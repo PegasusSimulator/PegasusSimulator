@@ -14,10 +14,14 @@ import omni.ui as ui
 from omni.isaac.core import World
 from omni.isaac.core.robots import Robot
 from omni.isaac.core.utils.viewports import set_camera_view
-from omni.isaac.core.utils.stage import create_new_stage_async, set_stage_up_axis, clear_stage, add_reference_to_stage
+from omni.isaac.core.utils.stage import create_new_stage_async, set_stage_up_axis, clear_stage, add_reference_to_stage, get_current_stage
 
 # Pegasus Extension Files
+from pegasus_isaac.utils import createObject
 from pegasus_isaac.params import EXTENSION_NAME, ROBOTS, DEFAULT_WORLD_SETTINGS
+
+# TODO - remove this - only for debugging purposes
+from omni.isaac.core.utils.nucleus import get_assets_root_path
 
 # Any class derived from `omni.ext.IExt` in top level module (defined in `python.modules` of `extension.toml`) will be
 # instantiated when extension gets enabled and `on_startup(ext_id)` will be called. Later when extension gets disabled
@@ -55,7 +59,7 @@ class Pegasus_isaacExtension(omni.ext.IExt):
             dockPreference=ui.DockPreference.RIGHT_BOTTOM)
         
         # Method to check whether the visibility of the extension widget has changed 
-        self._window.set_visibility_changed_fn(lambda visibility: carb.log_info("Extension Visibility: " + str(visibility)))
+        self._window.set_visibility_changed_fn(self.on_shutdown)
    
         # Define the UI of the widget window
         with self._window.frame:
@@ -77,6 +81,9 @@ class Pegasus_isaacExtension(omni.ext.IExt):
                 
                 # Button to set the camera view
                 camera_button = ui.Button("Set Camera", clicked_fn=self.set_camera_callback)
+                
+                # Button do adjust the physics timestep
+                physics_button = ui.Button("Set Physics", clicked_fn=self.set_physics_callback)
                 
     def load_button_callback(self):
         """
@@ -107,17 +114,39 @@ class Pegasus_isaacExtension(omni.ext.IExt):
             carb.log_warn("No world object yet. Drone not spawned")
             return
         
-        # Tell this stage that a USD model of a drone exists and where it is "inside the file"
-        add_reference_to_stage(usd_path=ROBOTS["Quadrotor"], prim_path="/World/quadrotor")
+        nucleus_server = get_assets_root_path()
+        asset_path = nucleus_server + "/Isaac/Props/Blocks/nvidia_cube.usd"
         
-        # Create the a "robot" object wrapper around the "/World/quadrotor" primitive
-        self.robot = Robot(
-           prim_path="/World/quadrotor",
-           position=np.array([0.0, 0.0, 1.0]),
-           articulation_controller=None)
+        from pxr import Gf
+        self.prims = []
+        position = Gf.Vec3d(0, 0, 3.0)
+        self.prims = createObject('/World/iris', get_current_stage(), asset_path, False, position=position, group=self.prims, density=1, scale=Gf.Vec3d(1, 1, 1))
         
-        # Add the drone USD model to the scene
-        self._world.scene.add(self.robot)
+        # Setup the dynamic control interface for the drone (to apply forces to the rigid body)
+        self.dynamic_control = self._world.dc_interface
+        
+        # Add the callbacks to 
+        self._world.add_physics_callback("drone", self.physics_callback)
+        
+    def physics_callback(self, dt):
+        """
+        Callback to update the physics of the drone
+        """
+        #carb.log_warn("Running physics: " + str(dt))   
+        
+        # Get the rigid body of the drone
+        rigid_body = self.dynamic_control.get_rigid_body(self.prims[-1])
+        
+        force = 9.86
+        
+        # Apply a force in the rigid body of the vehicle (hence the false flag, otherwise it would be in world coordinates)
+        self.dynamic_control.apply_body_force(rigid_body, [0, 0, force], [0,0,0], False)
+        
+        carb.log_warn(force)
+        
+        #carb.log_warn(self._world.scene.get_object(self.prims[-1]).get_world_pose())
+        
+        #self.dynamic_control.apply_body_force() 
         
     def set_camera_callback(self):
         """
@@ -128,6 +157,15 @@ class Pegasus_isaacExtension(omni.ext.IExt):
         # Set the camera view to a fixed value
         set_camera_view(eye=np.array([5, 5, 5]), target=np.array([0, 0, 0]))
              
+    def set_physics_callback(self):
+        """
+        Callback that sets the physics parameters for the simulation
+        """
+        carb.log_info("Pressed the set physics button")
+        
+        # Set the timestep update for the physics solver
+        self._world.set_simulation_dt(1.0 / 250.0)         
+    
     async def load_world_async(self):
         """
         Function called when clicking the load World button
@@ -163,6 +201,9 @@ class Pegasus_isaacExtension(omni.ext.IExt):
         
         # Cleanup the world pointer
         self._world = None
+        
+        # Cleanup the primitives list
+        self.prims = []
 
         # Call python's garbage collection
         gc.collect()
@@ -190,3 +231,5 @@ class Pegasus_isaacExtension(omni.ext.IExt):
         Callback called when the extension is shutdown
         """
         print("Pegasus Isaac extension shutdown")
+        
+        self.clear_world()
