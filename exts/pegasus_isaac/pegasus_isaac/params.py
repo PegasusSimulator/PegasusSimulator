@@ -17,7 +17,7 @@ ROBOTS_ASSETS = ASSET_PATH + "/Robots"
 
 # Define the built in robots of the extension
 ROBOTS = {
-    "Quadrotor": ROBOTS_ASSETS + "/iris_body.usd"
+    "Quadrotor": ROBOTS_ASSETS + "/iris_articulated.usda"
 }
 
 DEFAULT_WORLD_SETTINGS = {

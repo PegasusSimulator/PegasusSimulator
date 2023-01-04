@@ -19,11 +19,12 @@ import numpy as np
 from ..state import State
 from .geo_mag_utils import GRAVITY_VECTOR
 
+DEFAULT_HOME_ALT_AMSL = 488.0
+
 class Barometer:
 
-    def __init__(self, noise: float, z_start: float, altitude_home: float):
+    def __init__(self, z_start: float, altitude_home: float=DEFAULT_HOME_ALT_AMSL):
         
-        self._noise: float = noise
         self._z_start: float = z_start
         self._altitude_home: float = altitude_home
 
@@ -44,13 +45,13 @@ class Barometer:
         self._gravity: float = GRAVITY_VECTOR[2] 
 
 
-    def update(self, state: State, dt: float) -> dict[str, float | np.ndarray]:
+    def update(self, state: State, dt: float):
 
         # Compute the temperature at the current altitude
         # Inverting the sign, because we are using NED convention
         # and the z is negative upwards
-        alt_rel: float = -(state.position[2] - self._z_start)
-        alt_amsl: float = self._altitude_home - alt_rel
+        alt_rel: float = state.position[2] - self._z_start
+        alt_amsl: float = self._altitude_home + alt_rel
         temperature_local: float = self._TEMPERATURE_MSL - self._LAPSE_RATE * alt_amsl
 
         # Compute the absolute pressure at local temperature

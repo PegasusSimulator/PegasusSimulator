@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import numpy as np
-from pyquaternion import Quaternion
 
 class State:
     """
@@ -15,7 +14,7 @@ class State:
 
         # The attitude (orientation) of the vehicle's body frame relative to the inertial frame of reference, 
         # expressed in the inertial frame
-        self.attitude: Quaternion = Quaternion()
+        self.attitude = np.array([0.0, 0.0, 0.0, 1.0])
 
         # The linear velocity [u,v,w] of the vehicle's body frame expressed in the body frame of reference
         self.linear_body_velocity = np.array([0.0, 0.0, 0.])

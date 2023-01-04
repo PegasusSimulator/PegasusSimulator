@@ -46,7 +46,13 @@ class VehicleManager:
         """
         self._vehicles[stage_prefix] = vehicle
 
-    def __new__(cls, *args, **kwargs):
+    def remove_vehicle(self, stage_prefix):
+        """
+        Method that deletes a vehicle from the vehicle manager
+        """
+        self._vehicles.pop(stage_prefix) 
+
+    def __new__(cls):
         """[summary]
 
         Returns:
@@ -58,7 +64,7 @@ class VehicleManager:
         with cls._lock:
 
             if cls._instance is None:
-                cls._instance = super().__call__(*args, **kwargs)
+                cls._instance = object.__new__(cls)
             else:
                 carb.log_info("Vehicle Manager is defined already, returning the previously defined one")
 

@@ -12,7 +12,6 @@ import omni.ui as ui
 
 # Isaac Speficic extensions API
 from omni.isaac.core import World
-from omni.isaac.core.robots import Robot
 from omni.isaac.core.utils.viewports import set_camera_view
 from omni.isaac.core.utils.stage import create_new_stage_async, set_stage_up_axis, clear_stage, add_reference_to_stage, get_current_stage
 
@@ -23,7 +22,8 @@ from pegasus_isaac.params import EXTENSION_NAME, ROBOTS, DEFAULT_WORLD_SETTINGS
 # TODO - remove this - only for debugging purposes
 from omni.isaac.core.utils.nucleus import get_assets_root_path
 
-from omni.isaac.dynamic_control import _dynamic_control
+# Quadrotor vehicle
+from pegasus_isaac.logic.quadrotor import Quadrotor
 
 import omni.physx
 
@@ -141,11 +141,11 @@ class Pegasus_isaacExtension(omni.ext.IExt):
         )
         """
 
-        prim = add_reference_to_stage(usd_path=ROBOTS["Quadrotor"], prim_path="/World/quadrotor")
+        #prim = add_reference_to_stage(usd_path=ROBOTS["Quadrotor"], prim_path="/World/quadrotor")
 
         #self._world.scene.add(Robot())
         
-        from omni.isaac.core.prims import XFormPrim
+        #from omni.isaac.core.prims import XFormPrim
         #self._world.scene.add(XFormPrim("/World/quadrotor", visible=True, translation=[0.0, 0.0, 1.0]))
         #carb.log_warn(type(prim))
 
@@ -157,15 +157,18 @@ class Pegasus_isaacExtension(omni.ext.IExt):
         #self._world.scene.add(prim)
 
         # Create a new primitive in the stage
-        self.prim = self._world.stage.DefinePrim("/World/quadrotor", "Xform")
-        self.prim.GetReferences().AddReference(ROBOTS["Quadrotor"])
+        #self.prim = self._world.stage.DefinePrim("/World/quadrotor", "Xform")
+        #self.prim.GetReferences().AddReference(ROBOTS["Quadrotor"])
         
-        self.prim = self._world.stage.DefinePrim("/World/quadrotor2", "Xform")
-        self.prim.GetReferences().AddReference(ROBOTS["Quadrotor"])
+        #self.prim = self._world.stage.DefinePrim("/World/quadrotor2", "Xform")
+        #self.prim.GetReferences().AddReference(ROBOTS["Quadrotor"])
 
         # Bind that primitive to the content of the USD file
-       
-        carb.log_warn("Test 2")
+
+        #carb.log_warn("Test 2")
+
+        quad = Quadrotor("/World/quadrotor", ROBOTS["Quadrotor"], self._world)
+
 
         # Add the callbacks to
         #self._world.add_physics_callback("/World/quadrotor", self.physics_callback)
@@ -184,11 +187,6 @@ class Pegasus_isaacExtension(omni.ext.IExt):
         carb.log_warn("Running physics: " + str(dt))
         #carb.log_warn(self.prims[-1])
         #carb.log_warn("/updat")
-
-        physxIFace = omni.physx.get_physx_interface()
-        #physxIFace.apply_force_at_pos("/World/quadrotor/Iris/body", carb._carb.Float3([0,0, 11.0]),carb._carb.Float3([0,0,0]))
-        #physxIFace.apply_force_at_pos(self.prims[-1], carb._carb.Float3([1000,0,0]),carb._carb.Float3([0,100,0]))
-        #physxIFace.apply_force_at_pos(self.prims[-1], carb._carb.Float3([-1000,0,0]),carb._carb.Float3([0,-100,0]))
         
     def set_camera_callback(self):
         """

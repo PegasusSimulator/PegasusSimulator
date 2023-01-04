@@ -67,14 +67,14 @@ EARTH_RADIUS = 6353000.0 # meters
 
 GRAVITY_VECTOR = np.array([0.0, 0.0, 9.80665]) # m/s^2
 
-def get_lookup_table_index(float *val, float min, float max):
+def get_lookup_table_index(val: float, min: float, max: float):
 
 	# for the rare case of hitting the bounds exactly
 	# the rounding logic wouldn't fit, so enforce it.
 	# limit to table bounds - required for maxima even when table spans full globe range
 	# limit to (table bounds - 1) because bilinear interpolation requires checking (index + 1)
-	*val = constrain(*val, min, max - SAMPLING_RES)
-	return -(min) + *val) / SAMPLING_RES
+	val = np.clip(val, min, max - SAMPLING_RES)
+	return -((min) + val) / SAMPLING_RES
 
 
 def get_table_data(lat, lon, table):
@@ -90,8 +90,8 @@ def get_table_data(lat, lon, table):
 	min_lon = int(lon / SAMPLING_RES) * SAMPLING_RES
 
 	# find index of nearest low sampling point 
-	min_lat_index = get_lookup_table_index(&min_lat, SAMPLING_MIN_LAT, SAMPLING_MAX_LAT)
-	min_lon_index = get_lookup_table_index(&min_lon, SAMPLING_MIN_LON, SAMPLING_MAX_LON)
+	min_lat_index = get_lookup_table_index(min_lat, SAMPLING_MIN_LAT, SAMPLING_MAX_LAT)
+	min_lon_index = get_lookup_table_index(min_lon, SAMPLING_MIN_LON, SAMPLING_MAX_LON)
 
 	data_sw = table[min_lat_index][min_lon_index]
 	data_se = table[min_lat_index][min_lon_index + 1]
@@ -99,8 +99,8 @@ def get_table_data(lat, lon, table):
 	data_nw = table[min_lat_index + 1][min_lon_index]
 
 	# perform bilinear interpolation on the four grid corners */
-	lat_scale = constrain((lat - min_lat) / SAMPLING_RES, 0.0, 1.0)
-	lon_scale = constrain((lon - min_lon) / SAMPLING_RES, 0.0, 1.0)
+	lat_scale = np.clip((lat - min_lat) / SAMPLING_RES, 0.0, 1.0)
+	lon_scale = np.clip((lon - min_lon) / SAMPLING_RES, 0.0, 1.0)
 
 	data_min = lon_scale * (data_se - data_sw) + data_sw
 	data_max = lon_scale * (data_ne - data_nw) + data_nw
