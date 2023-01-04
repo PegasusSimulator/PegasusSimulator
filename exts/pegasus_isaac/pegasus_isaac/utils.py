@@ -1,3 +1,4 @@
+import carb
 import omni
 from numpy import sin, cos
 from pxr import UsdGeom, Gf, Sdf, UsdPhysics, UsdShade
@@ -58,12 +59,14 @@ def createObject(prefix, stage, path, material, position=Gf.Vec3d(0, 0, 0), rota
 
     xform = setScale(xform, scale)
     xform = setTransform(xform, rotation, position)
-    
+
     if material:
         UsdShade.MaterialBindingAPI(obj_prim).Bind(material, UsdShade.Tokens.strongerThanDescendants)
 
     if allow_physics:
-        utils.setRigidBody(obj_prim, "convexHull", False)
+        utils.setRigidBody(obj_prim, "none", False)
+        #carb.log_warn("test")
+        #utils.setRigidBody(obj_prim, "convexHull", False)
         mass_api = UsdPhysics.MassAPI.Apply(obj_prim)
         mass_api.CreateMassAttr(density)
     return group
