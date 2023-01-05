@@ -23,9 +23,7 @@ from pegasus_isaac.params import EXTENSION_NAME, ROBOTS, DEFAULT_WORLD_SETTINGS
 from omni.isaac.core.utils.nucleus import get_assets_root_path
 
 # Quadrotor vehicle
-from pegasus_isaac.logic.quadrotor import Quadrotor
-
-import omni.physx
+from pegasus_isaac.logic.vehicles.quadrotor import Quadrotor
 
 # Any class derived from `omni.ext.IExt` in top level module (defined in `python.modules` of `extension.toml`) will be
 # instantiated when extension gets enabled and `on_startup(ext_id)` will be called. Later when extension gets disabled
@@ -115,70 +113,8 @@ class Pegasus_isaacExtension(omni.ext.IExt):
         """
         carb.log_info("Pressed the load drone button")
         
-        # Check if we have a world already. If not, just return
-        #if self._world is None:
-        #    carb.log_warn("No world object yet. Drone not spawned")
-        #    return
-        
-        nucleus_server = get_assets_root_path()
-        asset_path = nucleus_server + "/Isaac/Props/Blocks/nvidia_cube.usd"
-
-        asset_path = ROBOTS["Quadrotor"]
-        
-        from pxr import Gf
-        self.prims = []
-        position = Gf.Vec3d(0, 0, 1.0)
-        """
-        self.prims = createObject(
-            '/World/iris', 
-            get_current_stage(), 
-            asset_path, 
-            False, 
-            position=position, 
-            group=self.prims, 
-            density=1, 
-            scale=Gf.Vec3d(1, 1, 1)
-        )
-        """
-
-        #prim = add_reference_to_stage(usd_path=ROBOTS["Quadrotor"], prim_path="/World/quadrotor")
-
-        #self._world.scene.add(Robot())
-        
-        #from omni.isaac.core.prims import XFormPrim
-        #self._world.scene.add(XFormPrim("/World/quadrotor", visible=True, translation=[0.0, 0.0, 1.0]))
-        #carb.log_warn(type(prim))
-
-        #prim_path = omni.usd.get_stage_next_free_path(get_current_stage(), "/World/quadrotor", False)
-        #prim = add_reference_to_stage(usd_path=ROBOTS["Quadrotor"], prim_path=prim_path)
-        #self._world.scene.add(prim)
-
-        
-        #self._world.scene.add(prim)
-
-        # Create a new primitive in the stage
-        #self.prim = self._world.stage.DefinePrim("/World/quadrotor", "Xform")
-        #self.prim.GetReferences().AddReference(ROBOTS["Quadrotor"])
-        
-        #self.prim = self._world.stage.DefinePrim("/World/quadrotor2", "Xform")
-        #self.prim.GetReferences().AddReference(ROBOTS["Quadrotor"])
-
-        # Bind that primitive to the content of the USD file
-
-        #carb.log_warn("Test 2")
-
+        # Try to load a quadrotor into the specified namespace
         quad = Quadrotor("/World/quadrotor", ROBOTS["Quadrotor"], self._world)
-
-
-        # Add the callbacks to
-        #self._world.add_physics_callback("/World/quadrotor", self.physics_callback)
-
-        #dc = _dynamic_control.acquire_dynamic_control_interface()
-        # Check to see what type of object the target prim is
-        #obj_type = dc.peek_object_type("/World/quadrotor")
-
-        
-        #carb.log_warn(obj_type)
         
     def physics_callback(self, dt):
         """

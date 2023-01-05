@@ -11,7 +11,7 @@ from omni.usd import get_stage_next_free_path
 from omni.isaac.core.robots.robot import Robot
 
 from pegasus_isaac.logic.state import State
-from pegasus_isaac.logic.vehicle_manager import VehicleManager
+from pegasus_isaac.logic.vehicles.vehicle_manager import VehicleManager
 
 class Vehicle(Robot):
 

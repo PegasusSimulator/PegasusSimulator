@@ -47,7 +47,7 @@ class GPS:
         self._gps_correlation_time: float = 60
 
     
-    def update(self, state: np.ndarray, dt: float) -> dict[str, float | np.ndarray]:
+    def update(self, state: np.ndarray, dt: float):
 
         # Update noise parameters
         self._random_walk_gps[0] = self._gps_xy_random_walk * np.sqrt(dt) * np.random.randn()

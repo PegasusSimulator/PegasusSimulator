@@ -2,7 +2,7 @@
 
 import carb
 
-from pegasus_isaac.logic.vehicle import Vehicle
+from pegasus_isaac.logic.vehicles.vehicle import Vehicle
 from pegasus_isaac.logic.sensors import Barometer, IMU, Magnetometer, GPS
 import omni.isaac.core.utils.rotations 
 
@@ -47,7 +47,7 @@ class Quadrotor(Vehicle):
         #carb.log_warn(result)
 
     def update_gps_sensor(self, dt: float):
-        result = self._gps.update()
+        result = self._gps.update(self._state, dt)
         carb.log_warn(result)
 
     def apply_forces(self, dt: float):
