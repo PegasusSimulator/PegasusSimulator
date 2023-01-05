@@ -69,7 +69,7 @@ class GPS:
 
         # reproject position with noise into geographic coordinates
         pos_with_noise: np.ndarray = state.position + self._noise_gps_pos + self._gps_bias
-        latitude, longitude = self.reprojection(pos_with_noise)
+        latitude, longitude = reprojection(pos_with_noise, self._origin_latitude, self._origin_longitude)
 
         # Add noise to the velocity expressed in the world frame
         velocity: np.ndarray = state.linear_velocity + self._noise_gps_vel

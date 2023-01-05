@@ -3,7 +3,7 @@
 import carb
 
 from pegasus_isaac.logic.vehicle import Vehicle
-from pegasus_isaac.logic.sensors import Barometer, IMU, Magnetometer
+from pegasus_isaac.logic.sensors import Barometer, IMU, Magnetometer, GPS
 import omni.isaac.core.utils.rotations 
 
 class Quadrotor(Vehicle):
@@ -20,19 +20,19 @@ class Quadrotor(Vehicle):
         # Initiate the Vehicle
         super().__init__(stage_prefix, usd_file, world, init_pos, init_orientation)
 
-        # Try to get the latitude and longitude of the origin of the world from the "/World" attributes
-        world_prim = self._world.stage.GetPrimAtPath('/World')
-
         # Create the sensors that a quadrotor typically has
         self._barometer = Barometer(init_pos[2])
         self._imu = IMU()
-        self._magnetometer = Magnetometer(world_prim.GetAttribute('latitude'), world_prim.GetAttribute('longitude'))
-        #self._gps = GPS()
+        # TODO - read the latitude and longitude from the world configuration
+        self._magnetometer = Magnetometer(38.765824, -9.092815)
+        # TODO - check if we can initialize with relative altitude or we need an absolute one
+        self._gps = GPS(38.765824, -9.092815, origin_altitude=init_pos[2])
 
         # Add callbacks to the physics engine to update the sensors every timestep
         self._world.add_physics_callback(self._stage_prefix + "/barometer", self.update_barometer_sensor)
         self._world.add_physics_callback(self._stage_prefix + "/imu", self.update_imu_sensor)
-        #self._world.add_physics_callback(self._stage_prefix + "/magnetometer", self.update_magnetometer_sensor)
+        self._world.add_physics_callback(self._stage_prefix + "/magnetometer", self.update_magnetometer_sensor)
+        self._world.add_physics_callback(self._stage_prefix + "/gps", self.update_gps_sensor)
 
     def update_barometer_sensor(self, dt: float):
         result = self._barometer.update(self._state, dt)
@@ -40,10 +40,14 @@ class Quadrotor(Vehicle):
 
     def update_imu_sensor(self, dt: float):
         result = self._imu.update(self._state, dt)
-        carb.log_warn(result)
+        #carb.log_warn(result)
 
     def update_magnetometer_sensor(self, dt: float):
         result = self._magnetometer.update(self._state, dt)
+        #carb.log_warn(result)
+
+    def update_gps_sensor(self, dt: float):
+        result = self._gps.update()
         carb.log_warn(result)
 
     def apply_forces(self, dt: float):
