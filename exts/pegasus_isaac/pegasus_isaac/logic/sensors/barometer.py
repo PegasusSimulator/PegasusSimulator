@@ -55,7 +55,7 @@ class Barometer:
         temperature_local: float = self._TEMPERATURE_MSL - self._LAPSE_RATE * alt_amsl
 
         # Compute the absolute pressure at local temperature
-        pressure_ratio: float = np.pow(self._TEMPERATURE_MSL / temperature_local, 5.256)
+        pressure_ratio: float = np.power(self._TEMPERATURE_MSL / temperature_local, 5.256)
         absolute_pressure: float = self._PRESSURE_MSL / pressure_ratio
         
         # Generate a Gaussian noise sequence using polar form of Box-Muller transformation
@@ -85,7 +85,7 @@ class Barometer:
         absolute_pressure_noisy_hpa: float = absolute_pressure_noisy * 0.01
 
         # Compute air density at local temperature
-        density_ratio: float = np.pow(self._TEMPERATURE_MSL / temperature_local, 4.256)
+        density_ratio: float = np.power(self._TEMPERATURE_MSL / temperature_local, 4.256)
         air_density: float = self._AIR_DENSITY_MSL / density_ratio
 
         # Compute pressure altitude including effect of pressure noise

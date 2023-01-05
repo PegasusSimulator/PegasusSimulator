@@ -11,10 +11,11 @@ Description:
     in PX4 stil_gazebo (https://github.com/PX4/PX4-SITL_gazebo)
 """
 import numpy as np
-from pyquaternion import Quaternion
 
 from ..state import State
-from .geo_mag_utils import GRAVITY_VECTOR
+
+from omni.isaac.core.utils.rotations import euler_angles_to_quat
+
 
 class IMU:
 
@@ -25,20 +26,20 @@ class IMU:
         
         # Gyroscope noise constants
         self._gyroscope_bias: np.ndarray = np.zeros((3,))
-        self._gyroscope_noise_density: float = 0.0
-        self._gyroscope_random_walk: float = 0.0
-        self._gyroscope_bias_correlation_time: float = 0.0
-        self._gyroscope_turn_on_bias_sigma: float = 0.0
+        self._gyroscope_noise_density: float = 2.0 * 35.0 / 3600.0 / 180.0 * np.pi
+        self._gyroscope_random_walk: float = 2.0 * 4.0 / 3600.0 / 180.0 * np.pi
+        self._gyroscope_bias_correlation_time: float = 1.0E3
+        self._gyroscope_turn_on_bias_sigma: float = 0.5 / 180.0 * np.pi
         
         # Accelerometer noise constants
         self._accelerometer_bias: np.ndarray = np.zeros((3,))
-        self._accelerometer_noise_density: float = 0.0
-        self._accelerometer_random_walk: float = 0.0
-        self._accelerometer_bias_correlation_time: float = 0.0
-        self._accelerometer_turn_on_bias_sigma: float = 0.0
+        self._accelerometer_noise_density: float = 2.0 * 2.0E-3
+        self._accelerometer_random_walk: float = 2.0 * 3.0E-3
+        self._accelerometer_bias_correlation_time: float = 300.0
+        self._accelerometer_turn_on_bias_sigma: float = 20.0E-3 * 9.8
 
 
-    def update(self, state: State, dt: float) -> dict[str, float|np.ndarray]:  
+    def update(self, state: State, dt: float):  
         
         # Gyroscopic terms
         tau_g: float = self._accelerometer_bias_correlation_time
@@ -81,13 +82,14 @@ class IMU:
             linear_acceleration[i] = state.linear_acceleration[i] + self._accelerometer_bias[i] + sigma_a_d * np.random.randn()
     
         # Create a small "noisy" rotation about each axis x, y and z and generate a rotation from that noise
-        noise_x: Quaternion = Quaternion(axis=[1, 0, 0], angle=np.random.rand() *  self._orientation_noise)
-        noise_y: Quaternion = Quaternion(axis=[0, 1, 0], angle=np.random.rand() *  self._orientation_noise)
-        noise_z: Quaternion = Quaternion(axis=[0, 0, 1], angle=np.random.rand() *  self._orientation_noise)
-        noise_quaternion: Quaternion = noise_x * noise_y * noise_z
+        # TODO - add noise to the attitude
+        #noise_x = euler_angles_to_quat(euler_angles=[np.random.randn() * self._orientation_noise, 0.0, 0.0], degrees=False)
+        #noise_y= euler_angles_to_quat(euler_angles=[0.0, np.random.randn() * self._orientation_noise, 0.0], degrees=False)
+        #noise_z= euler_angles_to_quat(euler_angles=[0.0, 0.0, np.random.randn() * self._orientation_noise], degrees=False)
+        #noise_quaternion = noise_x * noise_y * noise_z
     
         # Simulate the attitude affected by noise
-        attitude: Quaternion = state.attitude * noise_quaternion
+        attitude = state.attitude #* noise_quaternion
 
         # Add the values to the dictionary and return it
         return {'orientation': attitude, 'angular_velocity': angular_velocity, 'linear_acceleration': linear_acceleration}

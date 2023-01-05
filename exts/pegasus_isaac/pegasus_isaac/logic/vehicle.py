@@ -116,7 +116,7 @@ class Vehicle(Robot):
         Method that when called, applies a given force vector to the rigid body or /<rigid_body_name>/"body"
         specified.
         """
-        carb.log_info(self._stage_prefix + body_part + "  " + str(force))
+        #carb.log_info(self._stage_prefix + body_part + "  " + str(force))
 
         self._physx_interface.apply_force_at_pos(
             self._stage_prefix + body_part, carb._carb.Float3(force), carb._carb.Float3(pos))

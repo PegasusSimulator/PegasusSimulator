@@ -50,7 +50,10 @@ class VehicleManager:
         """
         Method that deletes a vehicle from the vehicle manager
         """
-        self._vehicles.pop(stage_prefix) 
+        try:
+            self._vehicles.pop(stage_prefix) 
+        except:
+            pass
 
     def __new__(cls):
         """[summary]
@@ -62,7 +65,6 @@ class VehicleManager:
         # Use a lock in here to make sure we do not have a race condition
         # when using multi-threading and creating the first instance of the VehicleManager
         with cls._lock:
-
             if cls._instance is None:
                 cls._instance = object.__new__(cls)
             else:

@@ -30,7 +30,7 @@ class Magnetometer:
         self._bias_correlation_time: float = 6.0E2 # s
         
 
-    def update(self, state: State, dt: float) -> dict[str, float|np.ndarray]:
+    def update(self, state: State, dt: float):
 
         # Get the latitude and longitude from the current state
         latitude, longitude = reprojection(state.position, self._origin_latitude, self._origin_longitude)
