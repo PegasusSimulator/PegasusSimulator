@@ -59,3 +59,21 @@ class MavlinkInterface:
             vel, vn, ve, vd,
             cog, self._GPS_satellites_visible
         )
+
+    def send_sensors(self, time_usec, imu_data, mag_data, baro_data):
+
+        # Get the accelerometer and gyro data from the simulated imu
+        # converted from ENU to NED convention
+        xacc =  imu_data["angular_velocity"][0]
+        yacc = -imu_data["angular_velocity"][1]
+        zacc = -imu_data["angular_velocity"][2]
+
+        # Get the magnetic field from the simulated magnetometer
+
+        # Get the pressure and temperature from simulated barometer
+
+        # Setup the update code for the mavlink message 
+
+        self._connection.mav.hil_sensor_send(
+            time_usec, 
+            )
