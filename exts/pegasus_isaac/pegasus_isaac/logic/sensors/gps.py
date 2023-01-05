@@ -73,7 +73,9 @@ class GPS:
 
         # Add noise to the velocity expressed in the world frame
         velocity: np.ndarray = state.linear_velocity + self._noise_gps_vel
-        speed: float = np.linalg.norm(velocity)
+
+        # Compute the xy speed
+        speed: float = np.linalg.norm(velocity[:2])
 
         # Add the values to the dictionary and return it
         return {
@@ -85,4 +87,4 @@ class GPS:
             'speed': speed, 
             'velocity_north': velocity[0], 
             'velocity_east': velocity[1], 
-            'velocity_down': velocity[2]}
+            'velocity_down': -velocity[2]}
