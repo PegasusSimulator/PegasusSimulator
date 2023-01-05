@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 
+import numpy as np
+
 import carb
 from omni.isaac.core import World
+import omni.isaac.core.utils.rotations 
 from omni.isaac.core.utils.prims import define_prim
 from omni.physx import get_physx_interface
 from omni.usd import get_stage_next_free_path
@@ -15,7 +18,7 @@ class Vehicle(Robot):
     def __init__(
         self, 
         stage_prefix: str, 
-        usd_file: str, 
+        usd_path: str = None, 
         world: World=None, 
         init_pos=[0.0, 0.0, 0.0], 
         init_orientation=[0.0, 0.0, 0.0, 1.0]
@@ -31,7 +34,7 @@ class Vehicle(Robot):
         # Save the name with which the vehicle will appear in the stage
         # and the name of the .usd file that contains its description
         self._stage_prefix = get_stage_next_free_path(self._current_stage, stage_prefix, False)
-        self._usd_file = usd_file
+        self._usd_file = usd_path
         
         # Spawn the vehicle primitive in the world's stage
         self._prim = define_prim(self._stage_prefix, "Xform")
@@ -46,7 +49,8 @@ class Vehicle(Robot):
             articulation_controller=None
         )
 
-        # Add this object for the world to track
+        # Add this object for the world to track, so that if we clear the world, this object is deleted from memory and
+        # as a consequence, from the VehicleManager as well
         self._world.scene.add(self)
 
         # Get a physics interface, so that we can apply forces and torques directly to the rigid body
@@ -112,35 +116,42 @@ class Vehicle(Robot):
         Method that when called, applies a given force vector to the rigid body or /<rigid_body_name>/"body"
         specified.
         """
-        carb.log_info(self._stage_prefix + body_part)
+        carb.log_info(self._stage_prefix + body_part + "  " + str(force))
 
         self._physx_interface.apply_force_at_pos(
             self._stage_prefix + body_part, carb._carb.Float3(force), carb._carb.Float3(pos))
 
     def update_current_state(self, dt):
 
-        carb.log_warn("Running Ok")
+        # Get the body frame interface of the vehicle (this will be the frame used to get the position, orientation, etc.)
+        body = self._world.dc_interface.get_rigid_body(self._stage_prefix  + "/body")
 
         # Get the current position and orientation in the inertial frame
-        pos, quat = self.get_world_pose()
+        pose = self._world.dc_interface.get_rigid_body_pose(body)
 
         # Get the angular velocity of the vehicle expressed in the body frame of reference
-        ang_vel = self.get_angular_velocity()
+        ang_vel = self._world.dc_interface.get_rigid_body_angular_velocity(body)
 
-        # Get the linear velocity of the body relative to the inertial frame, expressed in the inertial frame
-        linear_vel = self.get_linear_velocity()
+        # The linear velocity [x_dot, y_dot, z_dot] of the vehicle's body frame expressed in the inertial frame of reference
+        linear_vel = self._world.dc_interface.get_rigid_body_linear_velocity(body)
+
+        # The linear velocity [u,v,w] of the vehicle's body frame expressed in the body frame of reference
+        linear_vel_body = self._world.dc_interface.get_rigid_body_local_linear_velocity(body)
 
         # Get the linear acceleration of the body relative to the inertial frame, expressed in the inertial frame
         # Note: we must do this approximation, since the Isaac sim does not output the acceleration of the rigid body directly
-        linear_acceleration = (self._state.linear_velocity - linear_vel) / dt
+        # TODO - check if this is being computed correctly
+        linear_acceleration = (self._state.linear_velocity - np.array(linear_vel)) / dt
 
         # Update the state variable
-        self._state.position = pos
-        self._state.attitude = quat
-        self._state.angular_velocity = ang_vel
-        self._state.linear_velocity = linear_vel
+        self._state.position = np.array(pose.p)
+        self._state.attitude = np.array(pose.r)
 
-        carb.log_warn(self._state.linear_velocity)
+        self._state.linear_body_velocity = np.array(linear_vel_body)
+        self._state.linear_velocity = np.array(linear_vel)
+
+        self._state.angular_velocity = np.array(ang_vel)
+        self._state.linear_acceleration = linear_acceleration
 
     def apply_forces(self, dt: float):
         """

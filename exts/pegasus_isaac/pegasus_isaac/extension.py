@@ -234,7 +234,8 @@ class Pegasus_isaacExtension(omni.ext.IExt):
         self.robot = None
         
         # Clear the world
-        self._world.clear()
+        if self._world is not None:
+            self._world.clear()
 
         # Clear the stage
         clear_stage()

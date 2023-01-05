@@ -39,5 +39,5 @@ class Quadrotor(Vehicle):
         """
 
         # Try to apply upwards force to the rigid body
-        self.apply_force([0.0, 0.0, 30.0], body_part="/body")
+        self.apply_force([0.0, 0.0, 9.82], body_part="/body")
         
