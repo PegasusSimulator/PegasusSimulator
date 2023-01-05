@@ -81,13 +81,7 @@ class Pegasus_isaacExtension(omni.ext.IExt):
                 drone_button = ui.Button("Drone", clicked_fn=self.load_drone_callback)
                 
                 # Button to set the camera view
-                camera_button = ui.Button("Set Camera", clicked_fn=self.set_camera_callback)
-                
-                # Button do adjust the physics timestep
-                physics_button = ui.Button("Set Physics", clicked_fn=self.set_physics_callback)
-
-                #
-                test_button = ui.Button("do nothing", clicked_fn=lambda : print("test"))
+                camera_button = ui.Button("Set Camera", clicked_fn=self.set_camera_callback)                
                 
     def load_button_callback(self):
         """
