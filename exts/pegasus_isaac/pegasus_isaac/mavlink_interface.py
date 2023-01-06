@@ -15,13 +15,15 @@ class MavlinkInterface:
         self._GPS_eph: int = int(1)
         self._GPS_epv: int = int(1)
 
-    def send_heartbeat(self):
+    def send_heartbeat(self, mav_type=mavutil.mavlink.MAV_TYPE_GENERIC):
         """
         Method that is used to publish an heartbear through mavlink protocol
         """
 
+        # Note: to know more about these functions, go to pymavlink->dialects->v20->standard.py
+        # This contains the definitions for sending the hearbeat and simulated sensor messages
         self._connection.mav.hearbeat_send(
-            mavutil.mavlink.MAV_TYPE_GENERIC,
+            mav_type,
             mavutil.mavlink.MAV_AUTOPILOT_INVALID,
             0, 0, 0)
 
@@ -42,7 +44,8 @@ class MavlinkInterface:
         ve = int(gps_data["velocity_east"] * 100)
         vd = int(gps_data["velocity_down"] * 100)
 
-        # cog factor in degrees (and expressed in integers)
+        # Course over ground (NOT heading, but direction of movement), 
+        # 0.0..359.99 degrees. If unknown, set to: 65535 [cdeg] (type:uint16_t)
         cog = np.degrees(np.arctan2(ve, vn))
         
         if cog < 0.:
@@ -77,3 +80,50 @@ class MavlinkInterface:
         self._connection.mav.hil_sensor_send(
             time_usec, 
             )
+
+    def send_vision_position(self, time_usec, vision_mocap_data):
+        """
+        This is usefull if simulating a visual inertial plugin running inside Isaac SIM (maybe in the future), or
+        to just simulate sending the data that a MOCAP system would send to the vehicle for fusion
+        """
+
+        # TODO - implement this feature and handle the ENU to NED convention required by PX4
+        x = 0.0         # Local X global position in inertial frame [m] (type:float)
+        y = 0.0         # Local Y global position in inertial frame [m] (type:float)
+        z = 0.0         # Local Z global position in inertial frame [m] (type:float)
+        roll = 0.0      # Roll angle [rad] (type:float)
+        pitch = 0.0     # Pitch angle [rad] (type:float)
+        yaw = 0.0       # Yaw angle [rad] (type:float)
+
+        # Row-major representation of pose 6x6 cross-covariance matrix upper right triangle 
+        # (states: x, y, z, roll, pitch, yaw; first six entries are the first ROW, next five entries 
+        # are the second ROW, etc.). If unknown, assign NaN value to first element in the array. (type:float)
+        covariance=(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+        
+        # Estimate reset counter. This should be incremented when the estimate resets in any of the dimensions 
+        # (position, velocity, attitude, angular speed). This is designed to be used when e.g an external SLAM system 
+        # detects a loop-closure and the estimate jumps. (type:uint8_t)
+        reset_counter = 0
+
+        # Note: to know more about these functions, go to pymavlink->dialects->v20->standard.py
+        # This contains the definitions for sending the hearbeat and simulated sensor messages
+        self._connection.mav.global_vision_position_estimate_send(
+            time_usec,        # Timestamp (UNIX time or time since system boot) [us] (type:uint64_t)
+            x, y, z,
+            roll, pitch, yaw,
+            covariance,   
+            reset_counter)
+
+    def send_sim_data(self, time_usec, imu_data, mag_data, baro_data, gps_data):
+        
+        # TODO
+
+        self._connection.mav.sim_state_send(
+            q1, q2, q3, q4,                 # w, x, y, z convention
+            roll, pitch, yaw,               # rad
+            xacc, yacc, zacc,               # m/s^2
+            xgyro, ygyro, zgyro,            # rad/s
+            lat, lon, alt,                  # [deg, deg, m]
+            std_dev_horz, std_dev_vert,     # Horizontal/Vertical position standard deviation
+            vn, ve, vd                      # Velocity north, east, down m/s
+        )
