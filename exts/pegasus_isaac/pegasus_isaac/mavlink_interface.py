@@ -48,7 +48,7 @@ class MavlinkInterface:
         # 0.0..359.99 degrees. If unknown, set to: 65535 [cdeg] (type:uint16_t)
         cog = np.degrees(np.arctan2(ve, vn))
         
-        if cog < 0.:
+        if cog < 0:
             cog = cog + 360
 
         cog = cog * 100
@@ -64,14 +64,44 @@ class MavlinkInterface:
         )
 
     def send_sensors(self, time_usec, imu_data, mag_data, baro_data):
+        """
+        The IMU, MAG and BAROMETER readings in SI units in NED body frame
+        time_usec                 : Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number. [us] (type:uint64_t)
+        --------
+        IMU_DATA
+        --------
+        xacc                      : X acceleration [m/s/s] (type:float)
+        yacc                      : Y acceleration [m/s/s] (type:float)
+        zacc                      : Z acceleration [m/s/s] (type:float)
+        xgyro                     : Angular speed around X axis in body frame [rad/s] (type:float)
+        ygyro                     : Angular speed around Y axis in body frame [rad/s] (type:float)
+        zgyro                     : Angular speed around Z axis in body frame [rad/s] (type:float)
+        --------
+        MAG_DATA
+        --------
+        xmag                      : X Magnetic field [gauss] (type:float)
+        ymag                      : Y Magnetic field [gauss] (type:float)
+        zmag                      : Z Magnetic field [gauss] (type:float)
+        ---------
+        BARO_DATA
+        ---------
+        abs_pressure              : Absolute pressure [hPa] (type:float)
+        diff_pressure             : Differential pressure (airspeed) [hPa] (type:float)
+        pressure_alt              : Altitude calculated from pressure (type:float)
+        temperature               : Temperature [degC] (type:float)
+        ---------
+        fields_updated            : Bitmap for fields that have updated since last message, bit 0 = xacc, bit 12: temperature, bit 31: full reset of attitude/position/velocities/etc was performed in sim. (type:uint32_t)
+        id                        : Sensor ID (zero indexed). Used for multiple sensor inputs (type:uint8_t)
+        """
 
         # Get the accelerometer and gyro data from the simulated imu
         # converted from ENU to NED convention
-        xacc =  imu_data["angular_velocity"][0]
-        yacc = -imu_data["angular_velocity"][1]
-        zacc = -imu_data["angular_velocity"][2]
+        xgyro =  imu_data["angular_velocity"][0]
+        ygyro = -imu_data["angular_velocity"][1]
+        zgyro = -imu_data["angular_velocity"][2]
 
         # Get the magnetic field from the simulated magnetometer
+
 
         # Get the pressure and temperature from simulated barometer
 
@@ -115,8 +145,57 @@ class MavlinkInterface:
             reset_counter)
 
     def send_sim_data(self, time_usec, imu_data, mag_data, baro_data, gps_data):
-        
+        """
+        Status of simulation environment
+
+        q1, q2, q3, q4             : True attitude quaternion components, w, x, y, z (type:float)
+        roll, pitch, yaw           : Attitude roll, pitch, yaw expressed as Euler angles
+        xacc, yacc, zacc           : X, Y, Z acceleration [m/s/s] (type:float)
+        xgyro, ygyro, zgyro        : Angular speed around X, Y, Z axis [rad/s] (type:float)
+        lat, lon, alt              : Latitude [deg], Longitude [deg], Altitude [m] (type:float)
+        std_dev_horz, std_dev_vert : Horizontal/Vertical position standard deviation (type:float)
+        vn, ve, vd                 : True velocity in north, east, down direction in earth-fixed NED frame [m/s] (type:float)
+        ve                        : True velocity in east direction in earth-fixed NED frame [m/s] (type:float)
+        vd                        : True velocity in down direction in earth-fixed NED frame [m/s] (type:float)
+
+        """
         # TODO
+        
+        # Quaternion with the orientation of the vehicle
+        q1 = 1.0
+        q2 = 0.0
+        q3 = 0.0
+        q4 = 0.0
+
+        # Euler angles with the orientation of the vehicle
+        roll = 0.0
+        pitch = 0.0
+        yaw = 0.0
+
+        # Linear acceleration measured by the im
+        xacc = 0.0
+        yacc = 0.0
+        zacc = 0.0
+
+        # Angular velocity measured by the imu
+        # converted from ENU to NED convention
+        xgyro =  imu_data["angular_velocity"][0]
+        ygyro = -imu_data["angular_velocity"][1]
+        zgyro = -imu_data["angular_velocity"][2]
+
+        # Get the latitude and longitude from the GPS data 
+        lat = np.degrees(gps_data["latitude"])
+        lon = np.degrees(gps_data["longitude"])
+        alt = gps_data["altitude"]
+
+        # Set the standard deviation to a fixed value (zero for now - fix later)
+        std_dev_horz = 0
+        std_dev_vert = 0
+
+        # Get the velocity measured by the GPS
+        vn = gps_data["velocity_north"]
+        ve = gps_data["velocity_east"]
+        vd = gps_data["velocity_down"]
 
         self._connection.mav.sim_state_send(
             q1, q2, q3, q4,                 # w, x, y, z convention

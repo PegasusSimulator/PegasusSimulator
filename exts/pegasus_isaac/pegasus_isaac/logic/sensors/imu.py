@@ -38,6 +38,16 @@ class IMU:
         self._accelerometer_bias_correlation_time: float = 300.0
         self._accelerometer_turn_on_bias_sigma: float = 20.0E-3 * 9.8
 
+        # Save the current state measured by the IMU
+        self._state = {
+            'orientation': np.array([1.0, 0.0, 0.0, 0.0 ]), 
+            'angular_velocity': np.array([0.0, 0.0, 0.0]), 
+            'linear_acceleration': np.array([0.0, 0.0, 0.0])
+        }
+
+    @property
+    def state(self):
+        return self._state
 
     def update(self, state: State, dt: float):  
         
@@ -92,4 +102,10 @@ class IMU:
         attitude = state.attitude #* noise_quaternion
 
         # Add the values to the dictionary and return it
-        return {'orientation': attitude, 'angular_velocity': angular_velocity, 'linear_acceleration': linear_acceleration}
+        self._state = {
+            'orientation': attitude, 
+            'angular_velocity': angular_velocity, 
+            'linear_acceleration': linear_acceleration
+        }
+
+        return self._state

@@ -3,6 +3,7 @@
 import carb
 
 from pegasus_isaac.logic.vehicles.vehicle import Vehicle
+from pegasus_isaac.mavlink_interface import MavlinkInterface
 from pegasus_isaac.logic.sensors import Barometer, IMU, Magnetometer, GPS
 import omni.isaac.core.utils.rotations 
 
@@ -23,10 +24,11 @@ class Quadrotor(Vehicle):
         # Create the sensors that a quadrotor typically has
         self._barometer = Barometer(init_pos[2])
         self._imu = IMU()
-        # TODO - read the latitude and longitude from the world configuration
         self._magnetometer = Magnetometer(38.765824, -9.092815)
-        # TODO - check if we can initialize with relative altitude or we need an absolute one
         self._gps = GPS(38.765824, -9.092815, origin_altitude=init_pos[2])
+        
+        # Create a mavlink interface for getting data
+        self._mavlink = MavlinkInterface('tcpin:localhost:4560')
 
         # Add callbacks to the physics engine to update the sensors every timestep
         self._world.add_physics_callback(self._stage_prefix + "/barometer", self.update_barometer_sensor)
@@ -34,21 +36,29 @@ class Quadrotor(Vehicle):
         self._world.add_physics_callback(self._stage_prefix + "/magnetometer", self.update_magnetometer_sensor)
         self._world.add_physics_callback(self._stage_prefix + "/gps", self.update_gps_sensor)
 
+        # Add callback for the mavlink communication layer
+        self._world.add_physics_callback(self._stage_prefix + "/mavlink", self.update_mavlink)
+
     def update_barometer_sensor(self, dt: float):
-        result = self._barometer.update(self._state, dt)
-        #carb.log_warn(result["pressure_altitude"])
+        self._barometer.update(self._state, dt)
 
     def update_imu_sensor(self, dt: float):
-        result = self._imu.update(self._state, dt)
-        #carb.log_warn(result)
+        self._imu.update(self._state, dt)
 
     def update_magnetometer_sensor(self, dt: float):
-        result = self._magnetometer.update(self._state, dt)
-        #carb.log_warn(result)
+        self._magnetometer.update(self._state, dt)
 
     def update_gps_sensor(self, dt: float):
-        result = self._gps.update(self._state, dt)
-        carb.log_warn(result)
+        self._gps.update(self._state, dt)
+
+    def update_mavlink(self, dt: float):
+
+        # Poll for mavlink msgs (receive the control input for the thrusters)
+        self._mavlink.poll_events()
+
+        # Method to send mavlink sensor data from the simulator
+        self._mavlink.send_sensors(0, self._imu.state, self._magnetometer.state, self._barometer.state)
+
 
     def apply_forces(self, dt: float):
         """

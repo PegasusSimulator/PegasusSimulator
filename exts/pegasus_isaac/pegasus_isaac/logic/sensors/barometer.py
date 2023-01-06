@@ -44,6 +44,12 @@ class Barometer:
         # The gravity acceleration
         self._gravity: float = GRAVITY_VECTOR[2] 
 
+        # Save the current state measured by the Baramoter
+        self._state = {'absolute_pressure': 0.0, 'pressure_altitude': 0.0, 'temperature': 0.0}
+
+    @property
+    def state(self):
+        return self._state
 
     def update(self, state: State, dt: float):
 
@@ -95,5 +101,11 @@ class Barometer:
         temperature_celsius: float = temperature_local + self._ABSOLUTE_ZERO_C
 
         # Add the values to the dictionary and return it
-        return {'absolute_pressure': absolute_pressure_noisy_hpa, 'pressure_altitude': pressure_altitude, 'temperature': temperature_celsius}
+        self._state = {
+            'absolute_pressure': absolute_pressure_noisy_hpa, 
+            'pressure_altitude': pressure_altitude, 
+            'temperature': temperature_celsius
+        }
+
+        return self._state
         

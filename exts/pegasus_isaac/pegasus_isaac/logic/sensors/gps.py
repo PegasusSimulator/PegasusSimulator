@@ -46,6 +46,22 @@ class GPS:
         self._gps_bias: np.ndarray = np.array([0.0, 0.0, 0.0])
         self._gps_correlation_time: float = 60
 
+        # Save the current state measured by the GPS
+        self._state = {
+            'latitude': self._origin_latitude, 
+            'longitude': self._origin_longitude, 
+            'altitude': self._origin_altitude,
+            'eph': 1.0, 
+            'epv': 1.0, 
+            'speed': 0.0, 
+            'velocity_north': 0.0, 
+            'velocity_east': 0.0, 
+            'velocity_down': 0.0
+        }
+
+    @property
+    def state(self):
+        return self._state
     
     def update(self, state: np.ndarray, dt: float):
 
@@ -78,7 +94,7 @@ class GPS:
         speed: float = np.linalg.norm(velocity[:2])
 
         # Add the values to the dictionary and return it
-        return {
+        self._state = {
             'latitude': latitude * 180.0 / np.pi, 
             'longitude': longitude * 180.0 / np.pi, 
             'altitude': state.position[2] + self._origin_altitude - self._noise_gps_pos[2] + self._gps_bias[2],
@@ -87,4 +103,7 @@ class GPS:
             'speed': speed, 
             'velocity_north': velocity[0], 
             'velocity_east': velocity[1], 
-            'velocity_down': -velocity[2]}
+            'velocity_down': -velocity[2]
+        }
+
+        return self._state

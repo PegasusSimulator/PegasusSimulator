@@ -28,7 +28,13 @@ class Magnetometer:
         self._noise_density: float = 0.4E-3 # gauss / sqrt(hz)
         self._random_walk: float = 6.4E-6   # gauss * sqrt(hz)
         self._bias_correlation_time: float = 6.0E2 # s
+
+        # Save the current state measured by the Magnetometer
+        self._state = {'magnetic_field': 0.0}
         
+    @property
+    def state(self):
+        return self._state
 
     def update(self, state: State, dt: float):
 
@@ -76,4 +82,6 @@ class Magnetometer:
             magnetic_field_noisy[i] = magnetic_field_body[i] + self._bias[i] + sigma_d * np.random.randn()
 
         # Add the values to the dictionary and return it
-        return {'magnetic_field': magnetic_field_noisy}
+        self._state = {'magnetic_field': magnetic_field_noisy}
+
+        return self._state
