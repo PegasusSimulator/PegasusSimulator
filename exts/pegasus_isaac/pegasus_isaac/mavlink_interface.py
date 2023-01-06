@@ -1,10 +1,13 @@
 #!/usr/bin/env python
+import carb
 import numpy as np
+from time import sleep
+from threading import Thread, Lock
 from pymavlink import mavutil
 
 class MavlinkInterface:
 
-    def __init__(self, connection: str):
+    def __init__(self, connection: str, enable_lockstep: bool = True):
 
         # Connect to the mavlink server
         self._connection = mavutil.mavlink_connection(connection)
@@ -14,6 +17,91 @@ class MavlinkInterface:
         self._GPS_satellites_visible = int(10)
         self._GPS_eph: int = int(1)
         self._GPS_epv: int = int(1)
+
+        # Select whether lockstep is enabled
+        self._enable_lockstep: bool = enable_lockstep
+        self._received_first_actuator: bool = False
+        self._received_actuator: bool = False
+
+        # Auxiliar variables to check if we have already received an hearbeat from the software in the loop simulation
+        self._received_first_hearbeat: bool = False
+        self._first_hearbeat_lock: Lock = Lock()
+
+        # Create a thread for polling for mavlink messages (but only start after receiving the first hearbeat)
+        self._update_thread: Thread = Thread(target=self.mavlink_update)
+
+        # Start a new thread that will wait for a new hearbeat
+        Thread(target=self.wait_for_first_hearbeat).start()
+
+    def wait_for_first_hearbeat(self):
+        """
+        Method that is responsible for waiting for the first hearbeat. This method is locking and will only return
+        if an hearbeat is received via mavlink. When this first heartbeat is received, a new thread will be created to
+        poll for mavlink messages
+        """
+
+        carb.log_warn("Waiting for first hearbeat")
+        self._connection.wait_heartbeat()
+
+        # Set the first hearbeat flag to true
+        with self._first_hearbeat_lock:
+            self._received_first_hearbeat = True
+        
+        carb.log_warn("Received first hearbeat")
+
+        # Start polling for other mavlink messages
+        self._poll_thread.start()
+
+    def mavlink_update(self):
+        """
+        Method that is running in a thread in parallel to send the mavlink data 
+        """
+
+        while True:
+            
+            # Check if we have received any mavlink messages
+            self.poll_mavlink_messages()
+
+            # Send hearbeats at 1Hz
+            
+            
+            # Update at 250Hz
+            sleep(1.0/250.0)
+        
+
+    def poll_mavlink_messages(self):
+        """
+        Method that is used to check if new mavlink messages were received
+        """
+
+        # If we have not received the first hearbeat yet, do not poll for mavlink messages
+        with self._first_hearbeat_lock:
+            if self._received_first_hearbeat == False:
+                return
+
+        # Check if we need to lock and wait for actuator control data
+        needs_to_wait_for_actuator: bool = self._received_first_actuator and self._enable_lockstep
+
+        # Start by assuming that we have not received data for the actuators for the current step
+        self._received_actuator = False
+
+        # Use this loop to emulate a do-while loop (make sure this runs at least once)
+        while True:
+            
+            # Try to get a message
+            msg = self._connection.recv_match(blocking=needs_to_wait_for_actuator)
+
+            if msg is not None:
+                carb.log_warn(msg.controls)
+
+                # TODO - check if message is of the type actuator, and if so, then:
+                # self._received_first_actuator = True
+                # self._received_actuator = True
+
+            # Check if we do not need to wait for an actuator message or we just received actuator input
+            # If so, break out of the infinite loop
+            if not needs_to_wait_for_actuator or self._received_actuator:
+                break
 
     def send_heartbeat(self, mav_type=mavutil.mavlink.MAV_TYPE_GENERIC):
         """
@@ -107,9 +195,9 @@ class MavlinkInterface:
 
         # Setup the update code for the mavlink message 
 
-        self._connection.mav.hil_sensor_send(
-            time_usec, 
-            )
+        #self._connection.mav.hil_sensor_send(
+        #    time_usec, 
+        #    )
 
     def send_vision_position(self, time_usec, vision_mocap_data):
         """
