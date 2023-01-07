@@ -16,8 +16,6 @@ Description:
 import numpy as np
 from .geo_mag_utils import reprojection
 
-import carb # TODO - remove this import - only used for debugging
-
 # TODO - Introduce delay on the GPS data
 
 class GPS:
@@ -78,7 +76,7 @@ class GPS:
             'speed': 0.0, 
             'velocity_north': 0.0, 
             'velocity_east': 0.0, 
-            'velocity_down': 0.0
+            'velocity_down': 0.0,
             # Constant values
             'fix_type': self._fix_type,
             'eph': self._eph,
@@ -119,7 +117,6 @@ class GPS:
 
         # Compute the xy speed
         speed: float = np.linalg.norm(velocity[:2])
-        carb.log_warn(speed)
 
         # Add the values to the dictionary and return it
         self._state = {
@@ -129,8 +126,9 @@ class GPS:
             'eph': 1.0, 
             'epv': 1.0, 
             'speed': speed, 
-            'velocity_north': velocity[0], 
-            'velocity_east': velocity[1], 
+            # Conversion from ENU (standard of Isaac Sim to NED - used in GPS sensors)
+            'velocity_north': velocity[1], 
+            'velocity_east': velocity[0], 
             'velocity_down': -velocity[2],
             # Constant values
             'fix_type': self._fix_type,
