@@ -116,17 +116,14 @@ def get_mag_inclination(latitude: float, longitude: float):
 def get_mag_strength(latitude: float, longitude: float):
 	return get_table_data(latitude, longitude, STRENGTH_TABLE)
 
-def reprojection(position: np.ndarray, origin_lat, origin_long):
+def reprojection(position: np.ndarray, origin_lat=-999, origin_long=-999):
     """
     Compute the latitude and longitude coordinates from a local position
     """
 
-    # TODO - convert from NED to ENU (to make sure that the computations get correct)
-    position_ENU: np.ndarray = position
-
     # reproject local position to gps coordinates
-    x_rad: float = position_ENU[1] / EARTH_RADIUS    # north
-    y_rad: float = position_ENU[0] / EARTH_RADIUS    # east
+    x_rad: float = position[1] / EARTH_RADIUS    # north
+    y_rad: float = position[0] / EARTH_RADIUS    # east
     c: float = np.sqrt(x_rad * x_rad + y_rad * y_rad)
     sin_c: float = np.sin(c)
     cos_c: float = np.cos(c)

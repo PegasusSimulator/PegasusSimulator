@@ -1,16 +1,11 @@
 #!/usr/bin/env python
 
-import carb
-
+import numpy as np
 from pegasus_isaac.logic.vehicles.vehicle import Vehicle
 from pegasus_isaac.mavlink_interface import MavlinkInterface
 from pegasus_isaac.logic.sensors import Barometer, IMU, Magnetometer, GPS
-import omni.isaac.core.utils.rotations 
 
 import omni.timeline
-
-# TODO - remove this - only used for debugging
-import threading
 
 class Quadrotor(Vehicle):
 
@@ -30,7 +25,7 @@ class Quadrotor(Vehicle):
         self._barometer = Barometer(init_pos[2])
         self._imu = IMU()
         self._magnetometer = Magnetometer(38.765824, -9.092815)
-        self._gps = GPS(38.765824, -9.092815, origin_altitude=init_pos[2])
+        self._gps = GPS(47.397742, 8.545594, origin_altitude=488.0)
         
         # Create a mavlink interface for getting data
         self._mavlink = MavlinkInterface('tcpin:localhost:4560')
@@ -42,7 +37,7 @@ class Quadrotor(Vehicle):
         self._world.add_physics_callback(self._stage_prefix + "/gps", self.update_gps_sensor)
 
         # Add a callback to start/stop the mavlink streaming once the play/stop button is hit
-        self._world.add_timeline_callback(self._stage_prefix + "/start_stop_sim", self.sim_start_stop)
+        #self._world.add_timeline_callback(self._stage_prefix + "/start_stop_sim", self.sim_start_stop)
 
     def update_barometer_sensor(self, dt: float):
         self._barometer.update(self._state, dt)

@@ -16,16 +16,38 @@ Description:
 import numpy as np
 from .geo_mag_utils import reprojection
 
+import carb # TODO - remove this import - only used for debugging
+
 # TODO - Introduce delay on the GPS data
 
 class GPS:
 
-    def __init__(self, origin_latitude: float, origin_longitude: float, origin_altitude: float):
+    def __init__(
+        self, 
+        origin_latitude: float, 
+        origin_longitude: float, 
+        origin_altitude: float,
+        fix_type: int=3,
+        eph: float=1.0,
+        epv: float=1.0,
+        sattelites_visible: int=10):
+        """
+        Constructor for a GPS sensor. Receives as arguments the:
+        origin_latitude: float with the latitude of the inertial frame origin in degrees
+        origin_longitude: float with the longitude of the inertial frame origin in degrees
+        origin_altitude: float with the base altitude of the inertial frame origin in meters
+        """
         
         # Define the origin's latitude, longitude and altitude corresponding to the point [0.0, 0.0, 0.0] in the inertial frame
-        self._origin_latitude: float = origin_latitude
-        self._origin_longitude: float = origin_longitude
+        self._origin_latitude: float = np.radians(origin_latitude)
+        self._origin_longitude: float = np.radians(origin_longitude)
         self._origin_altitude: float = origin_altitude
+
+        # Define the GPS simulated/fixed values
+        self._fix_type = fix_type
+        self._eph = eph
+        self._epv = epv
+        self._sattelites_visible = sattelites_visible
         
         # Parameters for GPS random walk
         self._random_walk_gps: float = np.array([0.0, 0.0, 0.0])
@@ -46,7 +68,7 @@ class GPS:
         self._gps_bias: np.ndarray = np.array([0.0, 0.0, 0.0])
         self._gps_correlation_time: float = 60
 
-        # Save the current state measured by the GPS
+        # Save the current state measured by the GPS (and initialize at the origin)
         self._state = {
             'latitude': self._origin_latitude, 
             'longitude': self._origin_longitude, 
@@ -57,6 +79,11 @@ class GPS:
             'velocity_north': 0.0, 
             'velocity_east': 0.0, 
             'velocity_down': 0.0
+            # Constant values
+            'fix_type': self._fix_type,
+            'eph': self._eph,
+            'epv': self._epv,
+            'sattelites_visible': self._sattelites_visible
         }
 
     @property
@@ -92,18 +119,24 @@ class GPS:
 
         # Compute the xy speed
         speed: float = np.linalg.norm(velocity[:2])
+        carb.log_warn(speed)
 
         # Add the values to the dictionary and return it
         self._state = {
-            'latitude': latitude * 180.0 / np.pi, 
-            'longitude': longitude * 180.0 / np.pi, 
+            'latitude': np.degrees(latitude), 
+            'longitude': np.degrees(longitude), 
             'altitude': state.position[2] + self._origin_altitude - self._noise_gps_pos[2] + self._gps_bias[2],
             'eph': 1.0, 
             'epv': 1.0, 
             'speed': speed, 
             'velocity_north': velocity[0], 
             'velocity_east': velocity[1], 
-            'velocity_down': -velocity[2]
+            'velocity_down': -velocity[2],
+            # Constant values
+            'fix_type': self._fix_type,
+            'eph': self._eph,
+            'epv': self._epv,
+            'sattelites_visible': self._sattelites_visible
         }
 
         return self._state
