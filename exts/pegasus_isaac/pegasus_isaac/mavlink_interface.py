@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import carb
+import time
 import numpy as np
-from time import sleep
 from threading import Thread, Lock
 from pymavlink import mavutil
 
@@ -33,6 +33,8 @@ class MavlinkInterface:
         # Auxiliar variables to check if we have already received an hearbeat from the software in the loop simulation
         self._received_first_hearbeat: bool = False
         self._first_hearbeat_lock: Lock = Lock()
+
+        self._last_heartbeat_sent_time = 0
 
         # Create a thread for polling for mavlink messages (but only start after receiving the first hearbeat)
         self._update_thread: Thread = Thread(target=self.mavlink_update)
@@ -93,14 +95,18 @@ class MavlinkInterface:
             self.poll_mavlink_messages()
 
             # Send hearbeats at 1Hz
-            
+            if (time.time() - self._last_heartbeat_sent_time) > 1.0 or self._received_first_hearbeat == False:
+                self.send_heartbeat()
+                self._last_heartbeat_sent_time = time.time()
+
             # Send sensor messages
+            
 
             # Send groundtruth
 
             
             # Update at 250Hz
-            sleep(1.0/self._update_rate)
+            time.sleep(1.0/self._update_rate)
         
 
     def poll_mavlink_messages(self):
