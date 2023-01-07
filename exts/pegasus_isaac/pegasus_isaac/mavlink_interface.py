@@ -104,6 +104,11 @@ class MavlinkInterface:
 
             # Send groundtruth
             self.send_ground_truth()
+
+            # TODO - handle mavlink disconnections from the SITL here (TO BE DONE)
+
+            # Handle the control input to the motors
+            self.handle_control()
             
             # Update at 250Hz
             time.sleep(1.0/self._update_rate)
@@ -161,6 +166,10 @@ class MavlinkInterface:
 
     def send_ground_truth(self):
         # TODO
+        pass
+
+    def handle_control(self):
+        #TODO
         pass
 
     def send_gps(self, time_usec, gps_data):
