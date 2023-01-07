@@ -108,7 +108,7 @@ class Pegasus_isaacExtension(omni.ext.IExt):
         carb.log_info("Pressed the load drone button")
         
         # Try to load a quadrotor into the specified namespace
-        quad = Quadrotor("/World/quadrotor", ROBOTS["Quadrotor"], self._world)
+        self.robot = Quadrotor("/World/quadrotor", ROBOTS["Quadrotor"], self._world)
         
     def physics_callback(self, dt):
         """
@@ -159,6 +159,9 @@ class Pegasus_isaacExtension(omni.ext.IExt):
         self._world.scene.add_default_ground_plane()
         
     def clear_world(self):
+
+        # If the physics simulation was running, stop it first
+        self._world.stop()
         
         # Clear the Robot object wrapper
         self.robot = None

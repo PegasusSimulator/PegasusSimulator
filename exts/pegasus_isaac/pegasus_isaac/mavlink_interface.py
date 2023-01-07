@@ -10,7 +10,8 @@ class MavlinkInterface:
     def __init__(self, connection: str, enable_lockstep: bool = True):
 
         # Connect to the mavlink server
-        self._connection = mavutil.mavlink_connection(connection)
+        self._connection_port = connection
+        self._connection = mavutil.mavlink_connection(self._connection_port)
         self._update_rate: float = 250.0 # Hz
         self._is_running: bool = False
 
@@ -36,22 +37,67 @@ class MavlinkInterface:
 
         self._last_heartbeat_sent_time = 0
 
+
+    def __del__(self):
+
+        # When this object gets destroyed, close the mavlink connection to free the communication port
+        if self._connection is not None:
+            self._connection.close()
+
+    def start_stream(self):
+        
+        # If we are already running the mavlink interface, then ignore the function call
+        if self._is_running == True:
+            return
+
+        # If the connection no longer exists (we stoped and re-started the stream, then re_intialize the interface)
+        if self._connection is None:
+            self.re_initialize_interface()
+        
+        # Set the flag to signal that the mavlink transmission has started
+        self._is_running = True
+
         # Create a thread for polling for mavlink messages (but only start after receiving the first hearbeat)
         self._update_thread: Thread = Thread(target=self.mavlink_update)
 
         # Start a new thread that will wait for a new hearbeat
         Thread(target=self.wait_for_first_hearbeat).start()
 
-    def __del__(self):
-        # When this object gets destroyed, close the mavlink connection to free the communication port
-        if self._connection is not None:
-            self._connection.close()
-
-    def start_stream(self):
-        self._is_running = True
-
     def stop_stream(self):
+        
+        # If the simulation was already stoped, then ignore the function call
+        if self._is_running == False:
+            return
+
+        # Set the flag so that we are no longer running the mavlink interface
         self._is_running = False
+
+        # Terminate the infinite thread loop
+        self._update_thread.join()
+
+        # Close the mavlink connection
+        self._connection.close()
+        self._connection = None
+
+    def re_initialize_interface(self):
+
+        self._is_running: bool = False
+        
+        # Restart the connection
+        self._connection = mavutil.mavlink_connection(self._connection_port)
+
+        # Auxiliar variables to handle the lockstep between receiving sensor data and actuator control
+        self._received_first_imu: bool = False
+        self._received_first_actuator: bool = False
+
+        self._received_imu: bool = False        
+        self._received_actuator: bool = False
+
+        # Auxiliar variables to check if we have already received an hearbeat from the software in the loop simulation
+        self._received_first_hearbeat: bool = False
+        self._first_hearbeat_lock: Lock = Lock()
+
+        self._last_heartbeat_sent_time = 0
 
     def update_imu(self, imu_data):
         self._received_imu = True
@@ -81,7 +127,7 @@ class MavlinkInterface:
         """
 
         # Run this thread forever at a fixed rate
-        while True:
+        while self._is_running:
             
             # Check if we have already received IMU data. If so, we start the lockstep and wait for more imu data
             if self._received_first_imu:
@@ -135,9 +181,10 @@ class MavlinkInterface:
             
             # Try to get a message
             msg = self._connection.recv_match(blocking=needs_to_wait_for_actuator)
+            carb.log_warn(msg)
 
-            if msg is not None:
-                carb.log_warn(msg.controls)
+            #if msg is not None:
+            #    pass
 
                 # TODO - check if message is of the type actuator, and if so, then:
                 # self._received_first_actuator = True
@@ -153,16 +200,46 @@ class MavlinkInterface:
         Method that is used to publish an heartbear through mavlink protocol
         """
 
+        carb.log_warn("Sending heartbeat")
+
         # Note: to know more about these functions, go to pymavlink->dialects->v20->standard.py
         # This contains the definitions for sending the hearbeat and simulated sensor messages
-        self._connection.mav.hearbeat_send(
+        self._connection.mav.heartbeat_send(
             mav_type,
             mavutil.mavlink.MAV_AUTOPILOT_INVALID,
             0, 0, 0)
 
     def send_sensor_msgs(self):
-        # TODO
-        pass
+        """
+        Method that when invoked, will send the simulated sensor data through mavlink
+        """
+
+        carb.log_warn("Sending sensor msgs")
+
+        xacc = 0.0
+        yacc = 0.0
+        zacc = 0.0 
+        xgyro = 0.0 
+        ygyro = 0.0 
+        zgyro = 0.0
+        xmag = 0.0
+        ymag = 0.0
+        zmag = 0.0
+        abs_pressure = 0.0
+        pressure_alt = 0.0
+        temperature = 0.0
+        diff_pressure = 0.
+        fields_updated = 1 | 1<<1 | 1<<2 | 1<<3 | 1<<4 | 1<<5 | 1<<6 | 1<<7 | 1<<8 | 1<<9 | 0<<10 | 1<<11 | 1<<12
+
+        try:
+            self._connection.mav.hil_sensor_send(int(time.time()),
+                                                xacc, yacc, zacc,
+                                                xgyro, ygyro, zgyro,
+                                                xmag, ymag, zmag,
+                                                abs_pressure, diff_pressure, pressure_alt, temperature,
+                                                fields_updated)
+        except:
+            carb.log_warn("Could not send sensor data through mavlink")
 
     def send_ground_truth(self):
         # TODO

@@ -77,8 +77,11 @@ class Vehicle(Robot):
     def __del__(self):
 
         # Remove the physics callback so that we don't get a segmentation fault
-        self._world.remove_physics_callback(self._stage_prefix + "/state")
-        self._world.remove_physics_callback(self._stage_prefix + "/apply_forces")
+        try:
+            self._world.remove_physics_callback(self._stage_prefix + "/state")
+            self._world.remove_physics_callback(self._stage_prefix + "/apply_forces")
+        except:
+            carb.log_info("Physics callbacks were already cleaned")
 
         # Remove this object from the vehicleHandler
         VehicleManager.get_vehicle_manager().remove_vehicle(self._stage_prefix)

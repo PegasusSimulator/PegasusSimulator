@@ -7,6 +7,8 @@ from pegasus_isaac.mavlink_interface import MavlinkInterface
 from pegasus_isaac.logic.sensors import Barometer, IMU, Magnetometer, GPS
 import omni.isaac.core.utils.rotations 
 
+import omni.timeline
+
 # TODO - remove this - only used for debugging
 import threading
 
@@ -40,37 +42,31 @@ class Quadrotor(Vehicle):
         self._world.add_physics_callback(self._stage_prefix + "/gps", self.update_gps_sensor)
 
         # Add a callback to start/stop the mavlink streaming once the play/stop button is hit
-        self._world.add_timeline_callback(self.sim_start_stop)
-
-        # Add callback for the mavlink communication layer
-        #self._world.add_physics_callback(self._stage_prefix + "/mavlink", self.update_mavlink)
+        self._world.add_timeline_callback(self._stage_prefix + "/start_stop_sim", self.sim_start_stop)
 
     def update_barometer_sensor(self, dt: float):
-        carb.log_warn(threading.current_thread().name)
         self._barometer.update(self._state, dt)
 
     def update_imu_sensor(self, dt: float):
-        carb.log_warn(threading.current_thread().name)
         self._imu.update(self._state, dt)
 
     def update_magnetometer_sensor(self, dt: float):
-        carb.log_warn(threading.current_thread().name)
         self._magnetometer.update(self._state, dt)
 
     def update_gps_sensor(self, dt: float):
-        carb.log_warn(threading.current_thread().name)
         self._gps.update(self._state, dt)
 
     def sim_start_stop(self, event):
-        carb.log_warn(event)
-
-    #def update_mavlink(self, dt: float):
-
-        # Poll for mavlink msgs (receive the control input for the thrusters)
-        #self._mavlink.poll_events()
-
-        # Method to send mavlink sensor data from the simulator
-        #self._mavlink.send_sensors(0, self._imu.state, self._magnetometer.state, self._barometer.state)
+        """
+        Callback that is called every time there is a timeline event such as starting/stoping the simulation
+        """
+        
+        # If the start/stop button was pressed, then start/stop mavlink communication
+        if self._world.is_playing():
+            self._mavlink.start_stream()
+        
+        if self._world.is_stopped():
+            self._mavlink.stop_stream()
 
     def apply_forces(self, dt: float):
         """
