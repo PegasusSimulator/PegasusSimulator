@@ -39,6 +39,9 @@ class Quadrotor(Vehicle):
         self._world.add_physics_callback(self._stage_prefix + "/magnetometer", self.update_magnetometer_sensor)
         self._world.add_physics_callback(self._stage_prefix + "/gps", self.update_gps_sensor)
 
+        # Add a callback to start/stop the mavlink streaming once the play/stop button is hit
+        self._world.add_timeline_callback(self.sim_start_stop)
+
         # Add callback for the mavlink communication layer
         #self._world.add_physics_callback(self._stage_prefix + "/mavlink", self.update_mavlink)
 
@@ -58,14 +61,16 @@ class Quadrotor(Vehicle):
         carb.log_warn(threading.current_thread().name)
         self._gps.update(self._state, dt)
 
-    def update_mavlink(self, dt: float):
+    def sim_start_stop(self, event):
+        carb.log_warn(event)
+
+    #def update_mavlink(self, dt: float):
 
         # Poll for mavlink msgs (receive the control input for the thrusters)
-        self._mavlink.poll_events()
+        #self._mavlink.poll_events()
 
         # Method to send mavlink sensor data from the simulator
-        self._mavlink.send_sensors(0, self._imu.state, self._magnetometer.state, self._barometer.state)
-
+        #self._mavlink.send_sensors(0, self._imu.state, self._magnetometer.state, self._barometer.state)
 
     def apply_forces(self, dt: float):
         """

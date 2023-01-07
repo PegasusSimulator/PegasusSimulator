@@ -11,6 +11,8 @@ class MavlinkInterface:
 
         # Connect to the mavlink server
         self._connection = mavutil.mavlink_connection(connection)
+        self._update_rate: float = 250.0 # Hz
+        self._is_running: bool = False
 
         # GPS constants
         self._GPS_fix_type: int = int(3)
@@ -20,7 +22,12 @@ class MavlinkInterface:
 
         # Select whether lockstep is enabled
         self._enable_lockstep: bool = enable_lockstep
+
+        # Auxiliar variables to handle the lockstep between receiving sensor data and actuator control
+        self._received_first_imu: bool = False
         self._received_first_actuator: bool = False
+
+        self._received_imu: bool = False        
         self._received_actuator: bool = False
 
         # Auxiliar variables to check if we have already received an hearbeat from the software in the loop simulation
@@ -32,6 +39,20 @@ class MavlinkInterface:
 
         # Start a new thread that will wait for a new hearbeat
         Thread(target=self.wait_for_first_hearbeat).start()
+
+    def __del__(self):
+        # When this object gets destroyed, close the mavlink connection to free the communication port
+        if self._connection is not None:
+            self._connection.close()
+
+    def start_stream(self):
+        self._is_running = True
+
+    def stop_stream(self):
+        self._is_running = False
+
+    def update_imu(self, imu_data):
+        self._received_imu = True
 
     def wait_for_first_hearbeat(self):
         """
@@ -49,24 +70,37 @@ class MavlinkInterface:
         
         carb.log_warn("Received first hearbeat")
 
-        # Start polling for other mavlink messages
-        self._poll_thread.start()
+        # Start updating mavlink messages at a fixed rate
+        self._update_thread.start()
 
     def mavlink_update(self):
         """
         Method that is running in a thread in parallel to send the mavlink data 
         """
 
+        # Run this thread forever at a fixed rate
         while True:
             
+            # Check if we have already received IMU data. If so, we start the lockstep and wait for more imu data
+            if self._received_first_imu:
+                while not self._received_imu and self._is_running:
+                    # TODO - here
+                    pass
+            
+            self._received_imu = False        
+
             # Check if we have received any mavlink messages
             self.poll_mavlink_messages()
 
             # Send hearbeats at 1Hz
             
+            # Send sensor messages
+
+            # Send groundtruth
+
             
             # Update at 250Hz
-            sleep(1.0/250.0)
+            sleep(1.0/self._update_rate)
         
 
     def poll_mavlink_messages(self):
