@@ -100,10 +100,10 @@ class MavlinkInterface:
                 self._last_heartbeat_sent_time = time.time()
 
             # Send sensor messages
-            
+            self.send_sensor_msgs()            
 
             # Send groundtruth
-
+            self.send_ground_truth()
             
             # Update at 250Hz
             time.sleep(1.0/self._update_rate)
@@ -154,6 +154,14 @@ class MavlinkInterface:
             mav_type,
             mavutil.mavlink.MAV_AUTOPILOT_INVALID,
             0, 0, 0)
+
+    def send_sensor_msgs(self):
+        # TODO
+        pass
+
+    def send_ground_truth(self):
+        # TODO
+        pass
 
     def send_gps(self, time_usec, gps_data):
         """
