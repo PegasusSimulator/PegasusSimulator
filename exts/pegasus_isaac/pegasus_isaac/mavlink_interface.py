@@ -7,7 +7,7 @@ from pymavlink import mavutil
 
 class MavlinkInterface:
 
-    def __init__(self, connection: str, enable_lockstep: bool = True):
+    def __init__(self, connection: str, num_thrusters:int = 4, enable_lockstep: bool = True):
 
         # Connect to the mavlink server
         self._connection_port = connection
@@ -31,6 +31,16 @@ class MavlinkInterface:
         self._gps_data = None
         self._bar_data = None
         self._mag_data = None
+
+        # Vehicle actuator control data
+        self._num_inputs: int = num_thrusters
+        self._input_reference: np.ndarray = np.zeros((self._num_inputs,))
+        self._armed: bool = False
+
+        self._input_offset: np.ndarray = np.zeros((self._num_inputs,))
+        self._input_scaling: np.ndarray = np.zeros((self._num_inputs,))
+
+        # TODO - input_reference = (mavlink_input + input_offset) * input_scalling + zero_position_armed
 
         # Select whether lockstep is enabled
         self._enable_lockstep: bool = enable_lockstep
