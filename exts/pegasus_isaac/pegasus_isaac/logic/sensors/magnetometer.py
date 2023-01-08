@@ -12,16 +12,18 @@ Description:
     by Elia Tarasov <elias.tarasov@gmail.com>
 """
 import numpy as np
+from scipy.spatial.transform import Rotation
+
 from ..state import State
 from .geo_mag_utils import get_mag_declination, get_mag_inclination, get_mag_strength, reprojection
 
 class Magnetometer:
 
-    def __init__(self, origin_latitude, origin_longitude):
+    def __init__(self, origin_latitude: float, origin_longitude: float):
         
         # Update the groundtruth latitude and longitude (in radians)
-        self._origin_latitude = origin_latitude
-        self._origin_longitude = origin_longitude
+        self._origin_latitude = np.radians(origin_latitude)
+        self._origin_longitude = np.radians(origin_longitude)
         
         # Set the noise parameters
         self._bias: np.ndarray = np.array([0.0, 0.0, 0.0])
@@ -42,22 +44,26 @@ class Magnetometer:
         latitude, longitude = reprojection(state.position, self._origin_latitude, self._origin_longitude)
 
         # Magnetic declination and inclination (radians)
-        declination_rad: float = get_mag_declination(latitude * 180.0 / np.pi, longitude * 180.0 / np.pi) * np.pi / 180.0
-        inclination_rad: float = get_mag_inclination(latitude * 180.0 / np.pi, longitude * 180.0 / np.pi) * np.pi / 180.0
-
+        declination_rad: float = np.radians(get_mag_declination(np.degrees(latitude), np.degrees(longitude)))
+        inclination_rad: float = np.radians(get_mag_inclination(np.degrees(latitude), np.degrees(longitude)))
+        
         # Compute the magnetic strength (10^5xnanoTesla)
-        strength_ga: float = 0.01 * get_mag_strength(latitude * 180.0 / np.pi, longitude * 180.0 / np.pi)
+        strength_ga: float = 0.01 * get_mag_strength(np.degrees(latitude), np.degrees(longitude))
         
         # Compute the Magnetic filed components according to: http://geomag.nrcan.gc.ca/mag_fld/comp-en.php
-        H: float = strength_ga * np.cos(inclination_rad);
-        Z: float = np.tan(inclination_rad) * H;
-        X: float = H * np.cos(declination_rad);
-        Y: float = H * np.sin(declination_rad);
+        H: float = strength_ga * np.cos(inclination_rad)
+        Z: float = np.tan(inclination_rad) * H
+        X: float = H * np.cos(declination_rad)
+        Y: float = H * np.sin(declination_rad)
         
+        # Magnetic field of a body following a front-left-up (FLU) convention expressed in a East-North-Up (ENU) inertial frame
         magnetic_field: np.ndarray = np.array([X, Y, Z])
         
-        # Rotate the magnetic field vector according to the vehicle orientation (and represent it in the body frame of the vehicle)
-        # TODO
+        # Rotate the magnetic field vector such that it expresses a field of a body frame according to the front-right-down (FRD)
+        # expressed in a North-East-Down (NED) inertial frame (the standard used in magnetometer units)
+        attitude_flu_enu = Rotation.from_quat(state.attitude)
+
+
         magnetic_field_body = magnetic_field
         
         # -------------------------------

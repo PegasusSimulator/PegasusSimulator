@@ -3,7 +3,7 @@
 version = "1.0.0"
 
 # Lists people or organizations that are considered the "authors" of the package.
-authors = ["Marcelo Jacinto", "John Keller"]
+authors = ["Marcelo Jacinto", "John Keller", "DSOR", "AirLab"]
 
 # The title and description fields are primarily for displaying extension info in UI
 title = "pegasus_isaac"
@@ -19,7 +19,7 @@ repository = ""
 category = "Example"
 
 # Keywords for the extension
-keywords = ["kit", "example"]
+keywords = ["drone", "quadrotor", "multirotor", "UAV", "px4", "sitl"]
 
 # Location of change log file in target (final) folder of extension, relative to the root.
 # More info on writing changelog: https://keepachangelog.com/en/1.0.0/
