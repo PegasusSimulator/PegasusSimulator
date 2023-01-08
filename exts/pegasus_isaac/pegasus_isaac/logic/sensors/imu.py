@@ -13,8 +13,8 @@ Description:
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-from ..state import State
-from .geo_mag_utils import GRAVITY_VECTOR
+from pegasus_isaac.logic.state import State
+from pegasus_isaac.logic.sensors.geo_mag_utils import GRAVITY_VECTOR
 
 
 class IMU:

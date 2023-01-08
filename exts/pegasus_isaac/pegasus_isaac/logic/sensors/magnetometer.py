@@ -7,16 +7,15 @@ Author: Marcelo Jacinto
 Email: marcelo.jacinto@tecnico.ulisboa.pt
 Github: https://github.com/marcelojacinto
 Description:
-    Simulates a magnetometer. Based on the implementation provided
-    in PX4 stil_gazebo (https://github.com/PX4/PX4-SITL_gazebo)
-    by Elia Tarasov <elias.tarasov@gmail.com>
+    Simulates a magnetometer. Based on the original implementation provided
+    in PX4 stil_gazebo (https://github.com/PX4/PX4-SITL_gazebo) by Elia Tarasov <elias.tarasov@gmail.com>
 """
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-from ..state import State
-from pegasus_isaac.pegasus_isaac.logic.rotations import rot_ENU_to_NED, q_FLU_to_FRD
-from .geo_mag_utils import get_mag_declination, get_mag_inclination, get_mag_strength, reprojection
+from pegasus_isaac.logic.state import State
+from pegasus_isaac.logic.rotations import rot_ENU_to_NED, rot_FLU_to_FRD
+from pegasus_isaac.logic.sensors.geo_mag_utils import get_mag_declination, get_mag_inclination, get_mag_strength, reprojection
 
 class Magnetometer:
 
@@ -32,8 +31,8 @@ class Magnetometer:
         self._random_walk: float = 6.4E-6   # gauss * sqrt(hz)
         self._bias_correlation_time: float = 6.0E2 # s
 
-        # Save the current state measured by the Magnetometer
-        self._state = {'magnetic_field': 0.0}
+        # Initial state measured by the Magnetometer
+        self._state = {'magnetic_field': np.zeros((3,))}
         
     @property
     def state(self):
@@ -63,8 +62,9 @@ class Magnetometer:
         # Rotate the magnetic field vector such that it expresses a field of a body frame according to the front-right-down (FRD)
         # expressed in a North-East-Down (NED) inertial frame (the standard used in magnetometer units)
         attitude_flu_enu = Rotation.from_quat(state.attitude)
-        rot_body_to_world = rot_ENU_to_NED * attitude_flu_enu * q_FLU_to_FRD.inv()
+        rot_body_to_world = rot_ENU_to_NED * attitude_flu_enu * rot_FLU_to_FRD.inv()
 
+        # The magnetic field expressed in the body frame according to the front-right-down (FRD) convention
         magnetic_field_body = rot_body_to_world.inv().apply(magnetic_field_inertial)
         
         # -------------------------------

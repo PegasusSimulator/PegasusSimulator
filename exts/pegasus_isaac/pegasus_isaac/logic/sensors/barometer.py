@@ -16,8 +16,8 @@ Description:
     Cavcar, M., http://fisicaatmo.at.fcen.uba.ar/practicas/ISAweb.pdf
 """
 import numpy as np
-from ..state import State
-from .geo_mag_utils import GRAVITY_VECTOR
+from pegasus_isaac.logic.state import State
+from pegasus_isaac.logic.sensors.geo_mag_utils import GRAVITY_VECTOR
 
 DEFAULT_HOME_ALT_AMSL = 488.0
 

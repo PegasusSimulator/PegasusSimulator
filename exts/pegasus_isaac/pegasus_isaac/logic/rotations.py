@@ -22,4 +22,4 @@ rot_ENU_to_NED = Rotation(q_ENU_to_NED)
 q_FLU_to_FRD = np.array([1.0, 0.0, 0.0, 0.0])
 
 # A scipe rotation from the FLU body frame to the FRD body frame
-rot_FLU_FRD = Rotation(q_FLU_to_FRD)
+rot_FLU_to_FRD = Rotation(q_FLU_to_FRD)

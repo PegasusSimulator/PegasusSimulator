@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 
 import numpy as np
+import carb
 
 # Declare which functions are visible from this file
-__all__ = ["get_mag_declination", "get_mag_inclination", "get_mag_strength", "reprojection", "GRAVITY_VECTOR"]
+#__all__ = ["get_mag_declination", "get_mag_inclination", "get_mag_strength", "reprojection", "GRAVITY_VECTOR"]
 
 # --------------------------------------------------------------------
 # Magnetic field data from WMM2018 (10^5xnanoTesla (N, E D) n-frame )
@@ -57,27 +58,27 @@ STRENGTH_TABLE = [
     [ 48,48,49,50,52,53,55,56,57,57,56,55,53,51,50,49,48,48,48,49,49,50,51,53,55,56,58,59,60,60,58,56,54,52,50,49,48 ],
     [ 54,54,54,55,56,57,58,58,59,58,58,57,56,54,53,52,51,51,51,51,52,53,54,55,57,58,60,61,62,61,61,59,58,56,55,54,54 ]]
 
-SAMPLING_RES = 10.0
-SAMPLING_MIN_LAT = -60.0 # deg
-SAMPLING_MAX_LAT = 60.0 # deg
-SAMPLING_MIN_LON = -180.0 # deg
-SAMPLING_MAX_LON = 180.0 # deg
+SAMPLING_RES = 10
+SAMPLING_MIN_LAT = -60 # deg
+SAMPLING_MAX_LAT = 60 # deg
+SAMPLING_MIN_LON = -180 # deg
+SAMPLING_MAX_LON = 180 # deg
 
 EARTH_RADIUS = 6353000.0 # meters
 
 GRAVITY_VECTOR = np.array([0.0, 0.0, -9.80665]) # m/s^2
 
-def get_lookup_table_index(val: float, min: float, max: float):
+def get_lookup_table_index(val: int, min: int, max: int):
 
 	# for the rare case of hitting the bounds exactly
 	# the rounding logic wouldn't fit, so enforce it.
 	# limit to table bounds - required for maxima even when table spans full globe range
 	# limit to (table bounds - 1) because bilinear interpolation requires checking (index + 1)
 	val = np.clip(val, min, max - SAMPLING_RES)
-	return -((min) + val) / SAMPLING_RES
+	return int(-((min) + val) / SAMPLING_RES)
 
 
-def get_table_data(lat, lon, table):
+def get_table_data(lat: float, lon: float, table):
 
 	# If the values exceed valid ranges, return zero as default
 	# as we have no way of knowing what the closest real value

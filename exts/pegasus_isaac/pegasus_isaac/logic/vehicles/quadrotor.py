@@ -1,12 +1,9 @@
 #!/usr/bin/env python
 
 import carb
-import numpy as np
 from pegasus_isaac.logic.vehicles.vehicle import Vehicle
 from pegasus_isaac.mavlink_interface import MavlinkInterface
 from pegasus_isaac.logic.sensors import Barometer, IMU, Magnetometer, GPS
-
-import omni.timeline
 
 class Quadrotor(Vehicle):
 
@@ -25,7 +22,7 @@ class Quadrotor(Vehicle):
         # Create the sensors that a quadrotor typically has
         self._barometer = Barometer(init_pos[2], altitude_home=488.0)   # Check
         self._imu = IMU()                                               # Check
-        self._magnetometer = Magnetometer(47.397742, 8.545594)
+        self._magnetometer = Magnetometer(47.397742, 8.545594)          # Check
         self._gps = GPS(47.397742, 8.545594, origin_altitude=488.0)     # Check
         
         # Create a mavlink interface for getting data
@@ -38,20 +35,19 @@ class Quadrotor(Vehicle):
         self._world.add_physics_callback(self._stage_prefix + "/gps", self.update_gps_sensor)
 
         # Add a callback to start/stop the mavlink streaming once the play/stop button is hit
-        #self._world.add_timeline_callback(self._stage_prefix + "/start_stop_sim", self.sim_start_stop)
+        self._world.add_timeline_callback(self._stage_prefix + "/start_stop_sim", self.sim_start_stop)
 
     def update_barometer_sensor(self, dt: float):
-        self._barometer.update(self._state, dt)
+        self._mavlink.bar_data(self._barometer.update(self._state, dt))
 
     def update_imu_sensor(self, dt: float):
-        self._imu.update(self._state, dt)
-        carb.log_warn("Linear acceleration: " + str(self._imu.state["linear_acceleration"]))
+        self._mavlink.imu_data(self._imu.update(self._state, dt))
 
     def update_magnetometer_sensor(self, dt: float):
-        self._magnetometer.update(self._state, dt)
+        self._mavlink.mag_data(self._magnetometer.update(self._state, dt))
 
     def update_gps_sensor(self, dt: float):
-        self._gps.update(self._state, dt)
+        self._mavlink.gps_data(self._gps.update(self._state, dt))
 
     def sim_start_stop(self, event):
         """
@@ -73,6 +69,5 @@ class Quadrotor(Vehicle):
         """
 
         # Try to apply upwards force to the rigid body
-        pass
-        #self.apply_force([0.0, 0.0, 9.82], body_part="/body")
+        self.apply_force([0.0, 0.0, 9.82], body_part="/body")
         

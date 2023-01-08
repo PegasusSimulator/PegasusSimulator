@@ -14,7 +14,7 @@ Description:
         Nuno Marques <nuno.marques@dronesolutions.io>
 """
 import numpy as np
-from .geo_mag_utils import reprojection
+from pegasus_isaac.logic.sensors.geo_mag_utils import reprojection
 
 # TODO - Introduce delay on the GPS data
 
