@@ -65,7 +65,7 @@ SAMPLING_MAX_LON = 180.0 # deg
 
 EARTH_RADIUS = 6353000.0 # meters
 
-GRAVITY_VECTOR = np.array([0.0, 0.0, 9.80665]) # m/s^2
+GRAVITY_VECTOR = np.array([0.0, 0.0, -9.80665]) # m/s^2
 
 def get_lookup_table_index(val: float, min: float, max: float):
 

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import carb
 import numpy as np
 from pegasus_isaac.logic.vehicles.vehicle import Vehicle
 from pegasus_isaac.mavlink_interface import MavlinkInterface
@@ -22,7 +23,7 @@ class Quadrotor(Vehicle):
         super().__init__(stage_prefix, usd_file, world, init_pos, init_orientation)
 
         # Create the sensors that a quadrotor typically has
-        self._barometer = Barometer(init_pos[2])
+        self._barometer = Barometer(init_pos[2], altitude_home=488.0)   # Check
         self._imu = IMU()
         self._magnetometer = Magnetometer(38.765824, -9.092815)
         self._gps = GPS(47.397742, 8.545594, origin_altitude=488.0)     # Check

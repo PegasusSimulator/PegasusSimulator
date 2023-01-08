@@ -41,7 +41,7 @@ icon = "data/icon.png"
 name = "pegasus_isaac"
 
 [python.pipapi]
-requirements = ["numpy", "pymavlink"]
+requirements = ["numpy", "scipy", "pymavlink"]
 use_online_index = true
 
 [[test]]

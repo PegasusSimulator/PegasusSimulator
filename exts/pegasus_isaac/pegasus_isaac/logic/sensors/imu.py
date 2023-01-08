@@ -11,8 +11,11 @@ Description:
     in PX4 stil_gazebo (https://github.com/PX4/PX4-SITL_gazebo)
 """
 import numpy as np
+from scipy.spatial.transform import Rotation
 
 from ..state import State
+from .geo_mag_utils import GRAVITY_VECTOR
+
 
 from omni.isaac.core.utils.rotations import euler_angles_to_quat
 
@@ -37,6 +40,9 @@ class IMU:
         self._accelerometer_random_walk: float = 2.0 * 3.0E-3
         self._accelerometer_bias_correlation_time: float = 300.0
         self._accelerometer_turn_on_bias_sigma: float = 20.0E-3 * 9.8
+
+        # Auxiliar variable used to compute the linear acceleration of the vehicle
+        self._prev_linear_velocity = np.zeros((3,))
 
         # Save the current state measured by the IMU
         self._state = {
@@ -71,7 +77,7 @@ class IMU:
             self._gyroscope_bias[i] = phi_g_d * self._gyroscope_bias[i] + sigma_b_g_d * np.random.randn()
             angular_velocity[i] = state.angular_velocity[i] + self._gyroscope_bias[i] + sigma_g_d * np.random.randn()
         
-        # Get the attitude of the vehicle
+        # Accelerometer terms
         tau_a: float = self._accelerometer_bias_correlation_time
         
         # Discrete-time standard deviation equivalent to an "integrating" sampler with integration time dt
@@ -84,26 +90,27 @@ class IMU:
         # Compute state-transition.
         phi_a_d: float = np.exp(-1.0 / tau_a * dt)
         
+        # Compute the linear acceleration from diferentiating the velocity of the vehicle expressed in the inertial frame
+        linear_acceleration_inertial = (state.linear_velocity - self._prev_linear_velocity) / dt
+        linear_acceleration_inertial = linear_acceleration_inertial - GRAVITY_VECTOR
+        self._prev_linear_velocity = state.linear_velocity
+
+        # Compute the linear acceleration of the body frame, with respect to the inertial frame, expressed in the body frame
+        # TODO - check if we need to transpose the rotation obtained from the state quaternion
+        # TODO - check if the quaternion should follow the standard qx, qx, qy, qz or the other way around
+        linear_acceleration = np.array(Rotation.from_quat(state.attitude).apply(linear_acceleration_inertial))
+
         # Simulate the accelerometer noise processes and add them to the true linear aceleration values
-        linear_acceleration: np.ndarray = np.zeros((3,))
-        
         for i in range(3):
             self._accelerometer_bias[i] = phi_a_d * self._accelerometer_bias[i] + sigma_b_a_d * np.random.rand()
-            linear_acceleration[i] = state.linear_acceleration[i] + self._accelerometer_bias[i] + sigma_a_d * np.random.randn()
+            linear_acceleration[i] = linear_acceleration[i] + self._accelerometer_bias[i] + sigma_a_d * np.random.randn()
     
         # Create a small "noisy" rotation about each axis x, y and z and generate a rotation from that noise
         # TODO - add noise to the attitude
-        #noise_x = euler_angles_to_quat(euler_angles=[np.random.randn() * self._orientation_noise, 0.0, 0.0], degrees=False)
-        #noise_y= euler_angles_to_quat(euler_angles=[0.0, np.random.randn() * self._orientation_noise, 0.0], degrees=False)
-        #noise_z= euler_angles_to_quat(euler_angles=[0.0, 0.0, np.random.randn() * self._orientation_noise], degrees=False)
-        #noise_quaternion = noise_x * noise_y * noise_z
-    
-        # Simulate the attitude affected by noise
-        attitude = state.attitude #* noise_quaternion
 
         # Add the values to the dictionary and return it
         self._state = {
-            'orientation': attitude, 
+            'orientation': state.attitude, 
             'angular_velocity': angular_velocity, 
             'linear_acceleration': linear_acceleration
         }

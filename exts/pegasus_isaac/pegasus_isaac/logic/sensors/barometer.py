@@ -41,9 +41,6 @@ class Barometer:
         self._baro_rnd_y2: float = 0.0
         self._baro_drift_pa: float = 0.0
         self._baro_drift_pa_per_sec: float = 0.0
-        
-        # The gravity acceleration
-        self._gravity: float = GRAVITY_VECTOR[2] 
 
         # Save the current state measured by the Baramoter
         self._state = {'absolute_pressure': 0.0, 'pressure_altitude': 0.0, 'temperature': 0.0}
@@ -55,8 +52,6 @@ class Barometer:
     def update(self, state: State, dt: float):
 
         # Compute the temperature at the current altitude
-        # Inverting the sign, because we are using NED convention
-        # and the z is negative upwards
         alt_rel: float = state.position[2] - self._z_start
         alt_amsl: float = self._altitude_home + alt_rel
         temperature_local: float = self._TEMPERATURE_MSL - self._LAPSE_RATE * alt_amsl
@@ -73,7 +68,7 @@ class Barometer:
             while w >= 1.0:
                 x1: float = 2.0 * np.random.randn() - 1.0
                 x2: float = 2.0 * np.random.randn() - 1.0
-                w = x1 * x1 + x2 * x2
+                w = (x1 * x1) + (x2 * x2)
 
             w = np.sqrt((-2.0 * np.log(w)) / w)
             y1: float = x1 * w
@@ -84,7 +79,7 @@ class Barometer:
             self._baro_rnd_use_last = False
 
         # Apply noise and drift
-        abs_pressure_noise: float = y1
+        abs_pressure_noise: float = y1  # 1 Pa RMS noise
         self._baro_drift_pa = self._baro_drift_pa + (self._baro_drift_pa_per_sec * dt)
         absolute_pressure_noisy: float = absolute_pressure + abs_pressure_noise + self._baro_drift_pa
 
@@ -96,7 +91,7 @@ class Barometer:
         air_density: float = self._AIR_DENSITY_MSL / density_ratio
 
         # Compute pressure altitude including effect of pressure noise
-        pressure_altitude: float = alt_amsl - (abs_pressure_noise + self._baro_drift_pa) / (self._gravity * air_density)
+        pressure_altitude: float = alt_amsl - (abs_pressure_noise + self._baro_drift_pa) / (np.linalg.norm(GRAVITY_VECTOR) * air_density)
 
         # Compute temperature in celsius
         temperature_celsius: float = temperature_local + self._ABSOLUTE_ZERO_C
