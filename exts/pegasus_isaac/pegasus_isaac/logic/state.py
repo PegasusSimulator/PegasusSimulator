@@ -13,7 +13,8 @@ class State:
         self.position = np.array([0.0, 0.0, 0.0])
 
         # The attitude (orientation) of the vehicle's body frame relative to the inertial frame of reference, 
-        # expressed in the inertial frame
+        # expressed in the inertial frame. This quaternion should follow the convention [qx, qy, qz, qw], such that "no rotation"
+        # equates to the quaternion=[0, 0, 0, 1]
         self.attitude = np.array([0.0, 0.0, 0.0, 1.0])
 
         # The linear velocity [u,v,w] of the vehicle's body frame expressed in the body frame of reference

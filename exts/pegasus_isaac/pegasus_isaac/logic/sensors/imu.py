@@ -17,9 +17,6 @@ from ..state import State
 from .geo_mag_utils import GRAVITY_VECTOR
 
 
-from omni.isaac.core.utils.rotations import euler_angles_to_quat
-
-
 class IMU:
 
     def __init__(self):
@@ -97,7 +94,6 @@ class IMU:
 
         # Compute the linear acceleration of the body frame, with respect to the inertial frame, expressed in the body frame
         # TODO - check if we need to transpose the rotation obtained from the state quaternion
-        # TODO - check if the quaternion should follow the standard qx, qx, qy, qz or the other way around
         linear_acceleration = np.array(Rotation.from_quat(state.attitude).apply(linear_acceleration_inertial))
 
         # Simulate the accelerometer noise processes and add them to the true linear aceleration values
@@ -105,8 +101,7 @@ class IMU:
             self._accelerometer_bias[i] = phi_a_d * self._accelerometer_bias[i] + sigma_b_a_d * np.random.rand()
             linear_acceleration[i] = linear_acceleration[i] + self._accelerometer_bias[i] + sigma_a_d * np.random.randn()
     
-        # Create a small "noisy" rotation about each axis x, y and z and generate a rotation from that noise
-        # TODO - add noise to the attitude
+        # TODO - Add small "noisy" to the attitude
 
         # Add the values to the dictionary and return it
         self._state = {
