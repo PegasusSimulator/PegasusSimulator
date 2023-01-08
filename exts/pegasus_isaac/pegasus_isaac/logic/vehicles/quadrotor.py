@@ -45,6 +45,7 @@ class Quadrotor(Vehicle):
 
     def update_imu_sensor(self, dt: float):
         self._imu.update(self._state, dt)
+        carb.log_warn("Linear acceleration: " + str(self._imu.state["linear_acceleration"]))
 
     def update_magnetometer_sensor(self, dt: float):
         self._magnetometer.update(self._state, dt)
@@ -72,5 +73,6 @@ class Quadrotor(Vehicle):
         """
 
         # Try to apply upwards force to the rigid body
-        self.apply_force([0.0, 0.0, 9.82], body_part="/body")
+        pass
+        #self.apply_force([0.0, 0.0, 9.82], body_part="/body")
         
