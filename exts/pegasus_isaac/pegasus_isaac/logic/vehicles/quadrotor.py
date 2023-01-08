@@ -25,7 +25,7 @@ class Quadrotor(Vehicle):
         self._barometer = Barometer(init_pos[2])
         self._imu = IMU()
         self._magnetometer = Magnetometer(38.765824, -9.092815)
-        self._gps = GPS(47.397742, 8.545594, origin_altitude=488.0) # Check
+        self._gps = GPS(47.397742, 8.545594, origin_altitude=488.0)     # Check
         
         # Create a mavlink interface for getting data
         self._mavlink = MavlinkInterface('tcpin:localhost:4560')

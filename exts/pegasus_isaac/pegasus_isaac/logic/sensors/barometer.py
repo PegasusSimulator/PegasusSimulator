@@ -29,11 +29,12 @@ class Barometer:
         self._altitude_home: float = altitude_home
 
         # Define the constants for the barometer   
-        self._TEMPERATURE_MSL: float = 288.15
-        self._PRESSURE_MSL: float = 101325.0
-        self._LAPSE_RATE: float = 0.0065
-        self._AIR_DENSITY_MSL: float = 1.225
-        self._ABSOLUTE_ZERO_C: float = -273.15
+        # International standard atmosphere (troposphere model - valid up to 11km) see [1]
+        self._TEMPERATURE_MSL: float = 288.15       # temperature at MSL [K] (15 [C])
+        self._PRESSURE_MSL: float = 101325.0        # pressure at MSL [Pa]
+        self._LAPSE_RATE: float = 0.0065            # reduction in temperature with altitude for troposphere [K/m]
+        self._AIR_DENSITY_MSL: float = 1.225        # air density at MSL [kg/m^3]
+        self._ABSOLUTE_ZERO_C: float = -273.15      # [C]
 
         # Auxiliar variables for generating the noise
         self._baro_rnd_use_last: bool = False

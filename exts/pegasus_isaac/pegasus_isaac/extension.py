@@ -60,7 +60,7 @@ class Pegasus_isaacExtension(omni.ext.IExt):
             visible=True)
         
         # Method to check whether the visibility of the extension widget has changed 
-        self._window.set_visibility_changed_fn(self.on_shutdown)
+        self._window.set_visibility_changed_fn(self.change_visibility)
    
         # Define the UI of the widget window
         with self._window.frame:
@@ -161,7 +161,8 @@ class Pegasus_isaacExtension(omni.ext.IExt):
     def clear_world(self):
 
         # If the physics simulation was running, stop it first
-        self._world.stop()
+        if self._world is not None:
+            self._world.stop()
         
         # Clear the Robot object wrapper
         self.robot = None
@@ -204,6 +205,14 @@ class Pegasus_isaacExtension(omni.ext.IExt):
         """
         Callback called when the extension is shutdown
         """
-        print("Pegasus Isaac extension shutdown")
+        carb.log_info("Pegasus Isaac extension shutdown")
         
         self.clear_world()
+
+
+    def change_visibility(self, visible):
+        """
+        Method that is called when the visibility of the extension is changed
+        """
+        if not visible:
+            self.on_shutdown()
