@@ -81,6 +81,7 @@ class GPS:
             'fix_type': self._fix_type,
             'eph': self._eph,
             'epv': self._epv,
+            'cog': 0.0,
             'sattelites_visible': self._sattelites_visible
         }
 
@@ -118,6 +119,17 @@ class GPS:
         # Compute the xy speed
         speed: float = np.linalg.norm(velocity[:2])
 
+        # Course over ground (NOT heading, but direction of movement), 
+        # 0.0..359.99 degrees. If unknown, set to: 65535 [cdeg] (type:uint16_t)
+        ve = velocity[0]
+        vn = velocity[1]
+        cog = np.degrees(np.arctan2(ve, vn))
+        
+        if cog < 0:
+            cog = cog + 360
+
+        cog = cog * 100
+
         # Add the values to the dictionary and return it
         self._state = {
             'latitude': np.degrees(latitude), 
@@ -134,6 +146,7 @@ class GPS:
             'fix_type': self._fix_type,
             'eph': self._eph,
             'epv': self._epv,
+            'cog': 0.0,
             'sattelites_visible': self._sattelites_visible
         }
 

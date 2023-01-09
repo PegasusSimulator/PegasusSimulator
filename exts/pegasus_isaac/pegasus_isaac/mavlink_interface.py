@@ -5,6 +5,64 @@ import numpy as np
 from threading import Thread, Lock
 from pymavlink import mavutil
 
+class SensorSource:
+    """
+    The binary codes to signal which simulated data is being sent through mavlink
+    """
+    ACCEL: int = 7          # 0b111
+    GYRO: int = 56          # 0b111000
+    MAG: int = 448          # 0b111000000
+    BARO: int = 6656        # 0b1101000000000
+    DIFF_PRESS: int = 1024  # 0b10000000000
+
+class SensorMsg:
+    """
+    Class that defines the sensor data that can be sent through mavlink
+    """
+
+    def __init__(self):
+
+        # IMU Data
+        self.new_imu_data: bool = False
+        self.xacc: float = 0.0
+        self.yacc: float = 0.0
+        self.zacc: float = 0.0 
+        self.xgyro: float = 0.0 
+        self.ygyro: float = 0.0 
+        self.zgyro: float = 0.0
+
+        # Baro Data
+        self.new_bar_data: bool = False
+        self.abs_pressure: float = 0.0
+        self.pressure_alt: float = 0.0
+        self.temperature: float = 0.0
+
+        # Magnetometer Data
+        self.new_mag_data: bool = False
+        self.xmag: float = 0.0
+        self.ymag: float = 0.0
+        self.zmag: float = 0.0
+
+        # Airspeed Data
+        self.new_press_data: bool = False
+        self.diff_pressure: float = 0.0
+
+        # GPS Data
+        self.new_gps_data: bool = False
+        self.fix_type: int = 0
+        self.latitude_deg: float = -999
+        self.longitude_deg: float = -999
+        self.altitude: float = -999
+        self.eph: float = 1.0
+        self.epv: float = 1.0
+        self.velocity: float = 0.0
+        self.velocity_north: float = 0.0
+        self.velocity_east: float = 0.0
+        self.velocity_down: float = 0.0
+        self.cog: float = 0.0
+        self.satellites_visible: int = 0
+
+
 class MavlinkInterface:
 
     def __init__(self, connection: str, num_thrusters:int = 4, enable_lockstep: bool = True):
@@ -22,15 +80,7 @@ class MavlinkInterface:
         self._GPS_epv: int = int(1)
 
         # Vehicle Sensor data to send through mavlink
-        self._new_imu_data: bool = False
-        self._new_gps_data: bool = False
-        self._new_bar_data: bool = False
-        self._new_mag_data: bool = False
-
-        self._imu_data = None
-        self._gps_data = None
-        self._bar_data = None
-        self._mag_data = None
+        self._sensor_data: SensorMsg = SensorMsg()
 
         # Vehicle actuator control data
         self._num_inputs: int = num_thrusters
@@ -58,28 +108,61 @@ class MavlinkInterface:
 
         self._last_heartbeat_sent_time = 0
 
-    """
-    Properties
-    """
-    @property
-    def imu_data(self, data):
-        self._imu_data = data
-        self._new_imu_data = True
+    def update_imu_data(self, data):
 
-    @property
-    def gps_data(self, data):
-        self._gps_data = data
-        self._new_gps_data = True
+        # TODO - check if we need to rotate this! Probably we do!
 
-    @property
-    def bar_data(self, data):
-        self._bar_data = data
-        self._new_bar_data = True
+        # Acelerometer data
+        self._sensor_data.xacc = data["linear_acceleration"][0]
+        self._sensor_data.yacc = data["linear_acceleration"][1]
+        self._sensor_data.zacc = data["linear_acceleration"][2]
 
-    @property
-    def mag_data(self, data):
-        self._mag_data = data
-        self._new_mag_data = True
+        # Gyro data
+        self._sensor_data.xgyro = data["angular_velocity"][0]
+        self._sensor_data.ygyro = data["angular_velocity"][1]
+        self._sensor_data.zgyro = data["angular_velocity"][2]
+
+        # Signal that we have new IMU data
+        self._sensor_data.new_imu_data = True
+
+    def update_gps_data(self, data):
+    
+        # GPS data
+        self._sensor_data.fix_type = int(data["fix_type"])
+        self._sensor_data.latitude_deg = int(data["latitude"] * 10000000)
+        self._sensor_data.longitude_deg = int(data["longitude"] * 10000000)
+        self._sensor_data.altitude = int(data["altitude"] * 1000)
+        self._sensor_data.eph = int(data["eph"])
+        self._sensor_data.epv = int(data["epv"])
+        self._sensor_data.velocity = int(data["speed"] * 100)
+        self._sensor_data.velocity_north = int(data["velocity_north"] * 100)
+        self._sensor_data.velocity_east = int(data["velocity_east"] * 100)
+        self._sensor_data.velocity_down = int(data["velocity_down"] * 100)
+        self._sensor_data.cog = int(data["cog"] * 100)
+        self._sensor_data.satellites_visible = int(data["sattelites_visible"])
+
+        # Signal that we have new GPS data
+        self._sensor_data.new_gps_data = True
+
+    def update_bar_data(self, data):
+        
+        # Barometer data
+        self._sensor_data.temperature = data["temperature"]
+        self._sensor_data.abs_pressure = data["absolute_pressure"]
+        self._sensor_data.pressure_alt = data["pressure_altitude"]
+
+        # Signal that we have new Barometer data
+        self._sensor_data.new_bar_data = True
+
+    def update_mag_data(self, data):
+
+        # Magnetometer data
+        self._sensor_data.xmag = data["magnetic_field"][0]
+        self._sensor_data.ymag = data["magnetic_field"][1]
+        self._sensor_data.zmag = data["magnetic_field"][2]  
+
+        # Signal that we have new Magnetometer data
+        self._sensor_data.new_mag_data = True
 
     def __del__(self):
 
@@ -256,33 +339,84 @@ class MavlinkInterface:
         """
         Method that when invoked, will send the simulated sensor data through mavlink
         """
-
         carb.log_warn("Sending sensor msgs")
 
-        xacc = 0.0
-        yacc = 0.0
-        zacc = 0.0 
-        xgyro = 0.0 
-        ygyro = 0.0 
-        zgyro = 0.0
-        xmag = 0.0
-        ymag = 0.0
-        zmag = 0.0
-        abs_pressure = 0.0
-        pressure_alt = 0.0
-        temperature = 0.0
-        diff_pressure = 0.
-        fields_updated = 1 | 1<<1 | 1<<2 | 1<<3 | 1<<4 | 1<<5 | 1<<6 | 1<<7 | 1<<8 | 1<<9 | 0<<10 | 1<<11 | 1<<12
+        # Check which sensors have new data to send
+        fields_updated: int = 0
+
+        if self._sensor_data.new_imu_data:
+            # Set the bit field to signal that we are sending updated accelerometer and gyro data
+            fields_updated = fields_updated | SensorSource.ACCEL | SensorSource.GYRO
+            self._sensor_data.new_imu_data = False
+
+        if self._sensor_data.new_mag_data:
+            # Set the bit field to signal that we are sending updated magnetometer data
+            fields_updated = fields_updated | SensorSource.MAG
+            self._sensor_data.new_mag_data = False
+
+        if self._sensor_data.new_bar_data:
+            # Set the bit field to signal that we are sending updated barometer data
+            fields_updated = fields_updated | SensorSource.BARO
+            self._sensor_data.new_bar_data = False
+
+        if self._sensor_data.new_press_data:
+            # Set the bit field to signal that we are sending updated diff pressure data
+            fields_updated = fields_updated | SensorSource.DIFF_PRESS
+            self._sensor_data.new_press_data = False
 
         try:
-            self._connection.mav.hil_sensor_send(int(time.time()),
-                                                xacc, yacc, zacc,
-                                                xgyro, ygyro, zgyro,
-                                                xmag, ymag, zmag,
-                                                abs_pressure, diff_pressure, pressure_alt, temperature,
-                                                fields_updated)
+            self._connection.mav.hil_sensor_send(
+                int(time.time()),
+                self._sensor_data.xacc,
+                self._sensor_data.yacc,
+                self._sensor_data.zacc,
+                self._sensor_data.xgyro,
+                self._sensor_data.ygyro,
+                self._sensor_data.zgyro,
+                self._sensor_data.xmag,
+                self._sensor_data.ymag,
+                self._sensor_data.zmag,
+                self._sensor_data.abs_pressure,
+                self._sensor_data.diff_pressure,
+                self._sensor_data.pressure_alt,
+                self._sensor_data.altitude,
+                fields_updated
+            )
         except:
             carb.log_warn("Could not send sensor data through mavlink")
+
+    def send_gps_msgs(self):
+        """
+        Method that is used to send simulated GPS data through the mavlink protocol. Receives as argument
+        a dictionary with the simulated gps data
+        """
+        carb.log_warn("Sending GPS msgs")
+
+        # Do not send GPS data, if no new data was received
+        if not self._sensor_data.new_gps_data:
+            return
+        
+        self._sensor_data.new_gps_data = False
+        
+        # Latitude, longitude and altitude (all in integers)
+        try:
+            self._connection.mav.hil_gps_send(
+                int(time.time()),
+                self._sensor_data.fix_type,
+                self._sensor_data.latitude_deg,
+                self._sensor_data.longitude_deg,
+                self._sensor_data.altitude,
+                self._sensor_data.eph,
+                self._sensor_data.epv,
+                self._sensor_data.velocity,
+                self._sensor_data.velocity_north,
+                self._sensor_data.velocity_east,
+                self._sensor_data.velocity_down,
+                self._sensor_data.cog,
+                self._sensor_data.satellites_visible
+            )
+        except:
+            carb.log_warn("Could not send gps data through mavlink")
 
     def send_ground_truth(self):
         # TODO
@@ -291,39 +425,3 @@ class MavlinkInterface:
     def handle_control(self):
         #TODO
         pass
-
-    def send_gps(self, time_usec, gps_data):
-        """
-        Method that is used to send simulated GPS data through the mavlink protocol. Receives as argument
-        a dictionary with the simulated gps data
-        """
-        
-        # Latitude, longitude and altitude (all in integers)
-        lat = int(np.degrees(gps_data["latitude"])*10000000)
-        long = int(np.degrees(gps_data["longitude"])*10000000)
-        alt = int(gps_data["altitude"] * 1000)
-        
-        # Estimated velocity (all in integers)
-        vel = int(gps_data["speed"] * 100)
-        vn = int(gps_data["velocity_north"] * 100)
-        ve = int(gps_data["velocity_east"] * 100)
-        vd = int(gps_data["velocity_down"] * 100)
-
-        # Course over ground (NOT heading, but direction of movement), 
-        # 0.0..359.99 degrees. If unknown, set to: 65535 [cdeg] (type:uint16_t)
-        cog = np.degrees(np.arctan2(ve, vn))
-        
-        if cog < 0:
-            cog = cog + 360
-
-        cog = cog * 100
-
-        self._connection.mav.hil_gps_send(
-            time_usec,
-            self._GPS_fix_type,
-            lat, long, alt,
-            self._GPS_eph, 
-            self._GPS_epv,
-            vel, vn, ve, vd,
-            cog, self._GPS_satellites_visible
-        )

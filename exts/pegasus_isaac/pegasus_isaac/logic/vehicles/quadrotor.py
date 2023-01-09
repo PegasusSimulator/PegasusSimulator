@@ -38,16 +38,16 @@ class Quadrotor(Vehicle):
         self._world.add_timeline_callback(self._stage_prefix + "/start_stop_sim", self.sim_start_stop)
 
     def update_barometer_sensor(self, dt: float):
-        self._mavlink.bar_data(self._barometer.update(self._state, dt))
+        self._mavlink.update_bar_data(self._barometer.update(self._state, dt))
 
     def update_imu_sensor(self, dt: float):
-        self._mavlink.imu_data(self._imu.update(self._state, dt))
+        self._mavlink.update_imu_data(self._imu.update(self._state, dt))
 
     def update_magnetometer_sensor(self, dt: float):
-        self._mavlink.mag_data(self._magnetometer.update(self._state, dt))
+        self._mavlink.update_mag_data(self._magnetometer.update(self._state, dt))
 
     def update_gps_sensor(self, dt: float):
-        self._mavlink.gps_data(self._gps.update(self._state, dt))
+        self._mavlink.update_gps_data(self._gps.update(self._state, dt))
 
     def sim_start_stop(self, event):
         """
