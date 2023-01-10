@@ -41,11 +41,13 @@ class Vehicle(Robot):
         self._prim.GetReferences().AddReference(self._usd_file)
 
         # Initialize the "Robot" class
+        # Note: we need to change the rotation to have qw first, because NVidia
+        # does not keep a standard of quaternions inside its own libraries (not good, but okay)
         super().__init__(
             prim_path=self._stage_prefix, 
             name=self._stage_prefix, 
             position=init_pos, 
-            orientation=init_orientation, 
+            orientation=[init_orientation[3], init_orientation[0], init_orientation[1], init_orientation[2]], 
             articulation_controller=None
         )
 
