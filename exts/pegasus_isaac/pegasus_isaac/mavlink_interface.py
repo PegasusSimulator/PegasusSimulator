@@ -79,20 +79,33 @@ class ThrusterControl:
     Class that defines saves the thrusters command data received via mavlink
     """
 
-    def __init__(self, num_rotors: int=4, input_offset, input_scalling, zero_position_armed):
+    def __init__(self, num_rotors: int=4, input_offset, input_scaling, zero_position_armed):
         self.num_rotors: int = num_rotors
         
         # Values to scale and offset the rotor control inputs received from PX4
-        self.input_offset = []
-        self.input_scalling = []
-        self.zero_position_armed = []
+        assert len(input_offset) == self.num_rotors
+        self.input_offset = input_offset
+
+        assert len(input_scaling) == self.num_rotors
+        self.input_scaling = input_scaling
+
+        assert len(zero_position_armed) == self.num_rotors
+        self.zero_position_armed = zero_position_armed
 
         # The actual speed references to apply to the vehicle rotor joints
-        self.input_reference = []
+        self._input_reference = [0.0 for i in range(self.num_rotors)]
 
         # The actual force to apply to each vehicle rotor joints
-        self.input_force_reference = []
+        self._input_force_reference = [0.0 for i in range(self.num_rotors)]
 
+
+    @property
+    def input_reference(self):
+        return self._input_reference
+
+    @property
+    def input_force_reference(self):
+        return self._input_force_reference
     
     def update_input_reference(self, controls):
         
@@ -101,6 +114,9 @@ class ThrusterControl:
             carb.log_warn("Did not receive enough inputs for all the rotors")
             return
 
+        # Update the desired reference for every rotor
+        for i in range(self.num_rotors):
+            self._input_reference[i] = (controls[i] + self.input_offset[i]) * self.input_scaling[i] + self.zero_position_armed[i]
         
 
 class MavlinkInterface:
@@ -124,6 +140,13 @@ class MavlinkInterface:
 
         # Vehicle Sensor data to send through mavlink
         self._sensor_data: SensorMsg = SensorMsg()
+
+        # Vehicle Rotor data received from mavlink
+        self._rotor_data: ThrusterControl = ThrusterControl(
+            num_rotors=num_thrusters, 
+            input_offset=[0.0, 0.0, 0.0, 0.0],
+            input_scaling=[1000.0, 1000.0, 1000.0, 1000.0],
+            zero_position_armed=[100.0, 100.0, 100.0, 100.0])
 
         # Vehicle actuator control data
         self._num_inputs: int = num_thrusters
@@ -523,4 +546,9 @@ class MavlinkInterface:
         if mode == mavutil.mavlink.MAV_MODE_FLAG_SAFETY_ARMED:
             
             # Set the rotor target speeds
+            self._rotor_data.update_input_reference(controls)
+        
+        # If the vehicle is not armed, do not rotate the propellers
+        else:
+            self._rotor_data.zero_input_reference()
             
