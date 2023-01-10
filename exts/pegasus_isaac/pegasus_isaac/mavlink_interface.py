@@ -63,6 +63,45 @@ class SensorMsg:
         self.cog: float = 0.0
         self.satellites_visible: int = 0
 
+        # Vision Pose
+        self.new_vision_data: bool = False
+        self.vision_x: float = 0.0
+        self.vision_y: float = 0.0
+        self.vision_z: float = 0.0
+        self.vision_roll: float = 0.0
+        self.vision_pitch: float = 0.0
+        self.vision_yaw: float = 0.0
+        self.vision_covariance = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+
+
+class ThrusterControl:
+    """
+    Class that defines saves the thrusters command data received via mavlink
+    """
+
+    def __init__(self, num_rotors: int=4, input_offset, input_scalling, zero_position_armed):
+        self.num_rotors: int = num_rotors
+        
+        # Values to scale and offset the rotor control inputs received from PX4
+        self.input_offset = []
+        self.input_scalling = []
+        self.zero_position_armed = []
+
+        # The actual speed references to apply to the vehicle rotor joints
+        self.input_reference = []
+
+        # The actual force to apply to each vehicle rotor joints
+        self.input_force_reference = []
+
+    
+    def update_input_reference(self, controls):
+        
+        # Check if the number of controls received is correct
+        if len(controls) < self.num_rotors:
+            carb.log_warn("Did not receive enough inputs for all the rotors")
+            return
+
+        
 
 class MavlinkInterface:
 
@@ -167,6 +206,19 @@ class MavlinkInterface:
 
         # Signal that we have new Magnetometer data
         self._sensor_data.new_mag_data = True
+
+    def update_vision_data(self, data):
+
+        # Vision or MOCAP data
+        self._sensor_data.vision_x = data["x"]
+        self._sensor_data.vision_y = data["y"]
+        self._sensor_data.vision_z = data["z"]
+        self._sensor_data.vision_roll = data["roll"]
+        self._sensor_data.vision_pitch = data["pitch"]
+        self._sensor_data.vision_yaw = data["yaw"]
+        
+        # Signal that we have new vision or mocap data
+        self._sensor_data.new_vision_data = True
 
     def __del__(self):
 
@@ -401,8 +453,7 @@ class MavlinkInterface:
 
     def send_gps_msgs(self, time_usec: int):
         """
-        Method that is used to send simulated GPS data through the mavlink protocol. Receives as argument
-        a dictionary with the simulated gps data
+        Method that is used to send simulated GPS data through the mavlink protocol.
         """
         carb.log_warn("Sending GPS msgs")
 
@@ -432,6 +483,32 @@ class MavlinkInterface:
         except:
             carb.log_warn("Could not send gps data through mavlink")
 
+    def send_vision_msgs(self, time_usec: int):
+        """
+        Method that is used to send simulated vision/mocap data through the mavlink protocol.
+        """
+        carb.log_warn("Sending vision/mocap msgs")
+
+        # Do not send vision/mocap data, if not new data was received
+        if not self._sensor_data.new_vision_data:
+            return
+
+        self._sensor_data.new_vision_data = False
+
+        try:
+            self._connection.mav.global_vision_position_estimate_send(
+                time_usec,
+                self._sensor_data.vision_x,
+                self._sensor_data.vision_y,
+                self._sensor_data.vision_z,
+                self._sensor_data.vision_roll,
+                self._sensor_data.vision_pitch,
+                self._sensor_data.vision_yaw,
+                self._sensor_data.vision_covariance
+            )
+        except:
+            carb.log_warn("Could not send vision/mocap data through mavlink")
+
     def send_ground_truth(self):
         # TODO
         pass
@@ -441,4 +518,9 @@ class MavlinkInterface:
         Method that when received a control message, compute the forces simulated force that should be applied
         on each rotor of the vehicle
         """
-        pass
+        
+        # Check if the vehicle is armed
+        if mode == mavutil.mavlink.MAV_MODE_FLAG_SAFETY_ARMED:
+            
+            # Set the rotor target speeds
+            
