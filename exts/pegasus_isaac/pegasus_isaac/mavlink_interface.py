@@ -188,8 +188,6 @@ class MavlinkInterface:
         self._input_offset: np.ndarray = np.zeros((self._num_inputs,))
         self._input_scaling: np.ndarray = np.zeros((self._num_inputs,))
 
-        # TODO - input_reference = (mavlink_input + input_offset) * input_scalling + zero_position_armed
-
         # Select whether lockstep is enabled
         self._enable_lockstep: bool = enable_lockstep
 
@@ -556,8 +554,7 @@ class MavlinkInterface:
                 self._sensor_data.vision_roll,
                 self._sensor_data.vision_pitch,
                 self._sensor_data.vision_yaw,
-                self._sensor_data.vision_covariance
-            )
+                self._sensor_data.vision_covariance)
         except:
             carb.log_warn("Could not send vision/mocap data through mavlink")
 

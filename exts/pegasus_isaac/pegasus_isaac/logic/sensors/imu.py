@@ -14,6 +14,7 @@ import numpy as np
 from scipy.spatial.transform import Rotation
 
 from pegasus_isaac.logic.state import State
+from pegasus_isaac.logic.rotations import rot_FLU_to_FRD, rot_ENU_to_NED
 from pegasus_isaac.logic.sensors.geo_mag_utils import GRAVITY_VECTOR
 
 
@@ -103,11 +104,26 @@ class IMU:
     
         # TODO - Add small "noisy" to the attitude
 
+        # --------------------------------------------------------------------------------------------
+        # Apply rotations such that we express the IMU data according to the FRD body frame convention
+        # --------------------------------------------------------------------------------------------
+
+        # Convert the orientation to the FRD-NED standard
+        attitude_flu_enu = Rotation.from_quat(state.attitude)
+        attitude_frd_ned = rot_ENU_to_NED * attitude_flu_enu * rot_FLU_to_FRD
+
+        # Convert the angular velocity from FLU to FRD standard 
+        angular_velocity_frd = rot_FLU_to_FRD.apply(angular_velocity)
+
+        # Convert the linear acceleration in the body frame from FLU to FRD standard
+        linear_acceleration_frd = rot_FLU_to_FRD.apply(linear_acceleration)
+
+
         # Add the values to the dictionary and return it
         self._state = {
-            'orientation': state.attitude, 
-            'angular_velocity': angular_velocity, 
-            'linear_acceleration': linear_acceleration
+            'orientation': attitude_frd_ned.as_quat(), 
+            'angular_velocity': angular_velocity_frd, 
+            'linear_acceleration': linear_acceleration_frd
         }
 
         return self._state
