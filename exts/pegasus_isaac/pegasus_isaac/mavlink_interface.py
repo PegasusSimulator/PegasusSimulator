@@ -79,7 +79,15 @@ class ThrusterControl:
     Class that defines saves the thrusters command data received via mavlink
     """
 
-    def __init__(self, num_rotors: int=4, input_offset, input_scaling, zero_position_armed):
+    def __init__(
+        self, num_rotors: int=4, 
+        input_offset=[0, 0, 0, 0], 
+        input_scaling=[0, 0, 0, 0], 
+        zero_position_armed=[100, 100, 100, 100],
+        min_rotor_velocity=[0, 0, 0, 0],
+        max_rotor_velocity=[1100, 1100, 1100, 1100],
+        rotor_constant=[5.84E-6, 5.84E-6, 5.84E-6, 5.84E-6]):
+        
         self.num_rotors: int = num_rotors
         
         # Values to scale and offset the rotor control inputs received from PX4
@@ -91,6 +99,17 @@ class ThrusterControl:
 
         assert len(zero_position_armed) == self.num_rotors
         self.zero_position_armed = zero_position_armed
+
+        # Values for the minimum and maximum rotor velocity in rad/s
+        assert len(min_rotor_velocity) == self.num_rotors
+        self.min_rotor_velocity = min_rotor_velocity
+
+        assert len(max_rotor_velocity) == self.num_rotors
+        self.max_rotor_velocity = max_rotor_velocity
+
+        # The constant used to translate between rotor velocity (rad/s) and force (N)
+        assert len(rotor_constant) == self.num_rotors
+        self.rotor_constant = rotor_constant
 
         # The actual speed references to apply to the vehicle rotor joints
         self._input_reference = [0.0 for i in range(self.num_rotors)]
@@ -114,10 +133,23 @@ class ThrusterControl:
             carb.log_warn("Did not receive enough inputs for all the rotors")
             return
 
-        # Update the desired reference for every rotor
+        # Update the desired reference for every rotor (and saturate according to the min and max values)
         for i in range(self.num_rotors):
-            self._input_reference[i] = (controls[i] + self.input_offset[i]) * self.input_scaling[i] + self.zero_position_armed[i]
+
+            # Compute the actual velocity reference to apply to each rotor
+            self._input_reference[i] = np.maximum(self.min_rotor_velocity[i], np.minimum((controls[i] + self.input_offset[i]) * self.input_scaling[i] + self.zero_position_armed[i], self.max_rotor_velocity[i]))
         
+            # Compute the force that each rotor would generate for that particular rotation velocity
+            self._input_force_reference[i] = np.power(self._input_reference[i], 2) * self.rotor_constant[i]
+
+            carb.log_warn(self._input_force_reference[i])
+
+    def zero_input_reference(self):
+        """
+        When this method is called, the input_reference is updated such that every rotor is stopped
+        """
+        self._input_reference = [0.0 for i in range(self.num_rotors)]
+        self._input_force_reference = [0.0 for i in range(self.num_rotors)]
 
 class MavlinkInterface:
 
@@ -362,7 +394,7 @@ class MavlinkInterface:
             # TODO - handle mavlink disconnections from the SITL here (TO BE DONE)
 
             # Handle the control input to the motors
-            self.handle_control()
+            #self.handle_control()
             
             # Update at 250Hz or more
             time.sleep(1.0 / self._update_rate)
@@ -392,9 +424,6 @@ class MavlinkInterface:
 
             # If a message was received
             if msg is not None:
-
-                # Log the message
-                carb.log_warn(type(msg))
 
                 # Check if it is of the type that contains actuator controls
                 if msg.id == mavutil.mavlink.MAVLINK_MSG_ID_HIL_ACTUATOR_CONTROLS:
@@ -542,8 +571,11 @@ class MavlinkInterface:
         on each rotor of the vehicle
         """
         
-        # Check if the vehicle is armed
-        if mode == mavutil.mavlink.MAV_MODE_FLAG_SAFETY_ARMED:
+        # Check if the vehicle is armed - Note: here we have to add a +1 since the code for armed is 128, but
+        # pymavlink is return 129 (the end of the buffer)
+        if mode == mavutil.mavlink.MAV_MODE_FLAG_SAFETY_ARMED + 1:
+
+            carb.log_warn("Parsing control input")
             
             # Set the rotor target speeds
             self._rotor_data.update_input_reference(controls)
