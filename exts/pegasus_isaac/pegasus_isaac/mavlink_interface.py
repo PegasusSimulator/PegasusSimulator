@@ -9,11 +9,11 @@ class SensorSource:
     """
     The binary codes to signal which simulated data is being sent through mavlink
     """
-    ACCEL: int = 7          # 0b111
-    GYRO: int = 56          # 0b111000
-    MAG: int = 448          # 0b111000000
+    ACCEL: int = 7          # 0b0000000000111
+    GYRO: int = 56          # 0b0000000111000
+    MAG: int = 448          # 0b0000111000000
     BARO: int = 6656        # 0b1101000000000
-    DIFF_PRESS: int = 1024  # 0b10000000000
+    DIFF_PRESS: int = 1024  # 0b0010000000000
 
 class SensorMsg:
     """
@@ -24,6 +24,7 @@ class SensorMsg:
 
         # IMU Data
         self.new_imu_data: bool = False
+        self.received_first_imu: bool = False
         self.xacc: float = 0.0
         self.yacc: float = 0.0
         self.zacc: float = 0.0 
@@ -70,7 +71,10 @@ class MavlinkInterface:
         # Connect to the mavlink server
         self._connection_port = connection
         self._connection = mavutil.mavlink_connection(self._connection_port)
-        self._update_rate: float = 250.0 # Hz
+        
+        self._update_rate: float = 250.0                    # Hz
+        self._time_step: float = 1.0 / self._update_rate    # s
+        
         self._is_running: bool = False
 
         # GPS constants
@@ -96,10 +100,8 @@ class MavlinkInterface:
         self._enable_lockstep: bool = enable_lockstep
 
         # Auxiliar variables to handle the lockstep between receiving sensor data and actuator control
-        self._received_first_imu: bool = False
         self._received_first_actuator: bool = False
 
-        self._received_imu: bool = False        
         self._received_actuator: bool = False
 
         # Auxiliar variables to check if we have already received an hearbeat from the software in the loop simulation
@@ -108,9 +110,10 @@ class MavlinkInterface:
 
         self._last_heartbeat_sent_time = 0
 
-    def update_imu_data(self, data):
+        # Auxiliar variables for setting the u_time when sending sensor data to px4
+        self._current_utime: int = 0
 
-        # TODO - check if we need to rotate this! Probably we do!
+    def update_imu_data(self, data):
 
         # Acelerometer data
         self._sensor_data.xacc = data["linear_acceleration"][0]
@@ -124,6 +127,7 @@ class MavlinkInterface:
 
         # Signal that we have new IMU data
         self._sensor_data.new_imu_data = True
+        self._sensor_data.received_first_imu = True
 
     def update_gps_data(self, data):
     
@@ -167,8 +171,10 @@ class MavlinkInterface:
     def __del__(self):
 
         # When this object gets destroyed, close the mavlink connection to free the communication port
-        if self._connection is not None:
+        try:
             self._connection.close()
+        except:
+            carb.log_info("Mavlink connection was not closed, because it was never opened")
 
     def start_stream(self):
         
@@ -207,16 +213,16 @@ class MavlinkInterface:
 
     def re_initialize_interface(self):
 
-        self._is_running: bool = False
+        self._is_running = False
+
+        # Restart the sensor daata
+        self._sensor_data = SensorMsg()
         
         # Restart the connection
         self._connection = mavutil.mavlink_connection(self._connection_port)
 
         # Auxiliar variables to handle the lockstep between receiving sensor data and actuator control
-        self._received_first_imu: bool = False
         self._received_first_actuator: bool = False
-
-        self._received_imu: bool = False        
         self._received_actuator: bool = False
 
         # Auxiliar variables to check if we have already received an hearbeat from the software in the loop simulation
@@ -224,9 +230,6 @@ class MavlinkInterface:
         self._first_hearbeat_lock: Lock = Lock()
 
         self._last_heartbeat_sent_time = 0
-
-    def update_imu(self, imu_data):
-        self._received_imu = True
 
     def wait_for_first_hearbeat(self):
         """
@@ -255,13 +258,11 @@ class MavlinkInterface:
         # Run this thread forever at a fixed rate
         while self._is_running:
             
-            # Check if we have already received IMU data. If so, we start the lockstep and wait for more imu data
-            if self._received_first_imu:
-                while not self._received_imu and self._is_running:
-                    # TODO - here
-                    pass
-            
-            self._received_imu = False        
+            # Check if we have already received IMU data. If not, start the lockstep and wait for more data
+            if self._sensor_data.received_first_imu:
+                while not self._sensor_data.new_imu_data and self._is_running:
+                    # Sleep and then try to check if we have new simulated sensor data 
+                    time.sleep(1.0 / self._update_rate)
 
             # Check if we have received any mavlink messages
             self.poll_mavlink_messages()
@@ -271,8 +272,14 @@ class MavlinkInterface:
                 self.send_heartbeat()
                 self._last_heartbeat_sent_time = time.time()
 
+            # Update the current u_time for px4
+            self._current_utime += int(self._time_step * 1000000)
+
             # Send sensor messages
-            self.send_sensor_msgs()            
+            self.send_sensor_msgs(self._current_utime)
+
+            # Send the GPS messages
+            self.send_gps_msgs(self._current_utime)        
 
             # Send groundtruth
             self.send_ground_truth()
@@ -283,7 +290,7 @@ class MavlinkInterface:
             self.handle_control()
             
             # Update at 250Hz
-            time.sleep(1.0/self._update_rate)
+            time.sleep(1.0 / self._update_rate)
         
 
     def poll_mavlink_messages(self):
@@ -335,7 +342,7 @@ class MavlinkInterface:
             mavutil.mavlink.MAV_AUTOPILOT_INVALID,
             0, 0, 0)
 
-    def send_sensor_msgs(self):
+    def send_sensor_msgs(self, u_time: int):
         """
         Method that when invoked, will send the simulated sensor data through mavlink
         """
@@ -364,9 +371,11 @@ class MavlinkInterface:
             fields_updated = fields_updated | SensorSource.DIFF_PRESS
             self._sensor_data.new_press_data = False
 
+        fields_updated = 1 | 1<<1 | 1<<2 | 1<<3 | 1<<4 | 1<<5 | 1<<6 | 1<<7 | 1<<8 | 1<<9 | 0<<10 | 1<<11 | 1<<12
+
         try:
             self._connection.mav.hil_sensor_send(
-                int(time.time()),
+                u_time,
                 self._sensor_data.xacc,
                 self._sensor_data.yacc,
                 self._sensor_data.zacc,
@@ -385,7 +394,7 @@ class MavlinkInterface:
         except:
             carb.log_warn("Could not send sensor data through mavlink")
 
-    def send_gps_msgs(self):
+    def send_gps_msgs(self, u_time: int):
         """
         Method that is used to send simulated GPS data through the mavlink protocol. Receives as argument
         a dictionary with the simulated gps data
@@ -401,7 +410,7 @@ class MavlinkInterface:
         # Latitude, longitude and altitude (all in integers)
         try:
             self._connection.mav.hil_gps_send(
-                int(time.time()),
+                u_time,
                 self._sensor_data.fix_type,
                 self._sensor_data.latitude_deg,
                 self._sensor_data.longitude_deg,

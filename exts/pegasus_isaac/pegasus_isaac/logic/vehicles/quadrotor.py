@@ -37,6 +37,8 @@ class Quadrotor(Vehicle):
         # Add a callback to start/stop the mavlink streaming once the play/stop button is hit
         self._world.add_timeline_callback(self._stage_prefix + "/start_stop_sim", self.sim_start_stop)
 
+        self.total_time = 0
+
     def update_barometer_sensor(self, dt: float):
         self._mavlink.update_bar_data(self._barometer.update(self._state, dt))
 
@@ -68,6 +70,15 @@ class Quadrotor(Vehicle):
         by a class that inherits this type
         """
 
+        z = self.state.position[2]
+        z_ref = 1.0
+        Kp = 2.0
+
+        #if self.total_time > 1.0
         # Try to apply upwards force to the rigid body
-        self.apply_force([0.0, 0.0, 9.82], body_part="/body")
-        
+        self.apply_force([0.0, 0.0, 9.80 + Kp * (z_ref - z)], body_part="/body")
+        #carb.log_warn("stoped applying force in X")
+        #else:
+        #    self.apply_force([0.3, 0.0, 9.80 + Kp * (z_ref - z)], body_part="/body")
+
+        self.total_time += dt
