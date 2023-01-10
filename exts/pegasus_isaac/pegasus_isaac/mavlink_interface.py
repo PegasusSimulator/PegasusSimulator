@@ -289,7 +289,7 @@ class MavlinkInterface:
             # Handle the control input to the motors
             self.handle_control()
             
-            # Update at 250Hz
+            # Update at 250Hz or more
             time.sleep(1.0 / self._update_rate)
         
 
@@ -328,8 +328,7 @@ class MavlinkInterface:
                     self._received_actuator = True
 
                     # Handle the control of the actuation commands received by PX4
-                    self.handle_control()
-
+                    self.handle_control(msg.time_usec, msg.controls, msg.mode, msg.flags)
 
             # Check if we do not need to wait for an actuator message or we just received actuator input
             # If so, break out of the infinite loop
@@ -350,7 +349,7 @@ class MavlinkInterface:
             mavutil.mavlink.MAV_AUTOPILOT_INVALID,
             0, 0, 0)
 
-    def send_sensor_msgs(self, u_time: int):
+    def send_sensor_msgs(self, time_usec: int):
         """
         Method that when invoked, will send the simulated sensor data through mavlink
         """
@@ -379,12 +378,9 @@ class MavlinkInterface:
             fields_updated = fields_updated | SensorSource.DIFF_PRESS
             self._sensor_data.new_press_data = False
 
-        #fields_updated = 1 | 1<<1 | 1<<2 | 1<<3 | 1<<4 | 1<<5 | 1<<6 | 1<<7 | 1<<8 | 1<<9 | 0<<10 | 1<<11 | 1<<12
-        #carb.log_warn(self._sensor_data.zmag)
-
         try:
             self._connection.mav.hil_sensor_send(
-                u_time,
+                time_usec,
                 self._sensor_data.xacc,
                 self._sensor_data.yacc,
                 self._sensor_data.zacc,
@@ -403,7 +399,7 @@ class MavlinkInterface:
         except:
             carb.log_warn("Could not send sensor data through mavlink")
 
-    def send_gps_msgs(self, u_time: int):
+    def send_gps_msgs(self, time_usec: int):
         """
         Method that is used to send simulated GPS data through the mavlink protocol. Receives as argument
         a dictionary with the simulated gps data
@@ -419,7 +415,7 @@ class MavlinkInterface:
         # Latitude, longitude and altitude (all in integers)
         try:
             self._connection.mav.hil_gps_send(
-                u_time,
+                time_usec,
                 self._sensor_data.fix_type,
                 self._sensor_data.latitude_deg,
                 self._sensor_data.longitude_deg,
@@ -440,6 +436,9 @@ class MavlinkInterface:
         # TODO
         pass
 
-    def handle_control(self):
-        #TODO
+    def handle_control(self, time_usec, controls, mode, flags):
+        """
+        Method that when received a control message, compute the forces simulated force that should be applied
+        on each rotor of the vehicle
+        """
         pass
