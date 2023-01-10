@@ -12,7 +12,7 @@ class Quadrotor(Vehicle):
         stage_prefix: str="quadrotor",  
         usd_file: str="",
         world=None,
-        init_pos=[0.0, 0.0, 1.0], 
+        init_pos=[0.0, 0.0, 0.05], 
         init_orientation=[0.0, 0.0, 0.0, 1.0]
     ):
         
@@ -76,7 +76,7 @@ class Quadrotor(Vehicle):
 
         #if self.total_time > 1.0
         # Try to apply upwards force to the rigid body
-        self.apply_force([0.0, 0.0, 9.80 + Kp * (z_ref - z)], body_part="/body")
+        #self.apply_force([0.0, 0.0, 9.80 + Kp * (z_ref - z)], body_part="/body")
         #carb.log_warn("stoped applying force in X")
         #else:
         #    self.apply_force([0.3, 0.0, 9.80 + Kp * (z_ref - z)], body_part="/body")

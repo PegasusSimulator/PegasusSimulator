@@ -372,6 +372,7 @@ class MavlinkInterface:
             self._sensor_data.new_press_data = False
 
         fields_updated = 1 | 1<<1 | 1<<2 | 1<<3 | 1<<4 | 1<<5 | 1<<6 | 1<<7 | 1<<8 | 1<<9 | 0<<10 | 1<<11 | 1<<12
+        carb.log_warn(self._sensor_data.zmag)
 
         try:
             self._connection.mav.hil_sensor_send(

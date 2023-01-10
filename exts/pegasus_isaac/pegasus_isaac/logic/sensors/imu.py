@@ -72,7 +72,7 @@ class IMU:
         
         for i in range(3):
             self._gyroscope_bias[i] = phi_g_d * self._gyroscope_bias[i] + sigma_b_g_d * np.random.randn()
-            angular_velocity[i] = state.angular_velocity[i] + self._gyroscope_bias[i] + sigma_g_d * np.random.randn()
+            angular_velocity[i] = state.angular_velocity[i] + sigma_g_d * np.random.randn() # + self._gyroscope_bias[i]
         
         # Accelerometer terms
         tau_a: float = self._accelerometer_bias_correlation_time
@@ -99,7 +99,7 @@ class IMU:
         # Simulate the accelerometer noise processes and add them to the true linear aceleration values
         for i in range(3):
             self._accelerometer_bias[i] = phi_a_d * self._accelerometer_bias[i] + sigma_b_a_d * np.random.rand()
-            linear_acceleration[i] = linear_acceleration[i] + self._accelerometer_bias[i] + sigma_a_d * np.random.randn()
+            linear_acceleration[i] = linear_acceleration[i] + sigma_a_d * np.random.randn() # + self._accelerometer_bias[i] 
     
         # TODO - Add small "noisy" to the attitude
 

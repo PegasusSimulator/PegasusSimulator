@@ -110,7 +110,7 @@ class GPS:
         self._gps_bias[2] = self._gps_bias[2] + self._random_walk_gps[2] * dt - self._gps_bias[2] / self._gps_correlation_time
 
         # reproject position with noise into geographic coordinates
-        pos_with_noise: np.ndarray = state.position + self._noise_gps_pos + self._gps_bias
+        pos_with_noise: np.ndarray = state.position + self._noise_gps_pos # + self._gps_bias
         latitude, longitude = reprojection(pos_with_noise, self._origin_latitude, self._origin_longitude)
 
         # Add noise to the velocity expressed in the world frame
