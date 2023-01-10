@@ -314,14 +314,22 @@ class MavlinkInterface:
             
             # Try to get a message
             msg = self._connection.recv_match(blocking=needs_to_wait_for_actuator)
-            carb.log_warn(msg)
 
-            #if msg is not None:
-            #    pass
+            # If a message was received
+            if msg is not None:
 
-                # TODO - check if message is of the type actuator, and if so, then:
-                # self._received_first_actuator = True
-                # self._received_actuator = True
+                # Log the message
+                carb.log_warn(type(msg))
+
+                # Check if it is of the type that contains actuator controls
+                if msg.id == mavutil.mavlink.MAVLINK_MSG_ID_HIL_ACTUATOR_CONTROLS:
+                    
+                    self._received_first_actuator = True
+                    self._received_actuator = True
+
+                    # Handle the control of the actuation commands received by PX4
+                    self.handle_control()
+
 
             # Check if we do not need to wait for an actuator message or we just received actuator input
             # If so, break out of the infinite loop
@@ -372,6 +380,7 @@ class MavlinkInterface:
             self._sensor_data.new_press_data = False
 
         #fields_updated = 1 | 1<<1 | 1<<2 | 1<<3 | 1<<4 | 1<<5 | 1<<6 | 1<<7 | 1<<8 | 1<<9 | 0<<10 | 1<<11 | 1<<12
+        #carb.log_warn(self._sensor_data.zmag)
 
         try:
             self._connection.mav.hil_sensor_send(
