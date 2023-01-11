@@ -12,7 +12,7 @@ from scipy.spatial.transform import Rotation
 q_ENU_to_NED = np.array([0.70711, 0.70711, 0.0, 0.0])
 
 # A scipy rotation from the ENU inertial frame to the NED inertial frame of reference
-rot_ENU_to_NED = Rotation(q_ENU_to_NED)
+rot_ENU_to_NED = Rotation.from_quat(q_ENU_to_NED)
 
 # Quaternion for rotation between body FLU and body FRD frames
 # +PI rotation around X (Forward) axis rotates from Forward, Right, Down (aircraft)
@@ -22,4 +22,4 @@ rot_ENU_to_NED = Rotation(q_ENU_to_NED)
 q_FLU_to_FRD = np.array([1.0, 0.0, 0.0, 0.0])
 
 # A scipe rotation from the FLU body frame to the FRD body frame
-rot_FLU_to_FRD = Rotation(q_FLU_to_FRD)
+rot_FLU_to_FRD = Rotation.from_quat(q_FLU_to_FRD)
