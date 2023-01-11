@@ -10,6 +10,8 @@ Description:
     Simulates an imu. Based on the implementation provided
     in PX4 stil_gazebo (https://github.com/PX4/PX4-SITL_gazebo)
 """
+
+import carb # TODO - remove this import - only used for debugging
 import numpy as np
 from scipy.spatial.transform import Rotation
 
@@ -110,14 +112,14 @@ class IMU:
 
         # Convert the orientation to the FRD-NED standard
         attitude_flu_enu = Rotation.from_quat(state.attitude)
-        attitude_frd_ned = rot_ENU_to_NED * attitude_flu_enu * rot_FLU_to_FRD
+        attitude_frd_enu = attitude_flu_enu * rot_FLU_to_FRD
+        attitude_frd_ned = rot_ENU_to_NED * attitude_frd_enu
 
         # Convert the angular velocity from FLU to FRD standard 
         angular_velocity_frd = rot_FLU_to_FRD.apply(angular_velocity)
 
         # Convert the linear acceleration in the body frame from FLU to FRD standard
         linear_acceleration_frd = rot_FLU_to_FRD.apply(linear_acceleration)
-
 
         # Add the values to the dictionary and return it
         self._state = {
