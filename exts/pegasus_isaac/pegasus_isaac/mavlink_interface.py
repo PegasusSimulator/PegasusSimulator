@@ -164,12 +164,6 @@ class MavlinkInterface:
         
         self._is_running: bool = False
 
-        # GPS constants
-        self._GPS_fix_type: int = int(3)
-        self._GPS_satellites_visible = int(10)
-        self._GPS_eph: int = int(1)
-        self._GPS_epv: int = int(1)
-
         # Vehicle Sensor data to send through mavlink
         self._sensor_data: SensorMsg = SensorMsg()
 

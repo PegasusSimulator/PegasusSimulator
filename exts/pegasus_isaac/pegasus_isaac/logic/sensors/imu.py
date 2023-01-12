@@ -96,7 +96,6 @@ class IMU:
         self._prev_linear_velocity = state.linear_velocity
 
         # Compute the linear acceleration of the body frame, with respect to the inertial frame, expressed in the body frame
-        # TODO - check if we need to transpose the rotation obtained from the state quaternion
         linear_acceleration = np.array(Rotation.from_quat(state.attitude).apply(linear_acceleration_inertial))
 
         # Simulate the accelerometer noise processes and add them to the true linear aceleration values

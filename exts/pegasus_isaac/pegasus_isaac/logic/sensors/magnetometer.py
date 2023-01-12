@@ -14,7 +14,7 @@ import numpy as np
 from scipy.spatial.transform import Rotation
 
 from pegasus_isaac.logic.state import State
-from pegasus_isaac.logic.rotations import rot_ENU_to_NED, rot_FLU_to_FRD, q_ENU_to_NED, q_FLU_to_FRD
+from pegasus_isaac.logic.rotations import rot_ENU_to_NED, rot_FLU_to_FRD
 from pegasus_isaac.logic.sensors.geo_mag_utils import get_mag_declination, get_mag_inclination, get_mag_strength, reprojection
 
 class Magnetometer:
@@ -67,11 +67,10 @@ class Magnetometer:
         attitude_flu_enu = Rotation.from_quat(state.attitude)
 
         # Rotate the magnetic field from the inertial frame to the body frame of reference according to the FLU frame convention
-        rot_FLU_to_FRD = Rotation.from_quat([-1.0, 0.0, 0.0, 0.0])
-        q_body_to_world = rot_ENU_to_NED * attitude_flu_enu * rot_FLU_to_FRD.inv()
+        rot_body_to_world = rot_ENU_to_NED * attitude_flu_enu * rot_FLU_to_FRD.inv()
 
         # The magnetic field expressed in the body frame according to the front-right-down (FRD) convention
-        magnetic_field_body = q_body_to_world.inv().apply(magnetic_field_inertial)
+        magnetic_field_body = rot_body_to_world.inv().apply(magnetic_field_inertial)
         
         # -------------------------------
         # Add noise to the magnetic field

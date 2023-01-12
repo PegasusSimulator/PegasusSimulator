@@ -65,6 +65,7 @@ SAMPLING_MAX_LON = 180 # deg
 
 EARTH_RADIUS = 6353000.0 # meters
 
+# Gravity vector expressed in ENU
 GRAVITY_VECTOR = np.array([0.0, 0.0, -9.80665]) # m/s^2
 
 def get_lookup_table_index(val: int, min: int, max: int):
