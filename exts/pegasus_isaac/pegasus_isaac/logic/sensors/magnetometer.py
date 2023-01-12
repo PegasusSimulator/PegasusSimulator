@@ -14,7 +14,7 @@ import numpy as np
 from scipy.spatial.transform import Rotation
 
 from pegasus_isaac.logic.state import State
-from pegasus_isaac.logic.rotations import rot_ENU_to_NED, rot_FLU_to_FRD
+from pegasus_isaac.logic.rotations import rot_ENU_to_NED, rot_FLU_to_FRD, q_ENU_to_NED, q_FLU_to_FRD
 from pegasus_isaac.logic.sensors.geo_mag_utils import get_mag_declination, get_mag_inclination, get_mag_strength, reprojection
 
 class Magnetometer:
@@ -40,6 +40,9 @@ class Magnetometer:
 
     def update(self, state: State, dt: float):
 
+        # Attitude of a FLU frame with respect to a ENU inertial frame, expressed in the ENU inertial frame
+        state.attitude = np.array([0.0, 0.0, 0.0, 1.0])
+
         # Get the latitude and longitude from the current state
         latitude, longitude = reprojection(state.position, self._origin_latitude, self._origin_longitude)
 
@@ -62,10 +65,13 @@ class Magnetometer:
         # Rotate the magnetic field vector such that it expresses a field of a body frame according to the front-right-down (FRD)
         # expressed in a North-East-Down (NED) inertial frame (the standard used in magnetometer units)
         attitude_flu_enu = Rotation.from_quat(state.attitude)
-        rot_body_to_world = rot_ENU_to_NED * attitude_flu_enu * rot_FLU_to_FRD.inv()
+
+        # Rotate the magnetic field from the inertial frame to the body frame of reference according to the FLU frame convention
+        rot_FLU_to_FRD = Rotation.from_quat([-1.0, 0.0, 0.0, 0.0])
+        q_body_to_world = rot_ENU_to_NED * attitude_flu_enu * rot_FLU_to_FRD.inv()
 
         # The magnetic field expressed in the body frame according to the front-right-down (FRD) convention
-        magnetic_field_body = rot_body_to_world.inv().apply(magnetic_field_inertial)
+        magnetic_field_body = q_body_to_world.inv().apply(magnetic_field_inertial)
         
         # -------------------------------
         # Add noise to the magnetic field
@@ -86,9 +92,9 @@ class Magnetometer:
         magnetic_field_noisy: np.ndarray = np.zeros((3,))
         for i in range(3):
             self._bias[i] = phi_d * self._bias[i] + sigma_b_d * np.random.randn()
-            magnetic_field_noisy[i] = magnetic_field_body[i] + sigma_d * np.random.randn() #+ self._bias[i]
+            magnetic_field_noisy[i] = magnetic_field_body[i] + 0.001 * np.random.randn() #+ sigma_d * np.random.randn() #+ self._bias[i]
 
         # Add the values to the dictionary and return it
-        self._state = {'magnetic_field': magnetic_field_noisy}
+        self._state = {'magnetic_field': [magnetic_field_noisy[0], magnetic_field_noisy[1], magnetic_field_noisy[2]]}
 
         return self._state

@@ -92,7 +92,7 @@ class IMU:
         
         # Compute the linear acceleration from diferentiating the velocity of the vehicle expressed in the inertial frame
         linear_acceleration_inertial = (state.linear_velocity - self._prev_linear_velocity) / dt
-        linear_acceleration_inertial = linear_acceleration_inertial + GRAVITY_VECTOR
+        linear_acceleration_inertial = linear_acceleration_inertial - GRAVITY_VECTOR
         self._prev_linear_velocity = state.linear_velocity
 
         # Compute the linear acceleration of the body frame, with respect to the inertial frame, expressed in the body frame

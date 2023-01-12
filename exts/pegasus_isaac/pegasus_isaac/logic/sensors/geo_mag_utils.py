@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import numpy as np
-import carb
 
 # Declare which functions are visible from this file
 #__all__ = ["get_mag_declination", "get_mag_inclination", "get_mag_strength", "reprojection", "GRAVITY_VECTOR"]
@@ -75,8 +74,7 @@ def get_lookup_table_index(val: int, min: int, max: int):
 	# limit to table bounds - required for maxima even when table spans full globe range
 	# limit to (table bounds - 1) because bilinear interpolation requires checking (index + 1)
 	val = np.clip(val, min, max - SAMPLING_RES)
-	return int(-((min) + val) / SAMPLING_RES)
-
+	return int((-min + val) / SAMPLING_RES)
 
 def get_table_data(lat: float, lon: float, table):
 
