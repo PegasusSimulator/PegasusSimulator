@@ -77,14 +77,14 @@ class Quadrotor(Vehicle):
         # Get the force to apply to the body frame from mavlink
         forces_z = self._mavlink._rotor_data.input_force_reference
 
-        self.apply_force([0.0, 0.0, forces_z[0]], pos=[ 0.13, -0.22, 0.023], body_part="/body")
-        self.apply_force([0.0, 0.0, forces_z[1]], pos=[-0.13,  0.20, 0.023], body_part="/body")
-        self.apply_force([0.0, 0.0, forces_z[2]], pos=[ 0.13,  0.22, 0.023], body_part="/body")
-        self.apply_force([0.0, 0.0, forces_z[3]], pos=[-0.13, -0.20, 0.023], body_part="/body")
+        #self.apply_force([0.0, 0.0, forces_z[0]], pos=[ 0.13, -0.22, 0.023], body_part="/body")
+        #self.apply_force([0.0, 0.0, forces_z[1]], pos=[-0.13,  0.20, 0.023], body_part="/body")
+        #self.apply_force([0.0, 0.0, forces_z[2]], pos=[ 0.13,  0.22, 0.023], body_part="/body")
+        #self.apply_force([0.0, 0.0, forces_z[3]], pos=[-0.13, -0.20, 0.023], body_part="/body")
 
-        #if self.total_time > 1.0
+        if self.total_time > 1.0:
         # Try to apply upwards force to the rigid body
-        #self.apply_force([0.0, 0.0, 9.80 + Kp * (z_ref - z)], body_part="/body")
+            self.apply_force([0.0, 0.0, 9.80 + Kp * (z_ref - z)], body_part="/body")
         #carb.log_warn("stoped applying force in X")
         #else:
         #    self.apply_force([0.3, 0.0, 9.80 + Kp * (z_ref - z)], body_part="/body")
