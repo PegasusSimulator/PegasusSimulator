@@ -12,7 +12,7 @@ class Quadrotor(Vehicle):
         stage_prefix: str="quadrotor",  
         usd_file: str="",
         world=None,
-        init_pos=[0.0, 0.0, 0.06], 
+        init_pos=[0.0, 0.0, 0.5], 
         init_orientation=[0.0, 0.0, 0.0, 1.0]
     ):
         
@@ -40,15 +40,19 @@ class Quadrotor(Vehicle):
         self.total_time = 0
 
     def update_barometer_sensor(self, dt: float):
+        #self._barometer.update(self._state, dt)
         self._mavlink.update_bar_data(self._barometer.update(self._state, dt))
 
     def update_imu_sensor(self, dt: float):
+        #self._imu.update(self._state, dt)
         self._mavlink.update_imu_data(self._imu.update(self._state, dt))
 
     def update_magnetometer_sensor(self, dt: float):
+        #self._magnetometer.update(self._state, dt)
         self._mavlink.update_mag_data(self._magnetometer.update(self._state, dt))
 
     def update_gps_sensor(self, dt: float):
+        #self._gps.update(self._state, dt)
         self._mavlink.update_gps_data(self._gps.update(self._state, dt))
 
     def sim_start_stop(self, event):
@@ -77,16 +81,36 @@ class Quadrotor(Vehicle):
         # Get the force to apply to the body frame from mavlink
         forces_z = self._mavlink._rotor_data.input_force_reference
 
+        # Get the body frame interface of the vehicle (this will be the frame used to get the position, orientation, etc.)
+        body = self._world.dc_interface.get_rigid_body(self._stage_prefix  + "/body")
+
+        self._world.dc_interface.apply_body_force(body, carb._carb.Float3([0.0, 0.0, forces_z[0]]), carb._carb.Float3([ 0.13, -0.22, 0.023]), False)
+        self._world.dc_interface.apply_body_force(body, carb._carb.Float3([0.0, 0.0, forces_z[1]]), carb._carb.Float3([-0.13,  0.20, 0.023]), False)
+        self._world.dc_interface.apply_body_force(body, carb._carb.Float3([0.0, 0.0, forces_z[2]]), carb._carb.Float3([ 0.13,  0.22, 0.023]), False)
+        self._world.dc_interface.apply_body_force(body, carb._carb.Float3([0.0, 0.0, forces_z[3]]), carb._carb.Float3([-0.13, -0.20, 0.023]), False)
+
         #self.apply_force([0.0, 0.0, forces_z[0]], pos=[ 0.13, -0.22, 0.023], body_part="/body")
         #self.apply_force([0.0, 0.0, forces_z[1]], pos=[-0.13,  0.20, 0.023], body_part="/body")
         #self.apply_force([0.0, 0.0, forces_z[2]], pos=[ 0.13,  0.22, 0.023], body_part="/body")
         #self.apply_force([0.0, 0.0, forces_z[3]], pos=[-0.13, -0.20, 0.023], body_part="/body")
 
-        if self.total_time > 1.0:
+        #self._world.dc_interface.apply_body_force()
+
+        #if self.total_time > 1.0:
         # Try to apply upwards force to the rigid body
-            self.apply_force([0.0, 0.0, 9.80 + Kp * (z_ref - z)], body_part="/body")
+        #self.apply_force([0.0, 0.0, Kp * (z_ref - z) + 9.81 * 1.5], body_part="/body")
+        #self.apply_force([0.0, 0.3, 0.0], pos=[0.0, 0.0, 0.0], body_part="/body")
+        #self.apply_force([])
         #carb.log_warn("stoped applying force in X")
         #else:
         #    self.apply_force([0.3, 0.0, 9.80 + Kp * (z_ref - z)], body_part="/body")
+
+        #self._world.dc_interface.set_rigid_body_disable_gravity(body, True)
+        # self._world.dc_interface.apply_body_force(
+        #         body, 
+        #         carb._carb.Float3([0.0, 0.0, Kp * (z_ref - z) + 9.81 * 1.5]), 
+        #         carb._carb.Float3([0.0, 0.0, 0.0]), 
+        #         False
+        #     )        
 
         self.total_time += dt

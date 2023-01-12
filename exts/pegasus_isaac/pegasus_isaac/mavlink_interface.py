@@ -384,9 +384,6 @@ class MavlinkInterface:
             self.send_ground_truth()
 
             # TODO - handle mavlink disconnections from the SITL here (TO BE DONE)
-
-            # Handle the control input to the motors
-            #self.handle_control()
             
             # Update at 250Hz or more
             time.sleep(1.0 / self._update_rate)
@@ -526,6 +523,18 @@ class MavlinkInterface:
             )
         except:
             carb.log_warn("Could not send gps data through mavlink")
+            carb.log_warn(self._sensor_data.fix_type)
+            carb.log_warn(self._sensor_data.latitude_deg)
+            carb.log_warn(self._sensor_data.longitude_deg)
+            carb.log_warn(self._sensor_data.altitude)
+            carb.log_warn(self._sensor_data.eph)
+            carb.log_warn(self._sensor_data.epv)
+            carb.log_warn(self._sensor_data.velocity)
+            carb.log_warn(self._sensor_data.velocity_north)
+            carb.log_warn(self._sensor_data.velocity_east)
+            carb.log_warn(self._sensor_data.velocity_down)
+            carb.log_warn(self._sensor_data.cog)
+            carb.log_warn(self._sensor_data.satellites_visible)
 
     def send_vision_msgs(self, time_usec: int):
         """

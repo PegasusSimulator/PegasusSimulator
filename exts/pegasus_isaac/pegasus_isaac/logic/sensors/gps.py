@@ -135,6 +135,8 @@ class GPS:
             'latitude': np.degrees(latitude), 
             'longitude': np.degrees(longitude), 
             'altitude': state.position[2] + self._origin_altitude - self._noise_gps_pos[2] + self._gps_bias[2],
+            'eph': 1.0, 
+            'epv': 1.0, 
             'speed': speed, 
             # Conversion from ENU (standard of Isaac Sim to NED - used in GPS sensors)
             'velocity_north': velocity[1], 
