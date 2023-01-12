@@ -146,7 +146,7 @@ class GPS:
             'fix_type': self._fix_type,
             'eph': self._eph,
             'epv': self._epv,
-            'cog': cog,
+            'cog': 0.0, #cog,
             'sattelites_visible': self._sattelites_visible
         }
 
