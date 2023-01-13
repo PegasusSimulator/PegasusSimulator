@@ -16,7 +16,7 @@ readme  = "docs/README.md"
 repository = ""
 
 # One of categories for UI.
-category = "Example"
+category = "Simulation"
 
 # Keywords for the extension
 keywords = ["drone", "quadrotor", "multirotor", "UAV", "px4", "sitl"]

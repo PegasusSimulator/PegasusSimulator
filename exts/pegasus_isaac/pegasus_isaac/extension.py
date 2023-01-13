@@ -25,6 +25,8 @@ from omni.isaac.core.utils.nucleus import get_assets_root_path
 # Quadrotor vehicle
 from pegasus_isaac.logic.vehicles.quadrotor import Quadrotor
 
+from pegasus_isaac.widget_ui import WidgetWindow
+
 # Any class derived from `omni.ext.IExt` in top level module (defined in `python.modules` of `extension.toml`) will be
 # instantiated when extension gets enabled and `on_startup(ext_id)` will be called. Later when extension gets disabled
 # on_shutdown() is called.
@@ -61,6 +63,8 @@ class Pegasus_isaacExtension(omni.ext.IExt):
         
         # Method to check whether the visibility of the extension widget has changed 
         self._window.set_visibility_changed_fn(self.change_visibility)
+
+        ui_set = WidgetWindow()
    
         # Define the UI of the widget window
         with self._window.frame:
@@ -81,8 +85,10 @@ class Pegasus_isaacExtension(omni.ext.IExt):
                 drone_button = ui.Button("Drone", clicked_fn=self.load_drone_callback)
                 
                 # Button to set the camera view
-                camera_button = ui.Button("Set Camera", clicked_fn=self.set_camera_callback)                
-                
+                camera_button = ui.Button("Set Camera", clicked_fn=self.set_camera_callback)     
+
+                ui_set._transform_frame()
+
     def load_button_callback(self):
         """
         Callback function that is called when the load button of the extension is pressed
