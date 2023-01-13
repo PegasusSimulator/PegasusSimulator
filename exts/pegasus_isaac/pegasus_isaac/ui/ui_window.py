@@ -37,35 +37,39 @@ class WidgetWindow:
         
         # Define the UI of the widget window
         with self._window.frame:
-
-            #with ui.Frame()
-
             
             # Vertical Stack of menus
             with ui.VStack():
+                
+                # Frame for selecting the simulation environment to load
+                with ui.CollapsableFrame("Scene Selection")
+                
+                    # Button for loading a desired scene
+                    ui.Button("Load Scene", clicked_fn=self._delegate.on_load_scene)
 
-                ui.Button("Load Scene")
+                    # Button to reset the stage
+                    ui.Button("Clear Scene", clicked_fn=self._delegate.on_clear_scene)
 
-                # Label for the buttons in the UI
-                label = ui.Label("Vehicle Selection")
+                # Frame for selecting the vehicle to spawn in the simulation environment
+                with ui.CollapsableFrame("Vehicle Selection"):
 
-                # Create a frame for selecting which vehicle to load in the simulation environment
-                self._robot_selection_frame()
+                    # Create a frame for selecting which vehicle to load in the simulation environment
+                    self._robot_selection_frame()
+                    
+                    # Create a transform frame to choose where to spawn the vehicle
+                    self._transform_frame()
+
+                    # Button to load the drone
+                    ui.Button("Load Vehicle", clicked_fn=self._delegate.on_load_vehicle)
                 
-                # Create a transform frame to choose where to spawn the vehicle
-                self._transform_frame()
-                
-                # Button to load the world into the stage
-                load_button = ui.Button("Load", clicked_fn=self.load_button_callback)
-                
-                # Button to reset the stage
-                reset_button = ui.Button("Reset", clicked_fn=self.reset_button_callback)
-                
-                # Button to load the drone
-                drone_button = ui.Button("Drone", clicked_fn=self.load_drone_callback)
-                
-                # Button to set the camera view
-                camera_button = ui.Button("Set Camera", clicked_fn=self.set_camera_callback) 
+                # Frame for setting the camera to visualize the vehicle in the simulator viewport
+                with ui.CollapsableFrame("Viewport Camera")
+
+                    # Create a transform frame to choose where to spawn the vehicle
+                    self._transform_frame()
+
+                    # Button to set the camera view
+                    ui.Button("Set Camera Pose", clicked_fn=self._delegate.on_set_viewport_camera) 
 
     def _robot_selection_frame(self):
         """

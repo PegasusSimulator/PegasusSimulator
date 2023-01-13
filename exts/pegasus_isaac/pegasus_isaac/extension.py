@@ -118,14 +118,6 @@ class Pegasus_isaacExtension(omni.ext.IExt):
         # Try to load a quadrotor into the specified namespace
         self.robot = Quadrotor("/World/quadrotor", ROBOTS["Quadrotor"], self._world)
         
-    def physics_callback(self, dt):
-        """
-        Callback to update the physics of the drone
-        """
-        carb.log_warn("Running physics: " + str(dt))
-        #carb.log_warn(self.prims[-1])
-        #carb.log_warn("/updat")
-        
     def set_camera_callback(self):
         """
         Callback function that is called whent the load camera button of the extension is pressed
@@ -133,16 +125,7 @@ class Pegasus_isaacExtension(omni.ext.IExt):
         carb.log_info("Pressed the set camera button")
         
         # Set the camera view to a fixed value
-        set_camera_view(eye=np.array([5, 5, 5]), target=np.array([0, 0, 0]))
-             
-    def set_physics_callback(self):
-        """
-        Callback that sets the physics parameters for the simulation
-        """
-        carb.log_info("Pressed the set physics button")
-        
-        # Set the timestep update for the physics solver
-        self._world.set_simulation_dt(1.0 / 250.0)         
+        set_camera_view(eye=np.array([5, 5, 5]), target=np.array([0, 0, 0]))      
     
     async def load_world_async(self):
         """
