@@ -1,5 +1,6 @@
 import omni.ui as ui
 
+from pegasus_isaac.ui.ui_delegate import UIDeletegate
 from pegasus_isaac.params import ROBOTS
 
 class WidgetWindow:
@@ -7,8 +8,15 @@ class WidgetWindow:
     # Design constants for the widgets
     LABEL_PADDING = 120
 
-    def __init__(self):
+    def __init__(self, delegate: UIDeletegate):
+        """
+        Constructor for the Window UI widget of the extension. Receives as input a UIDelegate that implements
+        all the callbacks to handle button clicks, drop-down menu actions, etc. (abstracting the interface between
+        the logic of the code and the ui)
+        """
+
         self._window = None
+        self._delegate = delegate
 
     def shutdown(self):
         """Should be called when the extesion is unloaded"""
@@ -24,20 +32,25 @@ class WidgetWindow:
     def build_window(self):
 
         self._window = ui.Window("Pegasus Simulation", width=450, height=800)
-        self._window.deferred_dock_in("Layers")
+        self._window.deferred_dock_in("Property", ui.DockPolicy.CURRENT_WINDOW_IS_ACTIVE)
         self._window.setPosition(0.0, 0.0)
         
         # Define the UI of the widget window
         with self._window.frame:
+
+            #with ui.Frame()
+
             
             # Vertical Stack of menus
             with ui.VStack():
+
+                ui.Button("Load Scene")
 
                 # Label for the buttons in the UI
                 label = ui.Label("Vehicle Selection")
 
                 # Create a frame for selecting which vehicle to load in the simulation environment
-                self._selection_frame()
+                self._robot_selection_frame()
                 
                 # Create a transform frame to choose where to spawn the vehicle
                 self._transform_frame()
@@ -63,13 +76,13 @@ class WidgetWindow:
             with ui.ZStack():
                 ui.Rectangle(name="frame_background")
                 with ui.VStack(height=0, spacing=5, name="frame_v_stack"):
-                    ui.Spacer(height=5):
+                    ui.Spacer(height=5)
                     # Iterate over all existing robots in the extension
                     with ui.HStack():
-                        ui.Label("Drop Down", name="label", width=WidgetWindow.LABEL_PADDING)
+                        ui.Label("Vehicle Model", name="label", width=WidgetWindow.LABEL_PADDING)
                         robot_combo_box = ui.ComboBox(0, height=10, name="robots")
                         for robot in ROBOTS:
-                            robot_combo_box.model.append_child_item(robot)                  
+                            robot_combo_box.model.append_child_item(None, ui.SimpleStringModel(robot))                  
 
     def _transform_frame(self):
         """

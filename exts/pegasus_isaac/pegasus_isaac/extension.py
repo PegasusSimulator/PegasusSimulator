@@ -25,7 +25,7 @@ from omni.isaac.core.utils.nucleus import get_assets_root_path
 # Quadrotor vehicle
 from pegasus_isaac.logic.vehicles.quadrotor import Quadrotor
 
-from pegasus_isaac.widget_ui import WidgetWindow
+from pegasus_isaac.ui.ui_window import WidgetWindow
 
 # Any class derived from `omni.ext.IExt` in top level module (defined in `python.modules` of `extension.toml`) will be
 # instantiated when extension gets enabled and `on_startup(ext_id)` will be called. Later when extension gets disabled
@@ -88,6 +88,8 @@ class Pegasus_isaacExtension(omni.ext.IExt):
                 camera_button = ui.Button("Set Camera", clicked_fn=self.set_camera_callback)     
 
                 ui_set._transform_frame()
+
+                ui_set._robot_selection_frame()
 
     def load_button_callback(self):
         """

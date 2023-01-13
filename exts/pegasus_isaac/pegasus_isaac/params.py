@@ -17,7 +17,9 @@ ROBOTS_ASSETS = ASSET_PATH + "/Robots"
 
 # Define the built in robots of the extension
 ROBOTS = {
-    "Quadrotor": ROBOTS_ASSETS + "/iris_base.usda"
+    "Quadrotor": ROBOTS_ASSETS + "/iris_base.usda",
+    "Iris": ROBOTS_ASSETS + "/iris_base.usda",
+    "Iris FPV": ROBOTS_ASSETS + "/iris_base.usda"
 }
 
 # Define the default settings for the simulation environment
