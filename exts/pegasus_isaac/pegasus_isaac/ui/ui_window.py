@@ -88,7 +88,6 @@ class WidgetWindow:
                 ui.Spacer(height=0)
 
                 with ui.HStack():
-                    
                     # Add a thumbnail image to have a preview of the world that is about to be loaded
                     with ui.ZStack(width=WidgetWindow.LABEL_PADDING, height=WidgetWindow.BUTTON_HEIGHT*2):
                         ui.Rectangle()

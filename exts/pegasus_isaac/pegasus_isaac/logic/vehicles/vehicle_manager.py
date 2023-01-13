@@ -55,6 +55,14 @@ class VehicleManager:
         except:
             pass
 
+    def remove_all_vehicles(self):
+        """
+        Method that will delete all the vehicles that were spawned from the vehicle manager
+        """
+
+        
+        self._vehicles.clear()
+
     def __new__(cls):
         """[summary]
 

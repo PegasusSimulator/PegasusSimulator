@@ -1,8 +1,21 @@
 #!/usr/bin/env python
-import carb
 
+# Python libraries for multithreading and garbage collection
+import gc
+import asyncio
+
+# Omniverse extensions
+import carb
 import omni.ui as ui
 from omni.isaac.core import World
+from omni.isaac.core.utils.stage import create_new_stage, set_stage_up_axis, clear_stage, add_reference_to_stage, get_current_stage
+
+# Extension Configurations
+from pegasus_isaac.params import ROBOTS, SIMULATION_ENVIRONMENTS
+
+# Vehicle Manager to spawn Vehicles
+from pegasus_isaac.logic.vehicles.quadrotor import Quadrotor
+from pegasus_isaac.logic.vehicles.vehicle_manager import VehicleManager
 
 class UIDelegate:
     """
@@ -16,9 +29,14 @@ class UIDelegate:
 
         # Attribute that holds the currently selected scene from the dropdown menu
         self._scene_dropdown: ui.AbstractItemModel = None
+        self._scene_names = list(SIMULATION_ENVIRONMENTS.keys())
         
         # Attribute that hold the currently selected vehicle from the dropdown menu
         self._vehicle_dropdown: ui.AbstractItemModel = None
+        self._vehicles_names = list(ROBOTS.keys())
+
+        # Get an instance of the vehicle manager
+        self._vehicle_manager = VehicleManager()
 
     def set_scene_dropdown(self, scene_dropdown_model: ui.AbstractItemModel):
         self._scene_dropdown = scene_dropdown_model
@@ -36,6 +54,26 @@ class UIDelegate:
         """
         Method that should be invoked when the button to load the selected world is pressed
         """
+
+        # Asynchronous auxiliary function in order for the UI to be responsive while loading the world
+        async def load_world_async(self):
+
+            # Setup a new world (even if one already existed)
+            self._world = World(**self._world_settings)
+            await self._world.initialize_simulation_context_async()
+
+            # Reset and pause the world simulation
+            await self._world.reset_async()
+            await self._world.stop_async()
+
+            # Load a ground in the world
+            # TODO - add the loading of the custom scene here
+            self._world.scene.add_default_ground_plane()
+
+        # --------------------------
+        # Function logic starts here
+        # -------------------------- 
+
         carb.log_warn("New scene has been loaded")
 
         # Check if a scene is selected in the drop-down menu
@@ -43,17 +81,36 @@ class UIDelegate:
 
             # Get the id of the selected environment from the list
             environemnt_index = self._scene_dropdown.get_item_value_model().as_int
-            
-            carb.log_warn(self._scene_dropdown.get_item_value_model().as_string)
 
-            # Load the scene
-            # TODO
+            # Create a new empty with the correct settings and initialize it
+            asyncio.ensure_future(load_world_async(self))
+
 
     def on_clear_scene(self):
         """
         Method that should be invoked when the clear world button is pressed
         """
         carb.log_warn("Current scene and its vehicles has been deleted")
+
+        # If the physics simulation was running, stop it first
+        if self._world is not None:
+            self._world.stop()
+
+        # Remove all the robots that were spawned
+        self._vehicle_manager.remove_all_vehicles()
+
+        # Clear the world
+        if self._world is not None:
+            self._world.clear()
+
+        # Clear the stage
+        clear_stage()
+        
+        # Cleanup the world pointer
+        self._world = None
+
+        # Call python's garbage collection
+        gc.collect()
 
     def on_load_vehicle(self):
         """
@@ -67,7 +124,13 @@ class UIDelegate:
             # Get the id of the selected vehicle from the list
             vehicle_index = self._vehicle_dropdown.get_item_value_model().as_int
 
-            carb.log_warn(self._vehicle_dropdown.get_item_value_model().as_string)
+            # Get the name of the selected vehicle
+            selected_robot = self._vehicles_names[vehicle_index]
+
+            # Try to spawn the selected robot in the world to the specified namespace
+            Quadrotor("/World/quadrotor", ROBOTS[selected_robot], self._world)
+
+            carb.log_warn("Spawned the robot: " + selected_robot + "in ")
     
     def on_set_viewport_camera(self):
         """
