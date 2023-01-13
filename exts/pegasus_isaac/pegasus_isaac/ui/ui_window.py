@@ -10,6 +10,7 @@ class WidgetWindow:
     # Design constants for the widgets
     LABEL_PADDING = 120
     BUTTON_HEIGHT = 50
+    GENERAL_SPACING = 5
 
     def __init__(self, delegate: UIDelegate):
         """
@@ -53,6 +54,8 @@ class WidgetWindow:
 
                 # Create a frame for selecting which vehicle to load in the simulation environment
                 self._robot_selection_frame()
+
+                ui.Spacer(height=5)
                 
                 # Frame for setting the camera to visualize the vehicle in the simulator viewport
                 with ui.CollapsableFrame("Viewport Camera"):
@@ -84,12 +87,13 @@ class WidgetWindow:
                 self._delegate.set_scene_dropdown(dropdown_menu.model)
 
                 with ui.HStack():
-
+                    
+                    # Add a thumbnail image to have a preview of the world that is about to be loaded
                     with ui.ZStack(width=WidgetWindow.LABEL_PADDING, height=WidgetWindow.BUTTON_HEIGHT*2):
                         ui.Rectangle()
                         ui.Image(THUMBNAIL, fill_policy=ui.FillPolicy.PRESERVE_ASPECT_FIT, alignment=ui.Alignment.LEFT_CENTER)
 
-                    ui.Spacer(width=5)
+                    ui.Spacer(width=WidgetWindow.GENERAL_SPACING)
 
                     with ui.VStack():
                         # Button for loading a desired scene
@@ -107,7 +111,7 @@ class WidgetWindow:
         with ui.CollapsableFrame(title="Vehicle Selection"):
             with ui.ZStack():
                 with ui.VStack(height=0, spacing=10, name="frame_v_stack"):
-                    ui.Spacer(height=5)
+                    ui.Spacer(height=WidgetWindow.GENERAL_SPACING)
                     # Iterate over all existing robots in the extension
                     with ui.HStack():
                         ui.Label("Vehicle Model", name="label", width=WidgetWindow.LABEL_PADDING)
@@ -120,6 +124,19 @@ class WidgetWindow:
 
                     # Add a frame transform to select the position of where to place the selected robot in the world
                     self._transform_frame()
+
+                    ui.Label("Streaming Backend")
+                    
+                    with ui.HStack():
+                        # Add a thumbnail image to have a preview of the world that is about to be loaded
+                        with ui.ZStack(width=WidgetWindow.LABEL_PADDING, height=WidgetWindow.BUTTON_HEIGHT*2):
+                            ui.Rectangle()
+                            ui.Image(THUMBNAIL, fill_policy=ui.FillPolicy.PRESERVE_ASPECT_FIT, alignment=ui.Alignment.LEFT_CENTER)
+
+                        ui.Spacer(width=WidgetWindow.GENERAL_SPACING)
+                        with ui.VStack():
+                            ui.Button("PX4 + ROS 2", height=WidgetWindow.BUTTON_HEIGHT)
+                            ui.Button("ROS 2 (Only)", height=WidgetWindow.BUTTON_HEIGHT)
 
                     # Button to load the drone
                     ui.Button("Load Vehicle", height=WidgetWindow.BUTTON_HEIGHT, clicked_fn=self._delegate.on_load_vehicle)
