@@ -129,7 +129,7 @@ class Vehicle(Robot):
     def update_current_state(self, dt):
 
         # Get the body frame interface of the vehicle (this will be the frame used to get the position, orientation, etc.)
-        body = self._world.dc_interface.get_rigid_body(self._stage_prefix  + "/body")
+        body = self._world.dc_interface.get_rigid_body(self._stage_prefix  + "/vehicle/body")
 
         # Get the current position and orientation in the inertial frame
         pose = self._world.dc_interface.get_rigid_body_pose(body)
