@@ -68,17 +68,22 @@ class WidgetWindow:
 
         # Frame for selecting the simulation environment to load
         with ui.CollapsableFrame("Scene Selection"):
-            with ui.VStack():
+            with ui.VStack(height=0, spacing=10, name="frame_v_stack"):
+                ui.Spacer(height=WidgetWindow.GENERAL_SPACING)
+
+                # Iterate over all existing pre-made worlds bundled with this extension
                 with ui.HStack():
-                    ui.Label("World Assets", width=WidgetWindow.LABEL_PADDING)
+                    ui.Label("World Assets", width=WidgetWindow.LABEL_PADDING, height=10.0)
 
                     # Combo box with the available environments to select from
                     dropdown_menu = ui.ComboBox(0, height=10, name="environments")
                     for environment in SIMULATION_ENVIRONMENTS:
                         dropdown_menu.model.append_child_item(None, ui.SimpleStringModel(environment))
 
-                # Allow the delegate to know which option was selected in the dropdown menu
-                self._delegate.set_scene_dropdown(dropdown_menu.model)
+                    # Allow the delegate to know which option was selected in the dropdown menu
+                    self._delegate.set_scene_dropdown(dropdown_menu.model)
+
+                ui.Spacer(height=0)
 
                 with ui.HStack():
                     
@@ -142,33 +147,32 @@ class WidgetWindow:
 
         all_axis=["X", "Y", "Z"]
         colors={"X": 0xFF5555AA, "Y": 0xFF76A371, "Z": 0xFFA07D4F}
+        components=["Position"]
 
         # Frame for setting the camera to visualize the vehicle in the simulator viewport
         with ui.CollapsableFrame("Viewport Camera"):
 
-            # Create a transform frame to choose where to spawn the vehicle
-            self._transform_frame()
-
-            # Button to set the camera view
-            ui.Button("Set Camera Pose", height=WidgetWindow.BUTTON_HEIGHT, clicked_fn=self._delegate.on_set_viewport_camera) 
-
             with ui.VStack(spacing=8):
-                # Transform for the camera position
+
+                ui.Spacer(height=0)
+
+                # Iterate over the position and rotation menus
                 with ui.HStack():
                     with ui.HStack():
-                        ui.Label("Position", name="transform", width=50)
-                    
-                    # Fields for X, Y and Z
+                        ui.Label("Position", name="transform", width=50, height=20)
+                        ui.Spacer()
+                    # Fields X, Y and Z
                     for axis in all_axis:
                         with ui.HStack():
-                            # Draw the dragable rectangle where we can choose the position in one given axis
                             with ui.ZStack(width=15):
                                 ui.Rectangle(width=15, height=20, style={"background_color": colors[axis], "border_radius": 3, "corner_flag": ui.CornerFlag.LEFT})
-                                ui.Label(axis, name="transform_label", alignment=ui.Alignment.CENTER)
-                                ui.FloatDrag(name="transform", min=-1000000, max=1000000, step=0.01)
-                            ui.Circle(name="transform", width=20, radius=3.5, size_policy=ui.CircleSizePolicy.FIXED)
-                    ui.Spacer(height=0)
+                                ui.Label(axis, height=20, name="transform_label", alignment=ui.Alignment.CENTER)
+                            ui.FloatDrag(name="transform", min=-1000000, max=1000000, step=0.01)
+                            ui.Circle(name="transform", width=20, height=20, radius=3.5, size_policy=ui.CircleSizePolicy.FIXED)
 
+                # Button to set the camera view
+                ui.Button("Set Camera Pose", height=WidgetWindow.BUTTON_HEIGHT, clicked_fn=self._delegate.on_set_viewport_camera) 
+                ui.Spacer()
 
     def _transform_frame(self):
         """
