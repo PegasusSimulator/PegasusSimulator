@@ -1,6 +1,8 @@
+#!/usr/bin/env python
+import carb
 import omni.ui as ui
 
-from pegasus_isaac.ui.ui_delegate import UIDeletegate
+from pegasus_isaac.ui.ui_delegate import UIDelegate
 from pegasus_isaac.params import ROBOTS
 
 class WidgetWindow:
@@ -8,7 +10,7 @@ class WidgetWindow:
     # Design constants for the widgets
     LABEL_PADDING = 120
 
-    def __init__(self, delegate: UIDeletegate):
+    def __init__(self, delegate: UIDelegate):
         """
         Constructor for the Window UI widget of the extension. Receives as input a UIDelegate that implements
         all the callbacks to handle button clicks, drop-down menu actions, etc. (abstracting the interface between
@@ -31,9 +33,11 @@ class WidgetWindow:
 
     def build_window(self):
 
-        self._window = ui.Window("Pegasus Simulation", width=450, height=800)
-        self._window.deferred_dock_in("Property", ui.DockPolicy.CURRENT_WINDOW_IS_ACTIVE)
-        self._window.setPosition(0.0, 0.0)
+        self._window = ui.Window("Pegasus Simulation", width=450, height=800, visible=True)
+        #self._window.deferred_dock_in("Property", ui.DockPolicy.CURRENT_WINDOW_IS_ACTIVE)
+        #self._window.setPosition(0.0, 0.0)
+
+        carb.log_warn("drawing")
         
         # Define the UI of the widget window
         with self._window.frame:
@@ -42,7 +46,7 @@ class WidgetWindow:
             with ui.VStack():
                 
                 # Frame for selecting the simulation environment to load
-                with ui.CollapsableFrame("Scene Selection")
+                with ui.CollapsableFrame("Scene Selection"):
                 
                     # Button for loading a desired scene
                     ui.Button("Load Scene", clicked_fn=self._delegate.on_load_scene)
@@ -63,7 +67,7 @@ class WidgetWindow:
                     ui.Button("Load Vehicle", clicked_fn=self._delegate.on_load_vehicle)
                 
                 # Frame for setting the camera to visualize the vehicle in the simulator viewport
-                with ui.CollapsableFrame("Viewport Camera")
+                with ui.CollapsableFrame("Viewport Camera"):
 
                     # Create a transform frame to choose where to spawn the vehicle
                     self._transform_frame()

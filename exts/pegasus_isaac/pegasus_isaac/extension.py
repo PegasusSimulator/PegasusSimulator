@@ -8,6 +8,7 @@ import numpy as np
 # Omniverse general API
 import carb
 import omni.ext
+import omni.kit.app
 import omni.ui as ui
 
 # Isaac Speficic extensions API
@@ -25,7 +26,9 @@ from omni.isaac.core.utils.nucleus import get_assets_root_path
 # Quadrotor vehicle
 from pegasus_isaac.logic.vehicles.quadrotor import Quadrotor
 
+# Setting up the UI for the extension's Widget
 from pegasus_isaac.ui.ui_window import WidgetWindow
+from pegasus_isaac.ui.ui_delegate import UIDelegate
 
 # Any class derived from `omni.ext.IExt` in top level module (defined in `python.modules` of `extension.toml`) will be
 # instantiated when extension gets enabled and `on_startup(ext_id)` will be called. Later when extension gets disabled
@@ -35,10 +38,13 @@ class Pegasus_isaacExtension(omni.ext.IExt):
     # this extension is located on filesystem.
     def on_startup(self, ext_id):
         
-        carb.log_info("Pegasus Isaac extension startup")
+        carb.log_info("Pegasus extension startup")
 
         # Save the extension id
         self._ext_id = ext_id
+
+        # Get the handle for the extension manager
+        self._extension_manager = omni.kit.app.get_app().get_extension_manager()
         
         # Basic world configurations
         self._world_settings = DEFAULT_WORLD_SETTINGS
@@ -55,41 +61,46 @@ class Pegasus_isaacExtension(omni.ext.IExt):
         carb.log_info("Pegasus Isaac extension UI startup")
         
         # Create the widget window
-        self._window: ui.Window = ui.Window(
-            title=EXTENSION_NAME,
-            width=0.0,
-            height=0.0,
-            visible=True)
+        # self._window: ui.Window = ui.Window(
+        #     title=EXTENSION_NAME,
+        #     width=0.0,
+        #     height=0.0,
+        #     visible=True)
         
-        # Method to check whether the visibility of the extension widget has changed 
-        self._window.set_visibility_changed_fn(self.change_visibility)
+        # # Method to check whether the visibility of the extension widget has changed 
+        # self._window.set_visibility_changed_fn(self.change_visibility)
 
-        ui_set = WidgetWindow()
+        # Creating the Widget window and its delegate to handle the user interaction with the widget
+        ui_delegate = UIDelegate(self._world, self._world_settings)
+        ui_widget = WidgetWindow(ui_delegate)
+
+        # Create the actual widget window
+        ui_widget.build_window()
    
         # Define the UI of the widget window
-        with self._window.frame:
+        # with self._window.frame:
             
-            # Vertical Stack of menus
-            with ui.VStack():
+        #     # Vertical Stack of menus
+        #     with ui.VStack():
                 
-                # Label for the buttons in the UI
-                label = ui.Label("Simulation Setup")
+        #         # Label for the buttons in the UI
+        #         label = ui.Label("Simulation Setup")
                 
-                # Button to load the world into the stage
-                load_button = ui.Button("Load", clicked_fn=self.load_button_callback)
+        #         # Button to load the world into the stage
+        #         load_button = ui.Button("Load", clicked_fn=self.load_button_callback)
                 
-                # Button to reset the stage
-                reset_button = ui.Button("Reset", clicked_fn=self.reset_button_callback)
+        #         # Button to reset the stage
+        #         reset_button = ui.Button("Reset", clicked_fn=self.reset_button_callback)
                 
-                # Button to load the drone
-                drone_button = ui.Button("Drone", clicked_fn=self.load_drone_callback)
+        #         # Button to load the drone
+        #         drone_button = ui.Button("Drone", clicked_fn=self.load_drone_callback)
                 
-                # Button to set the camera view
-                camera_button = ui.Button("Set Camera", clicked_fn=self.set_camera_callback)     
+        #         # Button to set the camera view
+        #         camera_button = ui.Button("Set Camera", clicked_fn=self.set_camera_callback)     
 
-                ui_set._transform_frame()
+        #         ui_set._transform_frame()
 
-                ui_set._robot_selection_frame()
+        #         ui_set._robot_selection_frame()
 
     def load_button_callback(self):
         """
@@ -207,3 +218,17 @@ class Pegasus_isaacExtension(omni.ext.IExt):
         """
         if not visible:
             self.on_shutdown()
+
+    def check_ros_extension(self):
+        """
+        Method that checks which ROS extension is installed.
+        """
+        
+        version = ""
+        
+        if self._ext_manager.is_extension_enabled("omni.isaac.ros_bridge"):
+            version = "ros"
+        elif self._ext_manager.is_extension_enabled("omni.isaac.ros2_bridge"):
+            version = "ros2"
+        else:
+            carb.log_warn("Neither extension 'omni.isaac.ros_bridge' nor 'omni.isaac.ros2_bridge' is enabled")
