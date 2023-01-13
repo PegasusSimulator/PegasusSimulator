@@ -23,9 +23,9 @@ DEFAULT_HOME_ALT_AMSL = 488.0
 
 class Barometer:
 
-    def __init__(self, z_start: float, altitude_home: float=DEFAULT_HOME_ALT_AMSL):
+    def __init__(self, altitude_home: float=DEFAULT_HOME_ALT_AMSL):
         
-        self._z_start: float = z_start
+        self._z_start: float = None
         self._altitude_home: float = altitude_home
 
         # Define the constants for the barometer   
@@ -50,6 +50,10 @@ class Barometer:
         return self._state
 
     def update(self, state: State, dt: float):
+
+        # Set the initial altitude if not yet defined
+        if self._z_start is None:
+            self._z_start = state.position[2]
 
         # Compute the temperature at the current altitude
         alt_rel: float = state.position[2] - self._z_start

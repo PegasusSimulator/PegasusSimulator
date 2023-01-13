@@ -20,7 +20,7 @@ class Quadrotor(Vehicle):
         super().__init__(stage_prefix, usd_file, world, init_pos, init_orientation)
 
         # Create the sensors that a quadrotor typically has
-        self._barometer = Barometer(init_pos[2], altitude_home=488.0)   # Check
+        self._barometer = Barometer(altitude_home=488.0)                # Check
         self._imu = IMU()                                               # Check
         self._magnetometer = Magnetometer(47.397742, 8.545594)          # Check
         self._gps = GPS(47.397742, 8.545594, origin_altitude=488.0)     # Check
