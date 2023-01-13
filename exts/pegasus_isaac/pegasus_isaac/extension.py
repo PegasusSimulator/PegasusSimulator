@@ -50,32 +50,20 @@ class Pegasus_isaacExtension(omni.ext.IExt):
         self._world_settings = DEFAULT_WORLD_SETTINGS
         self._world: World = World(**self._world_settings)
 
-        # Build the extension UI
-        self.build_ui()
+        # Create the UI of the app and its manager
+        self.ui_delegate = UIDelegate(self._world, self._world_settings)
+        self.ui_widget = WidgetWindow(self.ui_delegate)
+        self.ui_widget.build_window()
 
     def build_ui(self):
         """
         Method that builds the actual extension UI
         """
         
-        carb.log_info("Pegasus Isaac extension UI startup")
-        
-        # Create the widget window
-        # self._window: ui.Window = ui.Window(
-        #     title=EXTENSION_NAME,
-        #     width=0.0,
-        #     height=0.0,
-        #     visible=True)
-        
-        # # Method to check whether the visibility of the extension widget has changed 
-        # self._window.set_visibility_changed_fn(self.change_visibility)
-
-        # Creating the Widget window and its delegate to handle the user interaction with the widget
-        ui_delegate = UIDelegate(self._world, self._world_settings)
-        ui_widget = WidgetWindow(ui_delegate)
+        carb.log_info("Pegasus Isaac extension UI startup")        
 
         # Create the actual widget window
-        ui_widget.build_window()
+        
    
         # Define the UI of the widget window
         # with self._window.frame:

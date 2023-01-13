@@ -22,6 +22,11 @@ ROBOTS = {
     "Iris FPV": ROBOTS_ASSETS + "/iris_base.usda"
 }
 
+SIMULATION_ENVIRONMENTS = {
+    "Empty World": "/",
+    "Forest": "/", 
+}
+
 # Define the default settings for the simulation environment
 DEFAULT_WORLD_SETTINGS = {
     "physics_dt": 1.0 / 250.0, 
