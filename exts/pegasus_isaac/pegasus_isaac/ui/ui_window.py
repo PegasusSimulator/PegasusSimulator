@@ -43,10 +43,10 @@ class WidgetWindow:
         
         # Define the UI of the widget window
         with self._window.frame:
-            
+
             # Vertical Stack of menus
             with ui.VStack():
-                
+            
                 # Create a frame for selecting which scene to load
                 self._scene_selection_frame()
 
@@ -57,14 +57,8 @@ class WidgetWindow:
 
                 ui.Spacer(height=5)
                 
-                # Frame for setting the camera to visualize the vehicle in the simulator viewport
-                with ui.CollapsableFrame("Viewport Camera"):
-
-                    # Create a transform frame to choose where to spawn the vehicle
-                    self._transform_frame()
-
-                    # Button to set the camera view
-                    ui.Button("Set Camera Pose", height=WidgetWindow.BUTTON_HEIGHT, clicked_fn=self._delegate.on_set_viewport_camera) 
+                # Create a frame for selecting the camera position, and what it should point torwards to
+                self._viewport_camera_frame()
 
                 
     def _scene_selection_frame(self):
@@ -109,43 +103,72 @@ class WidgetWindow:
 
         # Frame for selecting the vehicle to load
         with ui.CollapsableFrame(title="Vehicle Selection"):
-            with ui.ZStack():
-                with ui.VStack(height=0, spacing=10, name="frame_v_stack"):
-                    ui.Spacer(height=WidgetWindow.GENERAL_SPACING)
-                    # Iterate over all existing robots in the extension
-                    with ui.HStack():
-                        ui.Label("Vehicle Model", name="label", width=WidgetWindow.LABEL_PADDING)
-                        
-                        # Combo box with the available vehicles to select from
-                        dropdown_menu = ui.ComboBox(0, height=10, name="robots")
-                        for robot in ROBOTS:
-                            dropdown_menu.model.append_child_item(None, ui.SimpleStringModel(robot))  
-                        self._delegate.set_vehicle_dropdown(dropdown_menu.model)
-
-                    # Add a frame transform to select the position of where to place the selected robot in the world
-                    self._transform_frame()
-
-                    ui.Label("Streaming Backend")
+            with ui.VStack(height=0, spacing=10, name="frame_v_stack"):
+                ui.Spacer(height=WidgetWindow.GENERAL_SPACING)
+                # Iterate over all existing robots in the extension
+                with ui.HStack():
+                    ui.Label("Vehicle Model", name="label", width=WidgetWindow.LABEL_PADDING)
                     
-                    with ui.HStack():
-                        # Add a thumbnail image to have a preview of the world that is about to be loaded
-                        with ui.ZStack(width=WidgetWindow.LABEL_PADDING, height=WidgetWindow.BUTTON_HEIGHT*2):
-                            ui.Rectangle()
-                            ui.Image(THUMBNAIL, fill_policy=ui.FillPolicy.PRESERVE_ASPECT_FIT, alignment=ui.Alignment.LEFT_CENTER)
+                    # Combo box with the available vehicles to select from
+                    dropdown_menu = ui.ComboBox(0, height=10, name="robots")
+                    for robot in ROBOTS:
+                        dropdown_menu.model.append_child_item(None, ui.SimpleStringModel(robot))  
+                    self._delegate.set_vehicle_dropdown(dropdown_menu.model)
 
-                        ui.Spacer(width=WidgetWindow.GENERAL_SPACING)
-                        with ui.VStack():
-                            ui.Button("PX4 + ROS 2", height=WidgetWindow.BUTTON_HEIGHT)
-                            ui.Button("ROS 2 (Only)", height=WidgetWindow.BUTTON_HEIGHT)
+                # Add a frame transform to select the position of where to place the selected robot in the world
+                self._transform_frame()
 
-                    # Button to load the drone
-                    ui.Button("Load Vehicle", height=WidgetWindow.BUTTON_HEIGHT, clicked_fn=self._delegate.on_load_vehicle)
+                ui.Label("Streaming Backend")
+                
+                with ui.HStack():
+                    # Add a thumbnail image to have a preview of the world that is about to be loaded
+                    with ui.ZStack(width=WidgetWindow.LABEL_PADDING, height=WidgetWindow.BUTTON_HEIGHT*2):
+                        ui.Rectangle()
+                        ui.Image(THUMBNAIL, fill_policy=ui.FillPolicy.PRESERVE_ASPECT_FIT, alignment=ui.Alignment.LEFT_CENTER)
+
+                    ui.Spacer(width=WidgetWindow.GENERAL_SPACING)
+                    with ui.VStack():
+                        ui.Button("PX4 + ROS 2", height=WidgetWindow.BUTTON_HEIGHT)
+                        ui.Button("ROS 2 (Only)", height=WidgetWindow.BUTTON_HEIGHT)
+
+                # Button to load the drone
+                ui.Button("Load Vehicle", height=WidgetWindow.BUTTON_HEIGHT, clicked_fn=self._delegate.on_load_vehicle)
 
 
     def _viewport_camera_frame(self):
         """
         Method that implements a frame that allows the user to choose what is the viewport camera pose easily
         """
+
+        all_axis=["X", "Y", "Z"]
+        colors={"X": 0xFF5555AA, "Y": 0xFF76A371, "Z": 0xFFA07D4F}
+
+        # Frame for setting the camera to visualize the vehicle in the simulator viewport
+        with ui.CollapsableFrame("Viewport Camera"):
+
+            # Create a transform frame to choose where to spawn the vehicle
+            self._transform_frame()
+
+            # Button to set the camera view
+            ui.Button("Set Camera Pose", height=WidgetWindow.BUTTON_HEIGHT, clicked_fn=self._delegate.on_set_viewport_camera) 
+
+            with ui.VStack(spacing=8):
+                # Transform for the camera position
+                with ui.HStack():
+                    with ui.HStack():
+                        ui.Label("Position", name="transform", width=50)
+                    
+                    # Fields for X, Y and Z
+                    for axis in all_axis:
+                        with ui.HStack():
+                            # Draw the dragable rectangle where we can choose the position in one given axis
+                            with ui.ZStack(width=15):
+                                ui.Rectangle(width=15, height=20, style={"background_color": colors[axis], "border_radius": 3, "corner_flag": ui.CornerFlag.LEFT})
+                                ui.Label(axis, name="transform_label", alignment=ui.Alignment.CENTER)
+                                ui.FloatDrag(name="transform", min=-1000000, max=1000000, step=0.01)
+                            ui.Circle(name="transform", width=20, radius=3.5, size_policy=ui.CircleSizePolicy.FIXED)
+                    ui.Spacer(height=0)
+
 
     def _transform_frame(self):
         """
@@ -156,24 +179,26 @@ class WidgetWindow:
         all_axis=["X", "Y", "Z"]
         colors={"X": 0xFF5555AA, "Y": 0xFF76A371, "Z": 0xFFA07D4F}
 
-        with ui.VStack(spacing=8):
-            ui.Spacer(height=0)
+        with ui.CollapsableFrame("Position and Orientation"):
+            with ui.VStack(spacing=8):
 
-            # Iterate over the position and rotation menus
-            for component in components:
-                with ui.HStack():
+                ui.Spacer(height=0)
+
+                # Iterate over the position and rotation menus
+                for component in components:
                     with ui.HStack():
-                        ui.Label(component, name="transform", width=50)
-                        ui.Spacer()
-                    # Fields X, Y and Z
-                    for axis in all_axis:
                         with ui.HStack():
-                            with ui.ZStack():
-                                ui.Rectangle(width=15, height=20, style={"background_color": colors[axis], "border_radius": 3, "corner_flag": ui.CornerFlag.LEFT})
-                                ui.Label(axis, name="transform_label", alignment=ui.Alignment.CENTER)
-                            if component == "Position":
-                                ui.FloatDrag(name="transform", min=-1000000, max=1000000, step=0.01)
-                            else:
-                                ui.FloatDrag(name="transform", min=-180.0, max=180.0, step=0.01)
-                            ui.Circle(name="transform", width=20, radius=3.5, size_policy=ui.CircleSizePolicy.FIXED)
-            ui.Spacer(height=0)    
+                            ui.Label(component, name="transform", width=50)
+                            ui.Spacer()
+                        # Fields X, Y and Z
+                        for axis in all_axis:
+                            with ui.HStack():
+                                with ui.ZStack(width=15):
+                                    ui.Rectangle(width=15, height=20, style={"background_color": colors[axis], "border_radius": 3, "corner_flag": ui.CornerFlag.LEFT})
+                                    ui.Label(axis, name="transform_label", alignment=ui.Alignment.CENTER)
+                                if component == "Position":
+                                    ui.FloatDrag(name="transform", min=-1000000, max=1000000, step=0.01)
+                                else:
+                                    ui.FloatDrag(name="transform", min=-180.0, max=180.0, step=0.01)
+                                ui.Circle(name="transform", width=20, radius=3.5, size_policy=ui.CircleSizePolicy.FIXED)
+                ui.Spacer(height=0)
