@@ -3,12 +3,13 @@ import carb
 import omni.ui as ui
 
 from pegasus_isaac.ui.ui_delegate import UIDelegate
-from pegasus_isaac.params import ROBOTS, SIMULATION_ENVIRONMENTS
+from pegasus_isaac.params import ROBOTS, SIMULATION_ENVIRONMENTS, THUMBNAIL
 
 class WidgetWindow:
 
     # Design constants for the widgets
     LABEL_PADDING = 120
+    BUTTON_HEIGHT = 50
 
     def __init__(self, delegate: UIDelegate):
         """
@@ -52,12 +53,6 @@ class WidgetWindow:
 
                 # Create a frame for selecting which vehicle to load in the simulation environment
                 self._robot_selection_frame()
-                    
-                # Create a transform frame to choose where to spawn the vehicle
-                self._transform_frame()
-
-                # Button to load the drone
-                ui.Button("Load Vehicle", clicked_fn=self._delegate.on_load_vehicle)
                 
                 # Frame for setting the camera to visualize the vehicle in the simulator viewport
                 with ui.CollapsableFrame("Viewport Camera"):
@@ -66,7 +61,7 @@ class WidgetWindow:
                     self._transform_frame()
 
                     # Button to set the camera view
-                    ui.Button("Set Camera Pose", clicked_fn=self._delegate.on_set_viewport_camera) 
+                    ui.Button("Set Camera Pose", height=WidgetWindow.BUTTON_HEIGHT, clicked_fn=self._delegate.on_set_viewport_camera) 
 
                 
     def _scene_selection_frame(self):
@@ -87,32 +82,53 @@ class WidgetWindow:
 
                 # Allow the delegate to know which option was selected in the dropdown menu
                 self._delegate.set_scene_dropdown(dropdown_menu.model)
-                
-                # Button for loading a desired scene
-                ui.Button("Load Scene", clicked_fn=self._delegate.on_load_scene)
 
-                # Button to reset the stage
-                ui.Button("Clear Scene", clicked_fn=self._delegate.on_clear_scene)
+                with ui.HStack():
+
+                    with ui.ZStack(width=WidgetWindow.LABEL_PADDING, height=WidgetWindow.BUTTON_HEIGHT*2):
+                        ui.Rectangle()
+                        ui.Image(THUMBNAIL, fill_policy=ui.FillPolicy.PRESERVE_ASPECT_FIT, alignment=ui.Alignment.LEFT_CENTER)
+
+                    ui.Spacer(width=5)
+
+                    with ui.VStack():
+                        # Button for loading a desired scene
+                        ui.Button("Load Scene", height=WidgetWindow.BUTTON_HEIGHT, clicked_fn=self._delegate.on_load_scene)
+
+                        # Button to reset the stage
+                        ui.Button("Clear Scene", height=WidgetWindow.BUTTON_HEIGHT, clicked_fn=self._delegate.on_clear_scene)
 
     def _robot_selection_frame(self):
         """
         Method that implements a frame that allows the user to choose which robot that is about to be spawned
         """
 
-        with ui.CollapsableFrame(title="Header"):
-            with ui.CollapsableFrame(title="Vehicle Selection"):
-                with ui.ZStack():
-                    ui.Rectangle(name="frame_background")
-                    with ui.VStack(height=0, spacing=10, name="frame_v_stack"):
-                        ui.Spacer(height=5)
-                        # Iterate over all existing robots in the extension
-                        with ui.HStack():
-                            ui.Label("Vehicle Model", name="label", width=WidgetWindow.LABEL_PADDING)
-                            robot_combo_box = ui.ComboBox(0, height=10, name="robots")
-                            for robot in ROBOTS:
-                                robot_combo_box.model.append_child_item(None, ui.SimpleStringModel(robot))  
-                            self._delegate.set_vehicle_dropdown(robot_combo_box.model)
-                                            
+        # Frame for selecting the vehicle to load
+        with ui.CollapsableFrame(title="Vehicle Selection"):
+            with ui.ZStack():
+                with ui.VStack(height=0, spacing=10, name="frame_v_stack"):
+                    ui.Spacer(height=5)
+                    # Iterate over all existing robots in the extension
+                    with ui.HStack():
+                        ui.Label("Vehicle Model", name="label", width=WidgetWindow.LABEL_PADDING)
+                        
+                        # Combo box with the available vehicles to select from
+                        dropdown_menu = ui.ComboBox(0, height=10, name="robots")
+                        for robot in ROBOTS:
+                            dropdown_menu.model.append_child_item(None, ui.SimpleStringModel(robot))  
+                        self._delegate.set_vehicle_dropdown(dropdown_menu.model)
+
+                    # Add a frame transform to select the position of where to place the selected robot in the world
+                    self._transform_frame()
+
+                    # Button to load the drone
+                    ui.Button("Load Vehicle", height=WidgetWindow.BUTTON_HEIGHT, clicked_fn=self._delegate.on_load_vehicle)
+
+
+    def _viewport_camera_frame(self):
+        """
+        Method that implements a frame that allows the user to choose what is the viewport camera pose easily
+        """
 
     def _transform_frame(self):
         """

@@ -33,3 +33,6 @@ DEFAULT_WORLD_SETTINGS = {
     "stage_units_in_meters": 1.0, 
     "rendering_dt": 1.0 / 60.0
 }
+
+# Define where the thumbnail of the vehicle is located
+THUMBNAIL = ROBOTS_ASSETS + "/Iris/iris_thumbnail.png"
