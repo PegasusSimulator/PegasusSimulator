@@ -3,7 +3,7 @@ import carb
 import omni.ui as ui
 
 from pegasus_isaac.ui.ui_delegate import UIDelegate
-from pegasus_isaac.params import ROBOTS, SIMULATION_ENVIRONMENTS, THUMBNAIL
+from pegasus_isaac.params import ROBOTS, SIMULATION_ENVIRONMENTS, THUMBNAIL, WORLD_THUMBNAIL
 
 class WidgetWindow:
 
@@ -11,6 +11,9 @@ class WidgetWindow:
     LABEL_PADDING = 120
     BUTTON_HEIGHT = 50
     GENERAL_SPACING = 5
+
+    WINDOW_WIDTH=450
+    WINDOW_HEIGHT=800
 
     def __init__(self, delegate: UIDelegate):
         """
@@ -35,7 +38,7 @@ class WidgetWindow:
 
     def build_window(self):
 
-        self._window = ui.Window("Pegasus Simulation", width=450, height=800, visible=True)
+        self._window = ui.Window("Pegasus Simulation", width=WidgetWindow.WINDOW_WIDTH, height=WidgetWindow.WINDOW_HEIGHT, visible=True)
         self._window.deferred_dock_in("Property", ui.DockPolicy.CURRENT_WINDOW_IS_ACTIVE)
         self._window.setPosition(0.0, 0.0)
 
@@ -49,16 +52,15 @@ class WidgetWindow:
             
                 # Create a frame for selecting which scene to load
                 self._scene_selection_frame()
-
                 ui.Spacer(height=5)
 
                 # Create a frame for selecting which vehicle to load in the simulation environment
                 self._robot_selection_frame()
-
                 ui.Spacer(height=5)
                 
                 # Create a frame for selecting the camera position, and what it should point torwards to
                 self._viewport_camera_frame()
+                ui.Spacer()
 
                 
     def _scene_selection_frame(self):
@@ -90,7 +92,7 @@ class WidgetWindow:
                     # Add a thumbnail image to have a preview of the world that is about to be loaded
                     with ui.ZStack(width=WidgetWindow.LABEL_PADDING, height=WidgetWindow.BUTTON_HEIGHT*2):
                         ui.Rectangle()
-                        ui.Image(THUMBNAIL, fill_policy=ui.FillPolicy.PRESERVE_ASPECT_FIT, alignment=ui.Alignment.LEFT_CENTER)
+                        ui.Image(WORLD_THUMBNAIL, fill_policy=ui.FillPolicy.PRESERVE_ASPECT_FIT, alignment=ui.Alignment.LEFT_CENTER)
 
                     ui.Spacer(width=WidgetWindow.GENERAL_SPACING)
 

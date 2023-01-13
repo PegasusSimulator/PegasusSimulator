@@ -36,3 +36,6 @@ DEFAULT_WORLD_SETTINGS = {
 
 # Define where the thumbnail of the vehicle is located
 THUMBNAIL = ROBOTS_ASSETS + "/Iris/iris_thumbnail.png"
+
+# Define where the thumbail of the world is located
+WORLD_THUMBNAIL = ASSET_PATH + "/Worlds/Empty_thumbnail.png"
