@@ -27,7 +27,10 @@ class UIDelegate:
     """
 
     def __init__(self, world: World, world_settings):
-        
+
+        # The window that will be bound to this delegate
+        self._window = None
+
         self._world = world
         self._world_settings = world_settings
 
@@ -45,6 +48,9 @@ class UIDelegate:
         # Selected option for broadcasting the simulated vehicle (PX4+ROS2 or just ROS2)
         # By default we assume PX4
         self._streaming_backend: str = "px4"
+
+    def set_window_bind(self, window):
+        self._window = window
 
     def set_scene_dropdown(self, scene_dropdown_model: ui.AbstractItemModel):
         self._scene_dropdown = scene_dropdown_model
@@ -151,5 +157,7 @@ class UIDelegate:
         """
         carb.log_warn("The viewport camera pose has been adjusted")
 
-        # Set the camera view to a fixed value
-        set_camera_view(eye=np.array([5, 5, 5]), target=np.array([0, 0, 0])) 
+        if self._window:
+
+            # Set the camera view to a fixed value
+            set_camera_view(eye=self._window.get_selected_camera_pos(), target=np.array([0, 0, 0])) 

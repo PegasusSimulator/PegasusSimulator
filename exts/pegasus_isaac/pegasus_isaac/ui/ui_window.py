@@ -2,6 +2,9 @@
 
 __all__ = ["WidgetWindow"]
 
+# External packages
+import numpy as np
+
 # Omniverse general API
 import carb
 import omni.ui as ui
@@ -53,6 +56,12 @@ class WidgetWindow(ui.Window):
 
         # Setup the delegate that will bridge between the logic and the UI
         self._delegate = delegate
+
+        # Bind the UI delegate to this window
+        self._delegate.set_window_bind(self)
+
+        # Auxiliar attributes for getting the transforms of the vehicle and the camera from the UI
+        self._camera_transform_models = []
 
         # Build the actual window UI
         self._build_window()
@@ -197,12 +206,12 @@ class WidgetWindow(ui.Window):
 
         all_axis=["X", "Y", "Z"]
         colors={"X": 0xFF5555AA, "Y": 0xFF76A371, "Z": 0xFFA07D4F}
+        default_values=[1.0, 1.0, 1.0]
+        target_default_values=[0.0, 0.0, 0.0]
 
         # Frame for setting the camera to visualize the vehicle in the simulator viewport
         with ui.CollapsableFrame("Viewport Camera"):
-
             with ui.VStack(spacing=8):
-
                 ui.Spacer(height=0)
 
                 # Iterate over the position and rotation menus
@@ -211,12 +220,32 @@ class WidgetWindow(ui.Window):
                         ui.Label("Position", name="transform", width=50, height=20)
                         ui.Spacer()
                     # Fields X, Y and Z
-                    for axis in all_axis:
+                    for axis, default_value in zip(all_axis, default_values):
                         with ui.HStack():
                             with ui.ZStack(width=15):
                                 ui.Rectangle(width=15, height=20, style={"background_color": colors[axis], "border_radius": 3, "corner_flag": ui.CornerFlag.LEFT})
                                 ui.Label(axis, height=20, name="transform_label", alignment=ui.Alignment.CENTER)
-                            ui.FloatDrag(name="transform", min=-1000000, max=1000000, step=0.01)
+                            float_drag = ui.FloatDrag(name="transform", min=-1000000, max=1000000, step=0.01)
+                            float_drag.model.set_value(default_value)
+                            # Save the model of each FloatDrag such that we can access its values later on
+                            self._camera_transform_models.append(float_drag.model)
+                            ui.Circle(name="transform", width=20, height=20, radius=3.5, size_policy=ui.CircleSizePolicy.FIXED)
+
+                # Iterate over the position and rotation menus
+                with ui.HStack():
+                    with ui.HStack():
+                        ui.Label("Target", name="transform", width=50, height=20)
+                        ui.Spacer()
+                    # Fields X, Y and Z
+                    for axis, default_value in zip(all_axis, default_values):
+                        with ui.HStack():
+                            with ui.ZStack(width=15):
+                                ui.Rectangle(width=15, height=20, style={"background_color": colors[axis], "border_radius": 3, "corner_flag": ui.CornerFlag.LEFT})
+                                ui.Label(axis, height=20, name="transform_label", alignment=ui.Alignment.CENTER)
+                            float_drag = ui.FloatDrag(name="transform", min=-1000000, max=1000000, step=0.01)
+                            float_drag.model.set_value(default_value)
+                            # Save the model of each FloatDrag such that we can access its values later on
+                            self._camera_transform_models.append(float_drag.model)
                             ui.Circle(name="transform", width=20, height=20, radius=3.5, size_policy=ui.CircleSizePolicy.FIXED)
 
                 # Button to set the camera view
@@ -255,3 +284,14 @@ class WidgetWindow(ui.Window):
                                     ui.FloatDrag(name="transform", min=-180.0, max=180.0, step=0.01)
                                 ui.Circle(name="transform", width=20, radius=3.5, size_policy=ui.CircleSizePolicy.FIXED)
                 ui.Spacer(height=0)
+
+
+    def get_selected_camera_pos(self) -> np.ndarray:
+        """
+        Method that returns the currently selected camera position in the camera transform widget
+        """
+
+        if len(self._camera_transform_models) == 3:            
+            return np.array([model.get_value_as_float() for model in self._camera_transform_models])
+        else:
+            return np.zeros((3,))
