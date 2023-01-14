@@ -8,6 +8,7 @@ import asyncio
 import carb
 import omni.ui as ui
 from omni.isaac.core import World
+from omni.isaac.core.utils.viewports import set_camera_view
 from omni.isaac.core.utils.stage import create_new_stage, set_stage_up_axis, clear_stage, add_reference_to_stage, get_current_stage
 
 # Extension Configurations
@@ -145,3 +146,6 @@ class UIDelegate:
         Method that should be invoked when the button to set the viewport camera pose is pressed
         """
         carb.log_warn("The viewport camera pose has been adjusted")
+
+        # Set the camera view to a fixed value
+        set_camera_view(eye=np.array([5, 5, 5]), target=np.array([0, 0, 0])) 

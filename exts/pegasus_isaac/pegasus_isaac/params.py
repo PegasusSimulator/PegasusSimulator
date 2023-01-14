@@ -4,6 +4,7 @@ from pathlib import Path
 # Extension configuration
 EXTENSION_NAME = "Pegasus Isaac"
 WINDOW_TITLE = "Pegasus Isaac"
+MENU_PATH = "Window/" + WINDOW_TITLE
 DOC_LINK = ("https://docs.omniverse.nvidia.com")
 EXTENSION_OVERVIEW = "This extension shows how to incorporate drones into Isaac Sim"
 

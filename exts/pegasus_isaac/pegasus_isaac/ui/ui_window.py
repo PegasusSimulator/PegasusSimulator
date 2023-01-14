@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+
+# Omniverse general API
 import carb
 import omni.ui as ui
 from omni.ui import color as cl
@@ -45,6 +47,9 @@ class WidgetWindow:
 
         self._window = None
         self._delegate = delegate
+
+    def show_window():
+        carb.log_warn("showing window")
 
     def shutdown(self):
         """Should be called when the extesion is unloaded"""
@@ -179,7 +184,7 @@ class WidgetWindow:
                     with ui.VStack():
                         # Buttons that behave like switches to choose which network interface to use to simulate the control of the vehicle
                         px4_button = ui.Button("PX4 + ROS 2", height=WidgetWindow.BUTTON_HEIGHT, style=WidgetWindow.BUTTON_SELECTED_STYLE, enabled=False)
-                        ros2_button = ui.Button("ROS 2 (Only)", height=WidgetWindow.BUTTON_HEIGHT, style=WidgetWindow.BUTTON_BASE_STYLE, enabled=True)
+                        ros2_button = ui.Button("ROS 2 (Only) [TO BE IMPLEMENTED]", height=WidgetWindow.BUTTON_HEIGHT, style=WidgetWindow.BUTTON_BASE_STYLE, enabled=True)
 
                         # Set the auxiliary function to handle the switch between both backends
                         px4_button.set_clicked_fn(lambda : handle_px4_ros_switch(self, px4_button, ros2_button, "px4"))

@@ -8,6 +8,7 @@ import numpy as np
 # Omniverse general API
 import carb
 import omni.ext
+import omni.kit.ui
 import omni.kit.app
 import omni.ui as ui
 
@@ -18,7 +19,7 @@ from omni.isaac.core.utils.stage import create_new_stage_async, set_stage_up_axi
 
 # Pegasus Extension Files
 from pegasus_isaac.utils import createObject
-from pegasus_isaac.params import EXTENSION_NAME, ROBOTS, DEFAULT_WORLD_SETTINGS
+from pegasus_isaac.params import EXTENSION_NAME, ROBOTS, DEFAULT_WORLD_SETTINGS, MENU_PATH
 
 # TODO - remove this - only for debugging purposes
 from omni.isaac.core.utils.nucleus import get_assets_root_path
@@ -44,7 +45,7 @@ class Pegasus_isaacExtension(omni.ext.IExt):
         self._ext_id = ext_id
 
         # Get the handle for the extension manager
-        self._extension_manager = omni.kit.app.get_app().get_extension_manager()
+        self._extension_manager = omni.kit.app.get_app().get_extension_manager()      
         
         # Basic world configurations
         self._world_settings = DEFAULT_WORLD_SETTINGS
@@ -55,40 +56,10 @@ class Pegasus_isaacExtension(omni.ext.IExt):
         self.ui_widget = WidgetWindow(self.ui_delegate)
         self.ui_widget.build_window()
 
-    def build_ui(self):
-        """
-        Method that builds the actual extension UI
-        """
-        
-        carb.log_info("Pegasus Isaac extension UI startup")        
-
-        # Create the actual widget window
-        
-   
-        # Define the UI of the widget window
-        # with self._window.frame:
-            
-        #     # Vertical Stack of menus
-        #     with ui.VStack():
-                
-        #         # Label for the buttons in the UI
-        #         label = ui.Label("Simulation Setup")
-                
-        #         # Button to load the world into the stage
-        #         load_button = ui.Button("Load", clicked_fn=self.load_button_callback)
-                
-        #         # Button to reset the stage
-        #         reset_button = ui.Button("Reset", clicked_fn=self.reset_button_callback)
-                
-        #         # Button to load the drone
-        #         drone_button = ui.Button("Drone", clicked_fn=self.load_drone_callback)
-                
-        #         # Button to set the camera view
-        #         camera_button = ui.Button("Set Camera", clicked_fn=self.set_camera_callback)     
-
-        #         ui_set._transform_frame()
-
-        #         ui_set._robot_selection_frame()
+        # Add the extension to the editor menu inside isaac sim
+        self.editor_menu = omni.kit.ui.get_editor_menu()
+        if self.editor_menu:
+            self._menu = self.editor_menu.add_item(MENU_PATH, self.ui_widget.show_window, toggle=True, value=True)
 
     def load_button_callback(self):
         """
