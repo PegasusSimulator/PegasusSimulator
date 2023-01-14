@@ -206,7 +206,7 @@ class WidgetWindow(ui.Window):
 
         all_axis=["X", "Y", "Z"]
         colors={"X": 0xFF5555AA, "Y": 0xFF76A371, "Z": 0xFFA07D4F}
-        default_values=[1.0, 1.0, 1.0]
+        default_values=[5.0, 5.0, 5.0]
         target_default_values=[0.0, 0.0, 0.0]
 
         # Frame for setting the camera to visualize the vehicle in the simulator viewport
@@ -237,7 +237,7 @@ class WidgetWindow(ui.Window):
                         ui.Label("Target", name="transform", width=50, height=20)
                         ui.Spacer()
                     # Fields X, Y and Z
-                    for axis, default_value in zip(all_axis, default_values):
+                    for axis, default_value in zip(all_axis, target_default_values):
                         with ui.HStack():
                             with ui.ZStack(width=15):
                                 ui.Rectangle(width=15, height=20, style={"background_color": colors[axis], "border_radius": 3, "corner_flag": ui.CornerFlag.LEFT})
@@ -291,7 +291,10 @@ class WidgetWindow(ui.Window):
         Method that returns the currently selected camera position in the camera transform widget
         """
 
-        if len(self._camera_transform_models) == 3:            
-            return np.array([model.get_value_as_float() for model in self._camera_transform_models])
-        else:
-            return np.zeros((3,))
+        # Extract the camera desired position and the target it is pointing to
+        if len(self._camera_transform_models) == 6:
+            camera_pos = np.array([self._camera_transform_models[i].get_value_as_float() for i in range(3)])
+            camera_target = np.array([self._camera_transform_models[i].get_value_as_float() for i in range(3, 6)])
+            return camera_pos, camera_target
+        
+        return None, None

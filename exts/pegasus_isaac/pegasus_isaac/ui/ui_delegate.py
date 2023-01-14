@@ -159,5 +159,10 @@ class UIDelegate:
 
         if self._window:
 
-            # Set the camera view to a fixed value
-            set_camera_view(eye=self._window.get_selected_camera_pos(), target=np.array([0, 0, 0])) 
+            # Get the current camera position value
+            camera_position, camera_target = self._window.get_selected_camera_pos()
+
+            if camera_position is not None and camera_target is not None:
+
+                # Set the camera view to a fixed value
+                set_camera_view(eye=camera_position, target=camera_target) 
