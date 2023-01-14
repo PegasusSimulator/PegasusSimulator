@@ -1,14 +1,16 @@
 #!/usr/bin/env python
 
+__all__ = ["WidgetWindow"]
+
 # Omniverse general API
 import carb
 import omni.ui as ui
 from omni.ui import color as cl
 
 from pegasus_isaac.ui.ui_delegate import UIDelegate
-from pegasus_isaac.params import ROBOTS, SIMULATION_ENVIRONMENTS, THUMBNAIL, WORLD_THUMBNAIL
+from pegasus_isaac.params import ROBOTS, SIMULATION_ENVIRONMENTS, THUMBNAIL, WORLD_THUMBNAIL, WINDOW_TITLE
 
-class WidgetWindow:
+class WidgetWindow(ui.Window):
 
     # Design constants for the widgets
     LABEL_PADDING = 120
@@ -38,37 +40,33 @@ class WidgetWindow:
         }
     }
 
-    def __init__(self, delegate: UIDelegate):
+    def __init__(self, delegate: UIDelegate, **kwargs):
         """
         Constructor for the Window UI widget of the extension. Receives as input a UIDelegate that implements
         all the callbacks to handle button clicks, drop-down menu actions, etc. (abstracting the interface between
         the logic of the code and the ui)
         """
+        
+        # Setup the base widget window
+        super().__init__(WINDOW_TITLE, width=WidgetWindow.WINDOW_WIDTH, height=WidgetWindow.WINDOW_HEIGHT, visible=True,**kwargs)
+        self.deferred_dock_in("Property", ui.DockPolicy.CURRENT_WINDOW_IS_ACTIVE)
+        self.setPosition(0.0, 0.0)
 
-        self._window = None
+        # Setup the delegate that will bridge between the logic and the UI
         self._delegate = delegate
 
-    def show_window():
-        carb.log_warn("showing window")
+        # Build the actual window UI
+        self._build_window()
 
-    def shutdown(self):
-        """Should be called when the extesion is unloaded"""
-        # --------------------
-        # According to NVidia:
-        # --------------------
-        # Unfortunatley, the member variables are not destroyed when the extension is unloaded. We need to do it
-        # automatically. Usually, it's OK because the Python garbage collector will eventually destroy everythigng. But
-        # we need the images to be destroyed right now because Kit know nothing about Python garbage collector and it
-        # will fire warning that texture is not destroyed.
-        self._window = None
+    def destroy(self):
 
-    def build_window(self):
+        # Clear the world and the stage correctly
+        self._delegate.on_clear_scene()
 
-        self._window = ui.Window("Pegasus Simulation", width=WidgetWindow.WINDOW_WIDTH, height=WidgetWindow.WINDOW_HEIGHT, visible=True)
-        self._window.deferred_dock_in("Property", ui.DockPolicy.CURRENT_WINDOW_IS_ACTIVE)
-        self._window.setPosition(0.0, 0.0)
+        # It will destroy all the children
+        super().destroy()
 
-        carb.log_warn("drawing")
+    def _build_window(self):
         
         # Define the UI of the widget window
         with self._window.frame:

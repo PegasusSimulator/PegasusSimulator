@@ -105,11 +105,9 @@ class UIDelegate:
         if self._world is not None:
             self._world.stop()
 
-        # Remove all the robots that were spawned
-        self._vehicle_manager.remove_all_vehicles()
-
         # Clear the world
         if self._world is not None:
+            self._world.clear_all_callbacks()
             self._world.clear()
 
         # Clear the stage
@@ -117,6 +115,9 @@ class UIDelegate:
         
         # Cleanup the world pointer
         self._world = None
+
+        # Remove all the robots that were spawned
+        self._vehicle_manager.remove_all_vehicles()
 
         # Call python's garbage collection
         gc.collect()

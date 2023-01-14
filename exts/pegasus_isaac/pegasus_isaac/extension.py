@@ -18,11 +18,7 @@ from omni.isaac.core.utils.viewports import set_camera_view
 from omni.isaac.core.utils.stage import create_new_stage_async, set_stage_up_axis, clear_stage, add_reference_to_stage, get_current_stage
 
 # Pegasus Extension Files
-from pegasus_isaac.utils import createObject
-from pegasus_isaac.params import EXTENSION_NAME, ROBOTS, DEFAULT_WORLD_SETTINGS, MENU_PATH
-
-# TODO - remove this - only for debugging purposes
-from omni.isaac.core.utils.nucleus import get_assets_root_path
+from pegasus_isaac.params import ROBOTS, DEFAULT_WORLD_SETTINGS, MENU_PATH
 
 # Quadrotor vehicle
 from pegasus_isaac.logic.vehicles.quadrotor import Quadrotor
@@ -53,97 +49,44 @@ class Pegasus_isaacExtension(omni.ext.IExt):
 
         # Create the UI of the app and its manager
         self.ui_delegate = UIDelegate(self._world, self._world_settings)
-        self.ui_widget = WidgetWindow(self.ui_delegate)
-        self.ui_widget.build_window()
+        self.ui_window = None
 
         # Add the extension to the editor menu inside isaac sim
         self.editor_menu = omni.kit.ui.get_editor_menu()
         if self.editor_menu:
-            self._menu = self.editor_menu.add_item(MENU_PATH, self.ui_widget.show_window, toggle=True, value=True)
+            self._menu = self.editor_menu.add_item(MENU_PATH, self.show_window, toggle=True, value=True)
 
-    def load_button_callback(self):
+    def show_window(self, menu, value):
         """
-        Callback function that is called when the load button of the extension is pressed
+        Method that controls whether a widget window is created or not
         """
-        carb.log_info("Pressed the load button")
+        if value is not None and value == True:
+            # Create a window 
+            self.ui_window = WidgetWindow(self.ui_delegate)
+            self.ui_window.set_visibility_changed_fn(self._visibility_changed_fn)
         
-        # Load a world into the stage
-        asyncio.ensure_future(self.load_world_async())
+        carb.log_warn("showing window")
+        carb.log_warn(menu)
+        carb.log_warn(value)
 
-    def reset_button_callback(self):
+    def _visibility_changed_fn(self, visible):
+        """        
+        This method is invoked when the user pressed the "X" to close the extension window
         """
-        Callback function that is called when the reset button of the extension is pressed
-        """
-        carb.log_info("Pressed the reset button")
+        if not visible:
+            # Destroy the window, because we create a new one in the show window method
+            asyncio.ensure_future(self._destroy_window_async())
         
-        # Reset the world in the stage
-        self.clear_world()
+    async def _destroy_window_async(self):
         
-    def load_drone_callback(self):
-        """
-        Callback function that is called when the load drone button of the extension is pressed
-        """
-        carb.log_info("Pressed the load drone button")
-        
-        # Try to load a quadrotor into the specified namespace
-        self.robot = Quadrotor("/World/quadrotor", ROBOTS["Quadrotor"], self._world)
-        
-    def set_camera_callback(self):
-        """
-        Callback function that is called whent the load camera button of the extension is pressed
-        """
-        carb.log_info("Pressed the set camera button")
-        
-        # Set the camera view to a fixed value
-        set_camera_view(eye=np.array([5, 5, 5]), target=np.array([0, 0, 0]))      
-    
-    async def load_world_async(self):
-        """
-        Function called when clicking the load World button
-        """
+        # Wait one frame before it gets destructed (from NVidia example)
+        await omni.kit.app.get_app().next_update_async()
 
-        # Create a new empty stage
-        await create_new_stage_async()
+        # Destroy the window UI if it exists
+        if self.ui_window:
+            self.ui_window.destroy()
+            self.ui_window = None
 
-        # Make sure that we use Z as the up axis
-        set_stage_up_axis('z')
-
-        # Create a new empty with the correct settings and initialize it
-        self._world = World(**self._world_settings)
-        await self._world.initialize_simulation_context_async()
-
-        # Reset and pause the world simulation
-        await self._world.reset_async()
-        await self._world.pause_async()
-        
-        # Load a ground in the world
-        self._world.scene.add_default_ground_plane()
-        
-    def clear_world(self):
-
-        # If the physics simulation was running, stop it first
-        if self._world is not None:
-            self._world.stop()
-        
-        # Clear the Robot object wrapper
-        self.robot = None
-        
-        # Clear the world
-        if self._world is not None:
-            self._world.clear()
-
-        # Clear the stage
-        clear_stage()
-        
-        # Cleanup the world pointer
-        self._world = None
-        
-        # Cleanup the primitives list
-        self.prims = []
-
-        # Call python's garbage collection
-        gc.collect()
-        
                     
     def set_world_settings(self, physics_dt=None, stage_units_in_meters=None, rendering_dt=None):
         """
