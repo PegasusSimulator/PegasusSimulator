@@ -38,11 +38,19 @@ class UIDelegate:
         # Get an instance of the vehicle manager
         self._vehicle_manager = VehicleManager()
 
+        # Selected option for broadcasting the simulated vehicle (PX4+ROS2 or just ROS2)
+        # By default we assume PX4
+        self._streaming_backend: str = "px4"
+
     def set_scene_dropdown(self, scene_dropdown_model: ui.AbstractItemModel):
         self._scene_dropdown = scene_dropdown_model
 
     def set_vehicle_dropdown(self, vehicle_dropdown_model: ui.AbstractItemModel):
         self._vehicle_dropdown = vehicle_dropdown_model
+
+    def set_streaming_backend(self, backend: str="px4"):
+        carb.log_info("Chosen option: " + backend)
+        self._streaming_backend = backend
     
     """
     ---------------------------------------------------------------------

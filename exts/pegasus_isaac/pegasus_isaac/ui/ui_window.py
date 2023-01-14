@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import carb
 import omni.ui as ui
+from omni.ui import color as cl
 
 from pegasus_isaac.ui.ui_delegate import UIDelegate
 from pegasus_isaac.params import ROBOTS, SIMULATION_ENVIRONMENTS, THUMBNAIL, WORLD_THUMBNAIL
@@ -12,8 +13,28 @@ class WidgetWindow:
     BUTTON_HEIGHT = 50
     GENERAL_SPACING = 5
 
-    WINDOW_WIDTH=450
+    WINDOW_WIDTH=300
     WINDOW_HEIGHT=800
+
+    BUTTON_SELECTED_STYLE = {
+        "Button": {
+            "background_color": 0xFF5555AA,
+            "border_color": 0xFF5555AA,
+            "border_width": 2,
+            "border_radius": 5,
+            "padding": 5,
+        }
+    }
+
+    BUTTON_BASE_STYLE = {
+        "Button": {
+            "background_color": cl("#292929"),
+            "border_color": cl("#292929"),
+            "border_width": 2,
+            "border_radius": 5,
+            "padding": 5,
+        }
+    }
 
     def __init__(self, delegate: UIDelegate):
         """
@@ -97,15 +118,37 @@ class WidgetWindow:
 
                     with ui.VStack():
                         # Button for loading a desired scene
-                        ui.Button("Load Scene", height=WidgetWindow.BUTTON_HEIGHT, clicked_fn=self._delegate.on_load_scene)
+                        ui.Button("Load Scene", height=WidgetWindow.BUTTON_HEIGHT, clicked_fn=self._delegate.on_load_scene, style=WidgetWindow.BUTTON_BASE_STYLE)
 
                         # Button to reset the stage
-                        ui.Button("Clear Scene", height=WidgetWindow.BUTTON_HEIGHT, clicked_fn=self._delegate.on_clear_scene)
+                        ui.Button("Clear Scene", height=WidgetWindow.BUTTON_HEIGHT, clicked_fn=self._delegate.on_clear_scene, style=WidgetWindow.BUTTON_BASE_STYLE)
 
     def _robot_selection_frame(self):
         """
         Method that implements a frame that allows the user to choose which robot that is about to be spawned
         """
+
+        # Auxiliary function to handle the "switch behaviour" of the buttons that are used to choose between a px4 or ROS2 backend
+        def handle_px4_ros_switch(self, px4_button, ros2_button, button):
+            
+            # Handle the UI of both buttons switching of and on (To make it prettier)
+            if button == "px4":
+                px4_button.enabled = False
+                ros2_button.enabled = True
+                px4_button.set_style(WidgetWindow.BUTTON_SELECTED_STYLE)
+                ros2_button.set_style(WidgetWindow.BUTTON_BASE_STYLE)            
+            else:
+                px4_button.enabled = True
+                ros2_button.enabled = False
+                ros2_button.set_style(WidgetWindow.BUTTON_SELECTED_STYLE)
+                px4_button.set_style(WidgetWindow.BUTTON_BASE_STYLE)
+
+            # Handle the logic of switching between the two operating modes
+            self._delegate.set_streaming_backend(button)
+
+        # --------------------------
+        # Function UI starts here
+        # -------------------------- 
 
         # Frame for selecting the vehicle to load
         with ui.CollapsableFrame(title="Vehicle Selection"):
@@ -134,11 +177,16 @@ class WidgetWindow:
 
                     ui.Spacer(width=WidgetWindow.GENERAL_SPACING)
                     with ui.VStack():
-                        ui.Button("PX4 + ROS 2", height=WidgetWindow.BUTTON_HEIGHT)
-                        ui.Button("ROS 2 (Only)", height=WidgetWindow.BUTTON_HEIGHT)
+                        # Buttons that behave like switches to choose which network interface to use to simulate the control of the vehicle
+                        px4_button = ui.Button("PX4 + ROS 2", height=WidgetWindow.BUTTON_HEIGHT, style=WidgetWindow.BUTTON_SELECTED_STYLE, enabled=False)
+                        ros2_button = ui.Button("ROS 2 (Only)", height=WidgetWindow.BUTTON_HEIGHT, style=WidgetWindow.BUTTON_BASE_STYLE, enabled=True)
+
+                        # Set the auxiliary function to handle the switch between both backends
+                        px4_button.set_clicked_fn(lambda : handle_px4_ros_switch(self, px4_button, ros2_button, "px4"))
+                        ros2_button.set_clicked_fn(lambda : handle_px4_ros_switch(self, px4_button, ros2_button, "ros"))
 
                 # Button to load the drone
-                ui.Button("Load Vehicle", height=WidgetWindow.BUTTON_HEIGHT, clicked_fn=self._delegate.on_load_vehicle)
+                ui.Button("Load Vehicle", height=WidgetWindow.BUTTON_HEIGHT, clicked_fn=self._delegate.on_load_vehicle, style=WidgetWindow.BUTTON_BASE_STYLE)
 
 
     def _viewport_camera_frame(self):
@@ -148,7 +196,6 @@ class WidgetWindow:
 
         all_axis=["X", "Y", "Z"]
         colors={"X": 0xFF5555AA, "Y": 0xFF76A371, "Z": 0xFFA07D4F}
-        components=["Position"]
 
         # Frame for setting the camera to visualize the vehicle in the simulator viewport
         with ui.CollapsableFrame("Viewport Camera"):
@@ -172,7 +219,7 @@ class WidgetWindow:
                             ui.Circle(name="transform", width=20, height=20, radius=3.5, size_policy=ui.CircleSizePolicy.FIXED)
 
                 # Button to set the camera view
-                ui.Button("Set Camera Pose", height=WidgetWindow.BUTTON_HEIGHT, clicked_fn=self._delegate.on_set_viewport_camera) 
+                ui.Button("Set Camera Pose", height=WidgetWindow.BUTTON_HEIGHT, clicked_fn=self._delegate.on_set_viewport_camera, style=WidgetWindow.BUTTON_BASE_STYLE) 
                 ui.Spacer()
 
     def _transform_frame(self):
