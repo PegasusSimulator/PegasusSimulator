@@ -62,6 +62,7 @@ class WidgetWindow(ui.Window):
 
         # Auxiliar attributes for getting the transforms of the vehicle and the camera from the UI
         self._camera_transform_models = []
+        self._vehicle_transform_models = []
 
         # Build the actual window UI
         self._build_window()
@@ -279,14 +280,29 @@ class WidgetWindow(ui.Window):
                                     ui.Rectangle(width=15, height=20, style={"background_color": colors[axis], "border_radius": 3, "corner_flag": ui.CornerFlag.LEFT})
                                     ui.Label(axis, name="transform_label", alignment=ui.Alignment.CENTER)
                                 if component == "Position":
-                                    ui.FloatDrag(name="transform", min=-1000000, max=1000000, step=0.01)
+                                    float_drag = ui.FloatDrag(name="transform", min=-1000000, max=1000000, step=0.01)
                                 else:
-                                    ui.FloatDrag(name="transform", min=-180.0, max=180.0, step=0.01)
+                                    float_drag = ui.FloatDrag(name="transform", min=-180.0, max=180.0, step=0.01)
+                                # Save the model of each FloatDrag such that we can access its values later on
+                                self._vehicle_transform_models.append(float_drag.model)
                                 ui.Circle(name="transform", width=20, radius=3.5, size_policy=ui.CircleSizePolicy.FIXED)
                 ui.Spacer(height=0)
 
+    # ------------------------------------------------------------------------------------------------
+    # TODO - optimize the reading of values from the transform widget. This could be one function only
+    # ------------------------------------------------------------------------------------------------
 
-    def get_selected_camera_pos(self) -> np.ndarray:
+    def get_selected_vehicle_attitude(self):
+
+        # Extract the vehicle desired position and orientation for spawning
+        if len(self._vehicle_transform_models) == 6:
+            vehicle_pos = np.array([self._vehicle_transform_models[i].get_value_as_float() for i in range(3)])
+            vehicel_orientation = np.array([self._vehicle_transform_models[i].get_value_as_float() for i in range(3, 6)])
+            return vehicle_pos, vehicel_orientation
+
+        return None, None
+
+    def get_selected_camera_pos(self):
         """
         Method that returns the currently selected camera position in the camera transform widget
         """

@@ -6,7 +6,8 @@ import asyncio
 
 # External packages
 import numpy as np
-
+from scipy.spatial.transform import Rotation
+ 
 # Omniverse extensions
 import carb
 import omni.ui as ui
@@ -138,7 +139,7 @@ class UIDelegate:
         carb.log_warn("A new vehicle has been loaded")
 
         # Check fi a vehicle is selected in the drop-down menu
-        if self._vehicle_dropdown is not None:
+        if self._vehicle_dropdown is not None and self._window is not None:
 
             # Get the id of the selected vehicle from the list
             vehicle_index = self._vehicle_dropdown.get_item_value_model().as_int
@@ -146,8 +147,11 @@ class UIDelegate:
             # Get the name of the selected vehicle
             selected_robot = self._vehicles_names[vehicle_index]
 
+            # Get the desired position and orientation of the vehicle from the UI transform
+            pos, euler_angles = self._window.get_selected_vehicle_attitude()
+
             # Try to spawn the selected robot in the world to the specified namespace
-            Quadrotor("/World/quadrotor", ROBOTS[selected_robot], self._world)
+            Quadrotor("/World/quadrotor", ROBOTS[selected_robot], self._world, pos, Rotation.from_euler("XYZ", euler_angles, degrees=True).as_quat())
 
             carb.log_warn("Spawned the robot: " + selected_robot + "in ")
     
