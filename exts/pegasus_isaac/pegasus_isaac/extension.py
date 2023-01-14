@@ -1,6 +1,7 @@
 # Python garbage collenction and asyncronous API
 import gc
 import asyncio
+from functools import partial
 
 # External packages
 import numpy as np
@@ -18,7 +19,7 @@ from omni.isaac.core.utils.viewports import set_camera_view
 from omni.isaac.core.utils.stage import create_new_stage_async, set_stage_up_axis, clear_stage, add_reference_to_stage, get_current_stage
 
 # Pegasus Extension Files
-from pegasus_isaac.params import ROBOTS, DEFAULT_WORLD_SETTINGS, MENU_PATH
+from pegasus_isaac.params import ROBOTS, DEFAULT_WORLD_SETTINGS, MENU_PATH, WINDOW_TITLE
 
 # Quadrotor vehicle
 from pegasus_isaac.logic.vehicles.quadrotor import Quadrotor
@@ -34,8 +35,8 @@ class Pegasus_isaacExtension(omni.ext.IExt):
     # ext_id is current extension id. It can be used with extension manager to query additional information, like where
     # this extension is located on filesystem.
     def on_startup(self, ext_id):
-        
-        carb.log_info("Pegasus extension startup")
+
+        carb.log_info("Pegasus extension is starting up")
 
         # Save the extension id
         self._ext_id = ext_id
@@ -48,34 +49,54 @@ class Pegasus_isaacExtension(omni.ext.IExt):
         self._world: World = World(**self._world_settings)
 
         # Create the UI of the app and its manager
-        self.ui_delegate = UIDelegate(self._world, self._world_settings)
+        self.ui_delegate = None
         self.ui_window = None
 
-        # Add the extension to the editor menu inside isaac sim
-        self.editor_menu = omni.kit.ui.get_editor_menu()
-        if self.editor_menu:
-            self._menu = self.editor_menu.add_item(MENU_PATH, self.show_window, toggle=True, value=True)
+        # Add the ability to show the window if the system requires it (QuickLayout feature)
+        ui.Workspace.set_show_window_fn(WINDOW_TITLE, partial(self.show_window, None))
 
-    def show_window(self, menu, value):
+        # Add the extension to the editor menu inside isaac sim
+        editor_menu = omni.kit.ui.get_editor_menu()
+        if editor_menu:
+            self._menu = editor_menu.add_item(MENU_PATH, self.show_window, toggle=True, value=True)
+
+        # Show the window (It call the self.show_window)
+        ui.Workspace.show_window(WINDOW_TITLE, show=True)
+
+    def show_window(self, menu, show):
         """
         Method that controls whether a widget window is created or not
         """
-        if value is not None and value == True:
-            # Create a window 
+        if show == True:
+            # Create a window and its delegate
+            self.ui_delegate = UIDelegate(self._world, self._world_settings)
             self.ui_window = WidgetWindow(self.ui_delegate)
             self.ui_window.set_visibility_changed_fn(self._visibility_changed_fn)
         
-        carb.log_warn("showing window")
-        carb.log_warn(menu)
-        carb.log_warn(value)
+        # If we have a window and we are not supposed to show it, then change its visibility
+        elif self.ui_window:
+            self.ui_window.visible = False
+        
 
     def _visibility_changed_fn(self, visible):
         """        
         This method is invoked when the user pressed the "X" to close the extension window
         """
+        
+        # Update the Isaac sim menu visibility
+        self._set_menu(visible)
+
         if not visible:
             # Destroy the window, because we create a new one in the show window method
             asyncio.ensure_future(self._destroy_window_async())
+
+    def _set_menu(self, visible):
+        """
+        Method that updates the isaac sim ui menu to create the Widget window on and off
+        """
+        editor_menu = omni.kit.ui.get_editor_menu()
+        if editor_menu:
+            editor_menu.set_value(MENU_PATH, visible)
         
     async def _destroy_window_async(self):
         
@@ -87,7 +108,34 @@ class Pegasus_isaacExtension(omni.ext.IExt):
             self.ui_window.destroy()
             self.ui_window = None
 
-                    
+    def on_shutdown(self):
+        """
+        Callback called when the extension is shutdown
+        """
+        carb.log_info("Pegasus Isaac extension shutdown")
+
+        # Destroy the isaac sim menu object
+        self._menu = None
+        
+        # Destroy the window
+        if self.ui_window:
+            self.ui_window.destroy()
+            self.ui_window = None
+        
+        # Destroy the UI delegate
+        if self.ui_delegate:
+            self.ui_delegate = None
+
+        # De-register the function taht shows the window from the isaac sim ui
+        ui.Workspace.set_show_window_fn(WINDOW_TITLE, None)
+
+        # Call the garbage collector
+        gc.collect()
+
+    # -------------------------------------
+    # TO BE MOVED
+    # -------------------------------------
+
     def set_world_settings(self, physics_dt=None, stage_units_in_meters=None, rendering_dt=None):
         """
         Set the current world settings to the pre-defined settings
@@ -104,22 +152,6 @@ class Pegasus_isaacExtension(omni.ext.IExt):
         # Set the render engine update rate (might not be the same as the physics engine)
         if rendering_dt is not None:
             self._world_settings["rendering_dt"] = rendering_dt
-
-    def on_shutdown(self):
-        """
-        Callback called when the extension is shutdown
-        """
-        carb.log_info("Pegasus Isaac extension shutdown")
-        
-        self.clear_world()
-
-
-    def change_visibility(self, visible):
-        """
-        Method that is called when the visibility of the extension is changed
-        """
-        if not visible:
-            self.on_shutdown()
 
     def check_ros_extension(self):
         """

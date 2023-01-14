@@ -18,7 +18,7 @@ class WidgetWindow(ui.Window):
     GENERAL_SPACING = 5
 
     WINDOW_WIDTH=300
-    WINDOW_HEIGHT=800
+    WINDOW_HEIGHT=850
 
     BUTTON_SELECTED_STYLE = {
         "Button": {
@@ -48,9 +48,8 @@ class WidgetWindow(ui.Window):
         """
         
         # Setup the base widget window
-        super().__init__(WINDOW_TITLE, width=WidgetWindow.WINDOW_WIDTH, height=WidgetWindow.WINDOW_HEIGHT, visible=True,**kwargs)
+        super().__init__(WINDOW_TITLE, width=WidgetWindow.WINDOW_WIDTH, height=WidgetWindow.WINDOW_HEIGHT, visible=True, **kwargs)
         self.deferred_dock_in("Property", ui.DockPolicy.CURRENT_WINDOW_IS_ACTIVE)
-        self.setPosition(0.0, 0.0)
 
         # Setup the delegate that will bridge between the logic and the UI
         self._delegate = delegate
@@ -69,7 +68,7 @@ class WidgetWindow(ui.Window):
     def _build_window(self):
         
         # Define the UI of the widget window
-        with self._window.frame:
+        with self.frame:
 
             # Vertical Stack of menus
             with ui.VStack():
@@ -85,7 +84,6 @@ class WidgetWindow(ui.Window):
                 # Create a frame for selecting the camera position, and what it should point torwards to
                 self._viewport_camera_frame()
                 ui.Spacer()
-
                 
     def _scene_selection_frame(self):
         """

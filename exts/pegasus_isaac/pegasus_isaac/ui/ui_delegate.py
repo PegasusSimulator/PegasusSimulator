@@ -4,6 +4,9 @@
 import gc
 import asyncio
 
+# External packages
+import numpy as np
+
 # Omniverse extensions
 import carb
 import omni.ui as ui
