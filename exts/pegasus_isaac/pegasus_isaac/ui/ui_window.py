@@ -261,6 +261,7 @@ class WidgetWindow(ui.Window):
         components=["Position", "Rotation"]
         all_axis=["X", "Y", "Z"]
         colors={"X": 0xFF5555AA, "Y": 0xFF76A371, "Z": 0xFFA07D4F}
+        default_values=[0.0, 0.0, 0.1]
 
         with ui.CollapsableFrame("Position and Orientation"):
             with ui.VStack(spacing=8):
@@ -274,13 +275,14 @@ class WidgetWindow(ui.Window):
                             ui.Label(component, name="transform", width=50)
                             ui.Spacer()
                         # Fields X, Y and Z
-                        for axis in all_axis:
+                        for axis, default_value in zip(all_axis, default_values):
                             with ui.HStack():
                                 with ui.ZStack(width=15):
                                     ui.Rectangle(width=15, height=20, style={"background_color": colors[axis], "border_radius": 3, "corner_flag": ui.CornerFlag.LEFT})
                                     ui.Label(axis, name="transform_label", alignment=ui.Alignment.CENTER)
                                 if component == "Position":
                                     float_drag = ui.FloatDrag(name="transform", min=-1000000, max=1000000, step=0.01)
+                                    float_drag.model.set_value(default_value)
                                 else:
                                     float_drag = ui.FloatDrag(name="transform", min=-180.0, max=180.0, step=0.01)
                                 # Save the model of each FloatDrag such that we can access its values later on
