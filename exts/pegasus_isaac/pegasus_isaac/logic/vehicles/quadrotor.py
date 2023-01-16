@@ -17,6 +17,14 @@ class Quadrotor(Vehicle):
         init_pos=[0.0, 0.0, 0.07], 
         init_orientation=[0.0, 0.0, 0.0, 1.0]
     ):
+
+        # Create a mavlink interface for getting data on the desired port. IF it fails, do not spawn the vehicle
+        # on the simulation world
+        try:
+            self._mavlink = MavlinkInterface('tcpin:localhost:4560')
+        except e:
+            carb.log_error("Could not initiate the mavlink interface. Not spawning the vehicle. Full error log: ")
+            carb.log_error(e)
         
         # Initiate the Vehicle
         super().__init__(stage_prefix, usd_file, world, init_pos, init_orientation)
@@ -26,9 +34,6 @@ class Quadrotor(Vehicle):
         self._imu = IMU()                                               # Check
         self._magnetometer = Magnetometer(47.397742, 8.545594)          # Check
         self._gps = GPS(47.397742, 8.545594, origin_altitude=488.0)     # Check
-        
-        # Create a mavlink interface for getting data
-        self._mavlink = MavlinkInterface('tcpin:localhost:4560')
         
         # Add callbacks to the physics engine to update the sensors every timestep
         self._world.add_physics_callback(self._stage_prefix + "/barometer", self.update_barometer_sensor)
