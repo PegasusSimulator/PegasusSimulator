@@ -18,8 +18,8 @@ class Quadrotor(Vehicle):
         init_orientation=[0.0, 0.0, 0.0, 1.0]
     ):
 
-        # Create a mavlink interface for getting data on the desired port. IF it fails, do not spawn the vehicle
-        # on the simulation world
+        # Create a mavlink interface for getting data on the desired port. If it fails, do not spawn the vehicle
+        # on the simulation world and just throw an exception
         try:
             self._mavlink = MavlinkInterface('tcpin:localhost:4560')
         except e:
