@@ -4,6 +4,9 @@ import time
 import numpy as np
 from pymavlink import mavutil
 
+# TODO - remove this only for debug
+from pegasus_isaac.logic.state import State
+
 class SensorSource:
     """
     The binary codes to signal which simulated data is being sent through mavlink
@@ -72,6 +75,28 @@ class SensorMsg:
         self.vision_yaw: float = 0.0
         self.vision_covariance = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
+        # Simulation State
+        self._new_sim_state: bool = False
+        self._sim_atttitude = [1.0, 0.0, 0.0, 0.0]    # [w, x, y, z]
+        self._sim_acceleration = [0.0, 0.0, 0.0]      # [x,y,z body acceleration]
+        self._sim_angular_vel = [0.0, 0.0, 0.0]       # [roll-rate, pitch-rate, yaw-rate] rad/s
+        self._sim_lat = 0.0                           # [deg]
+        self._sim_lon = 0.0                           # [deg]
+        self._sim_alt = 0.0                           # [m]
+        self._sim_velocity_inertial = [0.0, 0.0, 0.0] # North-east-down [m/s]
+        
+    def update_sim_state(self, state: State):
+
+        # Get the quaternion in the convention [x, y, z, w]
+        attitude = state.get_attitude_ned_frd()
+
+        # Rotate the quaternion to the mavlink standard
+        self._sim_atttitude[0] = attitude[3]
+        self._sim_atttitude[1] = attitude[0]
+        self._sim_atttitude[2] = attitude[1]
+        self._sim_atttitude[3] = attitude[2]
+
+        # TODO - keep on going here
 
 class ThrusterControl:
     """
@@ -270,6 +295,7 @@ class MavlinkInterface:
         # When this object gets destroyed, close the mavlink connection to free the communication port
         try:
             self._connection.close()
+            self._connection = None
         except:
             carb.log_info("Mavlink connection was not closed, because it was never opened")
 
@@ -529,6 +555,7 @@ class MavlinkInterface:
 
     def send_ground_truth(self):
         # TODO
+        # hil_state_quaternion_send(self, time_usec, attitude_quaternion, rollspeed, pitchspeed, yawspeed, lat, lon, alt, vx, vy, vz, ind_airspeed, true_airspeed, xacc, yacc, zacc)
         pass
 
     def handle_control(self, time_usec, controls, mode, flags):

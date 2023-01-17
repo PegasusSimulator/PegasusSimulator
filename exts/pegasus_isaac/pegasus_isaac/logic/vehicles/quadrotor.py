@@ -5,7 +5,9 @@ from pegasus_isaac.logic.vehicles.vehicle import Vehicle
 from pegasus_isaac.mavlink_interface import MavlinkInterface
 from pegasus_isaac.logic.sensors import Barometer, IMU, Magnetometer, GPS
 
-from omni.isaac.core.controllers import BaseController
+# TODO - remove this - only for debugging purposes
+from pxr import UsdPhysics
+from omni.isaac.dynamic_control import _dynamic_control
 
 class Quadrotor(Vehicle):
 
@@ -15,7 +17,8 @@ class Quadrotor(Vehicle):
         usd_file: str="",
         world=None,
         init_pos=[0.0, 0.0, 0.07], 
-        init_orientation=[0.0, 0.0, 0.0, 1.0]
+        init_orientation=[0.0, 0.0, 0.0, 1.0],
+        rot_dir=[-1,-1,1,1]
     ):
 
         # Create a mavlink interface for getting data on the desired port. If it fails, do not spawn the vehicle
@@ -28,6 +31,9 @@ class Quadrotor(Vehicle):
         
         # Initiate the Vehicle
         super().__init__(stage_prefix, usd_file, world, init_pos, init_orientation)
+
+        # Set the rotation direction from the propellers
+        self.rot_dir = rot_dir
 
         # Create the sensors that a quadrotor typically has
         self._barometer = Barometer(altitude_home=488.0)                # Check
@@ -84,13 +90,8 @@ class Quadrotor(Vehicle):
         # Get the force to apply to the body frame from mavlink
         forces_z = self._mavlink._rotor_data.input_force_reference
 
-        # Get the articulation corresponding to the vehicle
-        articulation = self._world.dc_interface.get_articulation(self._stage_prefix + "/vehicle/body")
-        dof_ptr = self._world.dc_interface.find_articulation_dof(articulation, "rotor0/joint0")
-        carb.log_warn(self._world.dc_interface.get_joint('joint1'))
-        
-        # Get the body of the vehicle
-        body = self._world.dc_interface.get_rigid_body(self._stage_prefix  + "/vehicle/body")
+        # Get the articulation root of the vehicle
+        articulation = self._world.dc_interface.get_articulation(self._stage_prefix  + "/vehicle/body")
 
         # Apply force to each rotor
         for i in range(4):
@@ -100,5 +101,16 @@ class Quadrotor(Vehicle):
 
             # Apply the force in Z on the rotor frame
             self._world.dc_interface.apply_body_force(rotor, carb._carb.Float3([0.0, 0.0, forces_z[i]]), carb._carb.Float3([ 0.0, 0.0, 0.0]), False)
+
+            # Rotate the joint to yield the visual of a rotor spinning
+            joint = self._world.dc_interface.find_articulation_dof(articulation, "joint" + str(i))
+            if 0.0 < forces_z[i] < 0.1:
+                self._world.dc_interface.set_dof_velocity(joint, 5 * self.rot_dir[i])
+            elif 0.1 <= forces_z[i]:
+                self._world.dc_interface.set_dof_velocity(joint, 100 * self.rot_dir[i])
+            else:
+                self._world.dc_interface.set_dof_velocity(joint, 0)
+
+        carb.log_warn(forces_z)
 
         self.total_time += dt
