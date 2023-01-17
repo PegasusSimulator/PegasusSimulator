@@ -5,19 +5,18 @@ from pegasus_isaac.logic.vehicles.vehicle import Vehicle
 from pegasus_isaac.mavlink_interface import MavlinkInterface
 from pegasus_isaac.logic.sensors import Barometer, IMU, Magnetometer, GPS
 
-# TODO - remove this - only for debugging purposes
-from pxr import UsdPhysics
-from omni.isaac.dynamic_control import _dynamic_control
-
 class Quadrotor(Vehicle):
 
     def __init__(
         self, 
+        # Simulation specific configurations
         stage_prefix: str="quadrotor",  
         usd_file: str="",
         world=None,
+        # Spawning pose of the vehicle
         init_pos=[0.0, 0.0, 0.07], 
         init_orientation=[0.0, 0.0, 0.0, 1.0],
+        # Rotation direction for the rotors
         rot_dir=[-1,-1,1,1]
     ):
 
@@ -93,6 +92,10 @@ class Quadrotor(Vehicle):
         # Get the articulation root of the vehicle
         articulation = self._world.dc_interface.get_articulation(self._stage_prefix  + "/vehicle/body")
 
+        # Log the orientation
+        carb.log_warn(self._state.attitude)
+        carb.log_warn(self._state.get_attitude_ned_frd())
+
         # Apply force to each rotor
         for i in range(4):
 
@@ -102,12 +105,16 @@ class Quadrotor(Vehicle):
             # Apply the force in Z on the rotor frame
             self._world.dc_interface.apply_body_force(rotor, carb._carb.Float3([0.0, 0.0, forces_z[i]]), carb._carb.Float3([ 0.0, 0.0, 0.0]), False)
 
-            # Rotate the joint to yield the visual of a rotor spinning
+            # Rotate the joint to yield the visual of a rotor spinning (for animation purposes only)
             joint = self._world.dc_interface.find_articulation_dof(articulation, "joint" + str(i))
+
+            # Spinning when armed but not applying force
             if 0.0 < forces_z[i] < 0.1:
                 self._world.dc_interface.set_dof_velocity(joint, 5 * self.rot_dir[i])
+            # Spinning when armed and applying force
             elif 0.1 <= forces_z[i]:
                 self._world.dc_interface.set_dof_velocity(joint, 100 * self.rot_dir[i])
+            # Not spinning    
             else:
                 self._world.dc_interface.set_dof_velocity(joint, 0)
 
