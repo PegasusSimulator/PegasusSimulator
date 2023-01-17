@@ -4,7 +4,6 @@ import numpy as np
 
 import carb
 from omni.isaac.core import World
-import omni.isaac.core.utils.rotations 
 from omni.isaac.core.utils.prims import define_prim
 from omni.physx import get_physx_interface
 from omni.usd import get_stage_next_free_path
@@ -104,18 +103,6 @@ class Vehicle(Robot):
     Operations
     """
 
-    def update_state(self, state):
-        """
-        Method that updates the current state of the vehicle
-        """
-        self._state = state
-
-    def update_motor_speed(self, motor_speed):
-        """
-        Method that updates the desired motor speed for the vehicle 
-        """
-        self._motor_speed = motor_speed
-
     def apply_force(self, force, pos=[0.0, 0.0, 0.0], body_part=""):
         """
         Method that when called, applies a given force vector to the rigid body or /<rigid_body_name>/"body"
@@ -134,6 +121,18 @@ class Vehicle(Robot):
         # Get the current position and orientation in the inertial frame
         pose = self._world.dc_interface.get_rigid_body_pose(body)
 
+        # NOTE: the attitude given by get_rigid_body_pose is not updating correctly (I guess this is a bug on the NVidia API)
+        # Now, here is the question: is it a bug or is it a feature? Let me know your opinion - I'm curious XD
+        # But seriously, NVidia, if you are reading this, please fix it and let me know. Robotics people like me do not expect
+        # this behaviour from the get_rigid_body_pose method. It is only giving the me initial orientation the vehicle was spawned with
+        #carb.log_warn((self._world.stage.GetPrimAtPath(self._stage_prefix  + "/vehicle/body")))
+
+        #for att in self._world.stage.GetPrimAtPath(self._stage_prefix  + "/vehicle/body").GetAttributes():
+        #    carb.log_warn(att)
+
+        carb.log_warn(self._world.stage.GetPrimAtPath(self._stage_prefix  + "/vehicle/body").GetAttribute('xformOp:orient'))
+        carb.log_warn("-------------")
+
         # Get the angular velocity of the vehicle expressed in the body frame of reference
         ang_vel = self._world.dc_interface.get_rigid_body_angular_velocity(body)
 
@@ -142,6 +141,8 @@ class Vehicle(Robot):
 
         # The linear velocity [u,v,w] of the vehicle's body frame expressed in the body frame of reference
         linear_vel_body = self._world.dc_interface.get_rigid_body_local_linear_velocity(body)
+
+        carb.log_warn(linear_vel_body)
 
         # Get the linear acceleration of the body relative to the inertial frame, expressed in the inertial frame
         # Note: we must do this approximation, since the Isaac sim does not output the acceleration of the rigid body directly

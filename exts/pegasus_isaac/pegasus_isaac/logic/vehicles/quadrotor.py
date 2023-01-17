@@ -93,8 +93,14 @@ class Quadrotor(Vehicle):
         articulation = self._world.dc_interface.get_articulation(self._stage_prefix  + "/vehicle/body")
 
         # Log the orientation
-        carb.log_warn(self._state.attitude)
-        carb.log_warn(self._state.get_attitude_ned_frd())
+        #carb.log_warn(self._state.attitude)
+        #carb.log_warn(self._state.get_attitude_ned_frd())
+
+        # Get the rotor frame interface of the vehicle (this will be the frame used to get the position, orientation, etc.)
+        body = self._world.dc_interface.get_rigid_body(self._stage_prefix  + "/vehicle/body")
+
+        #if self.total_time <= 2.0:
+        self._world.dc_interface.apply_body_force(body, carb._carb.Float3([10.0, 0.0, 0.0]), carb._carb.Float3([0.0, 0.1, 0.0]), False)
 
         # Apply force to each rotor
         for i in range(4):
