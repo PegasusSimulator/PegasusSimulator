@@ -40,7 +40,7 @@ class State:
         """
         return rot_ENU_to_NED.apply(self.position)
 
-    def get_orientation_ned_frd(self):
+    def get_attitude_ned_frd(self):
         """
         Method that, assuming that a state is encoded in ENU-FLU standard (the Isaac Sim standard), converts the 
         attitude of the vehicle it to the NED-FRD convention used by PX4 and other onboard flight controllers
@@ -53,7 +53,12 @@ class State:
         Method that, assuming that a state is encoded in ENU-FLU standard (the Isaac Sim standard), converts the 
         linear body velocity of the vehicle it to the NED-FRD convention used by PX4 and other onboard flight controllers
         """
-        pass
+
+        # Get the linear acceleration in FLU convention
+        linear_acc_body_flu = Rotation.from_quat(self.attitude).inv().apply(self.linear_acceleration)
+
+        # Convert the linear acceleration in the body frame expressed in FLU convention to the FRD convention
+        return rot_FLU_to_FRD.apply(linear_acc_body_flu)
 
     def get_linear_velocity_ned(self):
         """
@@ -62,6 +67,14 @@ class State:
         controllers
         """
         return rot_ENU_to_NED.apply(self.linear_velocity)
+
+    def get_angular_velocity_frd(self):
+        """
+        Method that, assuming that a state is enconded in ENU-FLU standard (the Isaac Sim standard), converts the 
+        angular velocity expressed in the body frame to the NED-FRD convention used by PX4 and other onboard flight
+        controllers
+        """
+        return rot_FLU_to_FRD.apply(self.angular_velocity)
 
     def get_linear_acceleration_ned(self):
         """
