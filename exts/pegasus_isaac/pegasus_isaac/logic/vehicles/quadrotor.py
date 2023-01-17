@@ -79,7 +79,7 @@ class Quadrotor(Vehicle):
         by a class that inherits this type
         """
 
-        self._mavlink.mavlink_update()
+        self._mavlink.mavlink_update(dt)
 
         # Get the force to apply to the body frame from mavlink
         forces_z = self._mavlink._rotor_data.input_force_reference

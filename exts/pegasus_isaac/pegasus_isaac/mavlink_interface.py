@@ -331,7 +331,7 @@ class MavlinkInterface:
             self._received_first_hearbeat = True
             carb.log_warn("Received first hearbeat")
 
-    def mavlink_update(self):
+    def mavlink_update(self, dt):
         """
         Method that should be called by physics to send data to px4 and receive the control inputs
         """
@@ -344,8 +344,9 @@ class MavlinkInterface:
         # Check if we have already received IMU data. If not, start the lockstep and wait for more data
         if self._sensor_data.received_first_imu:
             while not self._sensor_data.new_imu_data and self._is_running:
-                # Sleep and then try to check if we have new simulated sensor data 
-                time.sleep(1.0 / self._update_rate)
+                # Just go for the next update and then try to check if we have new simulated sensor data 
+                # DO not continue and get mavlink thrusters commands until we have simulated IMU data available
+                return
 
         # Check if we have received any mavlink messages
         self.poll_mavlink_messages()
@@ -356,7 +357,7 @@ class MavlinkInterface:
             self._last_heartbeat_sent_time = time.time()
 
         # Update the current u_time for px4
-        self._current_utime += int(self._time_step * 1000000)
+        self._current_utime += int(dt * 1000000)
 
         # Send sensor messages
         self.send_sensor_msgs(self._current_utime)
