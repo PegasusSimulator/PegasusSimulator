@@ -124,6 +124,6 @@ class Quadrotor(Vehicle):
             else:
                 self._world.dc_interface.set_dof_velocity(joint, 0)
 
-        carb.log_warn(forces_z)
+        #carb.log_warn(forces_z)
 
         self.total_time += dt

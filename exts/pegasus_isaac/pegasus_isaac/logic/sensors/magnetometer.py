@@ -10,12 +10,43 @@ Description:
     Simulates a magnetometer. Based on the original implementation provided
     in PX4 stil_gazebo (https://github.com/PX4/PX4-SITL_gazebo) by Elia Tarasov <elias.tarasov@gmail.com>
 """
+import carb
 import numpy as np
 from scipy.spatial.transform import Rotation
 
 from pegasus_isaac.logic.state import State
 from pegasus_isaac.logic.rotations import rot_ENU_to_NED, rot_FLU_to_FRD
 from pegasus_isaac.logic.sensors.geo_mag_utils import get_mag_declination, get_mag_inclination, get_mag_strength, reprojection
+
+def quaternion_to_euler(q):
+    """ quaternion according in the [x,y,z,w] standard """
+
+    x = q[0]
+    y = q[1]
+    z = q[2]
+    w = q[3]
+    rpy = np.array([0.0, 0.0, 0.0])
+
+    # Compute roll
+    rpy[0] = np.arctan2(2 * (w * x + y * z), 1 - 2 * (x * x + y*y))
+    
+    # Compute pitch 
+    sin_pitch = 2 * (w*y - z*x)
+
+    if sin_pitch > 1:
+        sin_pitch = 1
+    elif sin_pitch < -1:
+        sin_pitch = -1
+    
+    rpy[1] = np.arcsin(sin_pitch)
+
+    # Compute yaw
+    rpy[2] = np.arctan2(2 * (w * z + x * y), 1 - 2 * (y * y + z * z))
+
+    for i in range(3):
+        rpy[i] = int(np.degrees(rpy[i]))
+
+    return rpy
 
 class Magnetometer:
 
@@ -39,9 +70,6 @@ class Magnetometer:
         return self._state
 
     def update(self, state: State, dt: float):
-
-        # Attitude of a FLU frame with respect to a ENU inertial frame, expressed in the ENU inertial frame
-        state.attitude = np.array([0.0, 0.0, 0.0, 1.0])
 
         # Get the latitude and longitude from the current state
         latitude, longitude = reprojection(state.position, self._origin_latitude, self._origin_longitude)
@@ -68,6 +96,13 @@ class Magnetometer:
 
         # Rotate the magnetic field from the inertial frame to the body frame of reference according to the FLU frame convention
         rot_body_to_world = rot_ENU_to_NED * attitude_flu_enu * rot_FLU_to_FRD.inv()
+        
+        carb.log_warn("------------------------")
+        carb.log_warn(state.attitude)
+        carb.log_warn(attitude_flu_enu.as_quat())
+        carb.log_warn(quaternion_to_euler(attitude_flu_enu.as_quat()))
+        carb.log_warn(quaternion_to_euler(rot_body_to_world.as_quat()))
+        carb.log_warn("------------------------")
 
         # The magnetic field expressed in the body frame according to the front-right-down (FRD) convention
         magnetic_field_body = rot_body_to_world.inv().apply(magnetic_field_inertial)

@@ -2,19 +2,21 @@
 
 import numpy as np
 
+# Low level APIs
 import carb
+from pxr import Usd, Gf
+
+# High level Isaac sim APIs
+import omni.usd
 from omni.isaac.core import World
 from omni.isaac.core.utils.prims import define_prim
 from omni.physx import get_physx_interface
 from omni.usd import get_stage_next_free_path
 from omni.isaac.core.robots.robot import Robot
 
+# Extension APIs
 from pegasus_isaac.logic.state import State
 from pegasus_isaac.logic.vehicles.vehicle_manager import VehicleManager
-
-import typing
-from pxr import Usd, UsdGeom, Gf
-import omni.usd
 
 def get_world_transform_xform(prim: Usd.Prim):
     """
@@ -33,6 +35,37 @@ def get_world_transform_xform(prim: Usd.Prim):
     rotation: Gf.Rotation = world_transform.ExtractRotation()
     #scale: Gf.Vec3d = Gf.Vec3d(*(v.GetLength() for v in world_transform.ExtractRotationMatrix()))
     return rotation #translation, rotation, scale
+
+def quaternion_to_euler(q):
+    """ quaternion according in the [x,y,z,w] standard """
+
+    x = q[0]
+    y = q[1]
+    z = q[2]
+    w = q[3]
+    rpy = np.array([0.0, 0.0, 0.0])
+
+    # Compute roll
+    rpy[0] = np.arctan2(2 * (w * x + y * z), 1 - 2 * (x * x + y*y))
+    
+    # Compute pitch 
+    sin_pitch = 2 * (w*y - z*x)
+
+    if sin_pitch > 1:
+        sin_pitch = 1
+    elif sin_pitch < -1:
+        sin_pitch = -1
+    
+    rpy[1] = np.arcsin(sin_pitch)
+
+    # Compute yaw
+    rpy[2] = np.arctan2(2 * (w * z + x * y), 1 - 2 * (y * y + z * z))
+
+    for i in range(3):
+        rpy[i] = int(np.degrees(rpy[i]))
+
+    return rpy
+
 
 class Vehicle(Robot):
 
@@ -169,7 +202,13 @@ class Vehicle(Robot):
 
         # Update the state variable
         self._state.position = np.array(pose.p)
+
+        # Get the quaternion according in the [x,y,z,w] standard
         self._state.attitude = np.array([rotation_quat_img[0], rotation_quat_img[1], rotation_quat_img[2], rotation_quat_real])
+
+        # Log the orientation of the vehicle in ENU
+        carb.log_warn(quaternion_to_euler(self._state.attitude))
+        carb.log_warn(self._state.attitude)
 
         self._state.linear_body_velocity = np.array(linear_vel_body)
         self._state.linear_velocity = np.array(linear_vel)
