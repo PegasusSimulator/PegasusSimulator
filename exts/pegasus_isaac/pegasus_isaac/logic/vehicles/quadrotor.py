@@ -100,7 +100,7 @@ class Quadrotor(Vehicle):
         body = self._world.dc_interface.get_rigid_body(self._stage_prefix  + "/vehicle/body")
 
         #if self.total_time <= 2.0:
-        self._world.dc_interface.apply_body_force(body, carb._carb.Float3([10.0, 0.0, 0.0]), carb._carb.Float3([0.0, 0.1, 0.0]), False)
+        #self._world.dc_interface.apply_body_force(body, carb._carb.Float3([10.0, 0.0, 0.0]), carb._carb.Float3([0.0, 0.1, 0.0]), False)
 
         # Apply force to each rotor
         for i in range(4):

@@ -12,6 +12,28 @@ from omni.isaac.core.robots.robot import Robot
 from pegasus_isaac.logic.state import State
 from pegasus_isaac.logic.vehicles.vehicle_manager import VehicleManager
 
+import typing
+from pxr import Usd, UsdGeom, Gf
+import omni.usd
+
+def get_world_transform_xform(prim: Usd.Prim):
+    """
+    Get the local transformation of a prim using omni.usd.get_world_transform_matrix().
+    See https://docs.omniverse.nvidia.com/kit/docs/omni.usd/latest/omni.usd/omni.usd.get_world_transform_matrix.html
+    Args:
+        prim: The prim to calculate the world transformation.
+    Returns:
+        A tuple of:
+        - Translation vector.
+        - Rotation quaternion, i.e. 3d vector plus angle.
+        - Scale vector.
+    """
+    world_transform: Gf.Matrix4d = omni.usd.get_world_transform_matrix(prim)
+    #translation: Gf.Vec3d = world_transform.ExtractTranslation()
+    rotation: Gf.Rotation = world_transform.ExtractRotation()
+    #scale: Gf.Vec3d = Gf.Vec3d(*(v.GetLength() for v in world_transform.ExtractRotationMatrix()))
+    return rotation #translation, rotation, scale
+
 class Vehicle(Robot):
 
     def __init__(
@@ -125,13 +147,11 @@ class Vehicle(Robot):
         # Now, here is the question: is it a bug or is it a feature? Let me know your opinion - I'm curious XD
         # But seriously, NVidia, if you are reading this, please fix it and let me know. Robotics people like me do not expect
         # this behaviour from the get_rigid_body_pose method. It is only giving the me initial orientation the vehicle was spawned with
-        #carb.log_warn((self._world.stage.GetPrimAtPath(self._stage_prefix  + "/vehicle/body")))
-
-        #for att in self._world.stage.GetPrimAtPath(self._stage_prefix  + "/vehicle/body").GetAttributes():
-        #    carb.log_warn(att)
-
-        carb.log_warn(self._world.stage.GetPrimAtPath(self._stage_prefix  + "/vehicle/body").GetAttribute('xformOp:orient'))
-        carb.log_warn("-------------")
+        # Get the attitude according to the convention [w, x, y, z] using the internal Pixar library instead
+        prim = self._world.stage.GetPrimAtPath(self._stage_prefix + "/vehicle/body")
+        rotation_quat = get_world_transform_xform(prim).GetQuaternion()
+        rotation_quat_real = rotation_quat.GetReal()
+        rotation_quat_img = rotation_quat.GetImaginary()
 
         # Get the angular velocity of the vehicle expressed in the body frame of reference
         ang_vel = self._world.dc_interface.get_rigid_body_angular_velocity(body)
@@ -142,8 +162,6 @@ class Vehicle(Robot):
         # The linear velocity [u,v,w] of the vehicle's body frame expressed in the body frame of reference
         linear_vel_body = self._world.dc_interface.get_rigid_body_local_linear_velocity(body)
 
-        carb.log_warn(linear_vel_body)
-
         # Get the linear acceleration of the body relative to the inertial frame, expressed in the inertial frame
         # Note: we must do this approximation, since the Isaac sim does not output the acceleration of the rigid body directly
         # TODO - check if this is being computed correctly
@@ -151,7 +169,7 @@ class Vehicle(Robot):
 
         # Update the state variable
         self._state.position = np.array(pose.p)
-        self._state.attitude = np.array(pose.r)
+        self._state.attitude = np.array([rotation_quat_img[0], rotation_quat_img[1], rotation_quat_img[2], rotation_quat_real])
 
         self._state.linear_body_velocity = np.array(linear_vel_body)
         self._state.linear_velocity = np.array(linear_vel)
