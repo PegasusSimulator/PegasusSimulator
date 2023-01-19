@@ -93,10 +93,14 @@ class IMU:
         # Compute the linear acceleration from diferentiating the velocity of the vehicle expressed in the inertial frame
         linear_acceleration_inertial = (state.linear_velocity - self._prev_linear_velocity) / dt
         linear_acceleration_inertial = linear_acceleration_inertial - GRAVITY_VECTOR
+
+        # Update the previous linear velocity for the next computation
         self._prev_linear_velocity = state.linear_velocity
 
         # Compute the linear acceleration of the body frame, with respect to the inertial frame, expressed in the body frame
-        linear_acceleration = np.array(Rotation.from_quat(state.attitude).apply(linear_acceleration_inertial))
+        linear_acceleration = np.array(Rotation.from_quat(state.attitude).inv().apply(linear_acceleration_inertial))
+        
+        carb.log_warn(np.round(angular_velocity, decimals=2))
 
         # Simulate the accelerometer noise processes and add them to the true linear aceleration values
         for i in range(3):
