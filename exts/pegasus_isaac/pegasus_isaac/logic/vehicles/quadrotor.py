@@ -159,7 +159,7 @@ class Quadrotor(Vehicle):
 
         rotated_control = r.inv().apply(control)
 
-        self._world.dc_interface.apply_body_force(body, carb._carb.Float3(rotated_control), carb._carb.Float3(0.0, 0.0, 0.0), False)
+        # self._world.dc_interface.apply_body_force(body, carb._carb.Float3(rotated_control), carb._carb.Float3(0.0, 0.0, 0.0), False)
         #self._world.dc_interface.apply_body_force(body, carb._carb.Float3(0.0, 0.0, 9.81 * 1.5 + kp * (1.0 - self._state.position[2] + kd * (0.0 - self._state.linear_velocity[2]))), carb._carb.Float3(0.0, 0.0, 0.0), False)
         
         #carb.log_warn("Forces")
@@ -172,15 +172,15 @@ class Quadrotor(Vehicle):
         att_enu = quaternion_to_euler(self._state.attitude)
         #carb.log_warn(att_enu)
 
-        if self.total_time >= 10.0:
-            #self._world.dc_interface.apply_body_torque(body, carb._carb.Float3([0.001, 0.0, 0.00]), False)
+        # if self.total_time >= 10.0:
+        #     #self._world.dc_interface.apply_body_torque(body, carb._carb.Float3([0.001, 0.0, 0.00]), False)
 
-            self._world.dc_interface.apply_body_torque(body, carb._carb.Float3([
-            0.01 * (np.pi/4 - att_enu[0]) + 0.01 * (0.0 - self._state.angular_velocity[0]),
-            0.01 * (0.0 - self._state.angular_velocity[1]),
-            0.01 * (0.0 - self._state.angular_velocity[2])
-            ]),
-            False)
+        #     self._world.dc_interface.apply_body_torque(body, carb._carb.Float3([
+        #     0.01 * (np.pi/4 - att_enu[0]) + 0.01 * (0.0 - self._state.angular_velocity[0]),
+        #     0.01 * (0.0 - att_enu[1]) + 0.01 * (0.0 - self._state.angular_velocity[1]),
+        #     0.01 * (0.0 - att_enu[2]) + 0.01 * (0.0 - self._state.angular_velocity[2])
+        #     ]),
+        #     False)
 
         # carb.log_warn([
         #     0.01 * (np.pi/4 - att_enu[0]) + 0.01 * (0.0 - self._state.angular_velocity[0]),
@@ -213,12 +213,17 @@ class Quadrotor(Vehicle):
 
         #carb.log_warn(forces_z)
 
+        # Get the force to apply to the body frame from mavlink
+        forces_z = self._mavlink._rotor_data.input_force_reference
+
+        self._world.dc_interface.apply_body_force(body, carb._carb.Float3([0.0, 0.0, forces_z[0]]), carb._carb.Float3([ 0.13, -0.22, 0.023]), False)
+        self._world.dc_interface.apply_body_force(body, carb._carb.Float3([0.0, 0.0, forces_z[1]]), carb._carb.Float3([-0.13,  0.20, 0.023]), False)
+        self._world.dc_interface.apply_body_force(body, carb._carb.Float3([0.0, 0.0, forces_z[2]]), carb._carb.Float3([ 0.13,  0.22, 0.023]), False)
+        self._world.dc_interface.apply_body_force(body, carb._carb.Float3([0.0, 0.0, forces_z[3]]), carb._carb.Float3([-0.13, -0.20, 0.023]), False)
+
         self.total_time += dt
 
         self._mavlink.mavlink_update(dt)
-
-        # Get the force to apply to the body frame from mavlink
-        forces_z = self._mavlink._rotor_data.input_force_reference
 
         # Get the articulation root of the vehicle
         #articulation = self._world.dc_interface.get_articulation(self._stage_prefix)
