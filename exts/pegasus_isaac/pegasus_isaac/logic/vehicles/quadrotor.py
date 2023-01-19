@@ -1,9 +1,53 @@
 #!/usr/bin/env python
 
+import numpy as np
+from scipy.spatial.transform import Rotation
+
 import carb
 from pegasus_isaac.logic.vehicles.vehicle import Vehicle
 from pegasus_isaac.mavlink_interface import MavlinkInterface
 from pegasus_isaac.logic.sensors import Barometer, IMU, Magnetometer, GPS
+
+def rotate_vector_by_quaternion(v, q):
+    """ quaternion according in the [x,y,z,w] standard """
+
+    v = np.array(v)
+    
+    # Extract the vector part of the quaternion
+    u = np.array([q[0], q[1], q[2]])
+
+    # Extract the scalar part of the quaternion
+    s = q[3]
+
+    # Do the math
+    return 2.0 * np.dot(u, v) * u + (s*s - np.dot(u, u)) * v + 2.0 * s * np.cross(u, v)
+
+def quaternion_to_euler(q):
+    """ quaternion according in the [x,y,z,w] standard """
+
+    x = q[0]
+    y = q[1]
+    z = q[2]
+    w = q[3]
+    rpy = np.array([0.0, 0.0, 0.0])
+
+    # Compute roll
+    rpy[0] = np.arctan2(2 * (w * x + y * z), 1 - 2 * (x * x + y*y))
+    
+    # Compute pitch 
+    sin_pitch = 2 * (w*y - z*x)
+
+    if sin_pitch > 1:
+        sin_pitch = 1
+    elif sin_pitch < -1:
+        sin_pitch = -1
+    
+    rpy[1] = np.arcsin(sin_pitch)
+
+    # Compute yaw
+    rpy[2] = np.arctan2(2 * (w * z + x * y), 1 - 2 * (y * y + z * z))
+
+    return rpy
 
 class Quadrotor(Vehicle):
 
@@ -45,6 +89,7 @@ class Quadrotor(Vehicle):
         self._world.add_physics_callback(self._stage_prefix + "/imu", self.update_imu_sensor)
         self._world.add_physics_callback(self._stage_prefix + "/magnetometer", self.update_magnetometer_sensor)
         self._world.add_physics_callback(self._stage_prefix + "/gps", self.update_gps_sensor)
+        self._world.add_physics_callback(self._stage_prefix + "/mav_state", self.update_sim_state_mav)
 
         # Add a callback to start/stop the mavlink streaming once the play/stop button is hit
         self._world.add_timeline_callback(self._stage_prefix + "/start_stop_sim", self.sim_start_stop)
@@ -62,6 +107,9 @@ class Quadrotor(Vehicle):
 
     def update_gps_sensor(self, dt: float):
         self._mavlink.update_gps_data(self._gps.update(self._state, dt))
+
+    def update_sim_state_mav(self, dt: float):
+        self._mavlink.update_sim_state(self._state)
 
     def sim_start_stop(self, event):
         """
@@ -83,6 +131,89 @@ class Quadrotor(Vehicle):
         simulation based on the motor speed. This method must be implemented
         by a class that inherits this type
         """
+        #carb.log_warn(self._state.attitude)
+        #carb.log_warn(self._state.get_attitude_ned_frd())
+
+        # Get the rotor frame interface of the vehicle (this will be the frame used to get the position, orientation, etc.)
+        body = self._world.dc_interface.get_rigid_body(self._stage_prefix)
+
+        kp = 1.0
+        kd = 1.0
+
+        target_pos = [[0.0, 0.0, 1.0], [0.0, 0.0, 1.0], [0.0, 0.0, 1.0], [0.0, 0.0, 1.0]]
+        i = 0
+        if 10.0 <=self.total_time <= 20.0:
+            i = 1
+        elif 20.0 <=self.total_time <= 30.0:
+            i = 2
+        elif 30.0 <=self.total_time:
+            i = 3
+
+        r = Rotation.from_quat(self._state.attitude)
+
+        control = [
+            kp * (0.0 - self._state.position[0]) + kd * (0.0 - self._state.linear_velocity[0]), 
+            kd * (0.0 - self._state.linear_velocity[1]),
+            9.81 * 1.5 + kp * (1.5 - self._state.position[2]) + kd * (0.2 - self._state.linear_velocity[2])
+        ] 
+
+        rotated_control = r.inv().apply(control)
+
+        self._world.dc_interface.apply_body_force(body, carb._carb.Float3(rotated_control), carb._carb.Float3(0.0, 0.0, 0.0), False)
+        #self._world.dc_interface.apply_body_force(body, carb._carb.Float3(0.0, 0.0, 9.81 * 1.5 + kp * (1.0 - self._state.position[2] + kd * (0.0 - self._state.linear_velocity[2]))), carb._carb.Float3(0.0, 0.0, 0.0), False)
+        
+        #carb.log_warn("Forces")
+        
+        #carb.log_warn(rotated_control / np.linalg.norm(rotated_control))
+
+        # roll = 0.0
+        # pitch = 0.0
+        yaw = np.pi / 3.0
+        att_enu = quaternion_to_euler(self._state.attitude)
+        #carb.log_warn(att_enu)
+
+        if self.total_time >= 10.0:
+            #self._world.dc_interface.apply_body_torque(body, carb._carb.Float3([0.001, 0.0, 0.00]), False)
+
+            self._world.dc_interface.apply_body_torque(body, carb._carb.Float3([
+            0.01 * (np.pi/4 - att_enu[0]) + 0.01 * (0.0 - self._state.angular_velocity[0]),
+            0.01 * (0.0 - self._state.angular_velocity[1]),
+            0.01 * (0.0 - self._state.angular_velocity[2])
+            ]),
+            False)
+
+        # carb.log_warn([
+        #     0.01 * (np.pi/4 - att_enu[0]) + 0.01 * (0.0 - self._state.angular_velocity[0]),
+        #     0.01 * (0.0 - self._state.angular_velocity[1]),
+        #     0.01 * (0.0 - self._state.angular_velocity[2])
+        #     ])
+
+        # Apply force to each rotor
+        # for i in range(4):
+        #     pass
+
+            # Get the rotor frame interface of the vehicle (this will be the frame used to get the position, orientation, etc.)
+            #rotor = self._world.dc_interface.get_rigid_body(self._stage_prefix  + "/vehicle/rotor" + str(i))
+
+            # Apply the force in Z on the rotor frame
+            #self._world.dc_interface.apply_body_force(rotor, carb._carb.Float3([0.0, 0.0, forces_z[i]]), carb._carb.Float3([ 0.0, 0.0, 0.0]), False)
+
+            # Rotate the joint to yield the visual of a rotor spinning (for animation purposes only)
+            #joint = self._world.dc_interface.find_articulation_dof(articulation, "joint" + str(i))
+
+            ## Spinning when armed but not applying force
+            #if 0.0 < forces_z[i] < 0.1:
+            #    self._world.dc_interface.set_dof_velocity(joint, 5 * self.rot_dir[i])
+            # Spinning when armed and applying force
+            #elif 0.1 <= forces_z[i]:
+            #    self._world.dc_interface.set_dof_velocity(joint, 100 * self.rot_dir[i])
+            ## Not spinning    
+            #else:
+            #    self._world.dc_interface.set_dof_velocity(joint, 0)
+
+        #carb.log_warn(forces_z)
+
+        self.total_time += dt
 
         self._mavlink.mavlink_update(dt)
 
@@ -90,40 +221,6 @@ class Quadrotor(Vehicle):
         forces_z = self._mavlink._rotor_data.input_force_reference
 
         # Get the articulation root of the vehicle
-        articulation = self._world.dc_interface.get_articulation(self._stage_prefix  + "/vehicle/body")
+        #articulation = self._world.dc_interface.get_articulation(self._stage_prefix)
 
         # Log the orientation
-        #carb.log_warn(self._state.attitude)
-        #carb.log_warn(self._state.get_attitude_ned_frd())
-
-        # Get the rotor frame interface of the vehicle (this will be the frame used to get the position, orientation, etc.)
-        body = self._world.dc_interface.get_rigid_body(self._stage_prefix  + "/vehicle/body")
-
-        #if self.total_time <= 2.0:
-        #self._world.dc_interface.apply_body_force(body, carb._carb.Float3([10.0, 0.0, 0.0]), carb._carb.Float3([0.0, 0.1, 0.0]), False)
-
-        # Apply force to each rotor
-        for i in range(4):
-
-            # Get the rotor frame interface of the vehicle (this will be the frame used to get the position, orientation, etc.)
-            rotor = self._world.dc_interface.get_rigid_body(self._stage_prefix  + "/vehicle/rotor" + str(i))
-
-            # Apply the force in Z on the rotor frame
-            self._world.dc_interface.apply_body_force(rotor, carb._carb.Float3([0.0, 0.0, forces_z[i]]), carb._carb.Float3([ 0.0, 0.0, 0.0]), False)
-
-            # Rotate the joint to yield the visual of a rotor spinning (for animation purposes only)
-            joint = self._world.dc_interface.find_articulation_dof(articulation, "joint" + str(i))
-
-            # Spinning when armed but not applying force
-            if 0.0 < forces_z[i] < 0.1:
-                self._world.dc_interface.set_dof_velocity(joint, 5 * self.rot_dir[i])
-            # Spinning when armed and applying force
-            elif 0.1 <= forces_z[i]:
-                self._world.dc_interface.set_dof_velocity(joint, 100 * self.rot_dir[i])
-            # Not spinning    
-            else:
-                self._world.dc_interface.set_dof_velocity(joint, 0)
-
-        #carb.log_warn(forces_z)
-
-        self.total_time += dt

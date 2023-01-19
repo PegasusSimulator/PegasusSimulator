@@ -82,7 +82,10 @@ class GPS:
             'eph': self._eph,
             'epv': self._epv,
             'cog': 0.0,
-            'sattelites_visible': self._sattelites_visible
+            'sattelites_visible': self._sattelites_visible,
+            'latitude_gt': self._origin_latitude,
+            'longitude_gt': self._origin_longitude,
+            'altitude_gt': self._origin_altitude
         }
 
     @property
@@ -112,6 +115,9 @@ class GPS:
         # reproject position with noise into geographic coordinates
         pos_with_noise: np.ndarray = state.position + self._noise_gps_pos # + self._gps_bias
         latitude, longitude = reprojection(pos_with_noise, self._origin_latitude, self._origin_longitude)
+
+        # Compute the values of the latitude and longitude without noise (for groundtruth measurements)
+        latitude_gt, longitude_gt = reprojection(state.position, self._origin_latitude, self._origin_longitude)
 
         # Add noise to the velocity expressed in the world frame
         velocity: np.ndarray = state.linear_velocity #+ self._noise_gps_vel
@@ -147,7 +153,10 @@ class GPS:
             'eph': self._eph,
             'epv': self._epv,
             'cog': 0.0, #cog,
-            'sattelites_visible': self._sattelites_visible
+            'sattelites_visible': self._sattelites_visible,
+            'latitude_gt': latitude_gt,
+            'longitude_gt': longitude_gt, 
+            'altitude_gt': state.position[2] + self._origin_altitude
         }
 
         return self._state

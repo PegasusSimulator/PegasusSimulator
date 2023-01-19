@@ -76,27 +76,17 @@ class SensorMsg:
         self.vision_covariance = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
         # Simulation State
-        self._new_sim_state: bool = False
-        self._sim_atttitude = [1.0, 0.0, 0.0, 0.0]    # [w, x, y, z]
-        self._sim_acceleration = [0.0, 0.0, 0.0]      # [x,y,z body acceleration]
-        self._sim_angular_vel = [0.0, 0.0, 0.0]       # [roll-rate, pitch-rate, yaw-rate] rad/s
-        self._sim_lat = 0.0                           # [deg]
-        self._sim_lon = 0.0                           # [deg]
-        self._sim_alt = 0.0                           # [m]
-        self._sim_velocity_inertial = [0.0, 0.0, 0.0] # North-east-down [m/s]
-        
-    def update_sim_state(self, state: State):
+        self.new_sim_state: bool = False
+        self.sim_attitude = [1.0, 0.0, 0.0, 0.0]    # [w, x, y, z]
+        self.sim_acceleration = [0.0, 0.0, 0.0]      # [x,y,z body acceleration]
+        self.sim_angular_vel = [0.0, 0.0, 0.0]       # [roll-rate, pitch-rate, yaw-rate] rad/s
+        self.sim_lat = 0.0                           # [deg]
+        self.sim_lon = 0.0                           # [deg]
+        self.sim_alt = 0.0                           # [m]
+        self.sim_ind_airspeed = 0.0                  # Indicated air speed
+        self.sim_true_airspeed = 0.0                 # Indicated air speed
+        self.sim_velocity_inertial = [0.0, 0.0, 0.0] # North-east-down [m/s]
 
-        # Get the quaternion in the convention [x, y, z, w]
-        attitude = state.get_attitude_ned_frd()
-
-        # Rotate the quaternion to the mavlink standard
-        self._sim_atttitude[0] = attitude[3]
-        self._sim_atttitude[1] = attitude[0]
-        self._sim_atttitude[2] = attitude[1]
-        self._sim_atttitude[3] = attitude[2]
-
-        # TODO - keep on going here
 
 class ThrusterControl:
     """
@@ -257,6 +247,11 @@ class MavlinkInterface:
         # Signal that we have new GPS data
         self._sensor_data.new_gps_data = True
 
+        # Also update the groundtruth for the latitude and longitude
+        self._sensor_data.sim_lat = int(data["latitude_gt"] * 10000000)
+        self._sensor_data.sim_lon = int(data["longitude_gt"] * 10000000)
+        self._sensor_data.sim_alt = int(data["altitude_gt"] * 1000)
+
     def update_bar_data(self, data):
         
         # Barometer data
@@ -289,6 +284,46 @@ class MavlinkInterface:
         
         # Signal that we have new vision or mocap data
         self._sensor_data.new_vision_data = True
+
+    def update_sim_state(self, state: State):
+
+        # Get the quaternion in the convention [x, y, z, w]
+        attitude = state.get_attitude_ned_frd()
+
+        # Rotate the quaternion to the mavlink standard
+        self._sensor_data.sim_attitude[0] = attitude[3]
+        self._sensor_data.sim_attitude[1] = attitude[0]
+        self._sensor_data.sim_attitude[2] = attitude[1]
+        self._sensor_data.sim_attitude[3] = attitude[2]
+
+        # Get the angular velocity
+        ang_vel = state.get_angular_velocity_frd()
+        self._sensor_data.sim_angular_vel[0] = ang_vel[0]
+        self._sensor_data.sim_angular_vel[1] = ang_vel[1]
+        self._sensor_data.sim_angular_vel[2] = ang_vel[2]
+
+        # Get the acceleration
+        acc_vel = state.get_linear_acceleration_ned()
+        self._sensor_data.sim_acceleration[0] = int(acc_vel[0] * 1000)
+        self._sensor_data.sim_acceleration[1] = int(acc_vel[1] * 1000)
+        self._sensor_data.sim_acceleration[2] = int(acc_vel[2] * 1000)
+
+        # Get the latitude, longitude and altitude directly from the GPS
+
+        # Get the linear velocity of the vehicle in the inertial frame
+        lin_vel = state.get_linear_velocity_ned()
+        self._sensor_data.sim_velocity_inertial[0] = int(lin_vel[0] * 100)
+        self._sensor_data.sim_velocity_inertial[1] = int(lin_vel[1] * 100)
+        self._sensor_data.sim_velocity_inertial[2] = int(lin_vel[2] * 100)
+
+        # Compute the air_speed - assumed indicated airspeed due to flow aligned with pitot (body x)
+        body_vel = state.get_linear_body_velocity_ned_frd()
+        self._sensor_data.sim_ind_airspeed = int(body_vel[0] * 100)
+        self._sensor_data.sim_true_airspeed = int(np.linalg.norm(lin_vel) * 100) # TODO - add wind here
+
+        self._sensor_data.new_sim_state = True
+
+        carb.log_warn("running")
 
     def __del__(self):
 
@@ -389,10 +424,10 @@ class MavlinkInterface:
         self.send_sensor_msgs(self._current_utime)
 
         # Send the GPS messages
-        self.send_gps_msgs(self._current_utime)        
+        #self.send_gps_msgs(self._current_utime)        
 
         # Send groundtruth
-        self.send_ground_truth()
+        #self.send_ground_truth(self._current_utime)
 
     def poll_mavlink_messages(self):
         """
@@ -553,10 +588,36 @@ class MavlinkInterface:
         except:
             carb.log_warn("Could not send vision/mocap data through mavlink")
 
-    def send_ground_truth(self):
-        # TODO
-        # hil_state_quaternion_send(self, time_usec, attitude_quaternion, rollspeed, pitchspeed, yawspeed, lat, lon, alt, vx, vy, vz, ind_airspeed, true_airspeed, xacc, yacc, zacc)
-        pass
+    def send_ground_truth(self, time_usec: int):
+        
+        carb.log_info("Sending groundtruth msgs")
+
+        # Do not send vision/mocap data, if not new data was received
+        if not self._sensor_data.new_sim_state or self._sensor_data.sim_alt == 0:
+            return
+
+        self._sensor_data.new_sim_state = False
+
+        try:
+            self._connection.mav.hil_state_quaternion_send(
+                time_usec, 
+                self._sensor_data.sim_attitude,
+                self._sensor_data.sim_angular_vel[0],
+                self._sensor_data.sim_angular_vel[1], 
+                self._sensor_data.sim_angular_vel[2], 
+                self._sensor_data.sim_lat,
+                self._sensor_data.sim_lon,
+                self._sensor_data.sim_alt,
+                self._sensor_data.sim_velocity_inertial[0],
+                self._sensor_data.sim_velocity_inertial[1],
+                self._sensor_data.sim_velocity_inertial[2],
+                self._sensor_data.sim_ind_airspeed, 
+                self._sensor_data.sim_true_airspeed,
+                self._sensor_data.sim_acceleration[0],
+                self._sensor_data.sim_acceleration[1], 
+                self._sensor_data.sim_acceleration[2])
+        except:
+            carb.log_warn("Could not send groundtruth through mavlink")
 
     def handle_control(self, time_usec, controls, mode, flags):
         """

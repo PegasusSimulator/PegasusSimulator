@@ -96,16 +96,11 @@ class Magnetometer:
 
         # Rotate the magnetic field from the inertial frame to the body frame of reference according to the FLU frame convention
         rot_body_to_world = rot_ENU_to_NED * attitude_flu_enu * rot_FLU_to_FRD.inv()
-        
-        carb.log_warn("------------------------")
-        carb.log_warn(state.attitude)
-        carb.log_warn(attitude_flu_enu.as_quat())
-        carb.log_warn(quaternion_to_euler(attitude_flu_enu.as_quat()))
-        carb.log_warn(quaternion_to_euler(rot_body_to_world.as_quat()))
-        carb.log_warn("------------------------")
 
         # The magnetic field expressed in the body frame according to the front-right-down (FRD) convention
         magnetic_field_body = rot_body_to_world.inv().apply(magnetic_field_inertial)
+
+        #carb.log_warn(magnetic_field_body)
         
         # -------------------------------
         # Add noise to the magnetic field
