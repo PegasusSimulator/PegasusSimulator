@@ -424,7 +424,7 @@ class MavlinkInterface:
         self.send_sensor_msgs(self._current_utime)
 
         # Send the GPS messages
-        #self.send_gps_msgs(self._current_utime)        
+        self.send_gps_msgs(self._current_utime)        
 
         # Send groundtruth
         #self.send_ground_truth(self._current_utime)
