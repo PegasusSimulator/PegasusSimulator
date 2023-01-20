@@ -11,7 +11,6 @@ Description:
     in PX4 stil_gazebo (https://github.com/PX4/PX4-SITL_gazebo)
 """
 
-import carb # TODO - remove this import - only used for debugging
 import numpy as np
 from scipy.spatial.transform import Rotation
 
@@ -99,8 +98,6 @@ class IMU:
 
         # Compute the linear acceleration of the body frame, with respect to the inertial frame, expressed in the body frame
         linear_acceleration = np.array(Rotation.from_quat(state.attitude).inv().apply(linear_acceleration_inertial))
-        
-        carb.log_warn(np.round(angular_velocity, decimals=2))
 
         # Simulate the accelerometer noise processes and add them to the true linear aceleration values
         for i in range(3):

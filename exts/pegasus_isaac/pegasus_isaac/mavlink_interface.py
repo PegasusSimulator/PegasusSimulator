@@ -131,7 +131,6 @@ class ThrusterControl:
         # The actual force to apply to each vehicle rotor joints
         self._input_force_reference = [0.0 for i in range(self.num_rotors)]
 
-
     @property
     def input_reference(self):
         return self._input_reference

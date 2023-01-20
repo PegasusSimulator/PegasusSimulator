@@ -10,7 +10,7 @@ Description:
     Simulates a magnetometer. Based on the original implementation provided
     in PX4 stil_gazebo (https://github.com/PX4/PX4-SITL_gazebo) by Elia Tarasov <elias.tarasov@gmail.com>
 """
-import carb
+
 import numpy as np
 from scipy.spatial.transform import Rotation
 
@@ -99,8 +99,6 @@ class Magnetometer:
 
         # The magnetic field expressed in the body frame according to the front-right-down (FRD) convention
         magnetic_field_body = rot_body_to_world.inv().apply(magnetic_field_inertial)
-
-        #carb.log_warn(magnetic_field_body)
         
         # -------------------------------
         # Add noise to the magnetic field

@@ -3,7 +3,7 @@
 version = "1.0.0"
 
 # Lists people or organizations that are considered the "authors" of the package.
-authors = ["Marcelo Jacinto", "John Keller", "DSOR", "AirLab"]
+authors = ["Marcelo Jacinto"]
 
 # The title and description fields are primarily for displaying extension info in UI
 title = "pegasus_isaac"

@@ -8,20 +8,6 @@ from pegasus_isaac.logic.vehicles.vehicle import Vehicle
 from pegasus_isaac.mavlink_interface import MavlinkInterface
 from pegasus_isaac.logic.sensors import Barometer, IMU, Magnetometer, GPS
 
-def rotate_vector_by_quaternion(v, q):
-    """ quaternion according in the [x,y,z,w] standard """
-
-    v = np.array(v)
-    
-    # Extract the vector part of the quaternion
-    u = np.array([q[0], q[1], q[2]])
-
-    # Extract the scalar part of the quaternion
-    s = q[3]
-
-    # Do the math
-    return 2.0 * np.dot(u, v) * u + (s*s - np.dot(u, u)) * v + 2.0 * s * np.cross(u, v)
-
 def quaternion_to_euler(q):
     """ quaternion according in the [x,y,z,w] standard """
 
@@ -61,7 +47,8 @@ class Quadrotor(Vehicle):
         init_pos=[0.0, 0.0, 0.07], 
         init_orientation=[0.0, 0.0, 0.0, 1.0],
         # Rotation direction for the rotors
-        rot_dir=[-1,-1,1,1]
+        rot_dir=[-1,-1,1,1],
+        rolling_moment_coefficient=1E-6
     ):
 
         # Create a mavlink interface for getting data on the desired port. If it fails, do not spawn the vehicle
@@ -77,6 +64,13 @@ class Quadrotor(Vehicle):
 
         # Set the rotation direction from the propellers
         self.rot_dir = rot_dir
+
+        # The actual rolling moment to apply to the body of the vehicle (rotate on yaw)
+        self._rolling_moment = np.array([0.0, 0.0, 0.0])
+
+        # Save the rolling moment coefficent used to compute how much torque to apply to
+        # the body (yaw-rate)
+        self._rolling_moment_coeficient = rolling_moment_coefficient
 
         # Create the sensors that a quadrotor typically has
         self._barometer = Barometer(altitude_home=488.0)                # Check
@@ -131,62 +125,9 @@ class Quadrotor(Vehicle):
         simulation based on the motor speed. This method must be implemented
         by a class that inherits this type
         """
-        #carb.log_warn(self._state.attitude)
-        #carb.log_warn(self._state.get_attitude_ned_frd())
 
         # Get the rotor frame interface of the vehicle (this will be the frame used to get the position, orientation, etc.)
-        body = self._world.dc_interface.get_rigid_body(self._stage_prefix)
-
-        kp = 1.0
-        kd = 1.0
-
-        target_pos = [[0.0, 0.0, 1.0], [0.0, 0.0, 1.0], [0.0, 0.0, 1.0], [0.0, 0.0, 1.0]]
-        i = 0
-        if 10.0 <=self.total_time <= 20.0:
-            i = 1
-        elif 20.0 <=self.total_time <= 30.0:
-            i = 2
-        elif 30.0 <=self.total_time:
-            i = 3
-
-        r = Rotation.from_quat(self._state.attitude)
-
-        control = [
-            kp * (0.0 - self._state.position[0]) + kd * (0.0 - self._state.linear_velocity[0]), 
-            kd * (0.0 - self._state.linear_velocity[1]),
-            9.81 * 1.5 + kp * (1.5 - self._state.position[2]) + kd * (0.2 - self._state.linear_velocity[2])
-        ] 
-
-        rotated_control = r.inv().apply(control)
-
-        # self._world.dc_interface.apply_body_force(body, carb._carb.Float3(rotated_control), carb._carb.Float3(0.0, 0.0, 0.0), False)
-        #self._world.dc_interface.apply_body_force(body, carb._carb.Float3(0.0, 0.0, 9.81 * 1.5 + kp * (1.0 - self._state.position[2] + kd * (0.0 - self._state.linear_velocity[2]))), carb._carb.Float3(0.0, 0.0, 0.0), False)
-        
-        #carb.log_warn("Forces")
-        
-        #carb.log_warn(rotated_control / np.linalg.norm(rotated_control))
-
-        # roll = 0.0
-        # pitch = 0.0
-        yaw = np.pi / 3.0
-        att_enu = quaternion_to_euler(self._state.attitude)
-        #carb.log_warn(att_enu)
-
-        # if self.total_time >= 10.0:
-        #     #self._world.dc_interface.apply_body_torque(body, carb._carb.Float3([0.001, 0.0, 0.00]), False)
-
-        #     self._world.dc_interface.apply_body_torque(body, carb._carb.Float3([
-        #     0.01 * (np.pi/4 - att_enu[0]) + 0.01 * (0.0 - self._state.angular_velocity[0]),
-        #     0.01 * (0.0 - att_enu[1]) + 0.01 * (0.0 - self._state.angular_velocity[1]),
-        #     0.01 * (0.0 - att_enu[2]) + 0.01 * (0.0 - self._state.angular_velocity[2])
-        #     ]),
-        #     False)
-
-        # carb.log_warn([
-        #     0.01 * (np.pi/4 - att_enu[0]) + 0.01 * (0.0 - self._state.angular_velocity[0]),
-        #     0.01 * (0.0 - self._state.angular_velocity[1]),
-        #     0.01 * (0.0 - self._state.angular_velocity[2])
-        #     ])
+        body = self._world.dc_interface.get_rigid_body(self._stage_prefix + "/vehicle/body")
 
         # Apply force to each rotor
         # for i in range(4):
@@ -216,16 +157,38 @@ class Quadrotor(Vehicle):
         # Get the force to apply to the body frame from mavlink
         forces_z = self._mavlink._rotor_data.input_force_reference
 
+        rotor_pos = [
+            np.array([ 0.13, -0.22, 0.023]),
+            np.array([-0.13,  0.20, 0.023]),
+            np.array([ 0.13,  0.22, 0.023]),
+            np.array([-0.13, -0.20, 0.023])
+        ]
+
         self._world.dc_interface.apply_body_force(body, carb._carb.Float3([0.0, 0.0, forces_z[0]]), carb._carb.Float3([ 0.13, -0.22, 0.023]), False)
         self._world.dc_interface.apply_body_force(body, carb._carb.Float3([0.0, 0.0, forces_z[1]]), carb._carb.Float3([-0.13,  0.20, 0.023]), False)
         self._world.dc_interface.apply_body_force(body, carb._carb.Float3([0.0, 0.0, forces_z[2]]), carb._carb.Float3([ 0.13,  0.22, 0.023]), False)
         self._world.dc_interface.apply_body_force(body, carb._carb.Float3([0.0, 0.0, forces_z[3]]), carb._carb.Float3([-0.13, -0.20, 0.023]), False)
 
+        # Get the angular velocities of each individual rotor
+        velocities = self._mavlink._rotor_data.input_reference
+
+        # Define the axis of rotation of the joint where the rotors are located
+        wind_vel = np.array([0.0, 0.0, 0.0])
+        joint_axis_body = np.array([0.0, 0.0, 1.0])
+
+        # Reset the rolling moment vector
+        rolling_moment = 0.0
+
+        # Compute the contributions for the rolling moment
+        for i in range(4):
+
+            # Compute the rolling moment coeficient
+            motor_rolling_contrib = self._rolling_moment_coeficient * np.power(velocities[i], 2.0) * self.rot_dir[i]
+
+            # Compute the torque to apply to the body of the vehicle based on the motor velocity (rolling moment)
+            rolling_moment += motor_rolling_contrib
+
+        self._world.dc_interface.apply_body_torque(body, carb._carb.Float3([0.0, 0.0, rolling_moment]), False)
+
         self.total_time += dt
-
         self._mavlink.mavlink_update(dt)
-
-        # Get the articulation root of the vehicle
-        #articulation = self._world.dc_interface.get_articulation(self._stage_prefix)
-
-        # Log the orientation
