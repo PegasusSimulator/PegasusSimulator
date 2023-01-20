@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
+# Numerical computations
 import numpy as np
+from scipy.spatial.transform import Rotation
 
 # Low level APIs
 import carb
@@ -10,19 +12,13 @@ from pxr import Usd, Gf
 import omni.usd
 from omni.isaac.core import World
 from omni.isaac.core.utils.prims import define_prim
-from omni.physx import get_physx_interface
 from omni.usd import get_stage_next_free_path
 from omni.isaac.core.robots.robot import Robot
-from omni.isaac.core.objects import DynamicCuboid
 
 # Extension APIs
 from pegasus_isaac.logic.state import State
 from pegasus_isaac.logic.vehicles.vehicle_manager import VehicleManager
 
-from scipy.spatial.transform import Rotation
-
-# TODO - check if this is viable solution
-from omni.physx.scripts.physicsUtils import add_rigid_box
 
 def get_world_transform_xform(prim: Usd.Prim):
     """
@@ -37,40 +33,8 @@ def get_world_transform_xform(prim: Usd.Prim):
         - Scale vector.
     """
     world_transform: Gf.Matrix4d = omni.usd.get_world_transform_matrix(prim)
-    #translation: Gf.Vec3d = world_transform.ExtractTranslation()
     rotation: Gf.Rotation = world_transform.ExtractRotation()
-    #scale: Gf.Vec3d = Gf.Vec3d(*(v.GetLength() for v in world_transform.ExtractRotationMatrix()))
-    return rotation #translation, rotation, scale
-
-def quaternion_to_euler(q):
-    """ quaternion according in the [x,y,z,w] standard """
-
-    x = q[0]
-    y = q[1]
-    z = q[2]
-    w = q[3]
-    rpy = np.array([0.0, 0.0, 0.0])
-
-    # Compute roll
-    rpy[0] = np.arctan2(2 * (w * x + y * z), 1 - 2 * (x * x + y*y))
-    
-    # Compute pitch 
-    sin_pitch = 2 * (w*y - z*x)
-
-    if sin_pitch > 1:
-        sin_pitch = 1
-    elif sin_pitch < -1:
-        sin_pitch = -1
-    
-    rpy[1] = np.arcsin(sin_pitch)
-
-    # Compute yaw
-    rpy[2] = np.arctan2(2 * (w * z + x * y), 1 - 2 * (y * y + z * z))
-
-    for i in range(3):
-        rpy[i] = int(np.degrees(rpy[i]))
-
-    return rpy
+    return rotation
 
 
 class Vehicle(Robot):
@@ -94,41 +58,26 @@ class Vehicle(Robot):
         # Save the name with which the vehicle will appear in the stage
         # and the name of the .usd file that contains its description
         self._stage_prefix = get_stage_next_free_path(self._current_stage, stage_prefix, False)
-        # self._usd_file = usd_path
+        self._usd_file = usd_path
         
         # # Spawn the vehicle primitive in the world's stage
-        # self._prim = define_prim(self._stage_prefix, "Xform")
-        # self._prim.GetReferences().AddReference(self._usd_file)
+        self._prim = define_prim(self._stage_prefix, "Xform")
+        self._prim.GetReferences().AddReference(self._usd_file)
 
         # # Initialize the "Robot" class
         # # Note: we need to change the rotation to have qw first, because NVidia
         # # does not keep a standard of quaternions inside its own libraries (not good, but okay)
-        # super().__init__(
-        #    prim_path=self._stage_prefix, 
-        #    name=self._stage_prefix, 
-        #    position=init_pos, 
-        #    orientation=[init_orientation[3], init_orientation[0], init_orientation[1], init_orientation[2]], 
-        #    articulation_controller=None
-        # )
-
-        
-        fancy_cube =  world.scene.add(
-        DynamicCuboid(
-           prim_path=self._stage_prefix,
-           name="fancy_cube",
-           position=np.array(init_pos),
-           scale=np.array([0.32, 0.48, 0.1]),
-           orientation=[init_orientation[3], init_orientation[0], init_orientation[1], init_orientation[2]],
-           color=np.array([0, 0, 1.0]),
-           mass=1.5
-        ))
+        super().__init__(
+           prim_path=self._stage_prefix, 
+           name=self._stage_prefix, 
+           position=init_pos, 
+           orientation=[init_orientation[3], init_orientation[0], init_orientation[1], init_orientation[2]], 
+           articulation_controller=None
+        )
 
         # Add this object for the world to track, so that if we clear the world, this object is deleted from memory and
         # as a consequence, from the VehicleManager as well
-        #self._world.scene.add(self)
-
-        # Get a physics interface, so that we can apply forces and torques directly to the rigid body
-        self._physx_interface = get_physx_interface()
+        self._world.scene.add(self)
 
         # Add the current vehicle to the vehicle manager, so that it knows
         # that a vehicle was instantiated
@@ -181,13 +130,13 @@ class Vehicle(Robot):
         Method that when called, applies a given force vector to the rigid body or /<rigid_body_name>/"body"
         specified.
         """
-
-        self._physx_interface.apply_force_at_pos(self._stage_prefix + body_part, carb._carb.Float3(force), carb._carb.Float3(pos))
+        # TODO - move the force application implementation to the vehicle layer, to make the API cleaner
+        pass
 
     def update_current_state(self, dt):
 
         # Get the body frame interface of the vehicle (this will be the frame used to get the position, orientation, etc.)
-        body = self._world.dc_interface.get_rigid_body(self._stage_prefix)
+        body = self._world.dc_interface.get_rigid_body(self._stage_prefix + "/vehicle/body")
 
         # Get the current position and orientation in the inertial frame
         pose = self._world.dc_interface.get_rigid_body_pose(body)
@@ -197,13 +146,10 @@ class Vehicle(Robot):
         # But seriously, NVidia, if you are reading this, please fix it and let me know. Robotics people like me do not expect
         # this behaviour from the get_rigid_body_pose method. It is only giving the me initial orientation the vehicle was spawned with
         # Get the attitude according to the convention [w, x, y, z] using the internal Pixar library instead
-        # prim = self._world.stage.GetPrimAtPath(self._stage_prefix)
-        # carb.log_warn("-------------#----------")
-        # carb.log_warn(self._world.scene.get_object(self._stage_prefix))
-        # carb.log_warn("-------------#----------")
-        # rotation_quat = get_world_transform_xform(prim).GetQuaternion()
-        # rotation_quat_real = rotation_quat.GetReal()
-        # rotation_quat_img = rotation_quat.GetImaginary()
+        prim = self._world.stage.GetPrimAtPath(self._stage_prefix + "/vehicle/body")
+        rotation_quat = get_world_transform_xform(prim).GetQuaternion()
+        rotation_quat_real = rotation_quat.GetReal()
+        rotation_quat_img = rotation_quat.GetImaginary()
 
         # Get the angular velocity of the vehicle expressed in the body frame of reference
         ang_vel = self._world.dc_interface.get_rigid_body_angular_velocity(body)
@@ -212,6 +158,8 @@ class Vehicle(Robot):
         linear_vel = self._world.dc_interface.get_rigid_body_linear_velocity(body)
 
         # The linear velocity [u,v,w] of the vehicle's body frame expressed in the body frame of reference
+        # TODO - check this linear body velocity - I don't trust it - rotate it manually from the linear_velocity
+        # expressed in the inertial frame
         linear_vel_body = self._world.dc_interface.get_rigid_body_local_linear_velocity(body)
 
         # Get the linear acceleration of the body relative to the inertial frame, expressed in the inertial frame
@@ -220,16 +168,9 @@ class Vehicle(Robot):
 
         # Update the state variable
         self._state.position = np.array(pose.p)
-        self._state.attitude = np.array(pose.r)
-
-        #carb.log_warn(self._state.position)
 
         # Get the quaternion according in the [x,y,z,w] standard
-        # self._state.attitude = np.array([rotation_quat_img[0], rotation_quat_img[1], rotation_quat_img[2], rotation_quat_real])
-
-        # Log the orientation of the vehicle in ENU
-        #carb.log_warn(quaternion_to_euler(self._state.attitude))
-        #carb.log_warn(self._state.attitude)
+        self._state.attitude = np.array([rotation_quat_img[0], rotation_quat_img[1], rotation_quat_img[2], rotation_quat_real])
 
         self._state.linear_body_velocity = np.array(linear_vel_body)
         self._state.linear_velocity = np.array(linear_vel)

@@ -3,7 +3,7 @@
 import numpy as np
 
 # Declare which functions are visible from this file
-#__all__ = ["get_mag_declination", "get_mag_inclination", "get_mag_strength", "reprojection", "GRAVITY_VECTOR"]
+__all__ = ["get_mag_declination", "get_mag_inclination", "get_mag_strength", "reprojection", "GRAVITY_VECTOR"]
 
 # --------------------------------------------------------------------
 # Magnetic field data from WMM2018 (10^5xnanoTesla (N, E D) n-frame )
