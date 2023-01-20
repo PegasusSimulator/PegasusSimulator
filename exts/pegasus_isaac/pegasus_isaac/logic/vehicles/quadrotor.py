@@ -8,33 +8,6 @@ from pegasus_isaac.logic.vehicles.vehicle import Vehicle
 from pegasus_isaac.mavlink_interface import MavlinkInterface
 from pegasus_isaac.logic.sensors import Barometer, IMU, Magnetometer, GPS
 
-def quaternion_to_euler(q):
-    """ quaternion according in the [x,y,z,w] standard """
-
-    x = q[0]
-    y = q[1]
-    z = q[2]
-    w = q[3]
-    rpy = np.array([0.0, 0.0, 0.0])
-
-    # Compute roll
-    rpy[0] = np.arctan2(2 * (w * x + y * z), 1 - 2 * (x * x + y*y))
-    
-    # Compute pitch 
-    sin_pitch = 2 * (w*y - z*x)
-
-    if sin_pitch > 1:
-        sin_pitch = 1
-    elif sin_pitch < -1:
-        sin_pitch = -1
-    
-    rpy[1] = np.arcsin(sin_pitch)
-
-    # Compute yaw
-    rpy[2] = np.arctan2(2 * (w * z + x * y), 1 - 2 * (y * y + z * z))
-
-    return rpy
-
 class Quadrotor(Vehicle):
 
     def __init__(
