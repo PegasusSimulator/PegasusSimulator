@@ -18,7 +18,7 @@ ROBOTS_ASSETS = ASSET_PATH + "/Robots"
 
 # Define the built in robots of the extension
 ROBOTS = {
-    "DEMO": ROBOTS_ASSETS + "/iris_13.usda",
+    "DEMO": ROBOTS_ASSETS + "/iris_14.usda",
     "Quadrotor": ROBOTS_ASSETS + "/iris_base.usda",
     "Basic quad": ROBOTS_ASSETS + "/iris_frame.usda",
     "Basic quad cam": ROBOTS_ASSETS + "/iris_frame_cam.usda", 

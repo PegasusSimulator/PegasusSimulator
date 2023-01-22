@@ -102,6 +102,9 @@ class Quadrotor(Vehicle):
         # Get the rotor frame interface of the vehicle (this will be the frame used to get the position, orientation, etc.)
         body = self._world.dc_interface.get_rigid_body(self._stage_prefix + "/vehicle/body")
 
+        # Get the articulation root of the vehicle
+        articulation = self._world.dc_interface.get_articulation(self._stage_prefix  + "/vehicle/body")
+
         # Get the force to apply to the body frame from mavlink
         forces_z = self._mavlink._rotor_data.input_force_reference
 
@@ -116,19 +119,17 @@ class Quadrotor(Vehicle):
             self._world.dc_interface.apply_body_force(rotor, carb._carb.Float3([0.0, 0.0, forces_z[i]]), carb._carb.Float3([ 0.0, 0.0, 0.0]), False)
 
             # Rotate the joint to yield the visual of a rotor spinning (for animation purposes only)
-            #joint = self._world.dc_interface.find_articulation_dof(articulation, "joint" + str(i))
+            joint = self._world.dc_interface.find_articulation_dof(articulation, "joint" + str(i))
 
-            ## Spinning when armed but not applying force
-            #if 0.0 < forces_z[i] < 0.1:
-            #    self._world.dc_interface.set_dof_velocity(joint, 5 * self.rot_dir[i])
+            # Spinning when armed but not applying force
+            if 0.0 < forces_z[i] < 0.1:
+                self._world.dc_interface.set_dof_velocity(joint, 5 * self.rot_dir[i])
             # Spinning when armed and applying force
-            #elif 0.1 <= forces_z[i]:
-            #    self._world.dc_interface.set_dof_velocity(joint, 100 * self.rot_dir[i])
-            ## Not spinning    
-            #else:
-            #    self._world.dc_interface.set_dof_velocity(joint, 0)
-
-        #carb.log_warn(forces_z)
+            elif 0.1 <= forces_z[i]:
+                self._world.dc_interface.set_dof_velocity(joint, 100 * self.rot_dir[i])
+            # Not spinning    
+            else:
+                self._world.dc_interface.set_dof_velocity(joint, 0)
 
         rotor_pos = [
             np.array([ 0.13, -0.22, 0.023]),
