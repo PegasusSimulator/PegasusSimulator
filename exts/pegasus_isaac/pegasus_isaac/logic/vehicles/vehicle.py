@@ -157,28 +157,30 @@ class Vehicle(Robot):
         # The linear velocity [x_dot, y_dot, z_dot] of the vehicle's body frame expressed in the inertial frame of reference
         linear_vel = self._world.dc_interface.get_rigid_body_linear_velocity(body)
 
-        # The linear velocity [u,v,w] of the vehicle's body frame expressed in the body frame of reference
-        # TODO - check this linear body velocity - I don't trust it - rotate it manually from the linear_velocity
-        # expressed in the inertial frame
-        linear_vel_body = self._world.dc_interface.get_rigid_body_local_linear_velocity(body)
-
         # Get the linear acceleration of the body relative to the inertial frame, expressed in the inertial frame
         # Note: we must do this approximation, since the Isaac sim does not output the acceleration of the rigid body directly
         linear_acceleration = (np.array(linear_vel) - self._state.linear_velocity) / dt
 
-        # Update the state variable
+        # Update the state variable X = [x,y,z]
         self._state.position = np.array(pose.p)
 
-        # Get the quaternion according in the [x,y,z,w] standard
+        # Get the quaternion according in the [qx,qy,qz,qw] standard
         self._state.attitude = np.array([rotation_quat_img[0], rotation_quat_img[1], rotation_quat_img[2], rotation_quat_real])
 
-        self._state.linear_body_velocity = np.array(linear_vel_body)
+        # Express the velocity of the vehicle in the inertial frame X_dot = [x_dot, y_dot, z_dot]
         self._state.linear_velocity = np.array(linear_vel)
+
+        # The linear velocity V =[u,v,w] of the vehicle's body frame expressed in the body frame of reference
+        # Note that: x_dot = Rot * V
+        self._state.linear_body_velocity = Rotation.from_quat(self._state.attitude).inv().apply(self._state.linear_velocity)
         
         # NOTE: for some reason, NVIDIA gives the angular velocity in a reference frame that is aligned with
         # the inertial frame, instead of the vehicle body frame, so we need to manually rotate it.. ARrrr
         # NVidia, let me know when you fix this. I spent way too many hours debugging, because of this. You can do better!
+        # omega = [p,q,r]
         self._state.angular_velocity = Rotation.from_quat(self._state.attitude).inv().apply(np.array(ang_vel))
+        
+        # The acceleration of the vehicle expressed in the inertial frame X_ddot = [x_ddot, y_ddot, z_ddot]
         self._state.linear_acceleration = linear_acceleration
 
     def apply_forces(self, dt: float):
