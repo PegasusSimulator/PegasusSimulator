@@ -102,15 +102,18 @@ class Quadrotor(Vehicle):
         # Get the rotor frame interface of the vehicle (this will be the frame used to get the position, orientation, etc.)
         body = self._world.dc_interface.get_rigid_body(self._stage_prefix + "/vehicle/body")
 
-        # Apply force to each rotor
-        # for i in range(4):
-        #     pass
+        # Get the force to apply to the body frame from mavlink
+        forces_z = self._mavlink._rotor_data.input_force_reference
 
-            # Get the rotor frame interface of the vehicle (this will be the frame used to get the position, orientation, etc.)
-            #rotor = self._world.dc_interface.get_rigid_body(self._stage_prefix  + "/vehicle/rotor" + str(i))
+        # Apply force to each rotor
+        for i in range(4):
+            pass
+
+            #Get the rotor frame interface of the vehicle (this will be the frame used to get the position, orientation, etc.)
+            rotor = self._world.dc_interface.get_rigid_body(self._stage_prefix  + "/vehicle/rotor" + str(i))
 
             # Apply the force in Z on the rotor frame
-            #self._world.dc_interface.apply_body_force(rotor, carb._carb.Float3([0.0, 0.0, forces_z[i]]), carb._carb.Float3([ 0.0, 0.0, 0.0]), False)
+            self._world.dc_interface.apply_body_force(rotor, carb._carb.Float3([0.0, 0.0, forces_z[i]]), carb._carb.Float3([ 0.0, 0.0, 0.0]), False)
 
             # Rotate the joint to yield the visual of a rotor spinning (for animation purposes only)
             #joint = self._world.dc_interface.find_articulation_dof(articulation, "joint" + str(i))
@@ -127,9 +130,6 @@ class Quadrotor(Vehicle):
 
         #carb.log_warn(forces_z)
 
-        # Get the force to apply to the body frame from mavlink
-        forces_z = self._mavlink._rotor_data.input_force_reference
-
         rotor_pos = [
             np.array([ 0.13, -0.22, 0.023]),
             np.array([-0.13,  0.20, 0.023]),
@@ -137,10 +137,10 @@ class Quadrotor(Vehicle):
             np.array([-0.13, -0.20, 0.023])
         ]
 
-        self._world.dc_interface.apply_body_force(body, carb._carb.Float3([0.0, 0.0, forces_z[0]]), carb._carb.Float3([ 0.13, -0.22, 0.023]), False)
-        self._world.dc_interface.apply_body_force(body, carb._carb.Float3([0.0, 0.0, forces_z[1]]), carb._carb.Float3([-0.13,  0.20, 0.023]), False)
-        self._world.dc_interface.apply_body_force(body, carb._carb.Float3([0.0, 0.0, forces_z[2]]), carb._carb.Float3([ 0.13,  0.22, 0.023]), False)
-        self._world.dc_interface.apply_body_force(body, carb._carb.Float3([0.0, 0.0, forces_z[3]]), carb._carb.Float3([-0.13, -0.20, 0.023]), False)
+        # self._world.dc_interface.apply_body_force(body, carb._carb.Float3([0.0, 0.0, forces_z[0]]), carb._carb.Float3([ 0.13, -0.22, 0.023]), False)
+        # self._world.dc_interface.apply_body_force(body, carb._carb.Float3([0.0, 0.0, forces_z[1]]), carb._carb.Float3([-0.13,  0.20, 0.023]), False)
+        # self._world.dc_interface.apply_body_force(body, carb._carb.Float3([0.0, 0.0, forces_z[2]]), carb._carb.Float3([ 0.13,  0.22, 0.023]), False)
+        # self._world.dc_interface.apply_body_force(body, carb._carb.Float3([0.0, 0.0, forces_z[3]]), carb._carb.Float3([-0.13, -0.20, 0.023]), False)
 
         # Get the angular velocities of each individual rotor
         velocities = self._mavlink._rotor_data.input_reference
