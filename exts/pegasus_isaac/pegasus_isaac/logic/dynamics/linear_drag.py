@@ -14,7 +14,7 @@ class LinearDrag:
 
     def __init__(self, drag_coefficients: np.ndarray):
         """
-        Receives as input the drag coefficients of the vehicle 
+        Receives as input the drag coefficients of the vehicle as a 3x1 vector of constants
         """
 
         self._drag = np.diag(drag_coefficients)

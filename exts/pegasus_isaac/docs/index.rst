@@ -1,7 +1,8 @@
-pegasus_isaac
+Pegasus Isaac Documentation
 #############################
 
-Example of Python only extension
+Pegasus Isaac is an isaac-sim extension design to provide control engineers an easy way to simulate the dynamics of
+multirotors vehicles. It provides a simulation interface for PX4 integration as well as ROS2.
 
 
 .. toctree::
@@ -12,7 +13,7 @@ Example of Python only extension
 
 
 .. automodule::"pegasus_isaac"
-    :platform: Windows-x86_64, Linux-x86_64
+    :platform: Linux-x86_64
     :members:
     :undoc-members:
     :show-inheritance:
