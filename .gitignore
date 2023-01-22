@@ -1,12 +1,38 @@
 # all folders starting with _ are local
 _*/
-
 .DS_Store
 **/.vscode/ipch
 
-# byte-compiled python files
-*.py[cod]
+# C++
+**/cmake-build*/
+**/build*/
+**/*.so
+
+# Python
+**/*.egg-info/
+**/__pycache__/
+**/.pytest_cache/
+**/*.pyc
+**/*.pb
 
 /.vs
 
 /app
+
+# Outputs
+**/output/*
+*.tmp
+**/runs/*
+**/logs/*
+**/*.dmp
+**/.thumbs
+
+# IDE
+**/.idea/
+**/.vscode/.**
+
+# Isaac-Sim packman
+_isaac_sim
+_repo
+_build
+.lastformat
