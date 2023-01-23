@@ -1,12 +1,16 @@
 #!/usr/bin/env python
 
 import numpy as np
-from scipy.spatial.transform import Rotation
 
 import carb
 from pegasus_isaac.logic.vehicles.vehicle import Vehicle
+
+# Mavlink interface
 from pegasus_isaac.mavlink_interface import MavlinkInterface
+
+# Sensors and dynamics setup
 from pegasus_isaac.logic.sensors import Barometer, IMU, Magnetometer, GPS
+from pegasus_isaac.logic.dynamics import LinearDrag
 
 class Quadrotor(Vehicle):
 
@@ -50,6 +54,7 @@ class Quadrotor(Vehicle):
         self._imu = IMU()                                               # Check
         self._magnetometer = Magnetometer(47.397742, 8.545594)          # Check
         self._gps = GPS(47.397742, 8.545594, origin_altitude=488.0)     # Check
+        self._linear_drag = LinearDrag(np.array([0.50, 0.30, 0.0]))
         
         # Add callbacks to the physics engine to update the sensors every timestep
         self._world.add_physics_callback(self._stage_prefix + "/barometer", self.update_barometer_sensor)
@@ -163,6 +168,11 @@ class Quadrotor(Vehicle):
             rolling_moment += motor_rolling_contrib
 
         self._world.dc_interface.apply_body_torque(body, carb._carb.Float3([0.0, 0.0, rolling_moment]), False)
+
+        # Compute the total linear drag force to apply to the vehicle's body frame
+        drag = self._linear_drag.update(self._state, dt)
+        carb.log_warn(drag)
+        self._world.dc_interface.apply_body_force(body, carb._carb.Float3(drag), carb._carb.Float3([0.0, 0.0, 0.0]), False)
 
         self.total_time += dt
         self._mavlink.mavlink_update(dt)

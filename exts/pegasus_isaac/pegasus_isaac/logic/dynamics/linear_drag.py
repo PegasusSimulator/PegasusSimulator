@@ -17,11 +17,15 @@ class LinearDrag:
         Receives as input the drag coefficients of the vehicle as a 3x1 vector of constants
         """
 
-        self._drag = np.diag(drag_coefficients)
+        # The linear drag coefficients of the vehicle's body frame
+        self._drag_coefficients = np.diag(drag_coefficients)
+
+        # The drag force to apply on the vehicle's body frame
+        self._drag_force = np.array([0.0, 0.0, 0.0])
 
     @property
     def drag(self):
-        return self._drag
+        return self._drag_force
 
     def update(self, state: State, dt: float):
         
@@ -29,4 +33,5 @@ class LinearDrag:
         body_vel = state.linear_body_velocity
 
         # Compute the component of the drag force to be applied in the body frame
-        return self.drag * body_vel
+        self._drag_force = np.dot(self._drag_coefficients, body_vel)
+        return self._drag_force
