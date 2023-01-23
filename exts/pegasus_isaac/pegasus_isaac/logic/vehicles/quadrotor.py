@@ -136,18 +136,6 @@ class Quadrotor(Vehicle):
             else:
                 self._world.dc_interface.set_dof_velocity(joint, 0)
 
-        rotor_pos = [
-            np.array([ 0.13, -0.22, 0.023]),
-            np.array([-0.13,  0.20, 0.023]),
-            np.array([ 0.13,  0.22, 0.023]),
-            np.array([-0.13, -0.20, 0.023])
-        ]
-
-        # self._world.dc_interface.apply_body_force(body, carb._carb.Float3([0.0, 0.0, forces_z[0]]), carb._carb.Float3([ 0.13, -0.22, 0.023]), False)
-        # self._world.dc_interface.apply_body_force(body, carb._carb.Float3([0.0, 0.0, forces_z[1]]), carb._carb.Float3([-0.13,  0.20, 0.023]), False)
-        # self._world.dc_interface.apply_body_force(body, carb._carb.Float3([0.0, 0.0, forces_z[2]]), carb._carb.Float3([ 0.13,  0.22, 0.023]), False)
-        # self._world.dc_interface.apply_body_force(body, carb._carb.Float3([0.0, 0.0, forces_z[3]]), carb._carb.Float3([-0.13, -0.20, 0.023]), False)
-
         # Get the angular velocities of each individual rotor
         velocities = self._mavlink._rotor_data.input_reference
 
