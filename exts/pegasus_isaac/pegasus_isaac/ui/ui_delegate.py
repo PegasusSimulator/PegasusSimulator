@@ -5,7 +5,6 @@ import gc
 import asyncio
 
 # External packages
-import numpy as np
 from scipy.spatial.transform import Rotation
  
 # Omniverse extensions
@@ -19,7 +18,7 @@ from omni.isaac.core.utils.stage import create_new_stage, set_stage_up_axis, cle
 from pegasus_isaac.params import ROBOTS, SIMULATION_ENVIRONMENTS
 
 # Vehicle Manager to spawn Vehicles
-from pegasus_isaac.logic.vehicles.quadrotor import Quadrotor
+from pegasus_isaac.logic.vehicles.multirotor import Multirotor
 from pegasus_isaac.logic.vehicles.vehicle_manager import VehicleManager
 
 class UIDelegate:
@@ -136,7 +135,6 @@ class UIDelegate:
         """
         Method that should be invoked when the button to load the selected vehicle is pressed
         """
-        carb.log_warn("A new vehicle has been loaded")
 
         # Check fi a vehicle is selected in the drop-down menu
         if self._vehicle_dropdown is not None and self._window is not None:
@@ -151,10 +149,14 @@ class UIDelegate:
             pos, euler_angles = self._window.get_selected_vehicle_attitude()
 
             # Try to spawn the selected robot in the world to the specified namespace
-            Quadrotor("/World/quadrotor", ROBOTS[selected_robot], self._world, pos, Rotation.from_euler("XYZ", euler_angles, degrees=True).as_quat())
+            Multirotor("/World/quadrotor", ROBOTS[selected_robot], self._world, pos, Rotation.from_euler("XYZ", euler_angles, degrees=True).as_quat())
 
-            carb.log_warn("Spawned the robot: " + selected_robot + "in ")
-    
+            # Log that a vehicle of the type multirotor was spawned in the world via the extension UI
+            carb.log_info("Spawned the robot: " + selected_robot + " using the Pegasus Simulator UI")
+        else:
+            # Log that it was not possible to spawn the vehicle in the world using the Pegasus Simulator UI
+            carb.log_error("Could not spawn the robot using the Pegasus Simulator UI")
+
     def on_set_viewport_camera(self):
         """
         Method that should be invoked when the button to set the viewport camera pose is pressed

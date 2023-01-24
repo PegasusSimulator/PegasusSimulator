@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import carb
-from threading import Lock, Thread
+from threading import Lock
 
 class VehicleManager:
 

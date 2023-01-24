@@ -15,14 +15,9 @@ import omni.ui as ui
 
 # Isaac Speficic extensions API
 from omni.isaac.core import World
-from omni.isaac.core.utils.viewports import set_camera_view
-from omni.isaac.core.utils.stage import create_new_stage_async, set_stage_up_axis, clear_stage, add_reference_to_stage, get_current_stage
 
 # Pegasus Extension Files
-from pegasus_isaac.params import ROBOTS, DEFAULT_WORLD_SETTINGS, MENU_PATH, WINDOW_TITLE
-
-# Quadrotor vehicle
-from pegasus_isaac.logic.vehicles.quadrotor import Quadrotor
+from pegasus_isaac.params import DEFAULT_WORLD_SETTINGS, MENU_PATH, WINDOW_TITLE
 
 # Setting up the UI for the extension's Widget
 from pegasus_isaac.ui.ui_window import WidgetWindow
@@ -42,15 +37,15 @@ class Pegasus_isaacExtension(omni.ext.IExt):
         self._ext_id = ext_id
 
         # Get the handle for the extension manager
-        self._extension_manager = omni.kit.app.get_app().get_extension_manager()      
-        
-        # Basic world configurations
-        self._world_settings = DEFAULT_WORLD_SETTINGS
-        self._world: World = World(**self._world_settings)
+        self._extension_manager = omni.kit.app.get_app().get_extension_manager()        
 
         # Create the UI of the app and its manager
         self.ui_delegate = None
         self.ui_window = None
+
+        # Basic world configurations
+        self._world_settings = DEFAULT_WORLD_SETTINGS
+        self._world: World = World(**self._world_settings)
 
         # Add the ability to show the window if the system requires it (QuickLayout feature)
         ui.Workspace.set_show_window_fn(WINDOW_TITLE, partial(self.show_window, None))
@@ -67,7 +62,9 @@ class Pegasus_isaacExtension(omni.ext.IExt):
         """
         Method that controls whether a widget window is created or not
         """
+
         if show == True:
+
             # Create a window and its delegate
             self.ui_delegate = UIDelegate(self._world, self._world_settings)
             self.ui_window = WidgetWindow(self.ui_delegate)
@@ -76,7 +73,6 @@ class Pegasus_isaacExtension(omni.ext.IExt):
         # If we have a window and we are not supposed to show it, then change its visibility
         elif self.ui_window:
             self.ui_window.visible = False
-        
 
     def _visibility_changed_fn(self, visible):
         """        
@@ -128,6 +124,10 @@ class Pegasus_isaacExtension(omni.ext.IExt):
 
         # De-register the function taht shows the window from the isaac sim ui
         ui.Workspace.set_show_window_fn(WINDOW_TITLE, None)
+        
+        editor_menu = omni.kit.ui.get_editor_menu()
+        if editor_menu:
+            editor_menu.remove_item(MENU_PATH)
 
         # Call the garbage collector
         gc.collect()

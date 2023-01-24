@@ -1,0 +1,41 @@
+vehicle:
+  sensors:
+    barometer:
+      temperature_msl: 288.15               # temperature at MSL [K] (15 [C])
+      pressure_msl: 101325.0                # pressure at MSL [Pa]
+      lapse_rate: 0.0065                    # reduction in temperature with altitude for troposphere [K/m]
+      air_density_msl: 1.225                # air density at MSL [kg/m^3]
+      absolute_zero_c: -273.15              # [C]
+      update_rate: 250.0
+    gps:
+      fix_type: 3
+      eph: 1.0
+      epv: 1.0
+      sattelites_visible: 10
+      update_rate: 1.0
+    imu:
+      gyroscope:
+        noise_density: 0.0003393695767766752
+        random_walk: 3.878509448876288E-05
+        bias_correlation_time: 1.0E3
+        turn_on_bias_sigma: 0.008726646259971648
+      accelerometer:
+        noise_density: 4.0E-03
+        random_walk: 6.0E-03
+        bias_correlation_time: 300.0
+        turn_on_bias_sigma: 0.196
+      update_rate: 250.0
+    magnetometer:
+      noise_density: 
+      random_walk:
+      bias_correlation_time:
+      update_rate: 250.0
+  linear_drag: [0.50, 0.30, 0.0]
+  thrust:
+    num_rotors: 4
+    rotor_constant: [5.84E-6, 5.84E-6, 5.84E-6, 5.84E-6]
+    rolling_moment_coeficient: [1.0E-6, 1.0E-6, 1.0E-6, 1.0E-6]
+    min_rotor_vel: [0, 0, 0, 0]
+    max_rotor_vel: [1100, 1100, 1100, 1100]
+    rotor_direction: [-1, -1, 1, 1]
+  

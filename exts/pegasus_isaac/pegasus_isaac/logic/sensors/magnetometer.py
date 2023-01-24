@@ -10,47 +10,40 @@ Description:
     Simulates a magnetometer. Based on the original implementation provided
     in PX4 stil_gazebo (https://github.com/PX4/PX4-SITL_gazebo) by Elia Tarasov <elias.tarasov@gmail.com>
 """
+__all__ = ["Magnetometer", "MagnetometerConfig"]
 
 import numpy as np
 from scipy.spatial.transform import Rotation
 
 from pegasus_isaac.logic.state import State
+from pegasus_isaac.logic.sensors import Sensor
 from pegasus_isaac.logic.rotations import rot_ENU_to_NED, rot_FLU_to_FRD
 from pegasus_isaac.logic.sensors.geo_mag_utils import get_mag_declination, get_mag_inclination, get_mag_strength, reprojection
 
-def quaternion_to_euler(q):
-    """ quaternion according in the [x,y,z,w] standard """
+class MagnetometerConfig:
 
-    x = q[0]
-    y = q[1]
-    z = q[2]
-    w = q[3]
-    rpy = np.array([0.0, 0.0, 0.0])
+    def __init__(self):
+        self.noise_density: float = 0.4E-3        # gauss / sqrt(hz)
+        self.random_walk: float = 6.4E-6          # gauss * sqrt(hz)
+        self.bias_correlation_time: float = 6.0E2 # s
+        self.update_rate: float = 250.0           # [Hz]
 
-    # Compute roll
-    rpy[0] = np.arctan2(2 * (w * x + y * z), 1 - 2 * (x * x + y*y))
-    
-    # Compute pitch 
-    sin_pitch = 2 * (w*y - z*x)
+    def load_from_dict(self, data: dict):
+        """
+        Method used to load/generate a MagnetometerConfig object given a set of parameters read from a dictionary 
+        """
 
-    if sin_pitch > 1:
-        sin_pitch = 1
-    elif sin_pitch < -1:
-        sin_pitch = -1
-    
-    rpy[1] = np.arcsin(sin_pitch)
+        self.noise_density = data.get("noise_density", self.noise_density)
+        self.random_walk = data.get("random_walk", self.random_walk)
+        self.bias_correlation_time = data.get("bias_correlation_time", self.bias_correlation_time)
+        self.update_rate = data.get("update_rate", self.update_rate)    
 
-    # Compute yaw
-    rpy[2] = np.arctan2(2 * (w * z + x * y), 1 - 2 * (y * y + z * z))
+class Magnetometer(Sensor):
 
-    for i in range(3):
-        rpy[i] = int(np.degrees(rpy[i]))
+    def __init__(self, origin_latitude: float, origin_longitude: float, config=MagnetometerConfig()):
 
-    return rpy
-
-class Magnetometer:
-
-    def __init__(self, origin_latitude: float, origin_longitude: float):
+        # Initialize the Super class "object" attributes
+        super().__init__(sensor_type="Magnetometer", update_rate=config.update_rate)
         
         # Update the groundtruth latitude and longitude (in radians)
         self._origin_latitude = np.radians(origin_latitude)
@@ -58,9 +51,9 @@ class Magnetometer:
         
         # Set the noise parameters
         self._bias: np.ndarray = np.array([0.0, 0.0, 0.0])
-        self._noise_density: float = 0.4E-3 # gauss / sqrt(hz)
-        self._random_walk: float = 6.4E-6   # gauss * sqrt(hz)
-        self._bias_correlation_time: float = 6.0E2 # s
+        self._noise_density = config.noise_density
+        self._random_walk = config.random_walk
+        self._bias_correlation_time = config.bias_correlation_time
 
         # Initial state measured by the Magnetometer
         self._state = {'magnetic_field': np.zeros((3,))}
@@ -69,6 +62,7 @@ class Magnetometer:
     def state(self):
         return self._state
 
+    @Sensor.update_at_rate
     def update(self, state: State, dt: float):
 
         # Get the latitude and longitude from the current state
