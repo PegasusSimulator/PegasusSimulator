@@ -12,6 +12,7 @@ Description:
 """
 __all__ = ["IMU", "IMUConfig"]
 
+import carb
 import numpy as np
 from scipy.spatial.transform import Rotation
 
@@ -58,6 +59,9 @@ class IMUConfig:
 
         self.update_rate = data.get("update_rate", self.update_rate)
 
+    def get_sensor_from_config(self):
+        return IMU(self)
+
 class IMU(Sensor):
 
     def __init__(self, config=IMUConfig()):
@@ -97,7 +101,7 @@ class IMU(Sensor):
         return self._state
 
     @Sensor.update_at_rate
-    def update(self, state: State, dt: float):  
+    def update(self, state: State, dt: float):
         
         # Gyroscopic terms
         tau_g: float = self._accelerometer_bias_correlation_time

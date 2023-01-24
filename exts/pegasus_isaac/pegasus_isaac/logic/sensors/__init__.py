@@ -1,5 +1,5 @@
 from .sensor import Sensor
-from .barometer import Barometer
-from .gps import GPS
-from .imu import IMU
-from .magnetometer import Magnetometer
+from .barometer import Barometer, BarometerConfig
+from .gps import GPS, GPSConfig
+from .imu import IMU, IMUConfig
+from .magnetometer import Magnetometer, MagnetometerConfig

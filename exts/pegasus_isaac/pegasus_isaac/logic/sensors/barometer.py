@@ -45,15 +45,22 @@ class BarometerConfig:
         self.absolute_zero_c = data.get("absolute_zero_c", self.absolute_zero_c)
         self.update_rate = data.get("update_rate", self.update_rate)
 
+    def get_sensor_from_config(self):
+        return Barometer(self)
+
 class Barometer(Sensor):
 
-    def __init__(self, altitude_home: float=DEFAULT_HOME_ALT_AMSL, config=BarometerConfig()):
+    def __init__(self, config=BarometerConfig()):
 
         # Initialize the Super class "object" attributes
         super().__init__(sensor_type="Barometer", update_rate=config.update_rate)
         
         self._z_start: float = None
-        self._altitude_home: float = altitude_home
+
+        # Setup the default home altitude (aka the altitude at the [0.0, 0.0, 0.0] coordinate on the simulated world)
+        # If desired, the user can override this default by calling the initialize() method defined inside the Sensor
+        # implementation
+        self._origin_alt = DEFAULT_HOME_ALT_AMSL
 
         # Define the constants for the barometer   
         # International standard atmosphere (troposphere model - valid up to 11km) see [1]
@@ -85,7 +92,7 @@ class Barometer(Sensor):
 
         # Compute the temperature at the current altitude
         alt_rel: float = state.position[2] - self._z_start
-        alt_amsl: float = self._altitude_home + alt_rel
+        alt_amsl: float = self._origin_alt + alt_rel
         temperature_local: float = self._TEMPERATURE_MSL - self._LAPSE_RATE * alt_amsl
 
         # Compute the absolute pressure at local temperature
