@@ -1,3 +1,3 @@
 from .vehicle import Vehicle
-from .quadrotor import Quadrotor
+from .multirotor import Multirotor
 from .vehicle_manager import VehicleManager

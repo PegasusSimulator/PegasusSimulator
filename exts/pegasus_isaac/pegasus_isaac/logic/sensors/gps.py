@@ -13,28 +13,51 @@ Description:
         Amy Wagoner <arwagoner@gmail.com> 
         Nuno Marques <nuno.marques@dronesolutions.io>
 """
+__all__ = ["GPS", "GPSConfig"]
+
 import numpy as np
+from pegasus_isaac.logic.sensors import Sensor
 from pegasus_isaac.logic.sensors.geo_mag_utils import reprojection
 
 # TODO - Introduce delay on the GPS data
 
-class GPS:
+class GPSConfig:
+
+    def __init__(self):
+        self.fix_type = 3
+        self.eph = 1.0
+        self.epv = 1.0
+        self.sattelites_visible = 10
+        self.update_rate = 1.0        # [Hz]
+
+    def load_from_dict(self, data: dict):
+        """
+        Method used to load/generate a GPSConfig object given a set of parameters read from a dictionary
+        """
+
+        self.fix_type = data.get("fix_type", self.fix_type)
+        self.eph = data.get("eph", self.eph)
+        self.epv = data.get("epv", self.epv)
+        self.sattelites_visible = data.get("sattelites_visible", self.sattelites_visible)
+        self.update_rate = data.get("update_rate", self.update_rate)
+
+class GPS(Sensor):
 
     def __init__(
         self, 
         origin_latitude: float, 
         origin_longitude: float, 
         origin_altitude: float,
-        fix_type: int=3,
-        eph: float=1.0,
-        epv: float=1.0,
-        sattelites_visible: int=10):
+        config=GPSConfig()):
         """
         Constructor for a GPS sensor. Receives as arguments the:
         origin_latitude: float with the latitude of the inertial frame origin in degrees
         origin_longitude: float with the longitude of the inertial frame origin in degrees
         origin_altitude: float with the base altitude of the inertial frame origin in meters
         """
+
+        # Initialize the Super class "object" attributes
+        super().__init__(sensor_type="GPS", update_rate=config.update_rate)
         
         # Define the origin's latitude, longitude and altitude corresponding to the point [0.0, 0.0, 0.0] in the inertial frame
         self._origin_latitude: float = np.radians(origin_latitude)
@@ -42,10 +65,10 @@ class GPS:
         self._origin_altitude: float = origin_altitude
 
         # Define the GPS simulated/fixed values
-        self._fix_type = fix_type
-        self._eph = eph
-        self._epv = epv
-        self._sattelites_visible = sattelites_visible
+        self._fix_type = config.fix_type
+        self._eph = config.eph
+        self._epv = config.epv
+        self._sattelites_visible = config.sattelites_visible
         
         # Parameters for GPS random walk
         self._random_walk_gps: float = np.array([0.0, 0.0, 0.0])
@@ -92,6 +115,7 @@ class GPS:
     def state(self):
         return self._state
     
+    @Sensor.update_at_rate
     def update(self, state: np.ndarray, dt: float):
 
         # Update noise parameters

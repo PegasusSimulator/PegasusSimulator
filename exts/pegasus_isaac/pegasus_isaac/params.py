@@ -2,8 +2,8 @@ import omni.kit.app as app
 from pathlib import Path
 
 # Extension configuration
-EXTENSION_NAME = "Pegasus Isaac"
-WINDOW_TITLE = "Pegasus Isaac"
+EXTENSION_NAME = "Pegasus Simulator"
+WINDOW_TITLE = "Pegasus Simulator"
 MENU_PATH = "Window/" + WINDOW_TITLE
 DOC_LINK = ("https://docs.omniverse.nvidia.com")
 EXTENSION_OVERVIEW = "This extension shows how to incorporate drones into Isaac Sim"
@@ -18,12 +18,8 @@ ROBOTS_ASSETS = ASSET_PATH + "/Robots"
 
 # Define the built in robots of the extension
 ROBOTS = {
-    "DEMO": ROBOTS_ASSETS + "/iris_14.usda",
-    "Quadrotor": ROBOTS_ASSETS + "/iris_base.usda",
-    "Basic quad": ROBOTS_ASSETS + "/iris_frame.usda",
-    "Basic quad cam": ROBOTS_ASSETS + "/iris_frame_cam.usda", 
-    "Cube": ROBOTS_ASSETS + "/iris_cube.usda",
-    "Cube Joints": ROBOTS_ASSETS + "/iris_cube_joints.usda"
+    "Iris": ROBOTS_ASSETS + "/Iris/iris.usda",
+    "Flying Cube": ROBOTS_ASSETS + "/iris_cube.usda"
 }
 
 SIMULATION_ENVIRONMENTS = {

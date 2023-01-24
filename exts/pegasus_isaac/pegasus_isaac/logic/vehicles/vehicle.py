@@ -90,21 +90,14 @@ class Vehicle(Robot):
         self._motor_speed = []
 
         # Add a callback to the physics engine to update the current state of the system
-        self._world.add_physics_callback(self._stage_prefix + "/state", self.update_current_state)
+        self._world.add_physics_callback(self._stage_prefix + "/state", self.update_state)
 
-        # Add the apply_forces method to the physics callback if the world was received
+        # Add the update method to the physics callback if the world was received
         # so that we can apply forces and torques to the vehicle. Note, this method should
         # be implemented in classes that inherit the vehicle object
-        self._world.add_physics_callback(self._stage_prefix + "/apply_forces", self.apply_forces)
+        self._world.add_physics_callback(self._stage_prefix + "/update", self.update)
 
     def __del__(self):
-
-        # Remove the physics callback so that we don't get a segmentation fault
-        try:
-            self._world.remove_physics_callback(self._stage_prefix + "/state")
-            self._world.remove_physics_callback(self._stage_prefix + "/apply_forces")
-        except:
-            carb.log_info("Physics callbacks were already cleaned")
 
         # Remove this object from the vehicleHandler
         VehicleManager.get_vehicle_manager().remove_vehicle(self._stage_prefix)
@@ -125,15 +118,29 @@ class Vehicle(Robot):
     Operations
     """
 
-    def apply_force(self, force, pos=[0.0, 0.0, 0.0], body_part=""):
+    def apply_force(self, force, pos=[0.0, 0.0, 0.0], body_part="/body"):
         """
-        Method that when called, applies a given force vector to the rigid body or /<rigid_body_name>/"body"
-        specified.
+        Method that when invoked applies a given force vector to the rigid body or /<rigid_body_name>/"body"
         """
-        # TODO - move the force application implementation to the vehicle layer, to make the API cleaner
-        pass
 
-    def update_current_state(self, dt):
+        # Get the handle of the rigidbody that we will apply the force to
+        rb = self._world.dc_interface.get_rigid_body(self._stage_prefix  + "/vehicle" + body_part)
+
+        # Apply the force to the rigidbody. The force should be expressed in the rigidbody frame
+        self._world.dc_interface.apply_body_force(rb, carb._carb.Float3(force), carb._carb.Float3(pos), False)
+
+    def apply_torque(self, torque, body_part=""):
+        """
+        Method that when invoked applies a given torque vector to the rigid body or /<rigid_body_name>/"body"
+        """
+        
+        # Get the handle of the rigidbody that we will apply a torque to
+        rb = self._world.dc_interface.get_rigid_body(self._stage_prefix  + "/vehicle" + body_part)
+
+        # Apply the torque to the rigidbody. The torque should be expressed in the rigidbody frame
+        self._world.dc_interface.apply_body_torque(rb, carb._carb.Float3(torque), False)
+
+    def update_state(self, dt: float):
 
         # Get the body frame interface of the vehicle (this will be the frame used to get the position, orientation, etc.)
         body = self._world.dc_interface.get_rigid_body(self._stage_prefix + "/vehicle/body")
@@ -183,7 +190,7 @@ class Vehicle(Robot):
         # The acceleration of the vehicle expressed in the inertial frame X_ddot = [x_ddot, y_ddot, z_ddot]
         self._state.linear_acceleration = linear_acceleration
 
-    def apply_forces(self, dt: float):
+    def update(self, dt: float):
         """
         Method that computes and applies the forces to the vehicle in
         simulation based on the motor speed. This method must be implemented
