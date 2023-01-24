@@ -1,11 +1,11 @@
 #!/usr/bin/env python
-
-import carb
 from pegasus_isaac.logic.state import State
 
 class Sensor:
 
     def __init__(self, sensor_type: str, update_rate: float):
+        
+        # Set the sensor type and update rate
         self._sensor_type = sensor_type
         self._update_rate = update_rate
         self._update_period = 1.0 / self._update_rate
@@ -13,6 +13,20 @@ class Sensor:
         # Auxiliar variables used to control whether to update the sensor or not given the time elapsed
         self._first_update = True
         self._total_time = 0.0
+
+        # Set the "configuration of the world" - some sensors might need it
+        self._origin_lat = -999
+        self._origin_lon = -999
+        self._origin_alt = 0.0
+
+    def initialize(self, origin_lat, origin_lon, origin_alt):
+        """
+        Given that some sensors require the knowledge of the latitude, longitude and altitude of the [0, 0, 0] coordinate
+        of the world, then we might as well just save this information for whatever sensor that comes
+        """
+        self._origin_lat = origin_lat
+        self._origin_lon = origin_lon
+        self._origin_alt = origin_alt
 
     def update_at_rate(fnc):
         """
@@ -29,12 +43,15 @@ class Sensor:
 
             # If it is time to update the sensor data, then just call the update function of the sensor
             if self._total_time >= self._update_period or self._first_update:
+
+                # Result of the update function for the sensor
+                result = fnc(self, state, self._total_time)
+
                 # Reset the auxiliar counter variables
                 self._first_update = False
                 self._total_time = 0.0
-
-                # return the result of the update function for the sensor
-                return fnc(self, state, dt)
+                
+                return result
             return None
         return wrapper
 

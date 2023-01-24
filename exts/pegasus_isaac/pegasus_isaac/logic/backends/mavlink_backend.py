@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-__all__ = ["MavlinkInterface", "MavlinkInterfaceConfig", "ThrusterControl"]
+__all__ = ["MavlinkBackend", "MavlinkBackendConfig", "ThrusterControl"]
 
 import carb
 import time
@@ -8,6 +8,7 @@ import numpy as np
 from pymavlink import mavutil
 
 from pegasus_isaac.logic.state import State
+from pegasus_isaac.logic.backends.backend import Backend
 
 class SensorSource:
     """
@@ -140,7 +141,7 @@ class ThrusterControl:
         """
         self._input_reference = [0.0 for i in range(self.num_rotors)]
 
-class MavlinkInterfaceConfig:
+class MavlinkBackendConfig:
 
     def __init__(self):
         self.connection_string = "tcpin:localhost:4560"
@@ -151,14 +152,19 @@ class MavlinkInterfaceConfig:
         self.zero_position_armed=[100.0, 100.0, 100.0, 100.0]
         self.update_rate: float = 250.0                         # [Hz]
 
-class MavlinkInterface:
+class MavlinkBackend(Backend):
 
-    def __init__(self, config=MavlinkInterfaceConfig()):
-
-        # Connect to the mavlink server
-        self._connection_port = config.connection_string
-        self._connection = mavutil.mavlink_connection(self._connection_port)
+    def __init__(self, config=MavlinkBackendConfig()):
         
+        # Initialize the Backend object
+        super().__init__()
+
+        # Setup the desired mavlink connection port
+        # The connection will only be created once the simulation starts
+        self._connection = None
+        self._connection_port = config.connection_string
+        
+        # Set the update rate used for sending the messages (TODO - remove this hardcoded value from here)
         self._update_rate: float = config.update_rate
         self._time_step: float = 1.0 / self._update_rate    # s
         
@@ -198,6 +204,21 @@ class MavlinkInterface:
 
         # Auxiliar variables for setting the u_time when sending sensor data to px4
         self._current_utime: int = 0
+
+    def update_sensor(self, sensor_type:str, data):
+        
+        if sensor_type == "IMU":
+            self.update_imu_data(data)
+        elif sensor_type == "GPS":
+            self.update_gps_data(data)
+        elif sensor_type == "Barometer":
+            self.update_bar_data(data)
+        elif sensor_type == "Magnetometer":
+            self.update_mag_data(data)
+        # If the data received is not from one of the above sensors, then this backend does
+        # not support that sensor and it will just ignore it
+        else:
+            pass
 
     def update_imu_data(self, data):
 
@@ -272,7 +293,7 @@ class MavlinkInterface:
         # Signal that we have new vision or mocap data
         self._sensor_data.new_vision_data = True
 
-    def update_sim_state(self, state: State):
+    def update_state(self, state: State):
 
         # Get the quaternion in the convention [x, y, z, w]
         attitude = state.get_attitude_ned_frd()
@@ -312,6 +333,9 @@ class MavlinkInterface:
 
         carb.log_warn("running")
 
+    def input_reference(self):
+        return self._rotor_data.input_reference
+
     def __del__(self):
 
         # When this object gets destroyed, close the mavlink connection to free the communication port
@@ -321,7 +345,7 @@ class MavlinkInterface:
         except:
             carb.log_info("Mavlink connection was not closed, because it was never opened")
 
-    def start_stream(self):
+    def start(self):
         
         # If we are already running the mavlink interface, then ignore the function call
         if self._is_running == True:
@@ -334,7 +358,7 @@ class MavlinkInterface:
         # Set the flag to signal that the mavlink transmission has started
         self._is_running = True
 
-    def stop_stream(self):
+    def stop(self):
         
         # If the simulation was already stoped, then ignore the function call
         if self._is_running == False:
@@ -347,11 +371,15 @@ class MavlinkInterface:
         self._connection.close()
         self._connection = None
 
+    def reset(self):
+        # TODO
+        return
+
     def re_initialize_interface(self):
 
         self._is_running = False
 
-        # Restart the sensor daata
+        # Restart the sensor data
         self._sensor_data = SensorMsg()
         
         # Restart the connection
@@ -379,7 +407,7 @@ class MavlinkInterface:
             self._received_first_hearbeat = True
             carb.log_warn("Received first hearbeat")
 
-    def mavlink_update(self, dt):
+    def update(self, dt):
         """
         Method that should be called by physics to send data to px4 and receive the control inputs
         """

@@ -5,7 +5,7 @@ import numpy as np
 from pegasus_isaac.logic.vehicles.vehicle import Vehicle
 
 # Mavlink interface
-from pegasus_isaac.logic.backends.mavlink_interface import MavlinkInterface
+from pegasus_isaac.logic.backends.mavlink_backend import MavlinkBackend
 
 # Sensors and dynamics setup
 from pegasus_isaac.logic.sensors import Barometer, IMU, Magnetometer, GPS
@@ -19,20 +19,19 @@ class MultirotorConfig:
         self.stage_prefix = "quadrotor"
 
         # The USD file that describes the visual aspect of the vehicle (and some properties such as mass and moments of inertia)
-        self.udf_file = ""
+        self.usd_file = ""
 
-        # The default thrust curve for a quadrotor
-        self.thrust_curves = QuadraticThrustCurve()
+        # The default thrust curve for a quadrotor and dynamics relating to drag
+        self.thrust_curve = QuadraticThrustCurve()
+        self.drag = LinearDrag(np.array([0.50, 0.30, 0.0]))
 
         # The default sensors for a quadrotor
         self.sensors = [Barometer(), IMU(), Magnetometer(), GPS()]
 
-        # The backend for the mavlink of this vehicle (with default mavlink configurations) 
-        # [Can be None as well, if we do not desired to use PX4 with this simulated vehicle]
-        self.mavlink_backend = MavlinkInterface()
-
-        # The backend for the ROS2 interface of this vehicle
-        self.ros2_backend = None
+        # The backends for actually sending commands to the vehicle. By default use mavlink (with default mavlink configurations) 
+        # [Can be None as well, if we do not desired to use PX4 with this simulated vehicle]. It can also be a ROS2 backend
+        # or your own custom Backend implementation! 
+        self.backends = [MavlinkBackend()]
 
 class Multirotor(Vehicle):
 
@@ -47,78 +46,67 @@ class Multirotor(Vehicle):
         init_orientation=[0.0, 0.0, 0.0, 1.0],
         lat=47.397742,
         long=8.545594,
-        alt=488.0
+        alt=488.0,
+        config=MultirotorConfig()
     ):
-
-        # Create a mavlink interface for getting data on the desired port. If it fails, do not spawn the vehicle
-        # on the simulation world and just throw an exception
-        try:
-            self._mavlink = MavlinkInterface()
-        except Exception as e:
-            carb.log_error("Could not initiate the mavlink interface. Not spawning the vehicle. Full error log: ")
-            carb.log_error(e)
         
-        # Initiate the Vehicle
+        # 1. Initiate the Vehicle object itself
         super().__init__(stage_prefix, usd_file, world, init_pos, init_orientation)
 
-        # Create a Quadratic Thrust curve for representing the thrusters
-        self._thrusters = QuadraticThrustCurve()
+        # 2. Initialize all the vehicle sensors
+        self._sensors = config.sensors
+        for sensor in self._sensors:
+            sensor.initialize(lat, long, alt)
 
-        # Create the sensors that a quadrotor typically has
-        self._barometer = Barometer(altitude_home=alt)
-        self._imu = IMU()
-        self._magnetometer = Magnetometer(lat, long)
-        self._gps = GPS(lat, long, origin_altitude=alt)
-        self._linear_drag = LinearDrag(np.array([0.50, 0.30, 0.0]))
+        # Add callbacks to the physics engine to update each sensor at every timestep
+        # and let the sensor decide depending on its internal update rate whether to generate new data
+        self._world.add_physics_callback(self._stage_prefix + "/Sensors", self.update_sensors)
+
+        # 3. Setup the dynamics of the system
+        # Get the thrust curve of the vehicle from the configuration
+        self._thrusters = config.thrust_curve
+        self._linear_drag = config.drag
+
+        # 4. Save the backend interface (if given in the configuration of the multirotor)
+        self._backends = config.backends
         
-        # Add callbacks to the physics engine to update the sensors every timestep
-        self._world.add_physics_callback(self._stage_prefix + "/barometer", self.update_barometer_sensor)
-        self._world.add_physics_callback(self._stage_prefix + "/imu", self.update_imu_sensor)
-        self._world.add_physics_callback(self._stage_prefix + "/magnetometer", self.update_magnetometer_sensor)
-        self._world.add_physics_callback(self._stage_prefix + "/gps", self.update_gps_sensor)
-        self._world.add_physics_callback(self._stage_prefix + "/mav_state", self.update_sim_state_mav)
+        # Add a callbacks for the 
+        self._world.add_physics_callback(self._stage_prefix + "/mav_state", self.update_sim_state)
 
-        # Add a callback to start/stop the mavlink streaming once the play/stop button is hit
+        # Add a callback to start/stop of the simulation once the play/stop button is hit
         self._world.add_timeline_callback(self._stage_prefix + "/start_stop_sim", self.sim_start_stop)
 
-        self.total_time = 0
+    def update_sensors(self, dt: float):
 
-    def update_barometer_sensor(self, dt: float):
-        sensor_data = self._barometer.update(self._state, dt)
-        if sensor_data is not None:
-            self._mavlink.update_bar_data(sensor_data)
+        # Call the update method for the sensor to update its values internally (if applicable)
+        for sensor in self._sensors:
+            sensor_data = sensor.update(self._state, dt)
+        
+            # If some data was updated and we have a mavlink backend or ros backend (or other), then just update it
+            if sensor_data is not None:
+                for backend in self._backends:
+                    backend.update_sensor(sensor.sensor_type, sensor_data)
 
-    def update_imu_sensor(self, dt: float):
-        sensor_data = self._imu.update(self._state, dt)
-        if sensor_data is not None:
-            self._mavlink.update_imu_data(sensor_data)
-
-    def update_magnetometer_sensor(self, dt: float):
-        sensor_data = self._magnetometer.update(self._state, dt)
-        if sensor_data is not None:
-            self._mavlink.update_mag_data(sensor_data)
-
-    def update_gps_sensor(self, dt: float):
-        sensor_data = self._gps.update(self._state, dt)
-        if sensor_data is not None:
-            self._mavlink.update_gps_data(sensor_data)
-
-    def update_sim_state_mav(self, dt: float): 
-        self._mavlink.update_sim_state(self._state)
+    def update_sim_state(self, dt: float): 
+        """
+        Callback that is used to "send" the current state for each backend being used to control the vehicle
+        """
+        for backend in self._backends:
+            backend.update_state(self._state)
 
     def sim_start_stop(self, event):
         """
         Callback that is called every time there is a timeline event such as starting/stoping the simulation
         """
         
-        # If the start/stop button was pressed, then start/stop mavlink communication
+        # If the start/stop button was pressed, then start/stop "mavlink" or ros or other communication
         if self._world.is_playing():
-            self._mavlink.start_stream()
-            pass
+            for backend in self._backends:
+                backend.start()
 
         if self._world.is_stopped():
-            self._mavlink.stop_stream()
-            pass
+            for backend in self._backends:
+                backend.stop()
 
     def update(self, dt: float):
         """
@@ -130,8 +118,11 @@ class Multirotor(Vehicle):
         # Get the articulation root of the vehicle
         articulation = self._world.dc_interface.get_articulation(self._stage_prefix  + "/vehicle/body")
 
-        # Get the desired angular velocities for each rotor from the backend (can be mavlink or other) expressed in rad/s
-        desired_rotor_velocities = self._mavlink._rotor_data.input_reference
+        # Get the desired angular velocities for each rotor from the first backend (can be mavlink or other) expressed in rad/s
+        # For now we are only getting the desired inputs from the first backend. TODO - add a more dynamic way of getting
+        # the controls of the vehicles from multiple places to allow overriding of controls - That would be way coooler
+        if len(self._backends) != 0:
+            desired_rotor_velocities = self._backends[0].input_reference()
 
         # Input the desired rotor velocities in the thruster model
         self._thrusters.set_input_reference(desired_rotor_velocities)
@@ -155,8 +146,9 @@ class Multirotor(Vehicle):
         drag = self._linear_drag.update(self._state, dt)
         self.apply_force(drag, body_part="/body")
 
-        self.total_time += dt
-        self._mavlink.mavlink_update(dt)
+        # Call the update methods in all backends
+        for backend in self._backends:
+            backend.update(dt)
 
     def handle_propeller_visual(self, rotor_number, force: float, articulation):
 

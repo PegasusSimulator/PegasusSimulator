@@ -37,17 +37,16 @@ class MagnetometerConfig:
         self.random_walk = data.get("random_walk", self.random_walk)
         self.bias_correlation_time = data.get("bias_correlation_time", self.bias_correlation_time)
         self.update_rate = data.get("update_rate", self.update_rate)    
+    
+    def get_sensor_from_config(self):
+        return Magnetometer(self)
 
 class Magnetometer(Sensor):
 
-    def __init__(self, origin_latitude: float, origin_longitude: float, config=MagnetometerConfig()):
+    def __init__(self, config=MagnetometerConfig()):
 
         # Initialize the Super class "object" attributes
         super().__init__(sensor_type="Magnetometer", update_rate=config.update_rate)
-        
-        # Update the groundtruth latitude and longitude (in radians)
-        self._origin_latitude = np.radians(origin_latitude)
-        self._origin_longitude = np.radians(origin_longitude)
         
         # Set the noise parameters
         self._bias: np.ndarray = np.array([0.0, 0.0, 0.0])
@@ -66,7 +65,7 @@ class Magnetometer(Sensor):
     def update(self, state: State, dt: float):
 
         # Get the latitude and longitude from the current state
-        latitude, longitude = reprojection(state.position, self._origin_latitude, self._origin_longitude)
+        latitude, longitude = reprojection(state.position, np.radians(self._origin_lat), np.radians(self._origin_lon))
 
         # Magnetic declination and inclination (radians)
         declination_rad: float = np.radians(get_mag_declination(np.degrees(latitude), np.degrees(longitude)))

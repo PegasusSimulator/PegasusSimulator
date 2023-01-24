@@ -28,6 +28,22 @@ class GPSConfig:
         self.eph = 1.0
         self.epv = 1.0
         self.sattelites_visible = 10
+
+        # Parameters for GPS random walk
+        self.gps_xy_random_walk = 2.0 # (m/s) / sqrt(hz)
+        self.gps_z_random_walk = 4.0  # (m/s) / sqrt(hz)
+
+        # Parameters for the position noise
+        self.gps_xy_noise_density = 2.0E-4 # (m) / sqrt(hz)
+        self.gps_z_noise_density = 4.0E-4  # (m) / sqrt(hz)
+
+        # Parameters for the velocity noise
+        self.gps_vxy_noise_density = 0.2  # (m/s) / sqrt(hz)
+        self.gps_vz_noise_density = 0.4   # (m/s) / sqrt(hz)
+
+        # Parameters for the GPS bias
+        self.gps_correlation_time: float = 60
+
         self.update_rate = 1.0        # [Hz]
 
     def load_from_dict(self, data: dict):
@@ -40,15 +56,13 @@ class GPSConfig:
         self.epv = data.get("epv", self.epv)
         self.sattelites_visible = data.get("sattelites_visible", self.sattelites_visible)
         self.update_rate = data.get("update_rate", self.update_rate)
+    
+    def get_sensor_from_config(self):
+        return GPS(self)
 
 class GPS(Sensor):
 
-    def __init__(
-        self, 
-        origin_latitude: float, 
-        origin_longitude: float, 
-        origin_altitude: float,
-        config=GPSConfig()):
+    def __init__(self, config=GPSConfig()):
         """
         Constructor for a GPS sensor. Receives as arguments the:
         origin_latitude: float with the latitude of the inertial frame origin in degrees
@@ -58,11 +72,6 @@ class GPS(Sensor):
 
         # Initialize the Super class "object" attributes
         super().__init__(sensor_type="GPS", update_rate=config.update_rate)
-        
-        # Define the origin's latitude, longitude and altitude corresponding to the point [0.0, 0.0, 0.0] in the inertial frame
-        self._origin_latitude: float = np.radians(origin_latitude)
-        self._origin_longitude: float = np.radians(origin_longitude)
-        self._origin_altitude: float = origin_altitude
 
         # Define the GPS simulated/fixed values
         self._fix_type = config.fix_type
@@ -71,29 +80,29 @@ class GPS(Sensor):
         self._sattelites_visible = config.sattelites_visible
         
         # Parameters for GPS random walk
-        self._random_walk_gps: float = np.array([0.0, 0.0, 0.0])
-        self._gps_xy_random_walk: float = 2.0 # (m/s) / sqrt(hz)
-        self._gps_z_random_walk: float = 4.0  # (m/s) / sqrt(hz)
+        self._random_walk_gps = np.array([0.0, 0.0, 0.0])
+        self._gps_xy_random_walk = config.gps_xy_random_walk
+        self._gps_z_random_walk = config.gps_z_random_walk
 
         # Parameters for the position noise
-        self._noise_gps_pos: np.ndarray = np.array([0.0, 0.0, 0.0])
-        self._gps_xy_noise_density: float = 2.0E-4 # (m) / sqrt(hz)
-        self._gps_z_noise_density: float = 4.0E-4  # (m) / sqrt(hz)
+        self._noise_gps_pos = np.array([0.0, 0.0, 0.0])
+        self._gps_xy_noise_density = config.gps_xy_noise_density
+        self._gps_z_noise_density = config.gps_z_noise_density
 
         # Parameters for the velocity noise
-        self._noise_gps_vel: np.ndarray = np.array([0.0, 0.0, 0.0])
-        self._gps_vxy_noise_density: float = 0.2  # (m/s) / sqrt(hz)
-        self._gps_vz_noise_density: float = 0.4   # (m/s) / sqrt(hz)
+        self._noise_gps_vel = np.array([0.0, 0.0, 0.0])
+        self._gps_vxy_noise_density = config.gps_vxy_noise_density
+        self._gps_vz_noise_density = config.gps_vz_noise_density
 
         # Parameters for the GPS bias
-        self._gps_bias: np.ndarray = np.array([0.0, 0.0, 0.0])
-        self._gps_correlation_time: float = 60
+        self._gps_bias = np.array([0.0, 0.0, 0.0])
+        self._gps_correlation_time = config.gps_correlation_time
 
         # Save the current state measured by the GPS (and initialize at the origin)
         self._state = {
-            'latitude': self._origin_latitude, 
-            'longitude': self._origin_longitude, 
-            'altitude': self._origin_altitude,
+            'latitude': np.radians(self._origin_lat), 
+            'longitude': np.radians(self._origin_lon), 
+            'altitude': self._origin_alt,
             'eph': 1.0, 
             'epv': 1.0, 
             'speed': 0.0, 
@@ -106,9 +115,9 @@ class GPS(Sensor):
             'epv': self._epv,
             'cog': 0.0,
             'sattelites_visible': self._sattelites_visible,
-            'latitude_gt': self._origin_latitude,
-            'longitude_gt': self._origin_longitude,
-            'altitude_gt': self._origin_altitude
+            'latitude_gt': np.radians(self._origin_lat),
+            'longitude_gt': np.radians(self._origin_lon),
+            'altitude_gt': self._origin_alt
         }
 
     @property
@@ -138,10 +147,10 @@ class GPS(Sensor):
 
         # reproject position with noise into geographic coordinates
         pos_with_noise: np.ndarray = state.position + self._noise_gps_pos # + self._gps_bias
-        latitude, longitude = reprojection(pos_with_noise, self._origin_latitude, self._origin_longitude)
+        latitude, longitude = reprojection(pos_with_noise, np.radians(self._origin_lat), np.radians(self._origin_lon))
 
         # Compute the values of the latitude and longitude without noise (for groundtruth measurements)
-        latitude_gt, longitude_gt = reprojection(state.position, self._origin_latitude, self._origin_longitude)
+        latitude_gt, longitude_gt = reprojection(state.position, np.radians(self._origin_lat), np.radians(self._origin_lon))
 
         # Add noise to the velocity expressed in the world frame
         velocity: np.ndarray = state.linear_velocity #+ self._noise_gps_vel
@@ -164,7 +173,7 @@ class GPS(Sensor):
         self._state = {
             'latitude': np.degrees(latitude), 
             'longitude': np.degrees(longitude), 
-            'altitude': state.position[2] + self._origin_altitude - self._noise_gps_pos[2] + self._gps_bias[2],
+            'altitude': state.position[2] + self._origin_alt - self._noise_gps_pos[2] + self._gps_bias[2],
             'eph': 1.0, 
             'epv': 1.0, 
             'speed': speed, 
@@ -180,7 +189,7 @@ class GPS(Sensor):
             'sattelites_visible': self._sattelites_visible,
             'latitude_gt': latitude_gt,
             'longitude_gt': longitude_gt, 
-            'altitude_gt': state.position[2] + self._origin_altitude
+            'altitude_gt': state.position[2] + self._origin_alt
         }
 
         return self._state
