@@ -175,6 +175,11 @@ class WidgetWindow(ui.Window):
                         dropdown_menu.model.append_child_item(None, ui.SimpleStringModel(robot))  
                     self._delegate.set_vehicle_dropdown(dropdown_menu.model)
 
+                with ui.HStack():
+                    ui.Label("Vehicle ID", name="label", width=WidgetWindow.LABEL_PADDING)
+                    vehicle_id_field = ui.IntField()
+                    self._delegate.set_vehicle_id_field(vehicle_id_field.model)
+
                 # Add a frame transform to select the position of where to place the selected robot in the world
                 self._transform_frame()
 

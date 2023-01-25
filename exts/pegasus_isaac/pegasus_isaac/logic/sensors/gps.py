@@ -44,7 +44,7 @@ class GPSConfig:
         # Parameters for the GPS bias
         self.gps_correlation_time: float = 60
 
-        self.update_rate = 1.0        # [Hz]
+        self.update_rate = 250.0        # [Hz]
 
     def load_from_dict(self, data: dict):
         """

@@ -40,6 +40,7 @@ class Multirotor(Vehicle):
         # Simulation specific configurations
         stage_prefix: str="quadrotor",  
         usd_file: str="",
+        vehicle_id: int=0,
         world=None,
         # Spawning pose of the vehicle
         init_pos=[0.0, 0.0, 0.07], 
