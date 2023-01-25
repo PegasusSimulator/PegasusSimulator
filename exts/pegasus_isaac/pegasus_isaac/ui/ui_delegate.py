@@ -18,7 +18,8 @@ from omni.isaac.core.utils.stage import create_new_stage, set_stage_up_axis, cle
 from pegasus_isaac.params import ROBOTS, SIMULATION_ENVIRONMENTS
 
 # Vehicle Manager to spawn Vehicles
-from pegasus_isaac.logic.vehicles.multirotor import Multirotor
+from pegasus_isaac.logic.backends import MavlinkBackend, MavlinkBackendConfig
+from pegasus_isaac.logic.vehicles.multirotor import Multirotor, MultirotorConfig
 from pegasus_isaac.logic.vehicles.vehicle_manager import VehicleManager
 
 class UIDelegate:
@@ -49,6 +50,10 @@ class UIDelegate:
         # By default we assume PX4
         self._streaming_backend: str = "px4"
 
+        # Selected value for the the id of the vehicle
+        self._vehicle_id_field: ui.AbstractValueModel = None
+        self._vehicle_id: int = 0
+
     def set_window_bind(self, window):
         self._window = window
 
@@ -57,6 +62,9 @@ class UIDelegate:
 
     def set_vehicle_dropdown(self, vehicle_dropdown_model: ui.AbstractItemModel):
         self._vehicle_dropdown = vehicle_dropdown_model
+
+    def set_vehicle_id_field(self, vehicle_id_field: ui.AbstractValueModel):
+        self._vehicle_id_field = vehicle_id_field
 
     def set_streaming_backend(self, backend: str="px4"):
         carb.log_info("Chosen option: " + backend)
@@ -145,11 +153,28 @@ class UIDelegate:
             # Get the name of the selected vehicle
             selected_robot = self._vehicles_names[vehicle_index]
 
+            # Get the id of the selected vehicle
+            self._vehicle_id = self._vehicle_id_field.get_value_as_int()
+
             # Get the desired position and orientation of the vehicle from the UI transform
             pos, euler_angles = self._window.get_selected_vehicle_attitude()
 
+            # Create the multirotor configuration
+            mavlink_config = MavlinkBackendConfig()
+            mavlink_config.vehicle_id = self._vehicle_id
+            config_multirotor = MultirotorConfig()
+            config_multirotor.backends = [MavlinkBackend(mavlink_config)]
+
             # Try to spawn the selected robot in the world to the specified namespace
-            Multirotor("/World/quadrotor", ROBOTS[selected_robot], self._world, pos, Rotation.from_euler("XYZ", euler_angles, degrees=True).as_quat())
+            Multirotor(
+                "/World/quadrotor", 
+                ROBOTS[selected_robot], 
+                self._vehicle_id, 
+                self._world, 
+                pos, 
+                Rotation.from_euler("XYZ", euler_angles, degrees=True).as_quat(), 
+                config=config_multirotor
+            )
 
             # Log that a vehicle of the type multirotor was spawned in the world via the extension UI
             carb.log_info("Spawned the robot: " + selected_robot + " using the Pegasus Simulator UI")
