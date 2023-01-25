@@ -97,6 +97,12 @@ class Vehicle(Robot):
         # be implemented in classes that inherit the vehicle object
         self._world.add_physics_callback(self._stage_prefix + "/update", self.update)
 
+        # Set the flag that signals if the simulation is running or not
+        self._sim_running = False
+
+        # Add a callback to start/stop of the simulation once the play/stop button is hit
+        self._world.add_timeline_callback(self._stage_prefix + "/start_stop_sim", self.sim_start_stop)
+
     def __del__(self):
 
         # Remove this object from the vehicleHandler
@@ -117,6 +123,20 @@ class Vehicle(Robot):
     """
     Operations
     """
+
+    def sim_start_stop(self, event):
+        """
+        Callback that is called every time there is a timeline event such as starting/stoping the simulation
+        """
+        
+        # If the start/stop button was pressed, then call the start and stop methods accordingly
+        if self._world.is_playing() and self._sim_running == False:
+            self._sim_running = True
+            self.start()
+
+        if self._world.is_stopped() and self._sim_running == True:
+            self._sim_running = False
+            self.stop()
 
     def apply_force(self, force, pos=[0.0, 0.0, 0.0], body_part="/body"):
         """
@@ -189,6 +209,18 @@ class Vehicle(Robot):
         
         # The acceleration of the vehicle expressed in the inertial frame X_ddot = [x_ddot, y_ddot, z_ddot]
         self._state.linear_acceleration = linear_acceleration
+
+    def start(self):
+        """
+        Method that should be implemented by the class that inherits the vehicle object.
+        """
+        pass
+
+    def stop(self):
+        """
+        Method that should be implemented by the class that inherits the vehicle object.
+        """
+        pass
 
     def update(self, dt: float):
         """

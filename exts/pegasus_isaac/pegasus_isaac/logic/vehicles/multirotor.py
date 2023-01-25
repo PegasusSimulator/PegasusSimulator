@@ -73,9 +73,6 @@ class Multirotor(Vehicle):
         # Add a callbacks for the 
         self._world.add_physics_callback(self._stage_prefix + "/mav_state", self.update_sim_state)
 
-        # Add a callback to start/stop of the simulation once the play/stop button is hit
-        self._world.add_timeline_callback(self._stage_prefix + "/start_stop_sim", self.sim_start_stop)
-
     def update_sensors(self, dt: float):
 
         # Call the update method for the sensor to update its values internally (if applicable)
@@ -94,19 +91,15 @@ class Multirotor(Vehicle):
         for backend in self._backends:
             backend.update_state(self._state)
 
-    def sim_start_stop(self, event):
-        """
-        Callback that is called every time there is a timeline event such as starting/stoping the simulation
-        """
-        
-        # If the start/stop button was pressed, then start/stop "mavlink" or ros or other communication
-        if self._world.is_playing():
-            for backend in self._backends:
-                backend.start()
+    def start(self):
+        # Intialize the communication with all the backends
+        for backend in self._backends:
+            backend.start()
 
-        if self._world.is_stopped():
-            for backend in self._backends:
-                backend.stop()
+    def stop(self):
+        # Signal all the backends that the simulation has stoped
+        for backend in self._backends:
+            backend.stop()
 
     def update(self, dt: float):
         """

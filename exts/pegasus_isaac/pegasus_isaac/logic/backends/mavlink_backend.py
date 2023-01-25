@@ -9,6 +9,7 @@ from pymavlink import mavutil
 
 from pegasus_isaac.logic.state import State
 from pegasus_isaac.logic.backends.backend import Backend
+from pegasus_isaac.logic.backends.tools.px4_launch_tool import PX4LaunchTool
 
 class SensorSource:
     """
@@ -144,13 +145,28 @@ class ThrusterControl:
 class MavlinkBackendConfig:
 
     def __init__(self):
-        self.connection_string = "tcpin:localhost:4560"
+
+        # Configurations for the mavlink communication protocol (note: the vehicle id is sumed to the connection_baseport)
+        self.vehicle_id = 0
+        self.connection_type = 'tcpin'
+        self.connection_ip = 'localhost'
+        self.connection_baseport = 4560
+
+        # Configure whether to launch px4 in the background automatically or not for every vehicle launched
+        self.px4_autolaunch: bool = True
+        self.px4_dir: str = "/home/marcelo/PX4-Autopilot"
+        self.px4_vehicle_model: str = 'iris'
+
+        # Configurations to interpret the rotors control messages coming from mavlink
         self.enable_lockstep: bool = True
         self.num_rotors: int = 4
         self.input_offset=[0.0, 0.0, 0.0, 0.0]
         self.input_scaling=[1000.0, 1000.0, 1000.0, 1000.0]
         self.zero_position_armed=[100.0, 100.0, 100.0, 100.0]
-        self.update_rate: float = 250.0                         # [Hz]
+
+        # The update rate at which we will be sending data to mavlink (TODO - remove this from here in the future
+        # and infer directly from the function calls)
+        self.update_rate: float = 250.0 # [Hz]
 
 class MavlinkBackend(Backend):
 
@@ -161,9 +177,16 @@ class MavlinkBackend(Backend):
 
         # Setup the desired mavlink connection port
         # The connection will only be created once the simulation starts
+        self._vehicle_id = config.vehicle_id
         self._connection = None
-        self._connection_port = config.connection_string
+        self._connection_port = config.connection_type + ':' + config.connection_ip + ':' + str(config.connection_baseport + config.vehicle_id)
         
+        # Check if we need to autolaunch px4 in the background or not
+        self.px4_autolaunch: bool = config.px4_autolaunch
+        self.px4_vehicle_model: str = config.px4_vehicle_model  # only needed if px4_autolaunch == True
+        self.px4_tool: PX4LaunchTool = None       
+        self.px4_dir: str = config.px4_dir
+
         # Set the update rate used for sending the messages (TODO - remove this hardcoded value from here)
         self._update_rate: float = config.update_rate
         self._time_step: float = 1.0 / self._update_rate    # s
@@ -358,6 +381,17 @@ class MavlinkBackend(Backend):
         # Set the flag to signal that the mavlink transmission has started
         self._is_running = True
 
+        # Launch the PX4 in the background if needed
+        carb.log_warn("-------------")
+        carb.log_warn(self.px4_tool)
+        carb.log_warn("-------------")
+        if self.px4_autolaunch and self.px4_tool is None:
+            carb.log_warn("-------------")
+            carb.log_warn("Launching PX4")
+            carb.log_warn("-------------")
+            self.px4_tool = PX4LaunchTool(self.px4_dir, self._vehicle_id, self.px4_vehicle_model)
+            self.px4_tool.launch_px4()
+            
     def stop(self):
         
         # If the simulation was already stoped, then ignore the function call
@@ -370,6 +404,14 @@ class MavlinkBackend(Backend):
         # Close the mavlink connection
         self._connection.close()
         self._connection = None
+
+        # Close the PX4 if it was running
+        if self.px4_autolaunch and self.px4_autolaunch is not None:
+            carb.log_warn("-------------")
+            carb.log_warn("Killing PX4")
+            carb.log_warn("-------------")
+            self.px4_tool.kill_px4()
+            self.px4_tool = None
 
     def reset(self):
         # TODO
