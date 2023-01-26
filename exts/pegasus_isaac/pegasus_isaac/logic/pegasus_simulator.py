@@ -31,7 +31,7 @@ class PegasusSimulator:
         if PegasusSimulator._is_initialized:
             return
 
-        carb.log_warn("Initializing the Pegasus Simulator Extension")
+        carb.log_info("Initializing the Pegasus Simulator Extension")
         PegasusSimulator._is_initialized = True
 
         # Get a handle to the vehicle manager instance which will manage which vehicles are spawned in the world
