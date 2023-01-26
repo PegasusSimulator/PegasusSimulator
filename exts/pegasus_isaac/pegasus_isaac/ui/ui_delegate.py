@@ -1,21 +1,15 @@
 #!/usr/bin/env python
 
-# Python libraries for multithreading and garbage collection
-import gc
-import asyncio
-
 # External packages
 from scipy.spatial.transform import Rotation
  
 # Omniverse extensions
 import carb
 import omni.ui as ui
-from omni.isaac.core import World
-from omni.isaac.core.utils.viewports import set_camera_view
 from omni.isaac.core.utils.stage import create_new_stage, set_stage_up_axis, clear_stage, add_reference_to_stage, get_current_stage
 
 # Extension Configurations
-from pegasus_isaac.params import ROBOTS, SIMULATION_ENVIRONMENTS, DEFAULT_WORLD_SETTINGS
+from pegasus_isaac.params import ROBOTS, SIMULATION_ENVIRONMENTS
 from pegasus_isaac.logic.pegasus_simulator import PegasusSimulator
 
 # Vehicle Manager to spawn Vehicles
@@ -168,4 +162,4 @@ class UIDelegate:
             if camera_position is not None and camera_target is not None:
 
                 # Set the camera view to a fixed value
-                set_camera_view(eye=camera_position, target=camera_target) 
+                self._pegasus_sim.set_viewport_camera(eye=camera_position, target=camera_target) 
