@@ -2,6 +2,7 @@
 
 # Importing Lock in ordef to have a multithread safe Pegasus singleton that manages the entire Pegasus extension
 import gc
+import yaml
 import asyncio
 from threading import Lock
 
@@ -59,6 +60,14 @@ class PegasusSimulator:
         Method that returns a list of vehicles that are considered active in the simulator
         """
         return self._vehicle_manager.vehicles
+
+    def generate_quadrotor_config_from_yaml(self, file: str):
+        
+        # Load the quadrotor configuration data from the given yaml file
+        with open(file, 'r') as f:
+            data = yaml.safe_load(f)
+
+        return self.generate_quadrotor_config_from_dict(data)
 
     def clear_scene(self):
         """

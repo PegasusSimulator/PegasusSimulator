@@ -28,6 +28,10 @@ class Sensor:
         self._origin_lon = origin_lon
         self._origin_alt = origin_alt
 
+    def set_update_rate(self, update_rate: float):
+        self._update_rate = update_rate
+        self._update_period = 1.0 / self._update_rate
+
     def update_at_rate(fnc):
         """
         Decorator function used to check if the time elapsed between the last sensor update call and the current
@@ -68,4 +72,7 @@ class Sensor:
         return None
 
     def update(self, state: State, dt: float):
+        pass
+
+    def config_from_dict(self, config_dict):
         pass

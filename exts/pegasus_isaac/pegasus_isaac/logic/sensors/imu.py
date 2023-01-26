@@ -10,9 +10,8 @@ Description:
     Simulates an imu. Based on the implementation provided
     in PX4 stil_gazebo (https://github.com/PX4/PX4-SITL_gazebo)
 """
-__all__ = ["IMU", "IMUConfig"]
+__all__ = ["IMU"]
 
-import carb
 import numpy as np
 from scipy.spatial.transform import Rotation
 
@@ -21,70 +20,31 @@ from pegasus_isaac.logic.sensors import Sensor
 from pegasus_isaac.logic.rotations import rot_FLU_to_FRD, rot_ENU_to_NED
 from pegasus_isaac.logic.sensors.geo_mag_utils import GRAVITY_VECTOR
 
-class IMUConfig:
-
-    def __init__(self):
-        # The gyroscope noise
-        self.gyroscope_noise_density: float = 2.0 * 35.0 / 3600.0 / 180.0 * np.pi
-        self.gyroscope_random_walk: float = 2.0 * 4.0 / 3600.0 / 180.0 * np.pi
-        self.gyroscope_bias_correlation_time: float = 1.0E3
-        self.gyroscope_turn_on_bias_sigma: float = 0.5 / 180.0 * np.pi
-
-        # The acceleromenter noise
-        self.accelerometer_noise_density: float = 2.0 * 2.0E-3
-        self.accelerometer_random_walk: float = 2.0 * 3.0E-3
-        self.accelerometer_bias_correlation_time: float = 300.0
-        self.accelerometer_turn_on_bias_sigma: float = 20.0E-3 * 9.8
-
-        self.update_rate: float = 250.0        # [Hz]
-
-    def load_from_dict(self, data: dict):
-        """
-        Method used to load/generate a IMUConfig object given a set of parameters read from a dictionary
-        """
-
-        if "gyroscope" in data:
-            gyroscope_data = data["gyroscope"]
-            self.gyroscope_noise_density = gyroscope_data.get("noise_density", self.gyroscope_noise_density)
-            self.gyroscope_random_walk = gyroscope_data.get("random_walk", self.gyroscope_random_walk)
-            self.gyroscope_bias_correlation_time = gyroscope_data.get("bias_correlation_time", self.gyroscope_bias_correlation_time)
-            self.gyroscope_turn_on_bias_sigma = gyroscope_data.get("turn_on_bias_sigma", self.gyroscope_turn_on_bias_sigma)
-
-        if "accelerometer" in data:
-            accelerometer_data = data["accelerometer"]
-            self.accelerometer_noise_density = accelerometer_data.get("noise_density", self.accelerometer_noise_density)
-            self.accelerometer_random_walk = accelerometer_data.get("random_walk", self.accelerometer_random_walk)
-            self.accelerometer_bias_correlation_time = accelerometer_data.get("bias_correlation_time", self.accelerometer_bias_correlation_time)
-            self.accelerometer_turn_on_bias_sigma = accelerometer_data.get("turn_on_bias_sigma", self.accelerometer_turn_on_bias_sigma)
-
-        self.update_rate = data.get("update_rate", self.update_rate)
-
-    def get_sensor_from_config(self):
-        return IMU(self)
-
 class IMU(Sensor):
 
-    def __init__(self, config=IMUConfig()):
+    def __init__(self, config={}):
 
         # Initialize the Super class "object" attributes
-        super().__init__(sensor_type="IMU", update_rate=config.update_rate)
+        super().__init__(sensor_type="IMU", update_rate=config.get("update_rate", 250.0))
         
         # Orientation noise constant
         self._orientation_noise: float = 0.0
         
         # Gyroscope noise constants
         self._gyroscope_bias: np.ndarray = np.zeros((3,))
-        self._gyroscope_noise_density = config.gyroscope_noise_density
-        self._gyroscope_random_walk = config.gyroscope_random_walk
-        self._gyroscope_bias_correlation_time = config.gyroscope_bias_correlation_time
-        self._gyroscope_turn_on_bias_sigma = config.gyroscope_turn_on_bias_sigma
+        gyroscope_config = config.get("gyroscope", {})
+        self._gyroscope_noise_density = gyroscope_config.get("noise_density", 2.0 * 35.0 / 3600.0 / 180.0 * np.pi)
+        self._gyroscope_random_walk = gyroscope_config.get("random_walk", 2.0 * 4.0 / 3600.0 / 180.0 * np.pi)
+        self._gyroscope_bias_correlation_time = gyroscope_config.get("bias_correlation_time", 1.0E3)
+        self._gyroscope_turn_on_bias_sigma = gyroscope_config.get("turn_on_bias_sigma", 0.5 / 180.0 * np.pi)
         
         # Accelerometer noise constants
         self._accelerometer_bias: np.ndarray = np.zeros((3,))
-        self._accelerometer_noise_density = config.accelerometer_noise_density
-        self._accelerometer_random_walk: float = 2.0 * 3.0E-3
-        self._accelerometer_bias_correlation_time: float = 300.0
-        self._accelerometer_turn_on_bias_sigma: float = 20.0E-3 * 9.8
+        accelerometer_config = config.get("accelerometer", {})
+        self._accelerometer_noise_density = accelerometer_config.get("noise_density", 2.0 * 2.0E-3)
+        self._accelerometer_random_walk = accelerometer_config.get("random_walk", 2.0 * 3.0E-3)
+        self._accelerometer_bias_correlation_time = accelerometer_config.get("bias_correlation_time", 300.0)
+        self._accelerometer_turn_on_bias_sigma = accelerometer_config.get("turn_on_bias_sigma", 20.0E-3 * 9.8)
 
         # Auxiliar variable used to compute the linear acceleration of the vehicle
         self._prev_linear_velocity = np.zeros((3,))

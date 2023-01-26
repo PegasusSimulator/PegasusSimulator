@@ -144,29 +144,29 @@ class ThrusterControl:
 
 class MavlinkBackendConfig:
 
-    def __init__(self):
+    def __init__(self, config={}):
 
         # Configurations for the mavlink communication protocol (note: the vehicle id is sumed to the connection_baseport)
-        self.vehicle_id = 0
-        self.connection_type = 'tcpin'
-        self.connection_ip = 'localhost'
-        self.connection_baseport = 4560
+        self.vehicle_id = config.get("vehicle_id", 0)
+        self.connection_type = config.get("connection_type", 'tcpin')
+        self.connection_ip = config.get("connection_ip", 'localhost')
+        self.connection_baseport = config.get("connection_baseport", 4560)
 
         # Configure whether to launch px4 in the background automatically or not for every vehicle launched
-        self.px4_autolaunch: bool = True
-        self.px4_dir: str = "/home/marcelo/PX4-Autopilot"
-        self.px4_vehicle_model: str = 'iris'
+        self.px4_autolaunch: bool = config.get("px4_autolaunch",True)
+        self.px4_dir: str = config.get("px4_dir","/home/marcelo/PX4-Autopilot")
+        self.px4_vehicle_model: str = config.get("px4_vehicle_model",'iris')
 
         # Configurations to interpret the rotors control messages coming from mavlink
-        self.enable_lockstep: bool = True
-        self.num_rotors: int = 4
-        self.input_offset=[0.0, 0.0, 0.0, 0.0]
-        self.input_scaling=[1000.0, 1000.0, 1000.0, 1000.0]
-        self.zero_position_armed=[100.0, 100.0, 100.0, 100.0]
+        self.enable_lockstep: bool = config.get("enable_lockstep", True)
+        self.num_rotors: int = config.get("num_rotors", 4)
+        self.input_offset = config.get("input_offset", [0.0, 0.0, 0.0, 0.0])
+        self.input_scaling = config.get("input_scaling", [1000.0, 1000.0, 1000.0, 1000.0])
+        self.zero_position_armed = config.get("zero_position_armed",[100.0, 100.0, 100.0, 100.0])
 
         # The update rate at which we will be sending data to mavlink (TODO - remove this from here in the future
         # and infer directly from the function calls)
-        self.update_rate: float = 250.0 # [Hz]
+        self.update_rate: float = config.get("update_rate", 250.0) # [Hz]
 
 class MavlinkBackend(Backend):
 

@@ -13,7 +13,7 @@ Description:
         Amy Wagoner <arwagoner@gmail.com> 
         Nuno Marques <nuno.marques@dronesolutions.io>
 """
-__all__ = ["GPS", "GPSConfig"]
+__all__ = ["GPS"]
 
 import numpy as np
 from pegasus_isaac.logic.sensors import Sensor
@@ -21,48 +21,9 @@ from pegasus_isaac.logic.sensors.geo_mag_utils import reprojection
 
 # TODO - Introduce delay on the GPS data
 
-class GPSConfig:
-
-    def __init__(self):
-        self.fix_type = 3
-        self.eph = 1.0
-        self.epv = 1.0
-        self.sattelites_visible = 10
-
-        # Parameters for GPS random walk
-        self.gps_xy_random_walk = 2.0 # (m/s) / sqrt(hz)
-        self.gps_z_random_walk = 4.0  # (m/s) / sqrt(hz)
-
-        # Parameters for the position noise
-        self.gps_xy_noise_density = 2.0E-4 # (m) / sqrt(hz)
-        self.gps_z_noise_density = 4.0E-4  # (m) / sqrt(hz)
-
-        # Parameters for the velocity noise
-        self.gps_vxy_noise_density = 0.2  # (m/s) / sqrt(hz)
-        self.gps_vz_noise_density = 0.4   # (m/s) / sqrt(hz)
-
-        # Parameters for the GPS bias
-        self.gps_correlation_time: float = 60
-
-        self.update_rate = 250.0        # [Hz]
-
-    def load_from_dict(self, data: dict):
-        """
-        Method used to load/generate a GPSConfig object given a set of parameters read from a dictionary
-        """
-
-        self.fix_type = data.get("fix_type", self.fix_type)
-        self.eph = data.get("eph", self.eph)
-        self.epv = data.get("epv", self.epv)
-        self.sattelites_visible = data.get("sattelites_visible", self.sattelites_visible)
-        self.update_rate = data.get("update_rate", self.update_rate)
-    
-    def get_sensor_from_config(self):
-        return GPS(self)
-
 class GPS(Sensor):
 
-    def __init__(self, config=GPSConfig()):
+    def __init__(self, config={}):
         """
         Constructor for a GPS sensor. Receives as arguments the:
         origin_latitude: float with the latitude of the inertial frame origin in degrees
@@ -71,32 +32,32 @@ class GPS(Sensor):
         """
 
         # Initialize the Super class "object" attributes
-        super().__init__(sensor_type="GPS", update_rate=config.update_rate)
+        super().__init__(sensor_type="GPS", update_rate=config.get("update_rate", 250.0))
 
         # Define the GPS simulated/fixed values
-        self._fix_type = config.fix_type
-        self._eph = config.eph
-        self._epv = config.epv
-        self._sattelites_visible = config.sattelites_visible
+        self._fix_type = config.get("fix_type", 3)
+        self._eph = config.get("eph", 1.0)
+        self._epv = config.get("epv", 1.0)
+        self._sattelites_visible = config.get("sattelites_visible", 10)
         
         # Parameters for GPS random walk
         self._random_walk_gps = np.array([0.0, 0.0, 0.0])
-        self._gps_xy_random_walk = config.gps_xy_random_walk
-        self._gps_z_random_walk = config.gps_z_random_walk
+        self._gps_xy_random_walk = config.get("gps_xy_random_walk", 2.0)   # (m/s) / sqrt(hz)
+        self._gps_z_random_walk = config.get("gps_z_random_walk", 4.0)     # (m/s) / sqrt(hz)
 
         # Parameters for the position noise
         self._noise_gps_pos = np.array([0.0, 0.0, 0.0])
-        self._gps_xy_noise_density = config.gps_xy_noise_density
-        self._gps_z_noise_density = config.gps_z_noise_density
+        self._gps_xy_noise_density = config.get("gps_xy_noise_density", 2.0E-4) # (m) / sqrt(hz)
+        self._gps_z_noise_density = config.get("gps_z_noise_density", 4.0E-4)   # (m) / sqrt(hz)
 
         # Parameters for the velocity noise
         self._noise_gps_vel = np.array([0.0, 0.0, 0.0])
-        self._gps_vxy_noise_density = config.gps_vxy_noise_density
-        self._gps_vz_noise_density = config.gps_vz_noise_density
+        self._gps_vxy_noise_density = config.get("gps_vxy_noise_density", 0.2)  # (m/s) / sqrt(hz)
+        self._gps_vz_noise_density = config.get("gps_vz_noise_density", 0.4)    # (m/s) / sqrt(hz)
 
         # Parameters for the GPS bias
         self._gps_bias = np.array([0.0, 0.0, 0.0])
-        self._gps_correlation_time = config.gps_correlation_time
+        self._gps_correlation_time = config.get("gps_correlation_time", 60)
 
         # Save the current state measured by the GPS (and initialize at the origin)
         self._state = {

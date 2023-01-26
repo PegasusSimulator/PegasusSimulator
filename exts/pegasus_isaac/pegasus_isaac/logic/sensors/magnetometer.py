@@ -10,7 +10,7 @@ Description:
     Simulates a magnetometer. Based on the original implementation provided
     in PX4 stil_gazebo (https://github.com/PX4/PX4-SITL_gazebo) by Elia Tarasov <elias.tarasov@gmail.com>
 """
-__all__ = ["Magnetometer", "MagnetometerConfig"]
+__all__ = ["Magnetometer"]
 
 import numpy as np
 from scipy.spatial.transform import Rotation
@@ -18,41 +18,20 @@ from scipy.spatial.transform import Rotation
 from pegasus_isaac.logic.state import State
 from pegasus_isaac.logic.sensors import Sensor
 from pegasus_isaac.logic.rotations import rot_ENU_to_NED, rot_FLU_to_FRD
-from pegasus_isaac.logic.sensors.geo_mag_utils import get_mag_declination, get_mag_inclination, get_mag_strength, reprojection
-
-class MagnetometerConfig:
-
-    def __init__(self):
-        self.noise_density: float = 0.4E-3        # gauss / sqrt(hz)
-        self.random_walk: float = 6.4E-6          # gauss * sqrt(hz)
-        self.bias_correlation_time: float = 6.0E2 # s
-        self.update_rate: float = 250.0           # [Hz]
-
-    def load_from_dict(self, data: dict):
-        """
-        Method used to load/generate a MagnetometerConfig object given a set of parameters read from a dictionary 
-        """
-
-        self.noise_density = data.get("noise_density", self.noise_density)
-        self.random_walk = data.get("random_walk", self.random_walk)
-        self.bias_correlation_time = data.get("bias_correlation_time", self.bias_correlation_time)
-        self.update_rate = data.get("update_rate", self.update_rate)    
-    
-    def get_sensor_from_config(self):
-        return Magnetometer(self)
+from pegasus_isaac.logic.sensors.geo_mag_utils import get_mag_declination, get_mag_inclination, get_mag_strength, reprojection   
 
 class Magnetometer(Sensor):
 
-    def __init__(self, config=MagnetometerConfig()):
+    def __init__(self, config={}):
 
         # Initialize the Super class "object" attributes
-        super().__init__(sensor_type="Magnetometer", update_rate=config.update_rate)
+        super().__init__(sensor_type="Magnetometer", update_rate=config.get("update_rate", 250.0))
         
         # Set the noise parameters
         self._bias: np.ndarray = np.array([0.0, 0.0, 0.0])
-        self._noise_density = config.noise_density
-        self._random_walk = config.random_walk
-        self._bias_correlation_time = config.bias_correlation_time
+        self._noise_density = config.get("noise_density", 0.4E-3)                # gauss / sqrt(hz)
+        self._random_walk = config.get("random_walk", 6.4E-6)                    # gauss * sqrt(hz)
+        self._bias_correlation_time = config.get("bias_correlation_time", 6.0E2) # s
 
         # Initial state measured by the Magnetometer
         self._state = {'magnetic_field': np.zeros((3,))}

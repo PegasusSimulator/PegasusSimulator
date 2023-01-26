@@ -12,7 +12,7 @@ from pegasus_isaac.logic.state import State
 
 class LinearDrag:
 
-    def __init__(self, drag_coefficients: np.ndarray):
+    def __init__(self, drag_coefficients=[0.0, 0.0, 0.0]):
         """
         Receives as input the drag coefficients of the vehicle as a 3x1 vector of constants
         """

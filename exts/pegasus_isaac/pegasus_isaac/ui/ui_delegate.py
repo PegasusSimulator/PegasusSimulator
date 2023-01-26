@@ -125,6 +125,15 @@ class UIDelegate:
             # Get the desired position and orientation of the vehicle from the UI transform
             pos, euler_angles = self._window.get_selected_vehicle_attitude()
 
+            import yaml
+            from pegasus_isaac.parser.vehicle_parser import VehicleParser
+            parser = VehicleParser()
+            file = "/home/marcelo/thesis/internal/pegasus_isaac/exts/pegasus_isaac/pegasus_isaac/assets/Robots/Iris/iris.yaml"
+            with open(file, 'r') as f:
+                data = yaml.safe_load(f)
+                carb.log_warn(data)
+                parser.parse("multirotor", data.get("vehicle", {}))
+
             # Create the multirotor configuration
             mavlink_config = MavlinkBackendConfig()
             mavlink_config.vehicle_id = self._vehicle_id
