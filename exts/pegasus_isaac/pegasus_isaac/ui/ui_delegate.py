@@ -15,7 +15,8 @@ from omni.isaac.core.utils.viewports import set_camera_view
 from omni.isaac.core.utils.stage import create_new_stage, set_stage_up_axis, clear_stage, add_reference_to_stage, get_current_stage
 
 # Extension Configurations
-from pegasus_isaac.params import ROBOTS, SIMULATION_ENVIRONMENTS
+from pegasus_isaac.params import ROBOTS, SIMULATION_ENVIRONMENTS, DEFAULT_WORLD_SETTINGS
+from pegasus_isaac.logic.pegasus_simulator import PegasusSimulator
 
 # Vehicle Manager to spawn Vehicles
 from pegasus_isaac.logic.backends import MavlinkBackend, MavlinkBackendConfig
@@ -27,13 +28,13 @@ class UIDelegate:
     Object that will interface between the logic/dynamic simulation part of the extension and the Widget UI
     """
 
-    def __init__(self, world: World, world_settings):
+    def __init__(self):
 
         # The window that will be bound to this delegate
         self._window = None
 
-        self._world = world
-        self._world_settings = world_settings
+        # Get an instance of the pegasus simulator
+        self._pegasus_sim: PegasusSimulator = PegasusSimulator()
 
         # Attribute that holds the currently selected scene from the dropdown menu
         self._scene_dropdown: ui.AbstractItemModel = None
@@ -85,16 +86,19 @@ class UIDelegate:
         async def load_world_async(self):
 
             # Setup a new world (even if one already existed)
-            self._world = World(**self._world_settings)
-            await self._world.initialize_simulation_context_async()
+            self._pegasus_sim._world = World(**DEFAULT_WORLD_SETTINGS)
+            await self._pegasus_sim._world.initialize_simulation_context_async()
 
             # Reset and pause the world simulation
-            await self._world.reset_async()
-            await self._world.stop_async()
+            await self._pegasus_sim.world.reset_async()
+            await self._pegasus_sim.world.stop_async()
 
             # Load a ground in the world
             # TODO - add the loading of the custom scene here
-            self._world.scene.add_default_ground_plane()
+            #self._pegasus_sim.world.scene.add_default_ground_plane()            
+
+            self._pegasus_sim.load_nvidia_environment()
+            
 
         # --------------------------
         # Function logic starts here
@@ -119,19 +123,19 @@ class UIDelegate:
         carb.log_warn("Current scene and its vehicles has been deleted")
 
         # If the physics simulation was running, stop it first
-        if self._world is not None:
-            self._world.stop()
+        if self._pegasus_sim.world is not None:
+            self._pegasus_sim.world.stop()
 
         # Clear the world
-        if self._world is not None:
-            self._world.clear_all_callbacks()
-            self._world.clear()
+        if self._pegasus_sim.world is not None:
+            self._pegasus_sim.world.clear_all_callbacks()
+            self._pegasus_sim.world.clear()
 
         # Clear the stage
         clear_stage()
         
         # Cleanup the world pointer
-        self._world = None
+        self._pegasus_sim.clear_world()
 
         # Remove all the robots that were spawned
         self._vehicle_manager.remove_all_vehicles()
@@ -170,7 +174,7 @@ class UIDelegate:
                 "/World/quadrotor", 
                 ROBOTS[selected_robot], 
                 self._vehicle_id, 
-                self._world, 
+                self._pegasus_sim.world, 
                 pos, 
                 Rotation.from_euler("XYZ", euler_angles, degrees=True).as_quat(), 
                 config=config_multirotor

@@ -16,8 +16,9 @@ import omni.ui as ui
 # Isaac Speficic extensions API
 from omni.isaac.core import World
 
-# Pegasus Extension Files
+# Pegasus Extension Files and API
 from pegasus_isaac.params import DEFAULT_WORLD_SETTINGS, MENU_PATH, WINDOW_TITLE
+from pegasus_isaac.logic.pegasus_simulator import PegasusSimulator
 
 # Setting up the UI for the extension's Widget
 from pegasus_isaac.ui.ui_window import WidgetWindow
@@ -43,9 +44,8 @@ class Pegasus_isaacExtension(omni.ext.IExt):
         self.ui_delegate = None
         self.ui_window = None
 
-        # Basic world configurations
-        self._world_settings = DEFAULT_WORLD_SETTINGS
-        self._world: World = World(**self._world_settings)
+        # Start the extension backend
+        self._pegasus_sim = PegasusSimulator()
 
         # Add the ability to show the window if the system requires it (QuickLayout feature)
         ui.Workspace.set_show_window_fn(WINDOW_TITLE, partial(self.show_window, None))
@@ -66,7 +66,7 @@ class Pegasus_isaacExtension(omni.ext.IExt):
         if show == True:
 
             # Create a window and its delegate
-            self.ui_delegate = UIDelegate(self._world, self._world_settings)
+            self.ui_delegate = UIDelegate()
             self.ui_window = WidgetWindow(self.ui_delegate)
             self.ui_window.set_visibility_changed_fn(self._visibility_changed_fn)
         
