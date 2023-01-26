@@ -14,7 +14,7 @@ from omni.isaac.core.utils.viewports import set_camera_view
 import omni.isaac.core.utils.nucleus as nucleus
 
 # Pegasus Simulator internal API
-from pegasus_isaac.params import DEFAULT_WORLD_SETTINGS
+from pegasus_isaac.params import DEFAULT_WORLD_SETTINGS, SIMULATION_ENVIRONMENTS
 from pegasus_isaac.logic.vehicles import VehicleManager
 
 class PegasusSimulator:
@@ -61,6 +61,12 @@ class PegasusSimulator:
         """
         return self._vehicle_manager.vehicles
 
+    def get_default_environments(self):
+        """
+        Method that returns a dictionary containing all the default simulation environments and their path
+        """
+        return SIMULATION_ENVIRONMENTS
+
     def generate_quadrotor_config_from_yaml(self, file: str):
         
         # Load the quadrotor configuration data from the given yaml file
@@ -101,7 +107,7 @@ class PegasusSimulator:
 
         # Reset and pause the world simulation
         await self.world.reset_async()
-        await self.world.stop_async()     
+        await self.world.stop_async()
 
         # Load the USD asset that will be used for the environment
         try:

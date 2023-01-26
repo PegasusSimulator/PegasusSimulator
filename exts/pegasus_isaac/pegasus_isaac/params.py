@@ -26,14 +26,15 @@ ROBOTS = {
 
 # Setup the default simulation environments path
 NVIDIA_ASSETS_PATH = nucleus.get_assets_root_path()
+ISAAC_SIM_ENVIRONMENTS = "/Isaac/Environments"
 NVIDIA_SIMULATION_ENVIRONMENTS = {
     "Default Environment": "Grid/default_environment.usd",
-    "Black Gridroom": "Grid/gridroom_back.usd",
+    "Black Gridroom": "Grid/gridroom_black.usd",
     "Curved Gridroom": "Grid/gridroom_curved.usd",
     "Hospital": "Hospital/hospital.usd",
     "Office": "Office/office.usd",
     "Simple Room": "Simple_Room/simple_room.usd",
-    "Warehouse": "warehouse.usd",
+    "Warehouse": "Simple_Warehouse/warehouse.usd",
     "Warehouse with Forklifts": "Simple_Warehouse/warehouse_with_forklifts.usd",
     "Warehouse with Shelves": "Simple_Warehouse/warehouse_multiple_shelves.usd",
     "Full Warehouse": "Simple_Warehouse/full_warehouse.usd",
@@ -45,7 +46,7 @@ NVIDIA_SIMULATION_ENVIRONMENTS = {
 
 SIMULATION_ENVIRONMENTS = {}
 for asset in NVIDIA_SIMULATION_ENVIRONMENTS:
-    SIMULATION_ENVIRONMENTS[asset] = NVIDIA_ASSETS_PATH + '/' + NVIDIA_SIMULATION_ENVIRONMENTS[asset]
+    SIMULATION_ENVIRONMENTS[asset] = NVIDIA_ASSETS_PATH + ISAAC_SIM_ENVIRONMENTS + '/' + NVIDIA_SIMULATION_ENVIRONMENTS[asset]
 
 # Define the default settings for the simulation environment
 DEFAULT_WORLD_SETTINGS = {
