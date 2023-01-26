@@ -82,66 +82,34 @@ class UIDelegate:
         Method that should be invoked when the button to load the selected world is pressed
         """
 
-        # Asynchronous auxiliary function in order for the UI to be responsive while loading the world
-        async def load_world_async(self):
-
-            # Setup a new world (even if one already existed)
-            self._pegasus_sim._world = World(**DEFAULT_WORLD_SETTINGS)
-            await self._pegasus_sim._world.initialize_simulation_context_async()
-
-            # Reset and pause the world simulation
-            await self._pegasus_sim.world.reset_async()
-            await self._pegasus_sim.world.stop_async()
-
-            # Load a ground in the world
-            # TODO - add the loading of the custom scene here
-            #self._pegasus_sim.world.scene.add_default_ground_plane()            
-
-            self._pegasus_sim.load_nvidia_environment()
-            
-
-        # --------------------------
-        # Function logic starts here
-        # -------------------------- 
-
-        carb.log_warn("New scene has been loaded")
-
         # Check if a scene is selected in the drop-down menu
         if self._scene_dropdown is not None:
 
             # Get the id of the selected environment from the list
             environemnt_index = self._scene_dropdown.get_item_value_model().as_int
 
+            # Get the nvidia environments
+            import omni.isaac.core.utils.nucleus as nucleus
+            environment_asset = "Hospital/hospital.usd"
+            
+            # Get the nvidia assets root path
+            nvidia_assets_path = nucleus.get_assets_root_path()
+
+            # Define the environments path inside the NVidia assets
+            environments_path = "/Isaac/Environments"
+
+            # Get the complete usd path
+            usd_path = nvidia_assets_path + environments_path + '/' + environment_asset
+
             # Create a new empty with the correct settings and initialize it
-            asyncio.ensure_future(load_world_async(self))
+            self._pegasus_sim.load_environment(usd_path)
 
 
     def on_clear_scene(self):
         """
         Method that should be invoked when the clear world button is pressed
         """
-        carb.log_warn("Current scene and its vehicles has been deleted")
-
-        # If the physics simulation was running, stop it first
-        if self._pegasus_sim.world is not None:
-            self._pegasus_sim.world.stop()
-
-        # Clear the world
-        if self._pegasus_sim.world is not None:
-            self._pegasus_sim.world.clear_all_callbacks()
-            self._pegasus_sim.world.clear()
-
-        # Clear the stage
-        clear_stage()
-        
-        # Cleanup the world pointer
-        self._pegasus_sim.clear_world()
-
-        # Remove all the robots that were spawned
-        self._vehicle_manager.remove_all_vehicles()
-
-        # Call python's garbage collection
-        gc.collect()
+        self._pegasus_sim.clear_scene()
 
     def on_load_vehicle(self):
         """

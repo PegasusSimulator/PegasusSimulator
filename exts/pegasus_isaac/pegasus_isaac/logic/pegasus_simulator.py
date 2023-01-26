@@ -1,13 +1,15 @@
 #!/usr/bin/env python
 
 # Importing Lock in ordef to have a multithread safe Pegasus singleton that manages the entire Pegasus extension
-import os
+import gc
+import asyncio
 from threading import Lock
 
 # NVidia API imports
 import carb
 from omni.isaac.core.world import World
-from omni.isaac.core.prims import XFormPrim 
+from omni.isaac.core.utils.stage import clear_stage
+from omni.isaac.core.utils.viewports import set_camera_view
 import omni.isaac.core.utils.nucleus as nucleus
 
 # Pegasus Simulator internal API
@@ -30,6 +32,7 @@ class PegasusSimulator:
             return
 
         carb.log_warn("Initializing the Pegasus Simulator Extension")
+        PegasusSimulator._is_initialized = True
 
         # Get a handle to the vehicle manager instance which will manage which vehicles are spawned in the world
         # to be controlled and simulated
@@ -38,15 +41,71 @@ class PegasusSimulator:
         # Initialize the world with the default simulation settings
         self._world_settings = DEFAULT_WORLD_SETTINGS
         self._world = World(**self._world_settings)
+        asyncio.ensure_future(self._world.initialize_simulation_context_async())
 
     @property
     def world(self):
         return self._world
 
-    def clear_world(self):
-        self._world.clear()
+    @property
+    def vehicle_manager(self):
+        return self._vehicle_manager
 
-    def load_nvidia_environment(self, environment_asset: str="/Hospital/hospital.usd"):
+    def get_vehicle(self, stage_prefix:str):
+        return self._vehicle_manager.vehicles[stage_prefix]
+
+    def get_all_vehicles(self):
+        """
+        Method that returns a list of vehicles that are considered active in the simulator
+        """
+        return self._vehicle_manager.vehicles
+
+    def clear_scene(self):
+        """
+        Method that when invoked will clear all vehicles and the simulation environment, leaving only an empty
+        world with a physics environment
+        """
+
+        # If the physics simulation was running, stop it first
+        if self.world is not None:
+            self.world.stop()
+
+        # Clear the world
+        if self.world is not None:
+            self.world.clear_all_callbacks()
+            self.world.clear()
+
+        # Clear the stage
+        clear_stage()
+
+        # Remove all the robots that were spawned
+        self._vehicle_manager.remove_all_vehicles()
+
+        # Call python's garbage collection
+        gc.collect()
+
+        # Re-initialize the physics context
+        asyncio.ensure_future(self._world.initialize_simulation_context_async())
+        carb.log_info("Current scene and its vehicles has been deleted")
+    
+    async def load_environment_async(self, usd_path: str):
+
+        # Reset and pause the world simulation
+        await self.world.reset_async()
+        await self.world.stop_async()     
+
+        # Load the USD asset that will be used for the environment
+        try:
+            self.load_asset(usd_path, "/World/layout")
+        except Exception as e:
+            carb.log_warn("Could not load the desired environment: " + str(e))
+
+        carb.log_info("A new environment has been loaded successfully")
+    
+    def load_environment(self, usd_path: str):
+        asyncio.ensure_future(self.load_environment_async(usd_path))
+    
+    def load_nvidia_environment(self, environment_asset: str="Hospital/hospital.usd"):
         """
         Method that is used to load NVidia internally provided USD stages into the simulaton World 
         """
@@ -58,7 +117,7 @@ class PegasusSimulator:
         environments_path = "/Isaac/Environments"
 
         # Get the complete usd path
-        usd_path = nvidia_assets_path + environments_path + environment_asset
+        usd_path = nvidia_assets_path + environments_path + '/' + environment_asset
 
         # Try to load the asset into the world
         self.load_asset(usd_path, "/World/layout")
@@ -78,10 +137,10 @@ class PegasusSimulator:
 
         if not success:
             raise Exception("The usd asset" + usd_asset + "is not load at stage path " + stage_prefix)
-        
-        # Wrap the primitive with and XFormPrim and add it to the scene
-        #x_form_prim = XFormPrim(prim)
-        #self._world.scene.add(x_form_prim)
+
+    def set_viewport_camera(self, camera_position, camera_target):
+        # Set the camera view to a fixed value
+        set_camera_view(eye=camera_position, target=camera_target)
 
     def __new__(cls):
         """[summary]
@@ -101,4 +160,4 @@ class PegasusSimulator:
     def __del__(self):
         """Destructor for the object"""
         PegasusSimulator._instance = None
-        return
+        PegasusSimulator._is_initialized = False
