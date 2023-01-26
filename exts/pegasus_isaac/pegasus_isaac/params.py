@@ -1,5 +1,7 @@
-import omni.kit.app as app
 from pathlib import Path
+
+import omni.kit.app as app
+import omni.isaac.core.utils.nucleus as nucleus
 
 # Extension configuration
 EXTENSION_NAME = "Pegasus Simulator"
@@ -22,10 +24,28 @@ ROBOTS = {
     "Flying Cube": ROBOTS_ASSETS + "/iris_cube.usda"
 }
 
-SIMULATION_ENVIRONMENTS = {
-    "Empty World": "/",
-    "Forest": "/", 
+# Setup the default simulation environments path
+NVIDIA_ASSETS_PATH = nucleus.get_assets_root_path()
+NVIDIA_SIMULATION_ENVIRONMENTS = {
+    "Default Environment": "Grid/default_environment.usd",
+    "Black Gridroom": "Grid/gridroom_back.usd",
+    "Curved Gridroom": "Grid/gridroom_curved.usd",
+    "Hospital": "Hospital/hospital.usd",
+    "Office": "Office/office.usd",
+    "Simple Room": "Simple_Room/simple_room.usd",
+    "Warehouse": "warehouse.usd",
+    "Warehouse with Forklifts": "Simple_Warehouse/warehouse_with_forklifts.usd",
+    "Warehouse with Shelves": "Simple_Warehouse/warehouse_multiple_shelves.usd",
+    "Full Warehouse": "Simple_Warehouse/full_warehouse.usd",
+    "Flat Plane": "Terrains/flat_plane.usd",
+    "Rough Plane": "Terrains/rough_plane.usd",
+    "Slope Plane": "Terrains/slope.usd",
+    "Stairs Plane": "Terrains/stairs.usd",
 }
+
+SIMULATION_ENVIRONMENTS = {}
+for asset in NVIDIA_SIMULATION_ENVIRONMENTS:
+    SIMULATION_ENVIRONMENTS[asset] = NVIDIA_ASSETS_PATH + '/' + NVIDIA_SIMULATION_ENVIRONMENTS[asset]
 
 # Define the default settings for the simulation environment
 DEFAULT_WORLD_SETTINGS = {

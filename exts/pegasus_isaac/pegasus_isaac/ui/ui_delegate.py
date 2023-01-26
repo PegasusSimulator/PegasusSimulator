@@ -82,21 +82,11 @@ class UIDelegate:
             # Get the id of the selected environment from the list
             environemnt_index = self._scene_dropdown.get_item_value_model().as_int
 
-            # Get the nvidia environments
-            import omni.isaac.core.utils.nucleus as nucleus
-            environment_asset = "Hospital/hospital.usd"
-            
-            # Get the nvidia assets root path
-            nvidia_assets_path = nucleus.get_assets_root_path()
+            # Get the name of the selected world
+            selected_world = self._scene_names[environemnt_index]
 
-            # Define the environments path inside the NVidia assets
-            environments_path = "/Isaac/Environments"
-
-            # Get the complete usd path
-            usd_path = nvidia_assets_path + environments_path + '/' + environment_asset
-
-            # Create a new empty with the correct settings and initialize it
-            self._pegasus_sim.load_environment(usd_path)
+            # Try to spawn the selected world
+            self._pegasus_sim.load_environment(SIMULATION_ENVIRONMENTS[selected_world])
 
 
     def on_clear_scene(self):
