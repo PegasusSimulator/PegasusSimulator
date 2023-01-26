@@ -6,6 +6,7 @@ class VehicleManager:
 
     # The object instance of the Vehicle Manager
     _instance = None
+    _is_initialized = False
 
     # Lock for safe multi-threading
     _lock: Lock = Lock()
@@ -15,8 +16,12 @@ class VehicleManager:
         Constructor for the vehicle manager class
         """
 
-        # A dictionary of vehicles that are spawned in the simulator
-        self._vehicles = {}
+        if not VehicleManager._is_initialized:
+            # Mark it as initialized
+            self._is_initialized = True
+
+            # A dictionary of vehicles that are spawned in the simulator
+            self._vehicles = {}
 
     """
     Properties
@@ -83,4 +88,5 @@ class VehicleManager:
     def __del__(self):
         """Destructor for the object"""
         VehicleManager._instance = None
+        VehicleManager._is_initialized = False
         return
