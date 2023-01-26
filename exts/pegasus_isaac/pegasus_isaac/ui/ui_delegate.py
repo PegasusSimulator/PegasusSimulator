@@ -6,7 +6,6 @@ from scipy.spatial.transform import Rotation
 # Omniverse extensions
 import carb
 import omni.ui as ui
-from omni.isaac.core.utils.stage import create_new_stage, set_stage_up_axis, clear_stage, add_reference_to_stage, get_current_stage
 
 # Extension Configurations
 from pegasus_isaac.params import ROBOTS, SIMULATION_ENVIRONMENTS
