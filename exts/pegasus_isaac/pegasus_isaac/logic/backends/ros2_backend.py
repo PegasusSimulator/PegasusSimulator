@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+import carb
+import omni.kit.app
 from pegasus_isaac.logic.backends.backend import Backend
 
 class ROS2Backend(Backend):
@@ -48,3 +50,20 @@ class ROS2Backend(Backend):
         Method that when implemented, should handle the reset of the vehicle simulation to its original state
         """
         pass
+
+    def check_ros_extension(self):
+        """
+        Method that checks which ROS extension is installed.
+        """
+
+        # Get the handle for the extension manager
+        extension_manager = omni.kit.app.get_app().get_extension_manager()    
+        
+        version = ""
+        
+        if self._ext_manager.is_extension_enabled("omni.isaac.ros_bridge"):
+            version = "ros"
+        elif self._ext_manager.is_extension_enabled("omni.isaac.ros2_bridge"):
+            version = "ros2"
+        else:
+            carb.log_warn("Neither extension 'omni.isaac.ros_bridge' nor 'omni.isaac.ros2_bridge' is enabled")

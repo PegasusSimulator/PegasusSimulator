@@ -3,18 +3,12 @@ import gc
 import asyncio
 from functools import partial
 
-# External packages
-import numpy as np
-
 # Omniverse general API
 import carb
 import omni.ext
 import omni.kit.ui
 import omni.kit.app
 import omni.ui as ui
-
-# Isaac Speficic extensions API
-from omni.isaac.core import World
 
 # Pegasus Extension Files and API
 from pegasus_isaac.params import DEFAULT_WORLD_SETTINGS, MENU_PATH, WINDOW_TITLE
@@ -131,38 +125,4 @@ class Pegasus_isaacExtension(omni.ext.IExt):
 
         # Call the garbage collector
         gc.collect()
-
-    # -------------------------------------
-    # TO BE MOVED
-    # -------------------------------------
-
-    def set_world_settings(self, physics_dt=None, stage_units_in_meters=None, rendering_dt=None):
-        """
-        Set the current world settings to the pre-defined settings
-        """
-
-        # Set the physics engine update rate
-        if physics_dt is not None:
-            self._world_settings["physics_dt"] = physics_dt
-
-        # Set the units of the simulator to meters
-        if stage_units_in_meters is not None:
-            self._world_settings["stage_units_in_meters"] = stage_units_in_meters
-
-        # Set the render engine update rate (might not be the same as the physics engine)
-        if rendering_dt is not None:
-            self._world_settings["rendering_dt"] = rendering_dt
-
-    def check_ros_extension(self):
-        """
-        Method that checks which ROS extension is installed.
-        """
-        
-        version = ""
-        
-        if self._ext_manager.is_extension_enabled("omni.isaac.ros_bridge"):
-            version = "ros"
-        elif self._ext_manager.is_extension_enabled("omni.isaac.ros2_bridge"):
-            version = "ros2"
-        else:
-            carb.log_warn("Neither extension 'omni.isaac.ros_bridge' nor 'omni.isaac.ros2_bridge' is enabled")
+    
