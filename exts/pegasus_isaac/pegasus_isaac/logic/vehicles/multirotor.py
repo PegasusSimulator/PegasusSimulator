@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import carb
 import numpy as np
 from pegasus_isaac.logic.vehicles.vehicle import Vehicle
 
@@ -8,8 +7,9 @@ from pegasus_isaac.logic.vehicles.vehicle import Vehicle
 from pegasus_isaac.logic.backends.mavlink_backend import MavlinkBackend
 
 # Sensors and dynamics setup
+from pegasus_isaac.logic.dynamics import LinearDrag
+from pegasus_isaac.logic.thrusters import QuadraticThrustCurve
 from pegasus_isaac.logic.sensors import Barometer, IMU, Magnetometer, GPS
-from pegasus_isaac.logic.dynamics import LinearDrag, QuadraticThrustCurve
 
 class MultirotorConfig:
 
@@ -23,7 +23,7 @@ class MultirotorConfig:
 
         # The default thrust curve for a quadrotor and dynamics relating to drag
         self.thrust_curve = QuadraticThrustCurve()
-        self.drag = LinearDrag(np.array([0.50, 0.30, 0.0]))
+        self.drag = LinearDrag([0.50, 0.30, 0.0])
 
         # The default sensors for a quadrotor
         self.sensors = [Barometer(), IMU(), Magnetometer(), GPS()]
@@ -66,7 +66,7 @@ class Multirotor(Vehicle):
         # 3. Setup the dynamics of the system
         # Get the thrust curve of the vehicle from the configuration
         self._thrusters = config.thrust_curve
-        self._linear_drag = config.drag
+        self._drag = config.drag
 
         # 4. Save the backend interface (if given in the configuration of the multirotor)
         self._backends = config.backends
@@ -137,7 +137,7 @@ class Multirotor(Vehicle):
         self.apply_torque([0.0, 0.0, rolling_moment], "/body")
 
         # Compute the total linear drag force to apply to the vehicle's body frame
-        drag = self._linear_drag.update(self._state, dt)
+        drag = self._drag.update(self._state, dt)
         self.apply_force(drag, body_part="/body")
 
         # Call the update methods in all backends

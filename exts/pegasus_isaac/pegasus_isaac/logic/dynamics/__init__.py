@@ -1,2 +1,1 @@
 from .linear_drag import LinearDrag
-from .quadratic_thrust_curve import QuadraticThrustCurve

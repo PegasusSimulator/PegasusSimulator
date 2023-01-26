@@ -3,6 +3,10 @@ import carb
 import omni.kit.app
 from pegasus_isaac.logic.backends.backend import Backend
 
+class ROS2BackendConfig:
+    def __init__(self):
+        pass
+
 class ROS2Backend(Backend):
 
     def __init__(self):

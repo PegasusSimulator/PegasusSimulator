@@ -11,36 +11,29 @@ import numpy as np
 from pegasus_isaac.logic.state import State
 class QuadraticThrustCurve:
 
-    def __init__(self, 
-        num_rotors: int=4, 
-        rotor_constant=[5.84E-6, 5.84E-6, 5.84E-6, 5.84E-6],
-        rolling_moment_coefficient=[1E-6, 1E-6, 1E-6, 1E-6],
-        min_rotor_velocity=[0, 0, 0, 0],
-        max_rotor_velocity=[1100, 1100, 1100, 1100],
-        # Rotation direction for the rotors
-        rot_dir=[-1,-1,1,1]):
+    def __init__(self, config={}):
         
         # Get the total number of rotors to simulate
-        self._num_rotors = num_rotors
+        self._num_rotors = config.get("num_rotors", 4)
 
         # The rotor constant used for computing the total thrust produced by the rotor: T = rotor_constant * omega^2
-        assert len(rotor_constant) == self._num_rotors
-        self._rotor_constant = rotor_constant
+        self._rotor_constant = config.get("rotor_constant", [5.84E-6, 5.84E-6, 5.84E-6, 5.84E-6])
+        assert len(self._rotor_constant) == self._num_rotors
 
         # The rotor constant used for computing the total torque generated about the vehicle Z-axis
-        assert len(rolling_moment_coefficient) == self._num_rotors
-        self._rolling_moment_coefficient = rolling_moment_coefficient
+        self._rolling_moment_coefficient = config.get("rolling_moment_coefficient", [1E-6, 1E-6, 1E-6, 1E-6])
+        assert len(self._rolling_moment_coefficient) == self._num_rotors
 
         # Save the rotor direction of rotation
-        assert len(rot_dir) == self._num_rotors
-        self._rot_dir = rot_dir
+        self._rot_dir = config.get("rot_dir", [-1,-1,1,1])
+        assert len(self._rot_dir) == self._num_rotors
 
         # Values for the minimum and maximum rotor velocity in rad/s
-        assert len(min_rotor_velocity) == self._num_rotors
-        self.min_rotor_velocity = min_rotor_velocity
+        self.min_rotor_velocity = config.get("min_rotor_velocity", [0, 0, 0, 0])
+        assert len(self.min_rotor_velocity) == self._num_rotors
 
-        assert len(max_rotor_velocity) == self._num_rotors
-        self.max_rotor_velocity = max_rotor_velocity
+        self.max_rotor_velocity = config.get("max_rotor_velocity", [1100, 1100, 1100, 1100])
+        assert len(self.max_rotor_velocity) == self._num_rotors
         
         # The actual speed references to apply to the vehicle rotor joints
         self._input_reference = [0.0 for i in range(self._num_rotors)]
