@@ -1,0 +1,720 @@
+#usda 1.0
+(
+    defaultPrim = "Root"
+    upAxis = "Z"
+)
+
+def Xform "Root"
+{
+    def Xform "vehicle"
+    {
+        token ui:displayGroup = "Material Graphs"
+        token ui:displayName = "vehicle"
+        int ui:order = 1024
+        float3 xformOp:rotateXYZ = (0, -0, 0)
+        float3 xformOp:scale = (1, 1, 1)
+        double3 xformOp:translate = (0, 0, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+
+        def Xform "body" (
+            apiSchemas = ["PhysicsMassAPI", "PhysicsRigidBodyAPI", "PhysxRigidBodyAPI", "PhysicsArticulationRootAPI", "PhysxArticulationAPI"]
+        )
+        {
+            rel material:binding = </Root/vehicle/body/Looks/Carpet_Gray> (
+                bindMaterialAs = "weakerThanDescendants"
+            )
+            point3f physics:centerOfMass = (0, 0, 0)
+            float3 physics:diagonalInertia = (0.029125, 0.029125, 0.055225)
+            bool physics:kinematicEnabled = 0
+            float physics:mass = 1.5
+            bool physics:rigidBodyEnabled = 1
+            float physxRigidBody:angularDamping = 0
+            float physxRigidBody:maxAngularVelocity = 10000
+            float physxRigidBody:maxContactImpulse = 0.1
+            bool primvars:doNotCastShadows = 0
+            quatf xformOp:orient = (1, 0, 0, 0)
+            double3 xformOp:scale = (1.0000000000000009, 1.0000000000000009, 1)
+            float3 xformOp:translate = (0, 0, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+            def Scope "Looks"
+            {
+                def Material "Carpet_Gray"
+                {
+                    token outputs:mdl:displacement.connect = </Root/vehicle/body/Looks/Carpet_Gray/Shader.outputs:out>
+                    token outputs:mdl:surface.connect = </Root/vehicle/body/Looks/Carpet_Gray/Shader.outputs:out>
+                    token outputs:mdl:volume.connect = </Root/vehicle/body/Looks/Carpet_Gray/Shader.outputs:out>
+
+                    def Shader "Shader"
+                    {
+                        reorder properties = ["inputs:diffuse_color_constant", "inputs:diffuse_texture", "inputs:albedo_desaturation", "inputs:albedo_add", "inputs:albedo_brightness", "inputs:diffuse_tint", "inputs:reflection_roughness_constant", "inputs:reflection_roughness_texture_influence", "inputs:reflectionroughness_texture", "inputs:metallic_constant", "inputs:metallic_texture_influence", "inputs:metallic_texture", "inputs:specular_level", "inputs:enable_ORM_texture", "inputs:ORM_texture", "inputs:ao_to_diffuse", "inputs:ao_texture", "inputs:enable_emission", "inputs:emissive_color", "inputs:emissive_color_texture", "inputs:emissive_mask_texture", "inputs:emissive_intensity", "inputs:enable_opacity", "inputs:opacity_texture", "inputs:opacity_constant", "inputs:enable_opacity_texture", "inputs:opacity_mode", "inputs:opacity_threshold", "inputs:bump_factor", "inputs:normalmap_texture", "inputs:detail_bump_factor", "inputs:detail_normalmap_texture", "inputs:flip_tangent_u", "inputs:flip_tangent_v", "inputs:project_uvw", "inputs:world_or_object", "inputs:uv_space_index", "inputs:texture_translate", "inputs:texture_rotate", "inputs:texture_scale", "inputs:detail_texture_translate", "inputs:detail_texture_rotate", "inputs:detail_texture_scale"]
+                        uniform token info:implementationSource = "sourceAsset"
+                        uniform asset info:mdl:sourceAsset = @http://omniverse-content-production.s3-us-west-2.amazonaws.com/Materials/Base/Carpet/Carpet_Gray.mdl@
+                        uniform token info:mdl:sourceAsset:subIdentifier = "Carpet_Gray"
+                        float inputs:albedo_add = 0 (
+                            customData = {
+                                float default = 0
+                                dictionary soft_range = {
+                                    float max = 1
+                                    float min = -1
+                                }
+                            }
+                            displayGroup = "Albedo"
+                            displayName = "Albedo Add"
+                            doc = "Adds a constant value to the diffuse color "
+                            hidden = false
+                        )
+                        float inputs:albedo_brightness = 1 (
+                            customData = {
+                                float default = 1
+                                dictionary soft_range = {
+                                    float max = 1
+                                    float min = 0
+                                }
+                            }
+                            displayGroup = "Albedo"
+                            displayName = "Albedo Brightness"
+                            doc = "Multiplier for the diffuse color "
+                            hidden = false
+                        )
+                        float inputs:albedo_desaturation = 0 (
+                            customData = {
+                                float default = 0
+                                dictionary soft_range = {
+                                    float max = 1
+                                    float min = 0
+                                }
+                            }
+                            displayGroup = "Albedo"
+                            displayName = "Albedo Desaturation"
+                            doc = "Desaturates the diffuse color"
+                            hidden = false
+                        )
+                        asset inputs:ao_texture = @@ (
+                            colorSpace = "raw"
+                            customData = {
+                                asset default = @@
+                            }
+                            displayGroup = "AO"
+                            displayName = "Ambient Occlusion Map"
+                            doc = "The ambient occlusion texture for the material"
+                            hidden = false
+                        )
+                        float inputs:ao_to_diffuse = 0 (
+                            customData = {
+                                float default = 0
+                                dictionary range = {
+                                    float max = 1
+                                    float min = 0
+                                }
+                            }
+                            displayGroup = "AO"
+                            displayName = "AO to diffuse"
+                            doc = "Controls the amount of ambient occlusion multiplied against the diffuse color channel"
+                            hidden = false
+                        )
+                        float inputs:bump_factor = 0.75 (
+                            customData = {
+                                float default = 0.75
+                                dictionary soft_range = {
+                                    float max = 1
+                                    float min = 0
+                                }
+                            }
+                            displayGroup = "Normal"
+                            displayName = "Normal Strength"
+                            doc = "Strength of normal map"
+                            hidden = false
+                        )
+                        float inputs:detail_bump_factor = 0.3 (
+                            customData = {
+                                float default = 0.3
+                                dictionary soft_range = {
+                                    float max = 1
+                                    float min = 0
+                                }
+                            }
+                            displayGroup = "Normal"
+                            displayName = "Detail Normal Strength"
+                            doc = "Strength of the detail normal"
+                            hidden = false
+                        )
+                        asset inputs:detail_normalmap_texture = @@ (
+                            colorSpace = "raw"
+                            customData = {
+                                asset default = @@
+                            }
+                            displayGroup = "Normal"
+                            displayName = "Detail Normal Map"
+                            hidden = false
+                        )
+                        float inputs:detail_texture_rotate = 0 (
+                            customData = {
+                                float default = 0
+                            }
+                            displayGroup = "UV"
+                            displayName = "Detail Texture Rotate"
+                            doc = "Rotates angle of the detail texture in degrees."
+                            hidden = false
+                        )
+                        float2 inputs:detail_texture_scale = (1, 1) (
+                            customData = {
+                                float2 default = (1, 1)
+                            }
+                            displayGroup = "UV"
+                            displayName = "Detail Texture Scale"
+                            doc = "Larger numbers increase the size of the detail texture"
+                            hidden = false
+                        )
+                        float2 inputs:detail_texture_translate = (0, 0) (
+                            customData = {
+                                float2 default = (0, 0)
+                            }
+                            displayGroup = "UV"
+                            displayName = "Detail Texture Translate"
+                            doc = "Controls the position of the detail texture."
+                            hidden = false
+                        )
+                        color3f inputs:diffuse_color_constant = (0.5, 0.5, 0.5) (
+                            customData = {
+                                float3 default = (0.5, 0.5, 0.5)
+                            }
+                            displayGroup = "Albedo"
+                            displayName = "Albedo Color"
+                            doc = "This is the albedo base color"
+                            hidden = false
+                        )
+                        asset inputs:diffuse_texture = @http://omniverse-content-production.s3-us-west-2.amazonaws.com/Materials/Base/Carpet/Carpet_Gray/Carpet_Gray_BaseColor.png@ (
+                            colorSpace = "sRGB"
+                            customData = {
+                                asset default = @http://omniverse-content-production.s3-us-west-2.amazonaws.com/Materials/Base/Carpet/Carpet_Gray/Carpet_Gray_BaseColor.png@
+                            }
+                            displayGroup = "Albedo"
+                            displayName = "Albedo Map"
+                            hidden = false
+                        )
+                        color3f inputs:diffuse_tint = (0.096565746, 0.097755775, 0.10126585) (
+                            customData = {
+                                float3 default = (1, 1, 1)
+                            }
+                            displayGroup = "Albedo"
+                            displayName = "Color Tint"
+                            doc = "When enabled, this color value is multiplied over the final albedo color"
+                            hidden = false
+                        )
+                        color3f inputs:emissive_color = (1, 1, 1) (
+                            customData = {
+                                float3 default = (1, 1, 1)
+                            }
+                            displayGroup = "Emissive"
+                            displayName = "Emissive Color"
+                            doc = "The emission color"
+                            hidden = false
+                        )
+                        asset inputs:emissive_color_texture = @@ (
+                            colorSpace = "auto"
+                            customData = {
+                                asset default = @@
+                            }
+                            displayGroup = "Emissive"
+                            displayName = "Emissive Color map"
+                            doc = "The emissive color texture"
+                            hidden = false
+                        )
+                        float inputs:emissive_intensity = 0 (
+                            customData = {
+                                float default = 0
+                            }
+                            displayGroup = "Emissive"
+                            displayName = "Emissive Intensity"
+                            doc = "Intensity of the emission"
+                            hidden = false
+                        )
+                        asset inputs:emissive_mask_texture = @@ (
+                            colorSpace = "raw"
+                            customData = {
+                                asset default = @@
+                            }
+                            displayGroup = "Emissive"
+                            displayName = "Emissive Mask map"
+                            doc = "The texture masking the emissive color"
+                            hidden = false
+                        )
+                        bool inputs:enable_emission = 0 (
+                            customData = {
+                                bool default = 0
+                            }
+                            displayGroup = "Emissive"
+                            displayName = "Enable Emission"
+                            doc = "Enables the emission of light from the material"
+                            hidden = false
+                        )
+                        bool inputs:enable_opacity = 0 (
+                            customData = {
+                                bool default = 0
+                            }
+                            displayGroup = "Opacity"
+                            displayName = "Enable Opacity"
+                            doc = "Enables the use of cutout opacity"
+                            hidden = false
+                        )
+                        bool inputs:enable_opacity_texture = 0 (
+                            customData = {
+                                bool default = 0
+                            }
+                            displayGroup = "Opacity"
+                            displayName = "Enable Opacity Texture"
+                            doc = "Enables or disables the usage of the opacity texture map"
+                            hidden = false
+                        )
+                        bool inputs:enable_ORM_texture = 1 (
+                            customData = {
+                                bool default = 1
+                            }
+                            displayGroup = "Reflectivity"
+                            displayName = "Enable ORM Texture"
+                            doc = "The ORM texture will be used to extract the Occlusion, Roughness and Metallic textures from R,G,B channels"
+                            hidden = false
+                        )
+                        bool inputs:excludeFromWhiteMode = 0 (
+                            customData = {
+                                bool default = 0
+                            }
+                            displayGroup = "Material Flags"
+                            displayName = "Exclude from White Mode"
+                            hidden = false
+                        )
+                        bool inputs:flip_tangent_u = 0 (
+                            customData = {
+                                bool default = 0
+                            }
+                            displayGroup = "Normal"
+                            displayName = "Normal Map Flip U Tangent"
+                            hidden = false
+                        )
+                        bool inputs:flip_tangent_v = 1 (
+                            customData = {
+                                bool default = 1
+                            }
+                            displayGroup = "Normal"
+                            displayName = "Normal Map Flip V Tangent"
+                            hidden = false
+                        )
+                        float inputs:metallic_constant = 0 (
+                            customData = {
+                                float default = 0
+                                dictionary range = {
+                                    float max = 1
+                                    float min = 0
+                                }
+                            }
+                            displayGroup = "Reflectivity"
+                            displayName = "Metallic Amount"
+                            doc = "Metallic Material"
+                            hidden = false
+                        )
+                        asset inputs:metallic_texture = @@ (
+                            colorSpace = "raw"
+                            customData = {
+                                asset default = @@
+                            }
+                            displayGroup = "Reflectivity"
+                            displayName = "Metallic Map"
+                            hidden = false
+                        )
+                        float inputs:metallic_texture_influence = 1 (
+                            customData = {
+                                float default = 1
+                                dictionary range = {
+                                    float max = 1
+                                    float min = 0
+                                }
+                            }
+                            displayGroup = "Reflectivity"
+                            displayName = "Metallic Map Influence"
+                            doc = "Blends between the constant value and the lookup of the metallic texture"
+                            hidden = false
+                        )
+                        asset inputs:normalmap_texture = @http://omniverse-content-production.s3-us-west-2.amazonaws.com/Materials/Base/Carpet/Carpet_Gray/Carpet_Gray_Normal.png@ (
+                            colorSpace = "raw"
+                            customData = {
+                                asset default = @http://omniverse-content-production.s3-us-west-2.amazonaws.com/Materials/Base/Carpet/Carpet_Gray/Carpet_Gray_Normal.png@
+                            }
+                            displayGroup = "Normal"
+                            displayName = "Normal Map"
+                            hidden = false
+                        )
+                        float inputs:opacity_constant = 1 (
+                            customData = {
+                                float default = 1
+                                dictionary range = {
+                                    float max = 1
+                                    float min = 0
+                                }
+                            }
+                            displayGroup = "Opacity"
+                            displayName = "Opacity Amount"
+                            doc = "Opacity value between 0 and 1, when Opacity Map is not valid"
+                            hidden = false
+                        )
+                        int inputs:opacity_mode = 1 (
+                            customData = {
+                                int default = 1
+                            }
+                            displayGroup = "Opacity"
+                            displayName = "Opacity Mono Source"
+                            doc = "Determines how to lookup opacity from the supplied texture. mono_alpha, mono_average, mono_luminance, mono_maximum"
+                            hidden = false
+                            renderType = "::base::mono_mode"
+                            sdrMetadata = {
+                                string __SDR__enum_value = "mono_average"
+                                string options = "mono_alpha:0|mono_average:1|mono_luminance:2|mono_maximum:3"
+                            }
+                        )
+                        asset inputs:opacity_texture = @@ (
+                            colorSpace = "raw"
+                            customData = {
+                                asset default = @@
+                            }
+                            displayGroup = "Opacity"
+                            displayName = "Opacity Map"
+                            hidden = false
+                        )
+                        float inputs:opacity_threshold = 0 (
+                            customData = {
+                                float default = 0
+                                dictionary range = {
+                                    float max = 1
+                                    float min = 0
+                                }
+                            }
+                            displayGroup = "Opacity"
+                            displayName = "Opacity Threshold"
+                            doc = "If 0, use fractional opacity values 'as is'; if > 0, remap opacity values to 1 when >= threshold and to 0 otherwise"
+                            hidden = false
+                        )
+                        asset inputs:ORM_texture = @http://omniverse-content-production.s3-us-west-2.amazonaws.com/Materials/Base/Carpet/Carpet_Gray/Carpet_Gray_ORM.png@ (
+                            colorSpace = "raw"
+                            customData = {
+                                asset default = @http://omniverse-content-production.s3-us-west-2.amazonaws.com/Materials/Base/Carpet/Carpet_Gray/Carpet_Gray_ORM.png@
+                            }
+                            displayGroup = "Reflectivity"
+                            displayName = "ORM Map"
+                            doc = "Texture that has Occlusion, Roughness and Metallic maps stored in their respective R, G and B channels"
+                            hidden = false
+                        )
+                        bool inputs:project_uvw = 0 (
+                            customData = {
+                                bool default = 0
+                            }
+                            displayGroup = "UV"
+                            displayName = "Enable Project UVW Coordinates"
+                            doc = "When enabled, UV coordinates will be generated by projecting them from a coordinate system"
+                            hidden = false
+                        )
+                        float inputs:reflection_roughness_constant = 0 (
+                            customData = {
+                                float default = 0
+                                dictionary range = {
+                                    float max = 1
+                                    float min = 0
+                                }
+                            }
+                            displayGroup = "Reflectivity"
+                            displayName = "Roughness Amount"
+                            doc = "Higher roughness values lead to more blurry reflections"
+                            hidden = false
+                        )
+                        float inputs:reflection_roughness_texture_influence = 1 (
+                            customData = {
+                                float default = 1
+                                dictionary range = {
+                                    float max = 1
+                                    float min = 0
+                                }
+                            }
+                            displayGroup = "Reflectivity"
+                            displayName = "Roughness Map Influence"
+                            doc = "Blends between the constant value and the lookup of the roughness texture"
+                            hidden = false
+                        )
+                        asset inputs:reflectionroughness_texture = @@ (
+                            colorSpace = "raw"
+                            customData = {
+                                asset default = @@
+                            }
+                            displayGroup = "Reflectivity"
+                            displayName = "Roughness Map"
+                            hidden = false
+                        )
+                        float inputs:specular_level = 0.5 (
+                            customData = {
+                                float default = 0.5
+                                dictionary soft_range = {
+                                    float max = 1
+                                    float min = 0
+                                }
+                            }
+                            displayGroup = "Reflectivity"
+                            displayName = "Specular"
+                            doc = "The specular level (intensity) of the material"
+                            hidden = false
+                        )
+                        float inputs:texture_rotate = 0 (
+                            customData = {
+                                float default = 0
+                            }
+                            displayGroup = "UV"
+                            displayName = "Texture Rotate"
+                            doc = "Rotates angle of texture in degrees."
+                            hidden = false
+                        )
+                        float2 inputs:texture_scale = (1, 1) (
+                            customData = {
+                                float2 default = (1, 1)
+                            }
+                            displayGroup = "UV"
+                            displayName = "Texture Scale"
+                            doc = "Larger number increases size of texture."
+                            hidden = false
+                        )
+                        float2 inputs:texture_translate = (0, 0) (
+                            customData = {
+                                float2 default = (0, 0)
+                            }
+                            displayGroup = "UV"
+                            displayName = "Texture Translate"
+                            doc = "Controls position of texture."
+                            hidden = false
+                        )
+                        int inputs:uv_space_index = 0 (
+                            customData = {
+                                int default = 0
+                                dictionary range = {
+                                    int max = 3
+                                    int min = 0
+                                }
+                            }
+                            displayGroup = "UV"
+                            displayName = "UV Space Index"
+                            doc = "UV Space Index."
+                            hidden = false
+                        )
+                        bool inputs:world_or_object = 0 (
+                            customData = {
+                                bool default = 0
+                            }
+                            displayGroup = "UV"
+                            displayName = "Enable World Space"
+                            doc = "When enabled, uses world space for projection, otherwise object space is used"
+                            hidden = false
+                        )
+                        token outputs:out (
+                            renderType = "material"
+                        )
+                    }
+                }
+            }
+
+            def Cube "body" (
+                apiSchemas = ["PhysicsCollisionAPI", "PhysxCollisionAPI"]
+            )
+            {
+                float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+                bool physics:collisionEnabled = 1
+                double size = 1
+                quatd xformOp:orient = (1, 0, 0, 0)
+                double3 xformOp:scale = (0.32, 0.48, 0.1)
+                double3 xformOp:translate = (0, 0, 0)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+            }
+        }
+
+        def Xform "rotor0" (
+            apiSchemas = ["PhysicsMassAPI", "PhysicsRigidBodyAPI", "PhysxRigidBodyAPI"]
+        )
+        {
+            rel material:binding = </Root/vehicle/rotor0/Looks/Linen_Blue> (
+                bindMaterialAs = "weakerThanDescendants"
+            )
+            float3 physics:diagonalInertia = (9.75e-7, 0.000273104, 0.000274004)
+            bool physics:kinematicEnabled = 0
+            float physics:mass = 0.005
+            bool physics:rigidBodyEnabled = 1
+            float physxRigidBody:angularDamping = 0
+            bool physxRigidBody:disableGravity = 0
+            bool physxRigidBody:enableCCD = 0
+            float physxRigidBody:maxAngularVelocity = 10000
+            float physxRigidBody:maxContactImpulse = 0.1
+            bool primvars:doNotCastShadows = 0
+            quatf xformOp:orient = (0.70710677, 0, 0, 0.70710677)
+            double3 xformOp:scale = (1.0000000000000009, 1.0000000000000009, 1)
+            float3 xformOp:translate = (0.13, -0.22, 0.06)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+            def Cube "Cube"
+            {
+                float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+                double size = 1
+                quatd xformOp:orient = (1, 0, 0, 0)
+                double3 xformOp:scale = (0.01, 0.01, 0.01)
+                double3 xformOp:translate = (0, 0, 0)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+            }
+
+            def PhysicsRevoluteJoint "RevoluteJoint"
+            {
+                uniform token physics:axis = "Z"
+                rel physics:body0 = </Root/vehicle/body>
+                rel physics:body1 = </Root/vehicle/rotor0>
+                float physics:breakForce = inf
+                float physics:breakTorque = inf
+                point3f physics:localPos0 = (0.13, -0.22, 0.06)
+                point3f physics:localPos1 = (2.7755576e-17, 0, 0)
+                quatf physics:localRot0 = (0.70710677, 0, 0, 0.70710677)
+                quatf physics:localRot1 = (1, 0, 0, -1.1852224e-7)
+            }
+        }
+
+        def Xform "rotor1" (
+            apiSchemas = ["PhysicsMassAPI", "PhysicsRigidBodyAPI", "PhysxRigidBodyAPI"]
+        )
+        {
+            point3f physics:centerOfMass = (0, 0, 0)
+            float3 physics:diagonalInertia = (9.75e-7, 0.000273104, 0.000274004)
+            bool physics:kinematicEnabled = 0
+            float physics:mass = 0.005
+            bool physics:rigidBodyEnabled = 1
+            float physxRigidBody:angularDamping = 0
+            float physxRigidBody:maxAngularVelocity = 10000
+            float physxRigidBody:maxContactImpulse = 0.1
+            quatf xformOp:orient = (1, 0, 0, 0)
+            double3 xformOp:scale = (1.0000000000000009, 1.0000000000000009, 1)
+            float3 xformOp:translate = (-0.13, 0.2, 0.06)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+            def Mesh "Cube"
+            {
+                float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+                int[] faceVertexCounts = [4, 4, 4, 4, 4, 4]
+                int[] faceVertexIndices = [0, 1, 3, 2, 0, 4, 5, 1, 1, 5, 6, 3, 2, 3, 6, 7, 0, 2, 7, 4, 4, 7, 6, 5]
+                normal3f[] normals = [(0, -1, 0), (0, -1, 0), (0, -1, 0), (0, -1, 0), (0, 0, -1), (0, 0, -1), (0, 0, -1), (0, 0, -1), (1, 0, 0), (1, 0, 0), (1, 0, 0), (1, 0, 0), (0, 0, 1), (0, 0, 1), (0, 0, 1), (0, 0, 1), (-1, 0, 0), (-1, 0, 0), (-1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, 1, 0), (0, 1, 0), (0, 1, 0)] (
+                    interpolation = "faceVarying"
+                )
+                point3f[] points = [(-0.5, -0.5, -0.5), (0.5, -0.5, -0.5), (-0.5, -0.5, 0.5), (0.5, -0.5, 0.5), (-0.5, 0.5, -0.5), (0.5, 0.5, -0.5), (0.5, 0.5, 0.5), (-0.5, 0.5, 0.5)]
+                float2[] primvars:st = [(1, 0), (0, 0), (0, 1), (1, 1), (1, 0), (1, 1), (0, 1), (0, 0), (1, 0), (0, 0), (0, 1), (1, 1), (1, 0), (0, 0), (0, 1), (1, 1), (1, 0), (1, 1), (0, 1), (0, 0), (1, 0), (1, 1), (0, 1), (0, 0)] (
+                    interpolation = "faceVarying"
+                )
+                uniform token subdivisionScheme = "none"
+                quatd xformOp:orient = (1, 0, 0, 0)
+                double3 xformOp:scale = (0.01, 0.01, 0.01)
+                double3 xformOp:translate = (0, 0, 0)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+            }
+
+            def PhysicsRevoluteJoint "RevoluteJoint"
+            {
+                uniform token physics:axis = "Z"
+                rel physics:body0 = </Root/vehicle/body>
+                rel physics:body1 = </Root/vehicle/rotor1>
+                float physics:breakForce = inf
+                float physics:breakTorque = inf
+                point3f physics:localPos0 = (-0.13, 0.2, 0.06)
+                point3f physics:localPos1 = (0, 2.7755576e-17, 0)
+                quatf physics:localRot0 = (1, 0, 0, 0)
+                quatf physics:localRot1 = (1, 0, 0, 0)
+            }
+        }
+
+        def Xform "rotor2" (
+            apiSchemas = ["PhysicsMassAPI", "PhysicsRigidBodyAPI", "PhysxRigidBodyAPI"]
+            customData = {
+                dictionary physics = {
+                    bool localSpaceVelocities = 1
+                }
+            }
+        )
+        {
+            point3f physics:centerOfMass = (0, 0, 0)
+            float3 physics:diagonalInertia = (9.75e-7, 0.000273104, 0.000274004)
+            bool physics:kinematicEnabled = 0
+            float physics:mass = 0.005
+            bool physics:rigidBodyEnabled = 1
+            float physxRigidBody:angularDamping = 0
+            float physxRigidBody:contactSlopCoefficient = 0
+            bool physxRigidBody:disableGravity = 0
+            bool physxRigidBody:enableGyroscopicForces = 1
+            int physxRigidBody:lockedPosAxis = 0
+            int physxRigidBody:lockedRotAxis = 0
+            float physxRigidBody:maxAngularVelocity = 10000
+            float physxRigidBody:maxContactImpulse = 0.1
+            bool physxRigidBody:solveContact = 1
+            quatf xformOp:orient = (1, 0, 0, 0)
+            double3 xformOp:scale = (1.0000000000000009, 1.0000000000000009, 1)
+            float3 xformOp:translate = (0.13, 0.22, 0.06)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+            def Cube "Cube"
+            {
+                float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+                double size = 1
+                quatd xformOp:orient = (1, 0, 0, 0)
+                double3 xformOp:scale = (0.01, 0.01, 0.01)
+                double3 xformOp:translate = (0, 0, 0)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+            }
+
+            def PhysicsRevoluteJoint "RevoluteJoint"
+            {
+                uniform token physics:axis = "Z"
+                rel physics:body0 = </Root/vehicle/body>
+                rel physics:body1 = </Root/vehicle/rotor2>
+                float physics:breakForce = inf
+                float physics:breakTorque = inf
+                point3f physics:localPos0 = (0.13, 0.22, 0.06)
+                point3f physics:localPos1 = (0, 0, 0)
+                quatf physics:localRot0 = (1, 0, 0, 0)
+                quatf physics:localRot1 = (1, 0, 0, 0)
+            }
+        }
+
+        def Xform "rotor3" (
+            apiSchemas = ["PhysicsMassAPI", "PhysicsRigidBodyAPI", "PhysxRigidBodyAPI"]
+        )
+        {
+            point3f physics:centerOfMass = (0, 0, 0)
+            float3 physics:diagonalInertia = (9.75e-7, 0.000273104, 0.000274004)
+            bool physics:kinematicEnabled = 0
+            float physics:mass = 0.005
+            bool physics:rigidBodyEnabled = 1
+            float physxRigidBody:maxContactImpulse = 0.1
+            quatf xformOp:orient = (1, 0, 0, 0)
+            double3 xformOp:scale = (1.0000000000000009, 1.0000000000000009, 1)
+            float3 xformOp:translate = (-0.13, -0.2, 0.06)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+            def Cube "Cube"
+            {
+                float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+                double size = 1
+                quatd xformOp:orient = (1, 0, 0, 0)
+                double3 xformOp:scale = (0.01, 0.01, 0.01)
+                double3 xformOp:translate = (0, 0, 0)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+            }
+
+            def PhysicsRevoluteJoint "RevoluteJoint"
+            {
+                uniform token physics:axis = "Z"
+                rel physics:body0 = </Root/vehicle/body>
+                rel physics:body1 = </Root/vehicle/rotor3>
+                float physics:breakForce = inf
+                float physics:breakTorque = inf
+                point3f physics:localPos0 = (-0.13, -0.2, 0.06)
+                point3f physics:localPos1 = (0, -2.7755576e-17, 0)
+                quatf physics:localRot0 = (1, 0, 0, 0)
+                quatf physics:localRot1 = (1, 0, 0, 0)
+            }
+        }
+    }
+}
