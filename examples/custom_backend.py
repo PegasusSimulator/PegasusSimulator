@@ -1,0 +1,26 @@
+#!/usr/bin/env python
+"""
+This example file demonstrates how to create custom backends that allow for controling and receiving simulation data from
+the Pegasus simulator without necessarily using PX4 or ROS2
+"""
+from omni.isaac.kit import SimulationApp
+from omni.isaac.core.simulation_context import SimulationContext
+from pegasus_isaac.logic.pegasus_simulator import PegasusSimulator
+
+# Start Isaac Sim's simulation environment
+simulation_app = SimulationApp({"headless": False})
+
+# Start the Pegasus Simulator backend
+pg_sim = PegasusSimulator()
+
+# get simulation context
+simulation_context = SimulationContext()
+# rest and play simulation
+simulation_context.reset()
+# step simulation
+simulation_context.step()
+# stop simulation
+simulation_context.stop()
+
+# Close the Isaac Sim simulator
+simulation_app.close()
