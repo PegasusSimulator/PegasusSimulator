@@ -12,7 +12,6 @@ import gc
 import yaml
 import asyncio
 import os
-from pathlib import Path
 from threading import Lock
 
 # NVidia API imports
