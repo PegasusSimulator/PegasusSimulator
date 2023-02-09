@@ -69,7 +69,7 @@ class PegasusInterface:
 
         # Get the px4_path from configuration file
         self._px4_path: str = self._get_px4_path_from_config()
-        carb.log_warn(self._px4_path)
+        carb.log_info("Default PX4 path:" + str(self._px4_path))
 
     @property
     def world(self):
@@ -339,12 +339,16 @@ class PegasusInterface:
         self._px4_path = absolute_path
 
         # Save the new path in the configurations file for the next simulations
-        save_dir = {"px4_dir": self._px4_path}
-
         try:
+
+            # Open the configuration file and the all the configurations that it contains
+            with open(CONFIG_FILE, 'r') as f:
+                data = yaml.safe_load(f)
+
             # Open the configuration file. If it fails, just warn in the console
             with open(CONFIG_FILE, 'w') as f:
-                yaml.safe_dump(save_dir, f)
+                data["px4_dir"] = absolute_path
+                yaml.dump(data, f)
         except:
             carb.log_warn("Could not save px4_dir to: " + str(CONFIG_FILE))
 
