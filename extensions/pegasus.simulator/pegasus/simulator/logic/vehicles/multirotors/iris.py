@@ -2,9 +2,20 @@
 # All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
-from pegasus.simulator.logic.vehicles.multirotor import Multirotor
+from pegasus.simulator.logic.vehicles.multirotor import Multirotor, MultirotorConfig
 
-class IrisConfig:
+# Sensors and dynamics setup
+from pegasus.simulator.logic.dynamics import LinearDrag
+from pegasus.simulator.logic.thrusters import QuadraticThrustCurve
+from pegasus.simulator.logic.sensors import Barometer, IMU, Magnetometer, GPS
+
+# Mavlink interface
+from pegasus.simulator.logic.backends.mavlink_backend import MavlinkBackend
+
+# Get the location of the IRIS asset
+from pegasus.simulator.params import ROBOTS
+
+class IrisConfig(MultirotorConfig):
 
     def __init__(self):
 
@@ -12,7 +23,7 @@ class IrisConfig:
         self.stage_prefix = "quadrotor"
 
         # The USD file that describes the visual aspect of the vehicle (and some properties such as mass and moments of inertia)
-        self.usd_file = ""
+        self.usd_file = ROBOTS["Iris"]
 
         # The default thrust curve for a quadrotor and dynamics relating to drag
         self.thrust_curve = QuadraticThrustCurve()
@@ -28,6 +39,5 @@ class IrisConfig:
 
 class Iris(Multirotor):
 
-    def __init__(self, id: int, stage_prefix: ):
-
-        super.__init__()
+    def __init__(self, id: int, world, init_pos=[0.0, 0.0, 0.07, init_orientation=[0.0, 0.0, 0.0, 1.0]], config=IrisConfig()):
+        super.__init__(config.stage_prefix, config.usd_file, id, world, init_pos, init_orientation, config=config)

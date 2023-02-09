@@ -1,3 +1,41 @@
+# Pegasus Simulator
+
+## Contributing
+
+We wholeheartedly welcome contributions from the community to make this framework mature and useful for everyone. These may happen in
+form of bug reports, feature requests, or code contributions. For details, please check our [contribution guidelines](https://isaac-orbit.github.io/orbit/source/refs/contributing.html).
+
+## Troubleshooting
+
+Please see the documentation [troubleshooting]() or [submit an issue]().
+
+For issues related to Isaac Sim, we recommend checking its [documentation](https://docs.omniverse.nvidia.com/app_isaacsim/app_isaacsim/overview.html), or opening a question on its [forums](https://forums.developer.nvidia.com/c/agx-autonomous-machines/isaac/67).
+
+## Support
+
+* Please use GitHub [Discussions]() for discussing ideas, asking questions, and requests for new features.
+* Github [Issues]() should only be used to track executable pieces of work with a definite scope and a clear deliverable. These can be fixing bugs, documentation issues or new features.
+
+## Acknowledgement
+
+NVIDIA Isaac Sim is available freely under [individual license](https://www.nvidia.com/en-us/omniverse/download/). 
+
+Pegasus Simulator is released under [BSD-3 License](LICENSE). The license files of its dependencies and assets are present in the [`docs/licenses`](docs/licenses) directory.
+
+## Citation
+
+Please cite [this paper]() if you use this framework in your work:
+
+```
+@misc{mittal2023orbit,
+	author = {},
+	title = {},
+	year = {2023},
+	eprint = {},
+}
+```
+
+
 # Extension Project Template
 
 This project was automatically generated.

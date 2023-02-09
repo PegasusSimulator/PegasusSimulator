@@ -19,7 +19,7 @@ INSTALL_REQUIRES = [
     # generic
     "numpy",
     "pymavlink",
-    "scypi",
+    "scipy",
     "pyyaml",
 ]
 

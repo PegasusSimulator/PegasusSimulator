@@ -4,9 +4,9 @@
 | License: BSD-3-Clause. Copyright (c) 2023, Marcelo Jacinto. All rights reserved.
 | Description: File that defines the base configurations for the Pegasus Simulator.
 """
+import os
 from pathlib import Path
 
-import omni.kit.app as app
 import omni.isaac.core.utils.nucleus as nucleus
 
 # Extension configuration
@@ -17,15 +17,18 @@ DOC_LINK = "https://docs.omniverse.nvidia.com"
 EXTENSION_OVERVIEW = "This extension shows how to incorporate drones into Isaac Sim"
 
 # Get the current directory of where this extension is located
-EXTENSION_FOLDER_PATH = Path(app.get_app().get_extension_manager().get_extension_path_by_module(__name__))
-ROOT = str(EXTENSION_FOLDER_PATH.parent.parent.resolve())
+EXTENSION_FOLDER_PATH = Path(os.path.dirname(os.path.realpath(__file__)))
+ROOT = str(EXTENSION_FOLDER_PATH.parent.parent.parent.resolve())
+
+# Get the configurations file path
+CONFIG_FILE = ROOT + "/pegasus.simulator/config/configs.yaml"
 
 # Define the Extension Assets Path
-ASSET_PATH = ROOT + "/extensions/pegasus.simulator/pegasus/simulator/assets/"
+ASSET_PATH = ROOT + "/pegasus.simulator/pegasus/simulator/assets"
 ROBOTS_ASSETS = ASSET_PATH + "/Robots"
 
 # Define the built in robots of the extension
-ROBOTS = {"Iris": ROBOTS_ASSETS + "/Iris/iris.usda", "Flying Cube": ROBOTS_ASSETS + "/iris_cube.usda"}
+ROBOTS = {"Iris": ROBOTS_ASSETS + "/Iris/iris.usd", "Flying Cube": ROBOTS_ASSETS + "/iris_cube.usda"}
 
 # Setup the default simulation environments path
 NVIDIA_ASSETS_PATH = nucleus.get_assets_root_path()

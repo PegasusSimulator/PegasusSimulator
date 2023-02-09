@@ -13,8 +13,8 @@
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath("../extensions/pegasus.simulator"))
-sys.path.insert(0, os.path.abspath("../extensions/pegasus.simulator/pegasus/simulator"))
+sys.path.insert(0, os.path.abspath(os.path.join('..', "extensions/pegasus.simulator")))
+sys.path.insert(0, os.path.abspath(os.path.join('..', "extensions/pegasus.simulator/pegasus/simulator")))
 
 # -- Project information -----------------------------------------------------
 
