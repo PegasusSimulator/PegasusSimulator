@@ -14,6 +14,7 @@ from omni.ui import color as cl
 
 from pegasus.simulator.ui.ui_delegate import UIDelegate
 from pegasus.simulator.params import ROBOTS, SIMULATION_ENVIRONMENTS, THUMBNAIL, WORLD_THUMBNAIL, WINDOW_TITLE
+from pegasus.simulator.logic.interface import PegasusInterface
 
 
 class WidgetWindow(ui.Window):
@@ -203,7 +204,7 @@ class WidgetWindow(ui.Window):
                 self._transform_frame()
 
                 ui.Label("Streaming Backend")
-
+                
                 with ui.HStack():
                     # Add a thumbnail image to have a preview of the world that is about to be loaded
                     with ui.ZStack(width=WidgetWindow.LABEL_PADDING, height=WidgetWindow.BUTTON_HEIGHT * 2):
@@ -216,13 +217,13 @@ class WidgetWindow(ui.Window):
                     with ui.VStack():
                         # Buttons that behave like switches to choose which network interface to use to simulate the control of the vehicle
                         px4_button = ui.Button(
-                            "PX4 + ROS 2",
+                            "PX4",
                             height=WidgetWindow.BUTTON_HEIGHT,
                             style=WidgetWindow.BUTTON_SELECTED_STYLE,
                             enabled=False,
                         )
                         ros2_button = ui.Button(
-                            "ROS 2 (Only) [TO BE IMPLEMENTED]",
+                            "ROS 2",
                             height=WidgetWindow.BUTTON_HEIGHT,
                             style=WidgetWindow.BUTTON_BASE_STYLE,
                             enabled=True,
@@ -231,6 +232,29 @@ class WidgetWindow(ui.Window):
                         # Set the auxiliary function to handle the switch between both backends
                         px4_button.set_clicked_fn(lambda: handle_px4_ros_switch(self, px4_button, ros2_button, "px4"))
                         ros2_button.set_clicked_fn(lambda: handle_px4_ros_switch(self, px4_button, ros2_button, "ros"))
+
+                # UI to configure the PX4 settings
+                with ui.CollapsableFrame("PX4 Configurations", collapsed=False) as px4_conf_frame:
+                    with ui.VStack(height=0, spacing=10, name="frame_v_stack"):
+                        with ui.HStack():
+                            ui.Label("Auto-launch PX4", name="label", width=WidgetWindow.LABEL_PADDING)
+                            px4_checkbox = ui.CheckBox()
+                            px4_checkbox.model.set_value(self._delegate._autostart_px4)
+                            self._delegate.set_px4_autostart_checkbox(px4_checkbox.model)
+
+                        with ui.HStack():
+                            ui.Label("PX4 Path", name="label", width=WidgetWindow.LABEL_PADDING)
+                            px4_path_field = ui.StringField(name="px4_path")
+                            px4_path_field.model.set_value(self._delegate._px4_dir)
+                            self._delegate.set_px4_directory_field(px4_path_field.model)
+
+                            ui.Button("Make Default", width=100, enabled=True)
+
+                        with ui.HStack():
+                            ui.Label("PX4 airframe", name="label", width=WidgetWindow.LABEL_PADDING)
+                            px4_airframe_field = ui.StringField(name="px4_model")
+                            px4_airframe_field.model.set_value(self._delegate._px4_airframe)
+                            self._delegate.set_px4_airframe_field(px4_airframe_field.model)
 
                 # Button to load the drone
                 ui.Button(
