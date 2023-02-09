@@ -327,7 +327,7 @@ class PegasusInterface:
         return px4_dir
     
 
-    def set_px4_path(self, absolute_path: str):
+    def set_px4_path(self, path: str):
         """Method that allows a user to save a new px4 directory in the configuration files of the extension.
 
         Args:
@@ -335,7 +335,7 @@ class PegasusInterface:
         """
         
         # Save the new path for current use during this simulation
-        self._px4_path = absolute_path
+        self._px4_path = os.path.expanduser(path)
 
         # Save the new path in the configurations file for the next simulations
         try:
@@ -346,12 +346,12 @@ class PegasusInterface:
 
             # Open the configuration file. If it fails, just warn in the console
             with open(CONFIG_FILE, 'w') as f:
-                data["px4_dir"] = absolute_path
+                data["px4_dir"] = path
                 yaml.dump(data, f)
         except:
             carb.log_warn("Could not save px4_dir to: " + str(CONFIG_FILE))
 
-        carb.log_info("New px4_dir set to: " + str(self._px4_path))
+        carb.log_warn("New px4_dir set to: " + str(self._px4_path))
 
     def __new__(cls):
         """Allocates the memory and creates the actual PegasusInterface object is not instance exists yet. Otherwise,

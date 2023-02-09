@@ -6,6 +6,7 @@
 """
 
 # External packages
+import os
 from scipy.spatial.transform import Rotation
 
 # Omniverse extensions
@@ -142,9 +143,22 @@ class UIDelegate:
             # Get the desired position and orientation of the vehicle from the UI transform
             pos, euler_angles = self._window.get_selected_vehicle_attitude()
 
+            # Read if we should auto-start px4 from the checkbox
+            px4_autostart = self._px4_autostart_checkbox.get_value_as_bool()
+
+            # Read the PX4 path from the field
+            px4_path = os.path.expanduser(self._px4_directory_field.get_value_as_string())
+
+            # Read the PX4 airframe from the field
+            px4_airframe = self._px4_airframe_field.get_value_as_string()
+
             # Create the multirotor configuration
-            mavlink_config = MavlinkBackendConfig()
-            mavlink_config.vehicle_id = self._vehicle_id
+            mavlink_config = MavlinkBackendConfig({
+                "vehicle_id": self._vehicle_id,
+                "px4_autolaunch": px4_autostart,
+                "px4_dir": px4_path,
+                "px4_vehicle_model": px4_airframe
+            })
             config_multirotor = MultirotorConfig()
             config_multirotor.backends = [MavlinkBackend(mavlink_config)]
 
@@ -179,3 +193,22 @@ class UIDelegate:
 
                 # Set the camera view to a fixed value
                 self._pegasus_sim.set_viewport_camera(eye=camera_position, target=camera_target)
+    
+    def on_set_new_default_px4_path(self):
+        """
+        Method that will try to update the new PX4 autopilot path with whatever is passed on the string field
+        """
+        carb.log_warn("A new default PX4 Path will be set for the extension.")
+
+        # Read the current path from the field
+        path = self._px4_directory_field.get_value_as_string()
+
+        # Set the path using the pegasus interface
+        self._pegasus_sim.set_px4_path(path)
+
+    def on_reset_px4_path(self):
+        """
+        Method that will reset the string field to the default PX4 path
+        """
+        carb.log_warn("Reseting the path to the default one")
+        self._px4_directory_field.set_value(self._pegasus_sim.px4_path)

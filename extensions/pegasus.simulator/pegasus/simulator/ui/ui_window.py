@@ -1,7 +1,10 @@
-# Copyright (c) 2023, Marcelo Jacinto
-# All rights reserved.
-#
-# SPDX-License-Identifier: BSD-3-Clause
+"""
+| File: ui_window.py
+| Author: Marcelo Jacinto (marcelo.jacinto@tecnico.ulisboa.pt)
+| License: BSD-3-Clause. Copyright (c) 2023, Marcelo Jacinto. All rights reserved.
+| Description: Definition of WidgetWindow which contains all the UI code that defines the extension GUI
+"""
+
 __all__ = ["WidgetWindow"]
 
 # External packages
@@ -14,7 +17,6 @@ from omni.ui import color as cl
 
 from pegasus.simulator.ui.ui_delegate import UIDelegate
 from pegasus.simulator.params import ROBOTS, SIMULATION_ENVIRONMENTS, THUMBNAIL, WORLD_THUMBNAIL, WINDOW_TITLE
-from pegasus.simulator.logic.interface import PegasusInterface
 
 
 class WidgetWindow(ui.Window):
@@ -234,24 +236,25 @@ class WidgetWindow(ui.Window):
                         ros2_button.set_clicked_fn(lambda: handle_px4_ros_switch(self, px4_button, ros2_button, "ros"))
 
                 # UI to configure the PX4 settings
-                with ui.CollapsableFrame("PX4 Configurations", collapsed=False) as px4_conf_frame:
+                with ui.CollapsableFrame("PX4 Configurations", collapsed=False):
                     with ui.VStack(height=0, spacing=10, name="frame_v_stack"):
                         with ui.HStack():
-                            ui.Label("Auto-launch PX4", name="label", width=WidgetWindow.LABEL_PADDING)
+                            ui.Label("Auto-launch PX4", name="label", width=WidgetWindow.LABEL_PADDING - 20)
                             px4_checkbox = ui.CheckBox()
                             px4_checkbox.model.set_value(self._delegate._autostart_px4)
                             self._delegate.set_px4_autostart_checkbox(px4_checkbox.model)
 
                         with ui.HStack():
-                            ui.Label("PX4 Path", name="label", width=WidgetWindow.LABEL_PADDING)
-                            px4_path_field = ui.StringField(name="px4_path")
+                            ui.Label("PX4 Path", name="label", width=WidgetWindow.LABEL_PADDING - 20)
+                            px4_path_field = ui.StringField(name="px4_path", width=300)
                             px4_path_field.model.set_value(self._delegate._px4_dir)
                             self._delegate.set_px4_directory_field(px4_path_field.model)
 
-                            ui.Button("Make Default", width=100, enabled=True)
+                            ui.Button("Reset", enabled=True, clicked_fn=self._delegate.on_reset_px4_path)
+                            ui.Button("Make Default", enabled=True, clicked_fn=self._delegate.on_set_new_default_px4_path)
 
                         with ui.HStack():
-                            ui.Label("PX4 airframe", name="label", width=WidgetWindow.LABEL_PADDING)
+                            ui.Label("PX4 airframe", name="label", width=WidgetWindow.LABEL_PADDING - 20)
                             px4_airframe_field = ui.StringField(name="px4_model")
                             px4_airframe_field.model.set_value(self._delegate._px4_airframe)
                             self._delegate.set_px4_airframe_field(px4_airframe_field.model)
