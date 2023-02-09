@@ -54,6 +54,20 @@ class UIDelegate:
         self._vehicle_id_field: ui.AbstractValueModel = None
         self._vehicle_id: int = 0
 
+        # Attribute that will save the model for the px4-autostart checkbox
+        self._px4_autostart_checkbox: ui.AbstractValueModel = None
+        self._autostart_px4: bool = True
+
+        # Atributes to store the path for the Px4 directory
+        self._px4_directory_field: ui.AbstractValueModel = None
+        self._px4_dir: str = PegasusInterface().px4_path
+        carb.log_warn(self._px4_dir)
+
+        # Atributes to store the PX4 airframe
+        self._px4_airframe_field: ui.AbstractValueModel = None
+        self._px4_airframe: str = 'iris'
+        carb.log_warn(self._px4_airframe)
+
     def set_window_bind(self, window):
         self._window = window
 
@@ -69,6 +83,15 @@ class UIDelegate:
     def set_streaming_backend(self, backend: str = "px4"):
         carb.log_info("Chosen option: " + backend)
         self._streaming_backend = backend
+
+    def set_px4_autostart_checkbox(self, checkbox_model:ui.AbstractValueModel):
+        self._px4_autostart_checkbox = checkbox_model
+
+    def set_px4_directory_field(self, directory_field_model: ui.AbstractValueModel):
+        self._px4_directory_field = directory_field_model
+
+    def set_px4_airframe_field(self, airframe_field_model: ui.AbstractValueModel):
+        self._px4_airframe_field = airframe_field_model
 
     """
     ---------------------------------------------------------------------

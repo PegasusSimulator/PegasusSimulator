@@ -311,10 +311,10 @@ class PegasusInterface:
         Method that reads the configured PX4 installation directory from the extension configuration file 
 
         Returns:
-            str: A string with the path to the px4 configuration directory or None
+            str: A string with the path to the px4 configuration directory or empty string ''
         """
 
-        px4_dir = None
+        px4_dir = ""
         
         # Open the configuration file. If it fails, just return the empty path
         try:
