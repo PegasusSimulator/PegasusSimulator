@@ -59,5 +59,5 @@ class LinearDrag(Drag):
         body_vel = state.linear_body_velocity
 
         # Compute the component of the drag force to be applied in the body frame
-        self._drag_force = np.dot(self._drag_coefficients, body_vel)
+        self._drag_force = -np.dot(self._drag_coefficients, body_vel)
         return self._drag_force

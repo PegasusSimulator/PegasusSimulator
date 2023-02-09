@@ -3,4 +3,4 @@
 | License: BSD-3-Clause. Copyright (c) 2023, Marcelo Jacinto. All rights reserved.
 """
 
-from .pegasus_simulator import PegasusSimulator
+from .interface.pegasus_interface import PegasusInterface

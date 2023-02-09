@@ -1,7 +1,9 @@
-# Copyright (c) 2023, Marcelo Jacinto
-# All rights reserved.
-#
-# SPDX-License-Identifier: BSD-3-Clause
+"""
+| File: ui_delegate.py
+| Author: Marcelo Jacinto (marcelo.jacinto@tecnico.ulisboa.pt)
+| License: BSD-3-Clause. Copyright (c) 2023, Marcelo Jacinto. All rights reserved.
+| Description: Definition of the UiDelegate which is an abstraction layer betweeen the extension UI and code logic features
+"""
 
 # External packages
 from scipy.spatial.transform import Rotation
@@ -12,12 +14,12 @@ import omni.ui as ui
 
 # Extension Configurations
 from pegasus.simulator.params import ROBOTS, SIMULATION_ENVIRONMENTS
-from pegasus.simulator.logic.pegasus_simulator import PegasusSimulator
+from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 
 # Vehicle Manager to spawn Vehicles
 from pegasus.simulator.logic.backends import MavlinkBackend, MavlinkBackendConfig
 from pegasus.simulator.logic.vehicles.multirotor import Multirotor, MultirotorConfig
-from pegasus.simulator.logic.vehicles.vehicle_manager import VehicleManager
+from pegasus.simulator.logic.vehicle_manager import VehicleManager
 
 
 class UIDelegate:
@@ -31,7 +33,7 @@ class UIDelegate:
         self._window = None
 
         # Get an instance of the pegasus simulator
-        self._pegasus_sim: PegasusSimulator = PegasusSimulator()
+        self._pegasus_sim: PegasusInterface = PegasusInterface()
 
         # Attribute that holds the currently selected scene from the dropdown menu
         self._scene_dropdown: ui.AbstractItemModel = None
@@ -128,7 +130,6 @@ class UIDelegate:
                 "/World/quadrotor",
                 ROBOTS[selected_robot],
                 self._vehicle_id,
-                self._pegasus_sim.world,
                 pos,
                 Rotation.from_euler("XYZ", euler_angles, degrees=True).as_quat(),
                 config=config_multirotor,

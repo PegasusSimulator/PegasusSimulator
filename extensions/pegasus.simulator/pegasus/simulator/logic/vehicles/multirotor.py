@@ -4,6 +4,8 @@
 | License: BSD-3-Clause. Copyright (c) 2023, Marcelo Jacinto. All rights reserved.
 | Description: Definition of the Multirotor class which is used as the base for all the multirotor vehicles.
 """
+
+# The vehicle interface
 from pegasus.simulator.logic.vehicles.vehicle import Vehicle
 
 # Mavlink interface
@@ -13,7 +15,7 @@ from pegasus.simulator.logic.backends.mavlink_backend import MavlinkBackend
 from pegasus.simulator.logic.dynamics import LinearDrag
 from pegasus.simulator.logic.thrusters import QuadraticThrustCurve
 from pegasus.simulator.logic.sensors import Barometer, IMU, Magnetometer, GPS
-
+from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 
 class MultirotorConfig:
     """
@@ -53,13 +55,9 @@ class Multirotor(Vehicle):
         stage_prefix: str = "quadrotor",
         usd_file: str = "",
         vehicle_id: int = 0,
-        world=None,
         # Spawning pose of the vehicle
         init_pos=[0.0, 0.0, 0.07],
         init_orientation=[0.0, 0.0, 0.0, 1.0],
-        lat=47.397742,
-        long=8.545594,
-        alt=488.0,
         config=MultirotorConfig(),
     ):
         """Initializes the multirotor object
@@ -68,22 +66,18 @@ class Multirotor(Vehicle):
             stage_prefix (str): The name the vehicle will present in the simulator when spawned. Defaults to "quadrotor".
             usd_file (str): The USD file that describes the looks and shape of the vehicle. Defaults to "".
             vehicle_id (int): The id to be used for the vehicle. Defaults to 0.
-            world (World): The omni.isaac.core.world that provides simulation details. Defaults to None.
             init_pos (list): The initial position of the vehicle in the inertial frame (in ENU convention). Defaults to [0.0, 0.0, 0.07].
             init_orientation (list): The initial orientation of the vehicle in quaternion [qx, qy, qz, qw]. Defaults to [0.0, 0.0, 0.0, 1.0].
-            lat (float): The latitude of the origin of the world. Defaults to 47.397742 deg.
-            long (float): The longitude of the origin of the world. Defaults to 8.545594 deg.
-            alt (float): The altitude of the origin of the world. Defaults to 488.0 m.
             config (_type_, optional): _description_. Defaults to MultirotorConfig().
         """
 
         # 1. Initiate the Vehicle object itself
-        super().__init__(stage_prefix, usd_file, world, init_pos, init_orientation)
+        super().__init__(stage_prefix, usd_file, init_pos, init_orientation)
 
         # 2. Initialize all the vehicle sensors
         self._sensors = config.sensors
         for sensor in self._sensors:
-            sensor.initialize(lat, long, alt)
+            sensor.initialize(PegasusInterface().latitude, PegasusInterface().longitude, PegasusInterface().altitude)
 
         # Add callbacks to the physics engine to update each sensor at every timestep
         # and let the sensor decide depending on its internal update rate whether to generate new data
@@ -155,13 +149,15 @@ class Multirotor(Vehicle):
         """
 
         # Get the articulation root of the vehicle
-        articulation = self._world.dc_interface.get_articulation(self._stage_prefix + "/vehicle/body")
+        articulation = self._world.dc_interface.get_articulation(self._stage_prefix)
 
         # Get the desired angular velocities for each rotor from the first backend (can be mavlink or other) expressed in rad/s
         # For now we are only getting the desired inputs from the first backend. TODO - add a more dynamic way of getting
         # the controls of the vehicles from multiple places to allow overriding of controls - That would be way coooler
         if len(self._backends) != 0:
             desired_rotor_velocities = self._backends[0].input_reference()
+        else:
+            desired_rotor_velocities = [0.0 for i in range(self._thrusters._num_rotors)]
 
         # Input the desired rotor velocities in the thruster model
         self._thrusters.set_input_reference(desired_rotor_velocities)

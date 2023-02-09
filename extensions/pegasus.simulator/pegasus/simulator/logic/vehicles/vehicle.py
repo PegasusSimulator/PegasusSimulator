@@ -15,14 +15,15 @@ from pxr import Usd, Gf
 
 # High level Isaac sim APIs
 import omni.usd
-from omni.isaac.core import World
-from omni.isaac.core.utils.prims import define_prim
+from omni.isaac.core.world import World
+from omni.isaac.core.utils.prims import define_prim, get_prim_at_path
 from omni.usd import get_stage_next_free_path
 from omni.isaac.core.robots.robot import Robot
 
 # Extension APIs
 from pegasus.simulator.logic.state import State
-from pegasus.simulator.logic.vehicles.vehicle_manager import VehicleManager
+from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
+from pegasus.simulator.logic.vehicle_manager import VehicleManager
 
 
 def get_world_transform_xform(prim: Usd.Prim):
@@ -47,7 +48,6 @@ class Vehicle(Robot):
         self,
         stage_prefix: str,
         usd_path: str = None,
-        world: World = None,
         init_pos=[0.0, 0.0, 0.0],
         init_orientation=[0.0, 0.0, 0.0, 1.0],
     ):
@@ -57,14 +57,13 @@ class Vehicle(Robot):
         Args:
             stage_prefix (str): The name the vehicle will present in the simulator when spawned. Defaults to "quadrotor".
             usd_path (str): The USD file that describes the looks and shape of the vehicle. Defaults to "".
-            world (World): The omni.isaac.core.world that provides simulation details. Defaults to None.
             init_pos (list): The initial position of the vehicle in the inertial frame (in ENU convention). Defaults to [0.0, 0.0, 0.0].
             init_orientation (list): The initial orientation of the vehicle in quaternion [qx, qy, qz, qw]. Defaults to [0.0, 0.0, 0.0, 1.0].
         """
 
         # Get the current world at which we want to spawn the vehicle
-        self._world = world
-        self._current_stage = world.stage
+        self._world = PegasusInterface().world
+        self._current_stage = self._world.stage
 
         # Save the name with which the vehicle will appear in the stage
         # and the name of the .usd file that contains its description
@@ -73,6 +72,7 @@ class Vehicle(Robot):
 
         # Spawn the vehicle primitive in the world's stage
         self._prim = define_prim(self._stage_prefix, "Xform")
+        self._prim = get_prim_at_path(self._stage_prefix)
         self._prim.GetReferences().AddReference(self._usd_file)
 
         # Initialize the "Robot" class
@@ -169,7 +169,7 @@ class Vehicle(Robot):
         """
 
         # Get the handle of the rigidbody that we will apply the force to
-        rb = self._world.dc_interface.get_rigid_body(self._stage_prefix + "/vehicle" + body_part)
+        rb = self._world.dc_interface.get_rigid_body(self._stage_prefix + body_part)
 
         # Apply the force to the rigidbody. The force should be expressed in the rigidbody frame
         self._world.dc_interface.apply_body_force(rb, carb._carb.Float3(force), carb._carb.Float3(pos), False)
@@ -184,7 +184,7 @@ class Vehicle(Robot):
         """
 
         # Get the handle of the rigidbody that we will apply a torque to
-        rb = self._world.dc_interface.get_rigid_body(self._stage_prefix + "/vehicle" + body_part)
+        rb = self._world.dc_interface.get_rigid_body(self._stage_prefix + body_part)
 
         # Apply the torque to the rigidbody. The torque should be expressed in the rigidbody frame
         self._world.dc_interface.apply_body_torque(rb, carb._carb.Float3(torque), False)
@@ -199,7 +199,7 @@ class Vehicle(Robot):
         """
 
         # Get the body frame interface of the vehicle (this will be the frame used to get the position, orientation, etc.)
-        body = self._world.dc_interface.get_rigid_body(self._stage_prefix + "/vehicle/body")
+        body = self._world.dc_interface.get_rigid_body(self._stage_prefix + "/body")
 
         # Get the current position and orientation in the inertial frame
         pose = self._world.dc_interface.get_rigid_body_pose(body)
@@ -209,7 +209,7 @@ class Vehicle(Robot):
         # But seriously, NVidia, if you are reading this, please fix it and let me know. Robotics people like me do not expect
         # this behaviour from the get_rigid_body_pose method. It is only giving the me initial orientation the vehicle was spawned with
         # Get the attitude according to the convention [w, x, y, z] using the internal Pixar library instead
-        prim = self._world.stage.GetPrimAtPath(self._stage_prefix + "/vehicle/body")
+        prim = self._world.stage.GetPrimAtPath(self._stage_prefix + "/body")
         rotation_quat = get_world_transform_xform(prim).GetQuaternion()
         rotation_quat_real = rotation_quat.GetReal()
         rotation_quat_img = rotation_quat.GetImaginary()

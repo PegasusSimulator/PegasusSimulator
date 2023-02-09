@@ -20,7 +20,7 @@ import omni.ui as ui
 
 # Pegasus Extension Files and API
 from pegasus.simulator.params import MENU_PATH, WINDOW_TITLE
-from pegasus.simulator.logic.pegasus_simulator import PegasusSimulator
+from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 
 # Setting up the UI for the extension's Widget
 from pegasus.simulator.ui.ui_window import WidgetWindow
@@ -47,7 +47,7 @@ class Pegasus_SimulatorExtension(omni.ext.IExt):
         self.ui_window = None
 
         # Start the extension backend
-        self._pegasus_sim = PegasusSimulator()
+        self._pegasus_sim = PegasusInterface()
 
         # Add the ability to show the window if the system requires it (QuickLayout feature)
         ui.Workspace.set_show_window_fn(WINDOW_TITLE, partial(self.show_window, None))
