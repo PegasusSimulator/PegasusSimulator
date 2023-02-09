@@ -13,6 +13,7 @@ from pymavlink import mavutil
 
 from pegasus.simulator.logic.state import State
 from pegasus.simulator.logic.backends.backend import Backend
+from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 from pegasus.simulator.logic.backends.tools.px4_launch_tool import PX4LaunchTool
 
 
@@ -199,7 +200,7 @@ class MavlinkBackendConfig:
             >>>  "connection_ip": "localhost",
             >>>  "connection_baseport": 4560,
             >>>  "px4_autolaunch": True,
-            >>>  "px4_dir": "~/PX4-Autopilot",
+            >>>  "px4_dir": "PegasusInterface().px4_path",
             >>>  "px4_vehicle_model": "iris",
             >>>  "enable_lockstep": True,
             >>>  "num_rotors": 4,
@@ -218,7 +219,7 @@ class MavlinkBackendConfig:
 
         # Configure whether to launch px4 in the background automatically or not for every vehicle launched
         self.px4_autolaunch: bool = config.get("px4_autolaunch", True)
-        self.px4_dir: str = config.get("px4_dir", "/home/marcelo/PX4-Autopilot")
+        self.px4_dir: str = config.get("px4_dir", PegasusInterface().px4_path)
         self.px4_vehicle_model: str = config.get("px4_vehicle_model", "iris")
 
         # Configurations to interpret the rotors control messages coming from mavlink
