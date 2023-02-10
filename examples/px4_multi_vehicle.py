@@ -7,7 +7,6 @@
 """
 
 # Imports to start Isaac Sim from this script
-import os
 import carb
 from omni.isaac.kit import SimulationApp
 
