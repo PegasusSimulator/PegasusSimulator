@@ -35,6 +35,11 @@ Please cite [this paper]() if you use this framework in your work:
 }
 ```
 
+## Installation
+```
+cd extensions;
+PYTHON_PATH -m pip install --editable pegasus.simulator
+```
 
 # Extension Project Template
 
