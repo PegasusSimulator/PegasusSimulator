@@ -5,26 +5,31 @@ the Pegasus simulator without necessarily using PX4 or ROS2
 """
 
 # Imports to start Isaac Sim from this script
+import carb
 from omni.isaac.kit import SimulationApp
 
 # Start Isaac Sim's simulation environment
 simulation_app = SimulationApp({"headless": False})
 
+# Extra stuff 
+from omni.isaac.core.utils.extensions import enable_extension
 from omni.isaac.core import World
-import carb
+
+# enable ROS2 bridge extension
+enable_extension("omni.isaac.ros2_bridge")
+
+simulation_app.update()
 
 # Import the pegasus API
 from pegasus.simulator.params import ROBOTS, SIMULATION_ENVIRONMENTS
 from pegasus.simulator.logic.state import State
-from pegasus.simulator.logic.pegasus_simulator import PegasusSimulator
+from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 from pegasus.simulator.logic.vehicles import Multirotor, MultirotorConfig
 from pegasus.simulator.logic.backends import Backend, MavlinkBackend, MavlinkBackendConfig
 
 # Auxiliar numpy and Scipy imports
 import numpy as np
 from scipy.spatial.transform import Rotation
-
-from omni.isaac.core.objects import DynamicCuboid
 
 class NonlinearControlBackend(Backend):
     """
@@ -139,7 +144,7 @@ def main():
     """
 
     # Start the Pegasus Simulator backend
-    pg_sim = PegasusSimulator()    
+    pg_sim = PegasusInterface()    
 
     # Load the simulation world
     pg_sim.load_environment(SIMULATION_ENVIRONMENTS["Default Environment"])
