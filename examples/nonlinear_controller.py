@@ -25,6 +25,7 @@ from pegasus.simulator.params import ROBOTS, SIMULATION_ENVIRONMENTS
 from pegasus.simulator.logic.state import State
 from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 from pegasus.simulator.logic.vehicles import Multirotor, MultirotorConfig
+from pegasus.simulator.logic.vehicle_manager import VehicleManager
 from pegasus.simulator.logic.backends import Backend, MavlinkBackend, MavlinkBackendConfig
 
 # Auxiliar numpy and Scipy imports

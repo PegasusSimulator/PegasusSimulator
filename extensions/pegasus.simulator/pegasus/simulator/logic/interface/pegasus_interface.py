@@ -57,8 +57,8 @@ class PegasusInterface:
 
         # Initialize the world with the default simulation settings
         self._world_settings = DEFAULT_WORLD_SETTINGS
-        self._world = World(**self._world_settings)
-        asyncio.ensure_future(self._world.initialize_simulation_context_async())
+        self._world = None
+        #self.initialize_world()
 
         # Initialize the latitude, longitude and altitude of the simulated environment at the (0.0, 0.0, 0.0) coordinate
         # Setup to the same defaults as PX4
@@ -142,6 +142,12 @@ class PegasusInterface:
         if self.altitude is not None:
             self._altitude = altitude
 
+    def initialize_world(self):
+        """Method that initializes the world object
+        """
+        self._world = World(**self._world_settings)
+        asyncio.ensure_future(self._world.initialize_simulation_context_async())
+
     def get_vehicle(self, stage_prefix: str):
         """Method that returns the vehicle object given its 'stage_prefix', i.e., the name the vehicle was spawned with in the simulator.
 
@@ -211,16 +217,19 @@ class PegasusInterface:
         asyncio.ensure_future(self._world.initialize_simulation_context_async())
         carb.log_info("Current scene and its vehicles has been deleted")
 
-    async def load_environment_async(self, usd_path: str):
+    async def load_environment_async(self, usd_path: str, force_clear: bool=False):
         """Method that loads a given world (specified in the usd_path) into the simulator asynchronously.
 
         Args:
             usd_path (str): The path where the USD file describing the world is located.
+            force_clear (bool): Whether to perform a clear before loading the asset. Defaults to False.
         """
 
-        # Reset and pause the world simulation
-        await self.world.reset_async()
-        await self.world.stop_async()
+        # Reset and pause the world simulation (only if force_clear is true)
+        # This is done to maximize the support between running in GUI as extension vs App
+        if force_clear == True:
+            await self.world.reset_async()
+            await self.world.stop_async()
 
         # Load the USD asset that will be used for the environment
         try:
@@ -230,13 +239,16 @@ class PegasusInterface:
 
         carb.log_info("A new environment has been loaded successfully")
 
-    def load_environment(self, usd_path: str):
-        """Method that loads a given world (specified in the usd_path) into the simulator
+    def load_environment(self, usd_path: str, force_clear: bool=False):
+        """Method that loads a given world (specified in the usd_path) into the simulator. If invoked from a python app,
+        this method should have force_clear=False, as the world reset and stop are performed asynchronously by this method, 
+        and when we are operating in App mode, we want everything to run in sync.
 
         Args:
             usd_path (str): The path where the USD file describing the world is located.
+            force_clear (bool): Whether to perform a clear before loading the asset. Defaults to False.
         """
-        asyncio.ensure_future(self.load_environment_async(usd_path))
+        asyncio.ensure_future(self.load_environment_async(usd_path, force_clear))
 
     def load_nvidia_environment(self, environment_asset: str = "Hospital/hospital.usd"):
         """
