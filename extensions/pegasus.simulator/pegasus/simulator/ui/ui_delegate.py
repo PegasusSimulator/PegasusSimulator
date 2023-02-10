@@ -115,7 +115,7 @@ class UIDelegate:
             selected_world = self._scene_names[environemnt_index]
 
             # Try to spawn the selected world
-            self._pegasus_sim.load_environment(SIMULATION_ENVIRONMENTS[selected_world])
+            self._pegasus_sim.load_environment(SIMULATION_ENVIRONMENTS[selected_world], force_clear=True)
 
     def on_clear_scene(self):
         """
