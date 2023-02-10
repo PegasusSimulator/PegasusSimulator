@@ -5,7 +5,7 @@ the Pegasus simulator without necessarily using PX4 or ROS2
 """
 from omni.isaac.kit import SimulationApp
 from omni.isaac.core.simulation_context import SimulationContext
-from pegasus.simulator.logic.pegasus_simulator import PegasusSimulator
+from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 
 def main():
     """
@@ -13,7 +13,7 @@ def main():
     """
 
     # Start the Pegasus Simulator backend
-    pg_sim = PegasusSimulator()
+    pg_sim = PegasusInterface()
 
     # get simulation context
     simulation_context = SimulationContext()
