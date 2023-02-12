@@ -79,6 +79,9 @@ class NonlinearController(Backend):
         # Lists used for analysing performance statistics
         self.time_vector = []
         self.position_error_over_time = []
+        self.velocity_error_over_time = []
+        self.atittude_error_over_time = []
+        self.attitude_rate_error_over_time = []
 
     def read_trajectory_from_csv(self, file_name: str):
         """Auxiliar method used to read the desired trajectory from a CSV file
@@ -104,8 +107,26 @@ class NonlinearController(Backend):
         self.index = 0
         self.total_time = 0.0
 
+        # Reset the lists used for analysing performance statistics
+        self.time_vector = []
+        self.position_error_over_time = []
+        self.velocity_error_over_time = []
+        self.atittude_error_over_time = []
+        self.attitude_rate_error_over_time = []
+
     def stop(self):
-        pass
+        """
+        Stopping the controller. Saving the statistics data for plotting later
+        """
+        carb.log_warn("---Stopping---")
+
+        statistics = {}
+        statistics["time"] = np.array(self.time_vector)
+        statistics["ep"] = np.vstack(self.position_error_over_time)
+        statistics["ev"] = np.vstack(self.velocity_error_over_time)
+        statistics["er"] = np.vstack(self.atittude_error_over_time)
+        statistics["ew"] = np.vstack(self.attitude_rate_error_over_time)
+        np.savez(str(Path(os.path.dirname(os.path.realpath(__file__))).resolve()) + "/results/statistics.npz", **statistics)
 
     def update_sensor(self, sensor_type: str, data):
         """
@@ -156,6 +177,7 @@ class NonlinearController(Backend):
         # Update the references for the controller to track
         # -------------------------------------------------
         self.total_time += dt
+        
 
         # Check if we need to update to the next trajectory index
         if self.index < self.max_index - 1 and self.total_time >= self.trajectory[self.index + 1, 0]:
@@ -176,11 +198,6 @@ class NonlinearController(Backend):
         # Compute the tracking errors
         ep = self.p - p_ref
         ev = self.v - v_ref
-
-        carb.log_warn(ep)
-
-        self.time_vector.append(self.total_time)
-        self.position_error_over_time.append(ep)
 
         # Compute F_des term
         F_des = -(self.Kp @ ep) - (self.Kd @ ev) + np.array([0.0, 0.0, self.m * self.g]) + (self.m * a_ref)
@@ -236,6 +253,15 @@ class NonlinearController(Backend):
 
         # Compute the torques to apply on the rigid body
         tau = -(self.Kr @ e_R) - (self.Kw @ e_w)
+
+        # ----------------------------
+        # Statistics to save for later
+        # ----------------------------
+        self.time_vector.append(self.total_time)        
+        self.position_error_over_time.append(ep)
+        self.velocity_error_over_time.append(ev)
+        self.atittude_error_over_time.append(e_R)
+        self.attitude_rate_error_over_time.append(e_w)
 
         # TODO - replace these 3 lines by proper force allocation matrix
         vehicle = PegasusInterface().vehicle_manager.get_vehicle("/World/quadrotor")
