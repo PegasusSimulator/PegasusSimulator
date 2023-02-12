@@ -59,14 +59,16 @@ class NonlinearController(Backend):
         self.a = np.zeros((3,))                   # The linear acceleration of the vehicle in the inertial frame
 
         # Define the control gains matrix for the outer-loop
-        self.Kp = np.diag([3.0, 3.0, 3.0])
-        self.Kd = np.diag([3.0, 3.0, 3.0])
+        self.Kp = np.diag([10.0, 10.0, 10.0])
+        self.Kd = np.diag([10.0, 10.0, 10.0])
         self.Kr = np.diag([3.0, 3.0, 3.0])
-        self.Kw = np.diag([3.0, 3.0, 3.0])
+        self.Kw = np.diag([0.5, 0.5, 0.5])
 
         # Define the dynamic parameters for the vehicle
         self.m = 1.5        # Mass in Kg
         self.g = 9.81       # The gravity acceleration ms^-2
+
+        self.reveived_first_state = False
 
         # Read the target trajectory from a CSV file inside the trajectories directory
         trajectory = self.read_trajectory_from_csv("slow_xy_ellipse.csv")
@@ -117,8 +119,7 @@ class NonlinearController(Backend):
         self.w = state.angular_velocity
         self.v = state.linear_velocity
 
-        # Update the acceleration state
-        self.a = state.linear_acceleration - np.array([0.0, 0.0, 9.81])
+        self.reveived_first_state = True
 
     def input_reference(self):
         """
@@ -136,6 +137,9 @@ class NonlinearController(Backend):
         Args:
             dt (float): The time elapsed between the previous and current function calls (s).
         """
+        
+        if self.reveived_first_state == False:
+            return
 
         # -------------------------------------------------
         # Update the references for the controller to track
@@ -179,10 +183,14 @@ class NonlinearController(Backend):
         X_b_des = np.cross(Y_b_des, Z_b_des)
 
         # Compute the desired rotation R_des = [X_b_des | Y_b_des | Z_b_des]
-        R_des = Rotation.from_matrix(np.array([X_b_des, Y_b_des, Z_b_des]).T)
+        R_des = np.c_[X_b_des, Y_b_des, Z_b_des]
+        R = self.R.as_matrix()
 
         # Compute the rotation error
-        e_R = 0.5 * self.vee((R_des.inv() * self.R).as_matrix() - (self.R.inv() * R_des).as_matrix())
+        e_R = 0.5 * self.vee((R_des.T @ R) - (R.T @ R_des))
+
+        # Compute an approximation of the current vehicle acceleration in the inertial frame (since we cannot measure it directly)
+        self.a = (u_1 * Z_B) / self.m - np.array([0.0, 0.0, self.g])
 
         # Compute the derivative of the acceleration. Since we cannot measure this directly, but we know exactly
         # the acceleration input that we are giving the vehicle, i.e. u_1 = F_des @ Z_B, assuming there is no
@@ -207,7 +215,7 @@ class NonlinearController(Backend):
         # Compute the torques to apply on the rigid body
         tau = -(self.Kr @ e_R) - (self.Kw @ e_w)
 
-        carb.log_warn(np.rad2deg(e_R))
+        #carb.log_warn(np.rad2deg(e_R))
 
         vehicle = PegasusInterface().vehicle_manager.get_vehicle("/World/quadrotor")
         vehicle.apply_torque(tau)
