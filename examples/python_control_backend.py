@@ -29,12 +29,11 @@ from pegasus.simulator.logic.vehicles.multirotor import Multirotor, MultirotorCo
 from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 
 # Auxiliary scipy and numpy modules
-import numpy as np       
+import numpy as np
 from scipy.spatial.transform import Rotation
 
-# Use os, pandas and pathlib for parsing the desired trajectory from a CSV file
+# Use os and pathlib for parsing the desired trajectory from a CSV file
 import os
-import pandas as pd
 from pathlib import Path
 
 class NonlinearController(Backend):
@@ -69,14 +68,17 @@ class NonlinearController(Backend):
         self.g = 9.81       # The gravity acceleration ms^-2
 
         # Read the target trajectory from a CSV file inside the trajectories directory
-        self.trajectory = self.read_trajectory_from_csv("slow_xy_ellipse.csv")
+        self.trajectory = self.read_trajectory_from_csv("pitch_relay_90_deg_2.csv")
         self.index = 0
         self.max_index, _ = self.trajectory.shape
         self.total_time = 0.0
-        carb.log_warn(self.trajectory)
 
         # Auxiliar variable, so that we only start sending motor commands once we get the state of the vehicle
         self.reveived_first_state = False
+
+        # Lists used for analysing performance statistics
+        self.time_vector = []
+        self.position_error_over_time = []
 
     def read_trajectory_from_csv(self, file_name: str):
         """Auxiliar method used to read the desired trajectory from a CSV file
@@ -96,7 +98,11 @@ class NonlinearController(Backend):
 
 
     def start(self):
-        pass
+        """
+        Reset the control and trajectory index
+        """
+        self.index = 0
+        self.total_time = 0.0
 
     def stop(self):
         pass
@@ -171,6 +177,11 @@ class NonlinearController(Backend):
         ep = self.p - p_ref
         ev = self.v - v_ref
 
+        carb.log_warn(ep)
+
+        self.time_vector.append(self.total_time)
+        self.position_error_over_time.append(ep)
+
         # Compute F_des term
         F_des = -(self.Kp @ ep) - (self.Kd @ ev) + np.array([0.0, 0.0, self.m * self.g]) + (self.m * a_ref)
 
@@ -226,6 +237,7 @@ class NonlinearController(Backend):
         # Compute the torques to apply on the rigid body
         tau = -(self.Kr @ e_R) - (self.Kw @ e_w)
 
+        # TODO - replace these 3 lines by proper force allocation matrix
         vehicle = PegasusInterface().vehicle_manager.get_vehicle("/World/quadrotor")
         vehicle.apply_torque(tau)
         vehicle.apply_force(np.array([0.0, 0.0, u_1]))
@@ -306,7 +318,8 @@ class PegasusApp:
             timeline_event: A timeline event
         """
         if self.world.is_stopped():
-            self.stop_sim = True
+            pass
+            #self.stop_sim = True
 
     def run(self):
         """

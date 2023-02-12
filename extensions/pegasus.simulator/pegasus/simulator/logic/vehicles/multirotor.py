@@ -169,17 +169,17 @@ class Multirotor(Vehicle):
         for i in range(4):
 
             # Apply the force in Z on the rotor frame
-            #self.apply_force([0.0, 0.0, forces_z[i]], body_part="/rotor" + str(i))
+            self.apply_force([0.0, 0.0, forces_z[i]], body_part="/rotor" + str(i))
 
             # Generate the rotating propeller visual effect
             self.handle_propeller_visual(i, forces_z[i], articulation)
 
         # Apply the torque to the body frame of the vehicle that corresponds to the rolling moment
-        #self.apply_torque([0.0, 0.0, rolling_moment], "/body")
+        self.apply_torque([0.0, 0.0, rolling_moment], "/body")
 
         # Compute the total linear drag force to apply to the vehicle's body frame
         drag = self._drag.update(self._state, dt)
-        #self.apply_force(drag, body_part="/body")
+        self.apply_force(drag, body_part="/body")
 
         # Call the update methods in all backends
         for backend in self._backends:
