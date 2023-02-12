@@ -48,6 +48,7 @@ class Pegasus_SimulatorExtension(omni.ext.IExt):
 
         # Start the extension backend
         self._pegasus_sim = PegasusInterface()
+        self._pegasus_sim.initialize_world()
 
         # Add the ability to show the window if the system requires it (QuickLayout feature)
         ui.Workspace.set_show_window_fn(WINDOW_TITLE, partial(self.show_window, None))
