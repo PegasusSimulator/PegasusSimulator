@@ -59,7 +59,7 @@ class NonlinearController(Backend):
         self.a = np.zeros((3,))                   # The linear acceleration of the vehicle in the inertial frame
 
         # Define the control gains matrix for the outer-loop
-        self.Kp = np.diag([10.0, 10.0, 10.0])
+        self.Kp = np.diag([13.0, 13.0, 13.0])
         self.Kd = np.diag([10.0, 10.0, 10.0])
         self.Kr = np.diag([3.0, 3.0, 3.0])
         self.Kw = np.diag([0.5, 0.5, 0.5])
@@ -68,10 +68,15 @@ class NonlinearController(Backend):
         self.m = 1.5        # Mass in Kg
         self.g = 9.81       # The gravity acceleration ms^-2
 
-        self.reveived_first_state = False
-
         # Read the target trajectory from a CSV file inside the trajectories directory
-        trajectory = self.read_trajectory_from_csv("slow_xy_ellipse.csv")
+        self.trajectory = self.read_trajectory_from_csv("slow_xy_ellipse.csv")
+        self.index = 0
+        self.max_index, _ = self.trajectory.shape
+        self.total_time = 0.0
+        carb.log_warn(self.trajectory)
+
+        # Auxiliar variable, so that we only start sending motor commands once we get the state of the vehicle
+        self.reveived_first_state = False
 
     def read_trajectory_from_csv(self, file_name: str):
         """Auxiliar method used to read the desired trajectory from a CSV file
@@ -87,7 +92,7 @@ class NonlinearController(Backend):
         csv_trajectory = str(Path(os.path.dirname(os.path.realpath(__file__))).resolve()) + "/trajectories/" + file_name
 
         # Read the trajectory to a pandas frame
-        return pd.read_csv(csv_trajectory)
+        return np.flip(np.genfromtxt(csv_trajectory, delimiter=','), axis=0)
 
 
     def start(self):
@@ -144,13 +149,19 @@ class NonlinearController(Backend):
         # -------------------------------------------------
         # Update the references for the controller to track
         # -------------------------------------------------
+        self.total_time += dt
+
+        # Check if we need to update to the next trajectory index
+        if self.index < self.max_index - 1 and self.total_time >= self.trajectory[self.index + 1, 0]:
+            self.index += 1
+
         # the target positions [m], velocity [m/s], accelerations [m/s^2], jerk [m/s^3], yaw-angle [rad], yaw-rate [rad/s]
-        p_ref = np.array([0.0, 0.0, 1.0])
-        v_ref = np.zeros((3,))
-        a_ref = np.zeros((3,))
-        j_ref = np.zeros((3,))
-        yaw_ref = 0.0
-        yaw_rate_ref = 0.0
+        p_ref = np.array([self.trajectory[self.index, 1], self.trajectory[self.index, 2], self.trajectory[self.index, 3]])
+        v_ref = np.array([self.trajectory[self.index, 4], self.trajectory[self.index, 5], self.trajectory[self.index, 6]])
+        a_ref = np.array([self.trajectory[self.index, 7], self.trajectory[self.index, 8], self.trajectory[self.index, 9]])
+        j_ref = np.array([self.trajectory[self.index, 10], self.trajectory[self.index, 11], self.trajectory[self.index, 12]])
+        yaw_ref = self.trajectory[self.index, 13]
+        yaw_rate_ref = self.trajectory[self.index, 14]
 
         # -------------------------------------------------
         # Start the controller implementation
@@ -214,8 +225,6 @@ class NonlinearController(Backend):
 
         # Compute the torques to apply on the rigid body
         tau = -(self.Kr @ e_R) - (self.Kw @ e_w)
-
-        #carb.log_warn(np.rad2deg(e_R))
 
         vehicle = PegasusInterface().vehicle_manager.get_vehicle("/World/quadrotor")
         vehicle.apply_torque(tau)
