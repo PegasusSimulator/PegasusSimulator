@@ -39,11 +39,14 @@ from pathlib import Path
 
 class NonlinearController(Backend):
     """A nonlinear controller class. It implements a nonlinear controller that allows a vehicle to track
-    aggressive trajectories. This controlers is well described in the paper
+    aggressive trajectories. This controlers is well described in the papers
     
     [1] J. Pinto, B. J. Guerreiro and R. Cunha, "Planning Parcel Relay Manoeuvres for Quadrotors," 
     2021 International Conference on Unmanned Aircraft Systems (ICUAS), Athens, Greece, 2021, 
     pp. 137-145, doi: 10.1109/ICUAS51884.2021.9476757.
+    [2] D. Mellinger and V. Kumar, "Minimum snap trajectory generation and control for quadrotors," 
+    2011 IEEE International Conference on Robotics and Automation, Shanghai, China, 2011, 
+    pp. 2520-2525, doi: 10.1109/ICRA.2011.5980409.
     """
 
     def __init__(self):
@@ -66,6 +69,8 @@ class NonlinearController(Backend):
         # Define the control gains matrix for the outer-loop
         self.Kp = np.diag([12.0, 12.0, 12.0])
         self.Kd = np.diag([9.0, 9.0, 9.0])
+        self.Kr = np.diag([3.0, 3.0, 3.0])
+        self.Kw = np.diag([3.0, 3.0, 3.0])
 
         # Define the dynamic parameters for the vehicle
         self.m = 1.5        # Mass in Kg
@@ -142,7 +147,7 @@ class NonlinearController(Backend):
         ev = self.v - self.v_ref
 
         # Compute F_des term
-        F_des = -(self.Kp @ ep) -(self.Kd @ ev) + np.array([0.0, 0.0, self.m * self.g]) + (self.m * self.a_ref)
+        F_des = -(self.Kp @ ep) - (self.Kd @ ev) + np.array([0.0, 0.0, self.m * self.g]) + (self.m * self.a_ref)
 
         # Get the current axis Z_B (given by the last column of the rotation matrix)
         Z_B = self.R.as_matrix()[:,2]
@@ -169,11 +174,30 @@ class NonlinearController(Backend):
         # Compute the rotation error
         e_R = 0.5 * self.vee((R_des.inv() * self.R) - (self.R.inv() * R_des))
 
-        # Compute the desired angular velocity by projecting the angular velocity in the Xb-Yb plane
+        # Compute the derivative of the acceleration. Since we cannot measure this directly, but we know exactly
+        # the acceleration input that we are giving the vehicle, i.e. u_1 = F_des @ Z_B, assuming there is no
+        # saturation and no time delays (ideal system), then u_1_dot \approx F_des_dot @ Z_B
+        ea = self.a - self.a_ref
+        F_des_dot = -(self.Kp @ ev) - (self.Kd @ ea) + (self.m * self.j_ref)
+        u_1_dot = F_des_dot @ Z_B
 
+        # Compute the desired angular velocity by projecting the angular velocity in the Xb-Yb plane
+        #projection of angular velocity on xB − yB plane
+        # see eqn (7) from [2].
+        hw = (F_des_dot - u_1_dot * Z_b_des) / u_1
+        
+        # desired angular velocity
+        w_des = np.array([-np.dot(hw, Y_b_des), 
+                           np.dot(hw, X_b_des), 
+                           self.yaw_rate_ref * Z_b_des[2]])
 
         # Compute the angular velocity error
         e_w = self.w - w_des
+
+        # Compute the torques to apply on the rigid body
+        tau = -(self.Kr @ e_R) - (self.Kw @ e_w)
+
+
     
     def apply_force_and_torques(self, force: float, torque: np.ndarray):
         """Method that given the total force [N] and the torque vector [\tau_x, \tau_y, \tau_z]^T [Nm]
