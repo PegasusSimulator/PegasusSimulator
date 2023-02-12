@@ -52,23 +52,15 @@ class NonlinearController(Backend):
     def __init__(self):
 
         # The current state of the vehicle expressed in the inertial frame (in ENU)
-        self.p = np.zeros((3,))         # The vehicle position
+        self.p = np.zeros((3,))                   # The vehicle position
         self.R: Rotation = Rotation.identity()    # The vehicle attitude
-        self.w = np.zeros((3,))         # The angular velocity of the vehicle
-        self.v = np.zeros((3,))         # The linear velocity of the vehicle in the inertial frame
-
-        # The trajectory references for the controller to track, i.e.
-        # the target positions [m], velocity [m/s], accelerations [m/s^2], jerk [m/s^3], yaw-angle [rad], yaw-rate [rad/s]
-        self.p_ref = np.array([0.0, 0.0, 1.0])
-        self.v_ref = np.zeros((3,))
-        self.a_ref = np.zeros((3,))
-        self.j_ref = np.zeros((3,))
-        self.yaw_ref = 0.0
-        self.yaw_rate_ref = 0.0
+        self.w = np.zeros((3,))                   # The angular velocity of the vehicle
+        self.v = np.zeros((3,))                   # The linear velocity of the vehicle in the inertial frame
+        self.a = np.zeros((3,))                   # The linear acceleration of the vehicle in the inertial frame
 
         # Define the control gains matrix for the outer-loop
-        self.Kp = np.diag([12.0, 12.0, 12.0])
-        self.Kd = np.diag([9.0, 9.0, 9.0])
+        self.Kp = np.diag([3.0, 3.0, 3.0])
+        self.Kd = np.diag([3.0, 3.0, 3.0])
         self.Kr = np.diag([3.0, 3.0, 3.0])
         self.Kw = np.diag([3.0, 3.0, 3.0])
 
@@ -125,6 +117,9 @@ class NonlinearController(Backend):
         self.w = state.angular_velocity
         self.v = state.linear_velocity
 
+        # Update the acceleration state
+        self.a = state.linear_acceleration - np.array([0.0, 0.0, 9.81])
+
     def input_reference(self):
         """
         Method that is used to return the latest target angular velocities to be applied to the vehicle
@@ -142,12 +137,27 @@ class NonlinearController(Backend):
             dt (float): The time elapsed between the previous and current function calls (s).
         """
 
+        # -------------------------------------------------
+        # Update the references for the controller to track
+        # -------------------------------------------------
+        # the target positions [m], velocity [m/s], accelerations [m/s^2], jerk [m/s^3], yaw-angle [rad], yaw-rate [rad/s]
+        p_ref = np.array([0.0, 0.0, 1.0])
+        v_ref = np.zeros((3,))
+        a_ref = np.zeros((3,))
+        j_ref = np.zeros((3,))
+        yaw_ref = 0.0
+        yaw_rate_ref = 0.0
+
+        # -------------------------------------------------
+        # Start the controller implementation
+        # -------------------------------------------------
+
         # Compute the tracking errors
-        ep = self.p - self.p_ref
-        ev = self.v - self.v_ref
+        ep = self.p - p_ref
+        ev = self.v - v_ref
 
         # Compute F_des term
-        F_des = -(self.Kp @ ep) - (self.Kd @ ev) + np.array([0.0, 0.0, self.m * self.g]) + (self.m * self.a_ref)
+        F_des = -(self.Kp @ ep) - (self.Kd @ ev) + np.array([0.0, 0.0, self.m * self.g]) + (self.m * a_ref)
 
         # Get the current axis Z_B (given by the last column of the rotation matrix)
         Z_B = self.R.as_matrix()[:,2]
@@ -159,7 +169,7 @@ class NonlinearController(Backend):
         Z_b_des = F_des / np.linalg.norm(F_des)
 
         # Compute X_C_des 
-        X_c_des = np.array([np.cos(self.yaw_ref), np.sin(self.yaw_ref), 0.0])
+        X_c_des = np.array([np.cos(yaw_ref), np.sin(yaw_ref), 0.0])
 
         # Compute Y_b_des
         Z_b_cross_X_c = np.cross(Z_b_des, X_c_des)
@@ -172,13 +182,13 @@ class NonlinearController(Backend):
         R_des = Rotation.from_matrix(np.array([X_b_des, Y_b_des, Z_b_des]).T)
 
         # Compute the rotation error
-        e_R = 0.5 * self.vee((R_des.inv() * self.R) - (self.R.inv() * R_des))
+        e_R = 0.5 * self.vee((R_des.inv() * self.R).as_matrix() - (self.R.inv() * R_des).as_matrix())
 
         # Compute the derivative of the acceleration. Since we cannot measure this directly, but we know exactly
         # the acceleration input that we are giving the vehicle, i.e. u_1 = F_des @ Z_B, assuming there is no
         # saturation and no time delays (ideal system), then u_1_dot \approx F_des_dot @ Z_B
-        ea = self.a - self.a_ref
-        F_des_dot = -(self.Kp @ ev) - (self.Kd @ ea) + (self.m * self.j_ref)
+        ea = self.a - a_ref
+        F_des_dot = -(self.Kp @ ev) - (self.Kd @ ea) + (self.m * j_ref)
         u_1_dot = F_des_dot @ Z_B
 
         # Compute the desired angular velocity by projecting the angular velocity in the Xb-Yb plane
@@ -189,7 +199,7 @@ class NonlinearController(Backend):
         # desired angular velocity
         w_des = np.array([-np.dot(hw, Y_b_des), 
                            np.dot(hw, X_b_des), 
-                           self.yaw_rate_ref * Z_b_des[2]])
+                           yaw_rate_ref * Z_b_des[2]])
 
         # Compute the angular velocity error
         e_w = self.w - w_des
@@ -197,6 +207,11 @@ class NonlinearController(Backend):
         # Compute the torques to apply on the rigid body
         tau = -(self.Kr @ e_R) - (self.Kw @ e_w)
 
+        carb.log_warn(np.rad2deg(e_R))
+
+        vehicle = PegasusInterface().vehicle_manager.get_vehicle("/World/quadrotor")
+        vehicle.apply_torque(tau)
+        vehicle.apply_force(np.array([0.0, 0.0, u_1]))
 
     
     def apply_force_and_torques(self, force: float, torque: np.ndarray):

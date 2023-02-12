@@ -63,7 +63,7 @@ class VehicleManager:
         """
         return VehicleManager()
 
-    def add_vehicle(self, stage_prefix, vehicle):
+    def add_vehicle(self, stage_prefix: str, vehicle):
         """
         Method that adds the vehicles to the vehicle manager.
 
@@ -73,7 +73,19 @@ class VehicleManager:
         """
         self._vehicles[stage_prefix] = vehicle
 
-    def remove_vehicle(self, stage_prefix):
+    def get_vehicle(self, stage_prefix: str):
+        """Method that returns the vehicle object given its stage prefix. Returns None if there is no vehicle
+        associated with that stage prefix
+
+        Args:
+            stage_prefix (str): A string with the name that the vehicle is spawned in the simulator
+
+        Returns:
+            Vehicle: The vehicle object associated with the stage_prefix
+        """
+        return self._vehicles.get(stage_prefix, None)
+
+    def remove_vehicle(self, stage_prefix: str):
         """
         Method that deletes a vehicle from the vehicle manager.
 
