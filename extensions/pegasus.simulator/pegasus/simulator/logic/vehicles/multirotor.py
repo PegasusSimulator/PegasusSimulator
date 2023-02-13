@@ -244,11 +244,14 @@ class Multirotor(Vehicle):
         aloc_matrix[0, :] = np.array(self._thrusters._rotor_constant)                                           
 
         # Define the second and third lines of the matrix (\tau_x [Nm] and \tau_y [Nm])
-        aloc_matrix[1, :] = np.array([relative_poses[i].p[0] * self._thrusters._rot_dir[i] for i in range(self._thrusters._num_rotors)])
-        aloc_matrix[2, :] = np.array([relative_poses[i].p[1] * self._thrusters._rot_dir[i] for i in range(self._thrusters._num_rotors)])
+        aloc_matrix[1, :] = np.array([relative_poses[i].p[1] * self._thrusters._rotor_constant[i] for i in range(self._thrusters._num_rotors)])
+        aloc_matrix[2, :] = np.array([-relative_poses[i].p[0] * self._thrusters._rotor_constant[i] for i in range(self._thrusters._num_rotors)])
 
         # Define the forth line of the matrix (\tau_z [Nm])
         aloc_matrix[3, :] = np.array([self._thrusters._rolling_moment_coefficient[i] * self._thrusters._rot_dir[i] for i in range(self._thrusters._num_rotors)])
+
+        import carb
+        carb.log_warn(aloc_matrix)
 
         # Compute the inverse allocation matrix, so that we can get the angular velocities (squared) from the total thrust and torques
         aloc_inv = np.linalg.pinv(aloc_matrix)
@@ -269,6 +272,6 @@ class Multirotor(Vehicle):
         squared_ang_vel = squared_ang_vel / normalize
 
         # Compute the angular velocities for each rotor in [rad/s]
-        ang_vel = np.sqrt(squared_ang_vel)        
+        ang_vel = np.sqrt(squared_ang_vel)
 
         return ang_vel

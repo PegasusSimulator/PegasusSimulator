@@ -166,12 +166,12 @@ class NonlinearController(Backend):
             self.index += 1
 
         # the target positions [m], velocity [m/s], accelerations [m/s^2], jerk [m/s^3], yaw-angle [rad], yaw-rate [rad/s]
-        p_ref = np.array([self.trajectory[self.index, 1], self.trajectory[self.index, 2], self.trajectory[self.index, 3]])
-        v_ref = np.array([self.trajectory[self.index, 4], self.trajectory[self.index, 5], self.trajectory[self.index, 6]])
-        a_ref = np.array([self.trajectory[self.index, 7], self.trajectory[self.index, 8], self.trajectory[self.index, 9]])
-        j_ref = np.array([self.trajectory[self.index, 10], self.trajectory[self.index, 11], self.trajectory[self.index, 12]])
-        yaw_ref = self.trajectory[self.index, 13]
-        yaw_rate_ref = self.trajectory[self.index, 14]
+        p_ref = np.array([0.0, 0.0, 1.0]) #np.array([self.trajectory[self.index, 1], self.trajectory[self.index, 2], self.trajectory[self.index, 3]])
+        v_ref = np.array([0.0, 0.0, 0.0]) #np.array([self.trajectory[self.index, 4], self.trajectory[self.index, 5], self.trajectory[self.index, 6]])
+        a_ref = np.array([0.0, 0.0, 0.0]) #np.array([self.trajectory[self.index, 7], self.trajectory[self.index, 8], self.trajectory[self.index, 9]])
+        j_ref = np.array([0.0, 0.0, 0.0]) #np.array([self.trajectory[self.index, 10], self.trajectory[self.index, 11], self.trajectory[self.index, 12]])
+        yaw_ref = 0.0 #self.trajectory[self.index, 13]
+        yaw_rate_ref = 0.0 #self.trajectory[self.index, 14]
 
         # -------------------------------------------------
         # Start the controller implementation
@@ -256,7 +256,6 @@ class NonlinearController(Backend):
         # Apply the force and torque directly and let the multirotor apply
         # the forces to each rotor individually via its built in API
         self.input_ref = self.apply_force_and_torques(u_1, tau)
-        carb.log_warn(self.input_ref)
         
     
     def apply_force_and_torques(self, force: float, torque: np.ndarray):
