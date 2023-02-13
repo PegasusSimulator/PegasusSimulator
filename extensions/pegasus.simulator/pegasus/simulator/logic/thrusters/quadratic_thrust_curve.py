@@ -102,9 +102,6 @@ class QuadraticThrustCurve(ThrustCurve):
         # Update the rolling moment variable
         self._rolling_moment = rolling_moment
 
-        import carb
-        carb.log_warn(self._rolling_moment)
-
         # Return the forces and velocities on each rotor and total torque applied on the body frame
         return self._force, self._velocity, self._rolling_moment
 

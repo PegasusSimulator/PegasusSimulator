@@ -250,9 +250,6 @@ class Multirotor(Vehicle):
         # Define the forth line of the matrix (\tau_z [Nm])
         aloc_matrix[3, :] = np.array([self._thrusters._rolling_moment_coefficient[i] * self._thrusters._rot_dir[i] for i in range(self._thrusters._num_rotors)])
 
-        import carb
-        carb.log_warn(aloc_matrix)
-
         # Compute the inverse allocation matrix, so that we can get the angular velocities (squared) from the total thrust and torques
         aloc_inv = np.linalg.pinv(aloc_matrix)
 
@@ -267,9 +264,11 @@ class Multirotor(Vehicle):
         # ------------------------------------------------------------------------------------------------
         max_thrust_vel_squared = np.power(self._thrusters.max_rotor_velocity[0], 2)
         max_val = np.max(squared_ang_vel)
-        normalize = np.maximum(max_val / max_thrust_vel_squared, 1.0)
 
-        squared_ang_vel = squared_ang_vel / normalize
+        if max_val >= max_thrust_vel_squared:
+            normalize = np.maximum(max_val / max_thrust_vel_squared, 1.0)
+
+            squared_ang_vel = squared_ang_vel / normalize
 
         # Compute the angular velocities for each rotor in [rad/s]
         ang_vel = np.sqrt(squared_ang_vel)
