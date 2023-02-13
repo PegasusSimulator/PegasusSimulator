@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-| File: px4_multi_vehicle.py
+| File: 2_px4_multi_vehicle.py
 | Author: Marcelo Jacinto (marcelo.jacinto@tecnico.ulisboa.pt)
 | License: BSD-3-Clause. Copyright (c) 2023, Marcelo Jacinto. All rights reserved.
 | Description: This files serves as an example on how to build an app that makes use of the Pegasus API to run a simulation with multiple vehicles, controlled using the MAVLink control backend.

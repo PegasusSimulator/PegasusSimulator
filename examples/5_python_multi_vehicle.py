@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 """
-| File: px4_single_vehicle.py
-| Author: Marcelo Jacinto (marcelo.jacinto@tecnico.ulisboa.pt)
+| File: python_control_backend.py
+| Author: Marcelo Jacinto and Joao Pinto (marcelo.jacinto@tecnico.ulisboa.pt, joao.s.pinto@tecnico.ulisboa.pt)
 | License: BSD-3-Clause. Copyright (c) 2023, Marcelo Jacinto. All rights reserved.
-| Description: This files serves as an example on how to build an app that makes use of the Pegasus API to run a simulation with a single vehicle, controlled using the MAVLink control backend.
+| Description: This files serves as an example on how to use the control backends API to create a custom controller 
+for the vehicle from scratch and use it to perform a simulation, without using PX4 nor ROS.
 """
 
 # Imports to start Isaac Sim from this script
@@ -23,13 +24,19 @@ from omni.isaac.core.world import World
 
 # Import the Pegasus API for simulating drones
 from pegasus.simulator.params import ROBOTS, SIMULATION_ENVIRONMENTS
-from pegasus.simulator.logic.state import State
-from pegasus.simulator.logic.backends.mavlink_backend import MavlinkBackend, MavlinkBackendConfig
 from pegasus.simulator.logic.vehicles.multirotor import Multirotor, MultirotorConfig
 from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 
+# Import the custom python control backend
+from utils.nonlinear_controller import NonlinearController
+
 # Auxiliary scipy and numpy modules
 from scipy.spatial.transform import Rotation
+
+# Use os and pathlib for parsing the desired trajectory from a CSV file
+import os
+from pathlib import Path
+
 
 class PegasusApp:
     """
@@ -55,32 +62,47 @@ class PegasusApp:
         # Launch one of the worlds provided by NVIDIA
         self.pg.load_environment(SIMULATION_ENVIRONMENTS["Curved Gridroom"])
 
-        # Create the vehicle
+        # Get the current directory used to read trajectories and save results
+        self.curr_dir = str(Path(os.path.dirname(os.path.realpath(__file__))).resolve())
+
+        # Create the vehicle 1
         # Try to spawn the selected robot in the world to the specified namespace
-        config_multirotor = MultirotorConfig()
-        # Create the multirotor configuration
-        mavlink_config = MavlinkBackendConfig({
-            "vehicle_id": 0,
-            "px4_autolaunch": True,
-            "px4_dir": "/home/marcelo/PX4-Autopilot",
-            "px4_vehicle_model": 'iris'
-        })
-        config_multirotor.backends = [MavlinkBackend(mavlink_config)]
+        config_multirotor1 = MultirotorConfig()
+        config_multirotor1.backends = [NonlinearController(
+            trajectory_file=self.curr_dir + "/trajectories/pitch_relay_90_deg_1.csv",
+            results_file=self.curr_dir + "/results/statistics_1.npz",
+            id=1
+        )]
 
         Multirotor(
-            "/World/quadrotor",
+            "/World/quadrotor1",
             ROBOTS['Iris'],
-            0,
-            [0.0, 0.0, 0.07],
+            1,
+            [0.0, -1.5, 0.07],
+            Rotation.from_euler("XYZ", [0.0, 0.0, 180.0], degrees=True).as_quat(),
+            config=config_multirotor1,
+        )
+
+        # Create the vehicle 2
+        #Try to spawn the selected robot in the world to the specified namespace
+        config_multirotor2 = MultirotorConfig()
+        config_multirotor2.backends = [NonlinearController(
+            trajectory_file=self.curr_dir + "/trajectories/pitch_relay_90_deg_2.csv",
+            results_file=self.curr_dir + "/results/statistics_2.npz",
+            id=2
+        )]
+
+        Multirotor(
+            "/World/quadrotor2",
+            ROBOTS['Iris'],
+            2,
+            [2.3, -1.5, 0.07],
             Rotation.from_euler("XYZ", [0.0, 0.0, 0.0], degrees=True).as_quat(),
-            config=config_multirotor,
+            config=config_multirotor2,
         )
 
         # Reset the simulation environment so that all articulations (aka robots) are initialized
         self.world.reset()
-
-        # Auxiliar variable for the timeline callback example
-        self.stop_sim = False
 
     def run(self):
         """
@@ -91,7 +113,7 @@ class PegasusApp:
         self.timeline.play()
 
         # The "infinite" loop
-        while simulation_app.is_running() and not self.stop_sim:
+        while simulation_app.is_running():
 
             # Update the UI of the app and perform the physics step
             self.world.step(render=True)
