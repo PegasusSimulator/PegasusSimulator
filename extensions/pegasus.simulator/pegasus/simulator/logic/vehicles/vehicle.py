@@ -44,6 +44,7 @@ def get_world_transform_xform(prim: Usd.Prim):
 
 
 class Vehicle(Robot):
+    
     def __init__(
         self,
         stage_prefix: str,

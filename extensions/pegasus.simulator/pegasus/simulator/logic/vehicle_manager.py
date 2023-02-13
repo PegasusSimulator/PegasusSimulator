@@ -24,6 +24,9 @@ class VehicleManager:
     # The object instance of the Vehicle Manager
     _instance = None
     _is_initialized = False
+    
+    # A dictionary of vehicles that are spawned in the simulator
+    _vehicles = {}
 
     # Lock for safe multi-threading
     _lock: Lock = Lock()
@@ -32,13 +35,7 @@ class VehicleManager:
         """
         Constructor for the vehicle manager class.
         """
-
-        if not VehicleManager._is_initialized:
-            # Mark it as initialized
-            self._is_initialized = True
-
-            # A dictionary of vehicles that are spawned in the simulator
-            self._vehicles = {}
+        pass
 
     """
     Properties
@@ -50,7 +47,7 @@ class VehicleManager:
         Returns:
             (list) List of vehicles that were spawned.
         """
-        return self._vehicles
+        return VehicleManager._vehicles
 
     """
     Operations
@@ -71,7 +68,7 @@ class VehicleManager:
             stage_prefix (str): A string with the name that the vehicle is spawned in the simulator
             vehicle (Vehicle): The vehicle object being added to the vehicle manager.
         """
-        self._vehicles[stage_prefix] = vehicle
+        VehicleManager._vehicles[stage_prefix] = vehicle
 
     def get_vehicle(self, stage_prefix: str):
         """Method that returns the vehicle object given its stage prefix. Returns None if there is no vehicle
@@ -83,7 +80,7 @@ class VehicleManager:
         Returns:
             Vehicle: The vehicle object associated with the stage_prefix
         """
-        return self._vehicles.get(stage_prefix, None)
+        return VehicleManager._vehicles.get(stage_prefix, None)
 
     def remove_vehicle(self, stage_prefix: str):
         """
@@ -93,7 +90,7 @@ class VehicleManager:
             stage_prefix (str): A string with the name that the vehicle is spawned in the simulator.
         """
         try:
-            self._vehicles.pop(stage_prefix)
+            VehicleManager._vehicles.pop(stage_prefix)
         except:
             pass
 
@@ -102,7 +99,7 @@ class VehicleManager:
         Method that will delete all the vehicles that were spawned from the vehicle manager.
         """
 
-        self._vehicles.clear()
+        VehicleManager._vehicles.clear()
 
     def __new__(cls):
         """Method that allocated memory for a new vehicle_manager. Since the VehicleManager follows a singleton pattern,
@@ -125,5 +122,4 @@ class VehicleManager:
     def __del__(self):
         """Destructor for the object"""
         VehicleManager._instance = None
-        VehicleManager._is_initialized = False
         return

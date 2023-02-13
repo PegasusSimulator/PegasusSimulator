@@ -6,9 +6,9 @@
 """
 import numpy as np
 from pegasus.simulator.logic.state import State
+from pegasus.simulator.logic.thrusters.thrust_curve import ThrustCurve
 
-
-class QuadraticThrustCurve:
+class QuadraticThrustCurve(ThrustCurve):
     """Class that implements the dynamics of rotors that can be described by a quadratic thrust curve
     """
     def __init__(self, config={}):

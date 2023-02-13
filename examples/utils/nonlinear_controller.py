@@ -1,40 +1,14 @@
-#!/usr/bin/env python
-"""
-| File: python_control_backend.py
-| Author: Marcelo Jacinto and Joao Pinto (marcelo.jacinto@tecnico.ulisboa.pt, joao.s.pinto@tecnico.ulisboa.pt)
-| License: BSD-3-Clause. Copyright (c) 2023, Marcelo Jacinto. All rights reserved.
-| Description: This files serves as an example on how to use the control backends API to create a custom controller for the vehicle from scratch and use it to perform a simulation, without using PX4 nor ROS.
-"""
-
-# Imports to start Isaac Sim from this script
+# Imports to be able to log to the terminal with fancy colors
 import carb
-from omni.isaac.kit import SimulationApp
 
-# Start Isaac Sim's simulation environment
-# Note: this simulation app must be instantiated right after the SimulationApp import, otherwise the simulator will crash
-# as this is the object that will load all the extensions and load the actual simulator.
-simulation_app = SimulationApp({"headless": False})
-
-# -----------------------------------
-# The actual script should start here
-# -----------------------------------
-import omni.timeline
-from omni.isaac.core.world import World
-
-# Import the Pegasus API for simulating drones
-from pegasus.simulator.params import ROBOTS, SIMULATION_ENVIRONMENTS
+# Imports from the Pegasus library
 from pegasus.simulator.logic.state import State
 from pegasus.simulator.logic.backends import Backend
-from pegasus.simulator.logic.vehicles.multirotor import Multirotor, MultirotorConfig
 from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 
 # Auxiliary scipy and numpy modules
 import numpy as np
 from scipy.spatial.transform import Rotation
-
-# Use os and pathlib for parsing the desired trajectory from a CSV file
-import os
-from pathlib import Path
 
 class NonlinearController(Backend):
     """A nonlinear controller class. It implements a nonlinear controller that allows a vehicle to track
@@ -48,7 +22,10 @@ class NonlinearController(Backend):
     pp. 2520-2525, doi: 10.1109/ICRA.2011.5980409.
     """
 
-    def __init__(self):
+    def __init__(self, trajectory_file: str, results_file: str=None, id=1):
+
+        # The current rotor references [rad/s]
+        self.input_ref = [0.0, 0.0, 0.0, 0.0]
 
         # The current state of the vehicle expressed in the inertial frame (in ENU)
         self.p = np.zeros((3,))                   # The vehicle position
@@ -68,7 +45,7 @@ class NonlinearController(Backend):
         self.g = 9.81       # The gravity acceleration ms^-2
 
         # Read the target trajectory from a CSV file inside the trajectories directory
-        self.trajectory = self.read_trajectory_from_csv("pitch_relay_90_deg_2.csv")
+        self.trajectory = self.read_trajectory_from_csv(trajectory_file)
         self.index = 0
         self.max_index, _ = self.trajectory.shape
         self.total_time = 0.0
@@ -77,11 +54,15 @@ class NonlinearController(Backend):
         self.reveived_first_state = False
 
         # Lists used for analysing performance statistics
+        self.results_files = results_file
         self.time_vector = []
         self.position_error_over_time = []
         self.velocity_error_over_time = []
         self.atittude_error_over_time = []
         self.attitude_rate_error_over_time = []
+
+        # TODO - remove this - only temporary for vehicle control
+        self.id = id
 
     def read_trajectory_from_csv(self, file_name: str):
         """Auxiliar method used to read the desired trajectory from a CSV file
@@ -90,14 +71,11 @@ class NonlinearController(Backend):
             file_name (str): A string with the name of the trajectory inside the trajectories directory
 
         Returns:
-            pd.DataFrame: A Pandas dataframe table with the target trajectory to be executed over time
+            np.ndarray: A numpy matrix with the trajectory desired states over time
         """
-        
-        # Get the complete path to the CSV file
-        csv_trajectory = str(Path(os.path.dirname(os.path.realpath(__file__))).resolve()) + "/trajectories/" + file_name
 
         # Read the trajectory to a pandas frame
-        return np.flip(np.genfromtxt(csv_trajectory, delimiter=','), axis=0)
+        return np.flip(np.genfromtxt(file_name, delimiter=','), axis=0)
 
 
     def start(self):
@@ -118,15 +96,19 @@ class NonlinearController(Backend):
         """
         Stopping the controller. Saving the statistics data for plotting later
         """
-        carb.log_warn("---Stopping---")
 
+        # Check if we should save the statistics to some file or not
+        if self.results_files is None:
+            return
+        
         statistics = {}
         statistics["time"] = np.array(self.time_vector)
         statistics["ep"] = np.vstack(self.position_error_over_time)
         statistics["ev"] = np.vstack(self.velocity_error_over_time)
         statistics["er"] = np.vstack(self.atittude_error_over_time)
         statistics["ew"] = np.vstack(self.attitude_rate_error_over_time)
-        np.savez(str(Path(os.path.dirname(os.path.realpath(__file__))).resolve()) + "/results/statistics.npz", **statistics)
+        np.savez(self.results_files, **statistics)
+        carb.log_warn("Statistics saved to: " + self.results_files)
 
     def update_sensor(self, sensor_type: str, data):
         """
@@ -160,7 +142,7 @@ class NonlinearController(Backend):
         Returns:
             A list with the target angular velocities for each individual rotor of the vehicle
         """
-        return [0.0, 0.0, 0.0, 0.0]
+        return self.input_ref
 
     def update(self, dt: float):
         """Method that implements the nonlinear control law and updates the target angular velocities for each rotor. 
@@ -234,14 +216,17 @@ class NonlinearController(Backend):
         # Compute the derivative of the acceleration. Since we cannot measure this directly, but we know exactly
         # the acceleration input that we are giving the vehicle, i.e. u_1 = F_des @ Z_B, assuming there is no
         # saturation and no time delays (ideal system), then u_1_dot \approx F_des_dot @ Z_B
-        ea = self.a - a_ref
-        F_des_dot = -(self.Kp @ ev) - (self.Kd @ ea) + (self.m * j_ref)
-        u_1_dot = F_des_dot @ Z_B
+        # Note: This is left here, because I still believe we can use the error, instead of feeding-forward 
+        # only the jerk for the projection, but I need to think a little bit more on the subject.
+        # For now, this is already pretty good 
+        #ea = self.a - a_ref
+        #F_des_dot = -(self.Kp @ ev) - (self.Kd @ ea) + (self.m * j_ref)
+        #u_1_dot = F_des_dot @ Z_B
 
         # Compute the desired angular velocity by projecting the angular velocity in the Xb-Yb plane
         #projection of angular velocity on xB − yB plane
         # see eqn (7) from [2].
-        hw = (F_des_dot - u_1_dot * Z_b_des) / u_1
+        hw = (self.m / u_1) * (j_ref - np.dot(Z_b_des, j_ref) * Z_b_des) 
         
         # desired angular velocity
         w_des = np.array([-np.dot(hw, Y_b_des), 
@@ -264,10 +249,15 @@ class NonlinearController(Backend):
         self.attitude_rate_error_over_time.append(e_w)
 
         # TODO - replace these 3 lines by proper force allocation matrix
-        vehicle = PegasusInterface().vehicle_manager.get_vehicle("/World/quadrotor")
-        vehicle.apply_torque(tau)
-        vehicle.apply_force(np.array([0.0, 0.0, u_1]))
+        vehicle = PegasusInterface().vehicle_manager.get_vehicle("/World/quadrotor" + str(self.id))
+        #vehicle.apply_torque(tau)
+        #vehicle.apply_force(np.array([0.0, 0.0, u_1]))
 
+        # Apply the force and torque directly and let the multirotor apply
+        # the forces to each rotor individually via its built in API
+        self.input_ref = self.apply_force_and_torques(u_1, tau)
+        carb.log_warn(self.input_ref)
+        
     
     def apply_force_and_torques(self, force: float, torque: np.ndarray):
         """Method that given the total force [N] and the torque vector [\tau_x, \tau_y, \tau_z]^T [Nm]
@@ -277,7 +267,10 @@ class NonlinearController(Backend):
             force (float): The total force [N] to apply to the vehicle body frame
             torque (np.ndarray): The total torque vector [\tau_x, \tau_y, \tau_z]^T [Nm] to apply to the vehicle
         """
-        pass
+
+        # Get the vehicle
+        vehicle = PegasusInterface().vehicle_manager.get_vehicle("/World/quadrotor" + str(self.id))
+        return vehicle.force_and_torques_to_velocities(force, torque)
 
     @staticmethod
     def vee(S):
@@ -287,92 +280,3 @@ class NonlinearController(Backend):
             S (np.array): A matrix in so(3)
         """
         return np.array([-S[1,2], S[0,2], -S[0,1]])
-
-
-class PegasusApp:
-    """
-    A Template class that serves as an example on how to build a simple Isaac Sim standalone App.
-    """
-
-    def __init__(self):
-        """
-        Method that initializes the PegasusApp and is used to setup the simulation environment.
-        """
-
-        # Acquire the timeline that will be used to start/stop the simulation
-        self.timeline = omni.timeline.get_timeline_interface()
-
-        # Start the Pegasus Interface
-        self.pg = PegasusInterface()
-
-        # Acquire the World, .i.e, the singleton that controls that is a one stop shop for setting up physics, 
-        # spawning asset primitives, etc.
-        self.pg._world = World(**self.pg._world_settings)
-        self.world = self.pg.world
-
-        # Launch one of the worlds provided by NVIDIA
-        self.pg.load_environment(SIMULATION_ENVIRONMENTS["Curved Gridroom"])
-
-        # Create the vehicle
-        # Try to spawn the selected robot in the world to the specified namespace
-        config_multirotor = MultirotorConfig()
-        config_multirotor.backends = [NonlinearController()]
-
-        Multirotor(
-            "/World/quadrotor",
-            ROBOTS['Iris'],
-            0,
-            [0.0, 0.0, 0.07],
-            Rotation.from_euler("XYZ", [0.0, 0.0, 0.0], degrees=True).as_quat(),
-            config=config_multirotor,
-        )
-
-        # Create a timeline callback to close the app when the simulation stops
-        self.world.add_timeline_callback('template_timeline_callback', self.timeline_callback)
-
-        # Reset the simulation environment so that all articulations (aka robots) are initialized
-        self.world.reset()
-
-        # Auxiliar variable for the timeline callback example
-        self.stop_sim = False
-
-    def timeline_callback(self, timeline_event):
-        """An example timeline callback. It will get invoked every time a timeline event occurs. In this example,
-        we will check if the event is for a 'simulation stop'. If so, we will attempt to close the app
-
-        Args:
-            timeline_event: A timeline event
-        """
-        if self.world.is_stopped():
-            pass
-            #self.stop_sim = True
-
-    def run(self):
-        """
-        Method that implements the application main loop, where the physics steps are executed.
-        """
-
-        # Start the simulation
-        self.timeline.play()
-
-        # The "infinite" loop
-        while simulation_app.is_running() and not self.stop_sim:
-
-            # Update the UI of the app and perform the physics step
-            self.world.step(render=True)
-        
-        # Cleanup and stop
-        carb.log_warn("PegasusApp Simulation App is closing.")
-        self.timeline.stop()
-        simulation_app.close()
-
-def main():
-
-    # Instantiate the template app
-    pg_app = PegasusApp()
-
-    # Run the application loop
-    pg_app.run()
-
-if __name__ == "__main__":
-    main()
