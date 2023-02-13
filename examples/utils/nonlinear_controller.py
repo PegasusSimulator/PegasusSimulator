@@ -37,7 +37,7 @@ class NonlinearController(Backend):
         # Define the control gains matrix for the outer-loop
         self.Kp = np.diag([13.0, 13.0, 13.0])
         self.Kd = np.diag([10.0, 10.0, 10.0])
-        self.Kr = np.diag([3.0, 3.0, 3.0])
+        self.Kr = np.diag([5.0, 5.0, 5.0])
         self.Kw = np.diag([0.5, 0.5, 0.5])
 
         # Define the dynamic parameters for the vehicle
@@ -166,12 +166,12 @@ class NonlinearController(Backend):
             self.index += 1
 
         # the target positions [m], velocity [m/s], accelerations [m/s^2], jerk [m/s^3], yaw-angle [rad], yaw-rate [rad/s]
-        p_ref = np.array([0.0, 0.0, 1.0]) #np.array([self.trajectory[self.index, 1], self.trajectory[self.index, 2], self.trajectory[self.index, 3]])
-        v_ref = np.array([0.0, 0.0, 0.0]) #np.array([self.trajectory[self.index, 4], self.trajectory[self.index, 5], self.trajectory[self.index, 6]])
-        a_ref = np.array([0.0, 0.0, 0.0]) #np.array([self.trajectory[self.index, 7], self.trajectory[self.index, 8], self.trajectory[self.index, 9]])
-        j_ref = np.array([0.0, 0.0, 0.0]) #np.array([self.trajectory[self.index, 10], self.trajectory[self.index, 11], self.trajectory[self.index, 12]])
-        yaw_ref = 0.0 #self.trajectory[self.index, 13]
-        yaw_rate_ref = 0.0 #self.trajectory[self.index, 14]
+        p_ref = np.array([self.trajectory[self.index, 1], self.trajectory[self.index, 2], self.trajectory[self.index, 3]])
+        v_ref = np.array([self.trajectory[self.index, 4], self.trajectory[self.index, 5], self.trajectory[self.index, 6]])
+        a_ref = np.array([self.trajectory[self.index, 7], self.trajectory[self.index, 8], self.trajectory[self.index, 9]])
+        j_ref = np.array([self.trajectory[self.index, 10], self.trajectory[self.index, 11], self.trajectory[self.index, 12]])
+        yaw_ref = self.trajectory[self.index, 13]
+        yaw_rate_ref = self.trajectory[self.index, 14]
 
         # -------------------------------------------------
         # Start the controller implementation
