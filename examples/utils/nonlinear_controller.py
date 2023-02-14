@@ -22,7 +22,7 @@ class NonlinearController(Backend):
     pp. 2520-2525, doi: 10.1109/ICRA.2011.5980409.
     """
 
-    def __init__(self, trajectory_file: str, results_file: str=None, id=1):
+    def __init__(self, trajectory_file: str, results_file: str=None):
 
         # The current rotor references [rad/s]
         self.input_ref = [0.0, 0.0, 0.0, 0.0]
@@ -60,9 +60,6 @@ class NonlinearController(Backend):
         self.velocity_error_over_time = []
         self.atittude_error_over_time = []
         self.attitude_rate_error_over_time = []
-
-        # TODO - remove this - only temporary for vehicle control
-        self.id = id
 
     def read_trajectory_from_csv(self, file_name: str):
         """Auxiliar method used to read the desired trajectory from a CSV file
@@ -239,6 +236,11 @@ class NonlinearController(Backend):
         # Compute the torques to apply on the rigid body
         tau = -(self.Kr @ e_R) - (self.Kw @ e_w)
 
+        # Use the allocation matrix provided by the Multirotor vehicle to convert the desired force and torque
+        # to angular velocity [rad/s] references to give to each rotor
+        if self.vehicle:
+            self.input_ref = self.vehicle.force_and_torques_to_velocities(u_1, tau)
+
         # ----------------------------
         # Statistics to save for later
         # ----------------------------
@@ -247,29 +249,6 @@ class NonlinearController(Backend):
         self.velocity_error_over_time.append(ev)
         self.atittude_error_over_time.append(e_R)
         self.attitude_rate_error_over_time.append(e_w)
-
-        # TODO - replace these 3 lines by proper force allocation matrix
-        vehicle = PegasusInterface().vehicle_manager.get_vehicle("/World/quadrotor" + str(self.id))
-        #vehicle.apply_torque(tau)
-        #vehicle.apply_force(np.array([0.0, 0.0, u_1]))
-
-        # Apply the force and torque directly and let the multirotor apply
-        # the forces to each rotor individually via its built in API
-        self.input_ref = self.apply_force_and_torques(u_1, tau)
-        
-    
-    def apply_force_and_torques(self, force: float, torque: np.ndarray):
-        """Method that given the total force [N] and the torque vector [\tau_x, \tau_y, \tau_z]^T [Nm]
-        computes the actual angular velocities to apply to each rotor of the vehicle.
-
-        Args:
-            force (float): The total force [N] to apply to the vehicle body frame
-            torque (np.ndarray): The total torque vector [\tau_x, \tau_y, \tau_z]^T [Nm] to apply to the vehicle
-        """
-
-        # Get the vehicle
-        vehicle = PegasusInterface().vehicle_manager.get_vehicle("/World/quadrotor" + str(self.id))
-        return vehicle.force_and_torques_to_velocities(force, torque)
 
     @staticmethod
     def vee(S):

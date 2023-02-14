@@ -127,6 +127,39 @@ class WidgetWindow(ui.Window):
 
                 ui.Spacer(height=0)
 
+                # UI to configure the default latitude, longitude and altitude coordinates
+                with ui.CollapsableFrame("Geographic Coordinates", collapsed=False):
+                    with ui.VStack(height=0, spacing=10, name="frame_v_stack"):
+                        with ui.HStack():
+
+                            # Latitude
+                            ui.Label("Latitude", name="label", width=WidgetWindow.LABEL_PADDING-50)
+                            latitude_field = ui.FloatField(name="latitude", precision=6)
+                            latitude_field.model.set_value(self._delegate._latitude)
+                            self._delegate.set_latitude_field(latitude_field.model)
+                            ui.Circle(name="transform", width=20, height=20, radius=3.5, size_policy=ui.CircleSizePolicy.FIXED)
+
+                            # Longitude
+                            ui.Label("Longitude", name="label", width=WidgetWindow.LABEL_PADDING-50)
+                            longitude_field = ui.FloatField(name="longitude", precision=6)
+                            longitude_field.model.set_value(self._delegate._longitude)
+                            self._delegate.set_longitude_field(longitude_field.model)
+                            ui.Circle(name="transform", width=20, height=20, radius=3.5, size_policy=ui.CircleSizePolicy.FIXED)
+
+                            # Altitude
+                            ui.Label("Altitude", name="label", width=WidgetWindow.LABEL_PADDING-50)
+                            altitude_field = ui.FloatField(name="altitude", precision=6)
+                            altitude_field.model.set_value(self._delegate._altitude)
+                            self._delegate.set_altitude_field(altitude_field.model)
+                            ui.Circle(name="transform", width=20, height=20, radius=3.5, size_policy=ui.CircleSizePolicy.FIXED)
+
+                        with ui.HStack():
+                            ui.Button("Set", enabled=True, clicked_fn=self._delegate.on_set_new_global_coordinates)
+                            ui.Button("Reset", enabled=True, clicked_fn=self._delegate.on_reset_global_coordinates)
+                            ui.Button("Make Default", enabled=True, clicked_fn=self._delegate.on_set_new_default_global_coordinates)
+
+                ui.Spacer(height=0)
+
                 with ui.HStack():
                     # Add a thumbnail image to have a preview of the world that is about to be loaded
                     with ui.ZStack(width=WidgetWindow.LABEL_PADDING, height=WidgetWindow.BUTTON_HEIGHT * 2):

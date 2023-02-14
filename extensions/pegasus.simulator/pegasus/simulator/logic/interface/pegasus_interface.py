@@ -61,12 +61,10 @@ class PegasusInterface:
         #self.initialize_world()
 
         # Initialize the latitude, longitude and altitude of the simulated environment at the (0.0, 0.0, 0.0) coordinate
-        # Setup to the same defaults as PX4
-        self._latitude: float = 47.397742
-        self._longitude: float = 8.545594
-        self._altitude: float = 488.0
+        # from the extension configuration file
+        self._latitude, self._longitude, self._altitude = self._get_global_coordinates_from_config()
 
-        # Get the px4_path from configuration file
+        # Get the px4_path from the extension configuration file
         self._px4_path: str = self._get_px4_path_from_config()
         carb.log_info("Default PX4 path:" + str(self._px4_path))
 
@@ -142,11 +140,13 @@ class PegasusInterface:
         if self.altitude is not None:
             self._altitude = altitude
 
+        carb.log_warn("New global coordinates set to: " + str(self._latitude) + ", " + str(self._longitude) + ", " + str(self._altitude))
+
     def initialize_world(self):
         """Method that initializes the world object
         """
         self._world = World(**self._world_settings)
-        asyncio.ensure_future(self._world.initialize_simulation_context_async())
+        #asyncio.ensure_future(self._world.initialize_simulation_context_async())
 
     def get_vehicle(self, stage_prefix: str):
         """Method that returns the vehicle object given its 'stage_prefix', i.e., the name the vehicle was spawned with in the simulator.
@@ -337,7 +337,34 @@ class PegasusInterface:
             carb.log_warn("Could not retrieve px4_dir from: " + str(CONFIG_FILE))
 
         return px4_dir
-    
+
+    def _get_global_coordinates_from_config(self):
+        """Method that reads the default latitude, longitude and altitude from the extension configuration file
+
+        Returns:
+            (float, float, float): A tuple of 3 floats with the latitude, longitude and altitude to use as the origin of the world
+        """
+
+        latitude = 0.0
+        longitude = 0.0
+        altitude = 0.0
+
+        # Open the configuration file. If it fails, just return the empty path
+        try:
+            with open(CONFIG_FILE, 'r') as f:
+                data = yaml.safe_load(f)
+                
+                # Try to read the coordinates from the configuration file
+                global_coordinates = data.get("global_coordinates", {})
+                latitude = global_coordinates.get("latitude", 0.0)
+                longitude = global_coordinates.get("longitude", 0.0)
+                altitude = global_coordinates.get("altitude", 0.0)
+
+                carb.log_warn("Trying to read coordinates")
+        except:
+            carb.log_warn("Could not retrieve the global coordinates from: " + str(CONFIG_FILE))
+
+        return (latitude, longitude, altitude)
 
     def set_px4_path(self, path: str):
         """Method that allows a user to save a new px4 directory in the configuration files of the extension.
@@ -364,6 +391,44 @@ class PegasusInterface:
             carb.log_warn("Could not save px4_dir to: " + str(CONFIG_FILE))
 
         carb.log_warn("New px4_dir set to: " + str(self._px4_path))
+
+    def set_default_global_coordinates(self):
+        """
+        Method that sets the latitude, longitude and altitude from the pegasus interface to the 
+        default global coordinates specified in the extension configuration file
+        """
+        self._latitude, self._longitude, self._altitude = self._get_global_coordinates_from_config()
+
+    def set_new_default_global_coordinates(self, latitude: float=None, longitude: float=None, altitude: float=None):
+        
+        # Set the current global coordinates to the new default global coordinates
+        self.set_global_coordinates(latitude, longitude, altitude)
+
+        # Update the default global coordinates in the configuration file
+        try:
+            # Open the configuration file and the all the configurations that it contains
+            with open(CONFIG_FILE, 'r') as f:
+                data = yaml.safe_load(f)
+
+            # Open the configuration file. If it fails, just warn in the console
+            with open(CONFIG_FILE, 'w') as f:
+
+                if latitude is not None:
+                    data["global_coordinates"]["latitude"] = latitude
+
+                if longitude is not None:
+                    data["global_coordinates"]["longitude"] = longitude
+
+                if altitude is not None:
+                    data["global_coordinates"]["altitude"] = altitude
+                
+                # Save the updated configurations    
+                yaml.dump(data, f)
+        except:
+            carb.log_warn("Could not save the new global coordinates to: " + str(CONFIG_FILE))
+
+        carb.log_warn("New global coordinates set to: latitude=" + str(latitude) + ", longitude=" + str(longitude) + ", altitude=" + str(altitude))
+
 
     def __new__(cls):
         """Allocates the memory and creates the actual PegasusInterface object is not instance exists yet. Otherwise,

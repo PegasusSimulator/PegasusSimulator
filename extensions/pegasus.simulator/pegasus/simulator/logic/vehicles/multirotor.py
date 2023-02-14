@@ -91,7 +91,10 @@ class Multirotor(Vehicle):
         self._drag = config.drag
 
         # 4. Save the backend interface (if given in the configuration of the multirotor)
+        # and initialize them
         self._backends = config.backends
+        for backend in self._backends:
+            backend.initialize(self)
 
         # Add a callbacks for the
         self._world.add_physics_callback(self._stage_prefix + "/mav_state", self.update_sim_state)
@@ -216,7 +219,8 @@ class Multirotor(Vehicle):
         Auxiliar method used to get the target angular velocities for each rotor, given the total desired thrust [N] and
         torque [Nm] to be applied in the multirotor's body frame.
 
-        Note: This method assumes a quadratic thrust curve.
+        Note: This method assumes a quadratic thrust curve. This method will be improved in a future update,
+        and a general thrust allocation scheme will be adopted. For now, it is made to work with multirotors directly.
 
         Args:
             force (np.ndarray): A vector of the force to be applied in the body frame of the vehicle [N]
@@ -232,9 +236,7 @@ class Multirotor(Vehicle):
         # Get the rotors of the vehicle
         rotors = [self._world.dc_interface.get_rigid_body(self._stage_prefix + "/rotor" + str(i)) for i in range(self._thrusters._num_rotors)]
 
-        # Get the relative position of the rotors with respect to the body frame of the vehicle
-        # Note: for now, we are ignoring the orientation.
-        # TODO: take this into consideration to make a more general force allocation function
+        # Get the relative position of the rotors with respect to the body frame of the vehicle (ignoring the orientation for now)
         relative_poses = self._world.dc_interface.get_relative_body_poses(rb, rotors)
 
         # Define the alocation matrix
