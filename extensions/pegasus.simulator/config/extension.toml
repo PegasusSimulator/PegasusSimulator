@@ -34,10 +34,12 @@ icon = "data/icon.png"
 
 # Use omni.ui to build simple UI
 [dependencies]
+"omni.ui" = {}
+"omni.usd" = {}
 "omni.kit.uiapp" = {}
 "omni.isaac.core" = {}
+"omni.ui.scene" = {}
 "omni.kit.window.viewport" = {}
-"omni.isaac.dynamic_control" = {}
 
 # Main python module this extension provides, it will be publicly available as "import pegasus.simulator".
 [[python.module]]

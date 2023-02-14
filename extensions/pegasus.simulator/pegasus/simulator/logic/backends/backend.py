@@ -19,7 +19,31 @@ class Backend:
     def __init__(self):
         """Initialize the Backend class
         """
-        pass
+        self._vehicle = None
+
+    """
+     Properties
+    """
+    @property
+    def vehicle(self):
+        """A reference to the vehicle associated with this backend.
+
+        Returns:
+            Vehicle: A reference to the vehicle associated with this backend.
+        """
+        return self._vehicle
+
+    def initialize(self, vehicle):
+        """A method that can be invoked when the simulation is starting to give access to the control backend 
+        to the entire vehicle object. Even though we provide update_sensor and update_state callbacks that are called
+        at every physics step with the latest vehicle state and its sensor data, having access to the full vehicle
+        object may prove usefull under some circumstances. This is nice to give users the possibility of overiding
+        default vehicle behaviour via this control backend structure.
+
+        Args:
+            vehicle (Vehicle): A reference to the vehicle that this sensor is associated with
+        """
+        self._vehicle = vehicle
 
     def update_sensor(self, sensor_type: str, data):
         """Method that when implemented, should handle the receival of sensor data

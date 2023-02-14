@@ -7,6 +7,7 @@
 
 # External packages
 import os
+import asyncio
 from scipy.spatial.transform import Rotation
 
 # Omniverse extensions
@@ -39,6 +40,14 @@ class UIDelegate:
         # Attribute that holds the currently selected scene from the dropdown menu
         self._scene_dropdown: ui.AbstractItemModel = None
         self._scene_names = list(SIMULATION_ENVIRONMENTS.keys())
+
+        # Selected latitude, longitude and altitude
+        self._latitude_field: ui.AbstractValueModel = None
+        self._latitude = PegasusInterface().latitude
+        self._longitude_field: ui.AbstractValueModel = None
+        self._longitude = PegasusInterface().longitude
+        self._altitude_field: ui.AbstractValueModel = None
+        self._altitude = PegasusInterface().altitude
 
         # Attribute that hold the currently selected vehicle from the dropdown menu
         self._vehicle_dropdown: ui.AbstractItemModel = None
@@ -74,6 +83,15 @@ class UIDelegate:
 
     def set_scene_dropdown(self, scene_dropdown_model: ui.AbstractItemModel):
         self._scene_dropdown = scene_dropdown_model
+    
+    def set_latitude_field(self, latitude_model: ui.AbstractValueModel):
+        self._latitude_field = latitude_model
+    
+    def set_longitude_field(self, longitude_model: ui.AbstractValueModel):
+        self._longitude_field = longitude_model
+
+    def set_altitude_field(self, altitude_model: ui.AbstractValueModel):
+        self._altitude_field = altitude_model
 
     def set_vehicle_dropdown(self, vehicle_dropdown_model: ui.AbstractItemModel):
         self._vehicle_dropdown = vehicle_dropdown_model
@@ -117,6 +135,36 @@ class UIDelegate:
             # Try to spawn the selected world
             self._pegasus_sim.load_environment(SIMULATION_ENVIRONMENTS[selected_world], force_clear=True)
 
+    def on_set_new_global_coordinates(self):
+        """
+        Method that gets invoked to set new global coordinates for this simulation
+        """
+        self._pegasus_sim.set_global_coordinates(
+            self._latitude_field.get_value_as_float(),
+            self._longitude_field.get_value_as_float(),
+            self._altitude_field.get_value_as_float())
+        
+    def on_reset_global_coordinates(self):
+        """
+        Method that gets invoked to set the global coordinates to the defaults saved in the extension configuration file
+        """
+        self._pegasus_sim.set_default_global_coordinates()
+
+        self._latitude_field.set_value(self._pegasus_sim.latitude)
+        self._longitude_field.set_value(self._pegasus_sim.longitude)
+        self._altitude_field.set_value(self._pegasus_sim.altitude)
+
+    def on_set_new_default_global_coordinates(self):
+        """
+        Method that gets invoked to set new defualt global coordinates for this simulation. This will attempt
+        to save the current coordinates as new defaults for the extension itself
+        """
+        self._pegasus_sim.set_new_default_global_coordinates(
+            self._latitude_field.get_value_as_float(),
+            self._longitude_field.get_value_as_float(),
+            self._altitude_field.get_value_as_float()
+        )
+
     def on_clear_scene(self):
         """
         Method that should be invoked when the clear world button is pressed
@@ -128,55 +176,66 @@ class UIDelegate:
         Method that should be invoked when the button to load the selected vehicle is pressed
         """
 
-        # Check fi a vehicle is selected in the drop-down menu
-        if self._vehicle_dropdown is not None and self._window is not None:
+        async def async_load_vehicle():
 
-            # Get the id of the selected vehicle from the list
-            vehicle_index = self._vehicle_dropdown.get_item_value_model().as_int
+            # Check if we already have a physics environment activated. If not, then activate it
+            # and only after spawn the vehicle. This is to avoid trying to spawn a vehicle without a physics
+            # environment setup. This way we can even spawn a vehicle in an empty world and it won't care
+            if hasattr(self._pegasus_sim.world, "_physics_context") == False:
+                await self._pegasus_sim.world.initialize_simulation_context_async()
 
-            # Get the name of the selected vehicle
-            selected_robot = self._vehicles_names[vehicle_index]
+            # Check if a vehicle is selected in the drop-down menu
+            if self._vehicle_dropdown is not None and self._window is not None:
 
-            # Get the id of the selected vehicle
-            self._vehicle_id = self._vehicle_id_field.get_value_as_int()
+                # Get the id of the selected vehicle from the list
+                vehicle_index = self._vehicle_dropdown.get_item_value_model().as_int
 
-            # Get the desired position and orientation of the vehicle from the UI transform
-            pos, euler_angles = self._window.get_selected_vehicle_attitude()
+                # Get the name of the selected vehicle
+                selected_robot = self._vehicles_names[vehicle_index]
 
-            # Read if we should auto-start px4 from the checkbox
-            px4_autostart = self._px4_autostart_checkbox.get_value_as_bool()
+                # Get the id of the selected vehicle
+                self._vehicle_id = self._vehicle_id_field.get_value_as_int()
 
-            # Read the PX4 path from the field
-            px4_path = os.path.expanduser(self._px4_directory_field.get_value_as_string())
+                # Get the desired position and orientation of the vehicle from the UI transform
+                pos, euler_angles = self._window.get_selected_vehicle_attitude()
 
-            # Read the PX4 airframe from the field
-            px4_airframe = self._px4_airframe_field.get_value_as_string()
+                # Read if we should auto-start px4 from the checkbox
+                px4_autostart = self._px4_autostart_checkbox.get_value_as_bool()
 
-            # Create the multirotor configuration
-            mavlink_config = MavlinkBackendConfig({
-                "vehicle_id": self._vehicle_id,
-                "px4_autolaunch": px4_autostart,
-                "px4_dir": px4_path,
-                "px4_vehicle_model": px4_airframe
-            })
-            config_multirotor = MultirotorConfig()
-            config_multirotor.backends = [MavlinkBackend(mavlink_config)]
+                # Read the PX4 path from the field
+                px4_path = os.path.expanduser(self._px4_directory_field.get_value_as_string())
 
-            # Try to spawn the selected robot in the world to the specified namespace
-            Multirotor(
-                "/World/quadrotor",
-                ROBOTS[selected_robot],
-                self._vehicle_id,
-                pos,
-                Rotation.from_euler("XYZ", euler_angles, degrees=True).as_quat(),
-                config=config_multirotor,
-            )
+                # Read the PX4 airframe from the field
+                px4_airframe = self._px4_airframe_field.get_value_as_string()
+
+                # Create the multirotor configuration
+                mavlink_config = MavlinkBackendConfig({
+                    "vehicle_id": self._vehicle_id,
+                    "px4_autolaunch": px4_autostart,
+                    "px4_dir": px4_path,
+                    "px4_vehicle_model": px4_airframe
+                })
+                config_multirotor = MultirotorConfig()
+                config_multirotor.backends = [MavlinkBackend(mavlink_config)]
+
+                # Try to spawn the selected robot in the world to the specified namespace
+                Multirotor(
+                    "/World/quadrotor",
+                    ROBOTS[selected_robot],
+                    self._vehicle_id,
+                    pos,
+                    Rotation.from_euler("XYZ", euler_angles, degrees=True).as_quat(),
+                    config=config_multirotor,
+                )
 
             # Log that a vehicle of the type multirotor was spawned in the world via the extension UI
-            carb.log_info("Spawned the robot: " + selected_robot + " using the Pegasus Simulator UI")
-        else:
-            # Log that it was not possible to spawn the vehicle in the world using the Pegasus Simulator UI
-            carb.log_error("Could not spawn the robot using the Pegasus Simulator UI")
+                carb.log_info("Spawned the robot: " + selected_robot + " using the Pegasus Simulator UI")
+            else:
+                # Log that it was not possible to spawn the vehicle in the world using the Pegasus Simulator UI
+                carb.log_error("Could not spawn the robot using the Pegasus Simulator UI")
+
+        # Run the actual vehicle spawn async so that the UI does not freeze
+        asyncio.ensure_future(async_load_vehicle())        
 
     def on_set_viewport_camera(self):
         """
