@@ -1,7 +1,7 @@
 Pegasus Simulator API
 =====================
 
-.. automodule:: pegasus.simulator.logic.pegasus_simulator
+.. automodule:: pegasus.simulator.logic.interface.pegasus_interface
    :members:
    :undoc-members:
    :show-inheritance:
