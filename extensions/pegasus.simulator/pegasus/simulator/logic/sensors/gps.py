@@ -137,7 +137,7 @@ class GPS(Sensor):
         )
 
         # reproject position with noise into geographic coordinates
-        pos_with_noise: np.ndarray = state.position + self._noise_gps_pos  # + self._gps_bias
+        pos_with_noise: np.ndarray = state.position + self._noise_gps_pos + self._gps_bias
         latitude, longitude = reprojection(pos_with_noise, np.radians(self._origin_lat), np.radians(self._origin_lon))
 
         # Compute the values of the latitude and longitude without noise (for groundtruth measurements)
