@@ -78,12 +78,9 @@ class Pegasus_SimulatorExtension(omni.ext.IExt):
         
         # Check if we already have a viewport and a camera of interest
         if get_active_viewport() != None and type(get_active_viewport().stage) == pxr.Usd.Stage and str(get_active_viewport().stage.GetPrimAtPath("/OmniverseKit_Persp")) != "invalid null prim":
-
-            carb.log_warn(type(get_active_viewport().stage))
             self._pegasus_sim.initialize_world()
         else:
             Timer(0.1, self.autoload_helper).start()
-            carb.log_warn("Trying")
 
     def show_window(self, menu, show):
         """

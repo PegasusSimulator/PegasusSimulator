@@ -359,8 +359,6 @@ class PegasusInterface:
                 latitude = global_coordinates.get("latitude", 0.0)
                 longitude = global_coordinates.get("longitude", 0.0)
                 altitude = global_coordinates.get("altitude", 0.0)
-
-                carb.log_warn("Trying to read coordinates")
         except:
             carb.log_warn("Could not retrieve the global coordinates from: " + str(CONFIG_FILE))
 
