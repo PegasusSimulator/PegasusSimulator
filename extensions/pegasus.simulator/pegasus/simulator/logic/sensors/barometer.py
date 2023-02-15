@@ -134,8 +134,8 @@ class Barometer(Sensor):
         air_density: float = self._AIR_DENSITY_MSL / density_ratio
 
         # Compute pressure altitude including effect of pressure noise
-        # pressure_altitude: float = alt_amsl - (abs_pressure_noise + self._baro_drift_pa) / (np.linalg.norm(GRAVITY_VECTOR) * air_density)
-        pressure_altitude: float = alt_amsl - (abs_pressure_noise) / (np.linalg.norm(GRAVITY_VECTOR) * air_density)
+        pressure_altitude: float = alt_amsl - (abs_pressure_noise + self._baro_drift_pa) / (np.linalg.norm(GRAVITY_VECTOR) * air_density)
+        #pressure_altitude: float = alt_amsl - (abs_pressure_noise) / (np.linalg.norm(GRAVITY_VECTOR) * air_density)
 
         # Compute temperature in celsius
         temperature_celsius: float = temperature_local + self._ABSOLUTE_ZERO_C

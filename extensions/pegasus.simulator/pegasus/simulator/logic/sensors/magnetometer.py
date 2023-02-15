@@ -121,7 +121,7 @@ class Magnetometer(Sensor):
         magnetic_field_noisy: np.ndarray = np.zeros((3,))
         for i in range(3):
             self._bias[i] = phi_d * self._bias[i] + sigma_b_d * np.random.randn()
-            magnetic_field_noisy[i] = (magnetic_field_body[i] + 0.001 * np.random.randn())  # + sigma_d * np.random.randn() #+ self._bias[i]
+            magnetic_field_noisy[i] = magnetic_field_body[i] + sigma_d * np.random.randn() + self._bias[i]
 
         # Add the values to the dictionary and return it
         self._state = {"magnetic_field": [magnetic_field_noisy[0], magnetic_field_noisy[1], magnetic_field_noisy[2]]}
