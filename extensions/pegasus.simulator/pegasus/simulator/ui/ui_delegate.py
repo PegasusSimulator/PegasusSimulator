@@ -71,12 +71,10 @@ class UIDelegate:
         # Atributes to store the path for the Px4 directory
         self._px4_directory_field: ui.AbstractValueModel = None
         self._px4_dir: str = PegasusInterface().px4_path
-        carb.log_warn(self._px4_dir)
 
         # Atributes to store the PX4 airframe
         self._px4_airframe_field: ui.AbstractValueModel = None
         self._px4_airframe: str = 'iris'
-        carb.log_warn(self._px4_airframe)
 
     def set_window_bind(self, window):
         self._window = window
@@ -133,7 +131,7 @@ class UIDelegate:
             selected_world = self._scene_names[environemnt_index]
 
             # Try to spawn the selected world
-            self._pegasus_sim.load_environment(SIMULATION_ENVIRONMENTS[selected_world], force_clear=True)
+            asyncio.ensure_future(self._pegasus_sim.load_environment_async(SIMULATION_ENVIRONMENTS[selected_world], force_clear=True))
 
     def on_set_new_global_coordinates(self):
         """
