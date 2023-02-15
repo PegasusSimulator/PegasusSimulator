@@ -54,5 +54,5 @@ Pegasus API
 .. toctree::
    :maxdepth: 2
 
-   pegasus_simulator
+   pegasus_interface
    
