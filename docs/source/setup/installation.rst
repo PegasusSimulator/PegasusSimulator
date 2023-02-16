@@ -207,3 +207,19 @@ To install PX4-Autopilot, follow the following steps:
 
         # Compile the code in SITL mode
         make px4_sitl_default none
+
+Setting the PX4 path inside the Pegasus Simulator
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The simulator provides a feature to auto-launch PX4-Autopilot for every vehicle that is spawned in the simulation world. 
+For this feature to work, we need to tell the Pegasus Simulator extension where the PX4-Autopilot directory can be found. 
+For that, edit the ``PX4 Path`` text field if is not correct by default and press the ``Make Default`` button. This 
+field supports relative paths to the home directory, which means that you can use ``~`` to represent the home directory 
+without hard-coding it.
+
+.. image:: /_static/pegasus_GUI_px4_dir.png
+    :width: 600px
+    :align: center
+    :alt: Pegasus GUI with px4 directory highlighted
+
+By default, the extension assumes that PX4-Autopilot is installed at ``~/PX4-Autopilot`` .

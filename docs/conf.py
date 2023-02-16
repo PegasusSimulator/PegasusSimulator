@@ -31,7 +31,7 @@ extensions = [
     "sphinx.ext.autodoc",
     "autodocsumm",
     'sphinx.ext.napoleon',
-    "sphinx.ext.autosummary",
+    #"sphinx.ext.autosummary",
     "sphinx.ext.intersphinx",
     "myst_parser",
     "sphinx.ext.mathjax",
@@ -131,6 +131,12 @@ html_theme = "sphinx_rtd_theme"
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
+html_logo = "_static/logo.png"
+html_theme_options = {
+    'logo_only': True,
+    'display_version': False,
+    'style_nav_header_background': '#FFD700'
+}
 
 html_show_copyright = True
 html_show_sphinx = False
