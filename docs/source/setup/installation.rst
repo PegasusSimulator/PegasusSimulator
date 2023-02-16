@@ -8,26 +8,21 @@ Installing NVIDIA Isaac Sim
    :target: https://developer.nvidia.com/isaac-sim
    :alt: IsaacSim 2022.2.0
 
-.. image:: https://img.shields.io/badge/python-3.7-blue.svg
-   :target: https://www.python.org/downloads/release/python-370/
-   :alt: Python 3.7
-
-.. image:: https://img.shields.io/badge/PX4-Autopilot-v1.13.2-brightgreen.svg
+.. image:: https://img.shields.io/badge/PX4--Autopilot-1.13.2-brightgreen.svg
    :target: https://github.com/PX4/PX4-Autopilot
    :alt: PX4-Autopilot 1.13.2
 
-.. image:: https://img.shields.io/badge/platform-linux--64-lightgrey.svg
+.. image:: https://img.shields.io/badge/Ubuntu-20.04LTS-brightgreen.svg
    :target: https://releases.ubuntu.com/20.04/
    :alt: Ubuntu 20.04
 
-.. image:: https://img.shields.io/badge/platform-linux--64-lightgrey.svg
+.. image:: https://img.shields.io/badge/Ubuntu-22.04LTS-brightgreen.svg
    :target: https://releases.ubuntu.com/22.04/
    :alt: Ubuntu 22.04
 
 .. note::
-	We have tested Pegasus Simulator with Isaac Sim 2022.2 release on Ubuntu 22.04LTS with NVIDIA driver 515.76.
-    The PX4-Autopilot used during development was v.13.2. 
-    Older versions Ubuntu and PX4-Autopilot were not tested. This extension was not tested on Windows. 
+	We have tested Pegasus Simulator with Isaac Sim 2022.2 release on Ubuntu 22.04LTS with NVIDIA driver 515.76. The PX4-Autopilot used during development was v.13.2. Older versions Ubuntu and PX4-Autopilot were not tested. This extension was not tested on Windows. 
+
 
 Configuring the environment variables
 -------------------------------------
@@ -41,7 +36,7 @@ from python scripts. As such, we recommend setting up a few custom environment v
     instructions `here <https://docs.omniverse.nvidia.com/app_isaacsim/app_isaacsim/install_python.html>`__, this
     feature was not tested.
 
-Start by locate the `Isaac Sim's Python installation <https://docs.omniverse.nvidia.com/app_isaacsim/app_isaacsim/install_python.html>`__ 
+Start by locating the `Isaac Sim's Python installation <https://docs.omniverse.nvidia.com/app_isaacsim/app_isaacsim/install_python.html>`__ 
 by navigating to Isaac Sim's root folder. Typically, in Linux, this folder can be found under ``${HOME}/.local/share/ov/pkg/isaac_sim-*``,
 where the ``*`` is the version number.
 
@@ -52,13 +47,13 @@ Add the following lines to your ``~/.bashrc`` or ``~/.zshrc`` file.
    # Isaac Sim root directory
    export ISAACSIM_PATH="${HOME}/.local/share/ov/pkg/isaac_sim-*"
    # Isaac Sim python executable
-   export ISAACSIM_PYTHON="${ISAACSIM_PATH}/python.sh"
+   alias ISAACSIM_PYTHON="${ISAACSIM_PATH}/python.sh"
    # Isaac Sim app
-   export ISAACSIM="${ISAACSIM_PATH}/isaac-sim.sh"
+   alias ISAACSIM="${ISAACSIM_PATH}/isaac-sim.sh"
 
 If you only have one version of Isaac Sim installed, you can leave the ``*``, otherwise you will have to replace it by the 
-version that you desire to use. In the remaining of the documentation, we will refer to the Isaac Sim's path as ``ISAACSIM_PATH``,
-the provided python interpreter as ``ISAACSIM_PYTHON``and the simulator itself as ``ISAACSIM``.
+version that you desire to use. In the remaining of the documentation, we will refer to the Isaac Sim's path as ``ISAACSIM_PATH`` ,
+the provided python interpreter as ``ISAACSIM_PYTHON`` and the simulator itself as ``ISAACSIM`` .
 
 Running Isaac Sim
 ~~~~~~~~~~~~~~~~~
@@ -105,14 +100,28 @@ Clone the `Pegasus Simulator <https://www.github.com/PegasusResearch/Pegasus-Sim
     git clone git@github.com:PegasusResearch/Pegasus-Simulator.git
     
 
-The Pegasus Simulator was developed as an Isaac Sim extension with a GUI, but it was developed in a way that allows it to run also 
-as a standalone app. To install the extension such that it can run in both modes:
+The Pegasus Simulator was originally developed as an Isaac Sim extension with an interactive GUI, but also provides a powerfull
+API that allows it to run as a standalone app, i.e. by creating python scritps (as shown in the examples directory of this repository).
+To be able to use the extension in both modes, follow these steps:
 
 1. Launch ``ISAACSIM`` application.
 
-2. Open the extensions menu inside Isaac Sim.
+2. Open the Window->extensions on the top menubar inside Isaac Sim.
 
-3. Add the path to the Pegasus-Simulator repository
+    .. image:: /_static/extensions_menu_bar.png
+        :width: 600px
+        :align: center
+        :alt: Extensions on top menubar
+
+3. On the Extensions manager menu, we can enable or disable extensions. By pressing the settings button, we can 
+add a path to the Pegasus-Simulator repository.
+
+    .. image:: /_static/extensions_widget.png
+        :width: 600px
+        :align: center
+        :alt: Extensions widget
+
+4. 
 
 The python requirements should install automatically, and after a few seconds, the Pegasus widget GUI should pop-up.
 

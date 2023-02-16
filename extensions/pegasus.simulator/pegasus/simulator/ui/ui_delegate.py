@@ -19,7 +19,7 @@ from pegasus.simulator.params import ROBOTS, SIMULATION_ENVIRONMENTS
 from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 
 # Vehicle Manager to spawn Vehicles
-from pegasus.simulator.logic.backends import MavlinkBackend, MavlinkBackendConfig
+from pegasus.simulator.logic.backends import MavlinkBackend, MavlinkBackendConfig #, ROS2Backend
 from pegasus.simulator.logic.vehicles.multirotor import Multirotor, MultirotorConfig
 from pegasus.simulator.logic.vehicle_manager import VehicleManager
 
@@ -215,6 +215,8 @@ class UIDelegate:
                 })
                 config_multirotor = MultirotorConfig()
                 config_multirotor.backends = [MavlinkBackend(mavlink_config)]
+
+                #ros2 = ROS2Backend(self._vehicle_id)
 
                 # Try to spawn the selected robot in the world to the specified namespace
                 Multirotor(

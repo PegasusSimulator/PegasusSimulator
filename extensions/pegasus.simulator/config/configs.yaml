@@ -1,5 +1,5 @@
 global_coordinates:
-  altitude: 488.0
-  latitude: 47.397742
-  longitude: 8.545594
+  altitude: 90.0
+  latitude: 38.736832
+  longitude: -9.137977
 px4_dir: ~/PX4-Autopilot

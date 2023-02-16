@@ -30,7 +30,7 @@ this repository to be mantained by me directly, hopefully until 2027.
 
 With that said, it is very likely that you will stumble upon bugs on the code or missing features. If you feel that there is
 some critical feature missing and want to contribute to this project, suggest a new feature or just improve the documentation,
-please check the Contributing_ section.
+please check the :ref:`Contributing` section.
 
 Sponsor the project
 -------------------

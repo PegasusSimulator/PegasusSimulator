@@ -5,6 +5,8 @@
 | License: BSD-3-Clause. Copyright (c) 2023, Marcelo Jacinto. All rights reserved.
 """
 import carb
+from omni.isaac.core.utils.extensions import disable_extension, enable_extension
+
 import omni.kit.app
 from pegasus.simulator.logic.backends.backend import Backend
 
@@ -15,8 +17,39 @@ class ROS2BackendConfig:
 
 
 class ROS2Backend(Backend):
-    def __init__(self):
-        pass
+
+    def __init__(self, vehicle_id: int):
+
+        # Save the configurations for this backend
+        self._id = vehicle_id
+        
+        # Perform some checks, because Isaac Sim some times does not play nice when using ROS/ROS2
+        #disable_extension("omni.isaac.ros_bridge")
+        #disable_extension("omni.isaac.ros2_bridge")
+        #enable_extension("omni.isaac.ros2_bridge-humble")
+        
+        # Inform the user that now we are actually import the ROS2 dependencies 
+        import rclpy
+        from sensor_msgs.msg import Imu, NavSatFix
+        from geometry_msgs.msg import PoseStamped, TwistStamped, AccelStamped
+        carb.log_warn("rclpy was imported successfully")
+
+        # Start the actual ROS2 setup here
+        rclpy.init()
+        self.node = rclpy.create_node("vehicle_1")
+
+        # Create publishers for the state of the vehicle in ENU
+        self.pose_pub = self.node.create_publisher(PoseStamped, "vehicle" + str(self._id) + "/state/pose", 10)
+        self.twist_pub = self.node.create_publisher(TwistStamped, "vehicle" + str(self._id) + "/state/twist", 10)
+        self.accel_pub = self.node.create_publisher(AccelStamped, "vehicle" + str(self._id) + "/state/accel", 10)
+
+        # Create publishers for some sensor data
+        self.imu_pub = self.node.create_publisher(Imu, "vehicle" + str(self._id) + "/sensors/imu", 10)
+        self.gps_pub = self.node.create_publisher(NavSatFix, "vehicle" + str(self._id) + "/sensors/gps", 10)
+
+        # Subscribe to vector of floats with the target angular velocities to control the vehicle
+        #self.vel_sub = self.node.create_subscription(LaserScan, "scan", lidar_callback, 10)
+        
 
     def update_sensor(self, sensor_type: str, data):
         """
