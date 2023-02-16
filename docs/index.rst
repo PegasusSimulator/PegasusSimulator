@@ -1,6 +1,11 @@
 Pegasus Simulator Documentation
 ###############################
 
+:Lead Developer and maintainer:
+   Marcelo Jacinto
+:Version: 1.0.0 
+:Date: 2023/02/16
+
 Overview
 ========
 
