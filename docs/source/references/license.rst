@@ -1,8 +1,8 @@
 License
 =======
 
-Pegasus Simulator
------------------
+Pegasus Simulator License
+-------------------------
 
 The Pegasus Simulator is an open-source framework that follows a `BSD-3 Clause License <https://opensource.org/licenses/BSD-3-Clause/>`__. 
 

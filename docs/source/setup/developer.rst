@@ -15,6 +15,68 @@ Additional documentation pages provided by NVIDIA:
 Code structure
 --------------
 
+.. code:: bash
+    
+    PegasusSimulator:
+    ├── .vscode
+    ├── docs
+    ├── examples
+    ├── tools
+    ├── extensions
+    │   ├── pegasus.simulator
+    │   │   ├── config
+    │   │   │   ├── configs.yaml
+    │   │   │   ├── extension.toml
+    │   │   ├── data
+    │   │   ├── docs
+    │   │   ├── setup.py
+    │   │   ├── pegasus
+    │   │   │   ├── simulator
+    │   │   │   │   ├── __init__.py
+    │   │   │   │   ├── params.py
+    │   │   │   │   ├── extension.py
+    │   │   │   │   ├── assets
+    │   │   │   │   │   ├── Robots
+    │   │   │   │   │   ├── Worlds
+    │   │   │   │   ├── logic
+    │   │   │   │   │   ├── __init__.py
+    │   │   │   │   │   ├── state.py
+    │   │   │   │   │   ├── rotation.py
+    │   │   │   │   │   ├── vehicle_manager.py
+    │   │   │   │   │   ├── backends
+    │   │   │   │   │   │   ├── backend.py
+    │   │   │   │   │   │   ├── mavlink_backend.py
+    │   │   │   │   │   │   ├── ros2_backend.py
+    │   │   │   │   │   │   ├── tools
+    │   │   │   │   │   │   │   ├── px4_launch_tool.py
+    │   │   │   │   │   ├── dynamics
+    │   │   │   │   │   │   ├── __init__.py
+    │   │   │   │   │   │   ├── drag.py
+    │   │   │   │   │   │   ├── linear_drag.py
+    │   │   │   │   │   ├── sensors
+    │   │   │   │   │   │   ├── __init__.py
+    │   │   │   │   │   │   ├── sensor.py
+    │   │   │   │   │   │   ├── gps.py
+    │   │   │   │   │   │   ├── imu.py
+    │   │   │   │   │   │   ├── magnetometer.py
+    │   │   │   │   │   │   ├── barometer.py
+    │   │   │   │   │   │   ├── geo_mag_utils.py
+    │   │   │   │   │   ├── thrusters
+    │   │   │   │   │   │   ├── __init__.py
+    │   │   │   │   │   │   ├── thrust_curve.py
+    │   │   │   │   │   │   ├── quadratic_thrust_curve.py
+    │   │   │   │   │   ├── vehicles
+    │   │   │   │   │   │   ├── __init__.py
+    │   │   │   │   │   │   ├── vehicle.py
+    │   │   │   │   │   │   ├── multirotor.py
+    │   │   │   │   │   ├── interface
+    │   │   │   │   │   │   ├── __init__.py
+    │   │   │   │   │   │   ├── pegasus_interface.py
+    │   │   │   │   ├── ui
+    │   │   │   │   │   ├── __init__.py
+    │   │   │   │   │   ├── ui_delegate.py
+    │   │   │   │   │   ├── ui_window.py
+
 Working in extension mode
 -------------------------
 

@@ -1,19 +1,24 @@
-Pegasus Simulator Documentation
-###############################
-
-:Lead Developer and maintainer:
-   Marcelo Jacinto
-:Version: 1.0.0 
-:Date: 2023/02/16
+Pegasus Simulator
+#################
 
 Overview
 ========
 
 **Pegasus Simulator** is a framework built on top of `NVIDIA
 Omniverse <https://docs.omniverse.nvidia.com/>`__ and `Isaac
-Sim <https://docs.omniverse.nvidia.com/app_isaacsim/app_isaacsim/overview.html>`__. It is designed to provide control
-engineers an easy way to simulate the dynamics of multirotors vehicles. It provides a simulation interface for PX4
-integration as well as ROS2.
+Sim <https://docs.omniverse.nvidia.com/app_isaacsim/app_isaacsim/overview.html>`__. It is designed to provide an easy, yet
+powerfull way of simulating the dynamics of multirotors vehicles. It provides a simulation interface for PX4
+integration as well as costume python control interface.
+
+.. image:: /_static/pegasus_cover.png
+        :width: 600px
+        :align: center
+        :alt: Pegasus Simulator cover photo
+
+:Lead Developer and maintainer:
+   Marcelo Jacinto
+:Version: 1.0.0 
+:Date: 2023/02/16
 
 If you use ``PegasusSimulator`` in your work, please cite the `paper <https://arxiv.org/>`_:
 
@@ -71,13 +76,6 @@ If you use ``PegasusSimulator`` in your work, please cite the `paper <https://ar
    source/references/license
    source/references/support
    source/references/bibliography
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
 
 .. automodule::"pegasus_isaac"
     :platform: Linux-x86_64
