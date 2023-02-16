@@ -87,8 +87,8 @@ Please do not proceed with this installation until you have everything setup cor
 Addtional Isaac Sim resources:
 - `Troubleshooting documentation <https://docs.omniverse.nvidia.com/app_isaacsim/prod_kit/linux-troubleshooting.html>`__
 
-Installing the Pegasus Simulator extension
-------------------------------------------
+Installing the Pegasus Simulator
+--------------------------------
 
 Clone the `Pegasus Simulator <https://www.github.com/PegasusResearch/Pegasus-Simulator.git>`__:
 
@@ -121,9 +121,49 @@ add a path to the Pegasus-Simulator repository.
         :align: center
         :alt: Extensions widget
 
-4. 
+4. The path inserted should be the path to the repository followed by ``/extensions``.
 
-The python requirements should install automatically, and after a few seconds, the Pegasus widget GUI should pop-up.
+    .. image:: /_static/ading_extension_path.png
+        :width: 600px
+        :align: center
+        :alt: Adding extension path to the extension manager
+
+5. After adding the path to the extension, we can enable the Pegasus Simulator extension on the third-party tab.
+
+    .. image:: /_static/pegasus_inside_extensions_menu.png
+        :width: 600px
+        :align: center
+        :alt: Pegasus Extension on the third-party tab
+
+When enabling the extension for the first time, the python requirements should be install automatically for the build in 
+``ISAACSIM_PYTHON`` , and after a few seconds, the Pegasus widget GUI should pop-up.
+
+6. The Pegasus Simulator window should appear docked to the bottom-right section of the screen.
+
+    .. image:: /_static/pegasus_gui_example.png
+        :width: 600px
+        :align: center
+        :alt: Pegasus Extension GUI after install
+
+Installing the extension as a library
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In order to be able to use the Pegasus Simulator API from python scripts and standalone apps, we must install this 
+extension as a ``pip`` python module for the built-in ``ISAACSIM_PYTHON`` to recognize. For that, run:
+
+.. code:: bash
+
+        # Go to the repository of the pegasus simulator
+        cd pegasus_simulator
+
+        # Go into the extensions directory
+        cd extensions
+
+        # Run the pip command using the built-in python interpreter
+        ISAACSIM_PYTHON -m pip install --editable pegasus.simulator
+
+We use the ``--editable`` flag so that the content of the extension is linked instead of copied. After this step, you 
+should be able to run the python standalone examples inside the ``examples`` folder.
 
 Installing PX4-Autopilot
 ------------------------
@@ -131,7 +171,17 @@ Installing PX4-Autopilot
 In this first version of the Pegasus Simulator (in extension mode), the GUI widget provided is only usefull if you intend to use the PX4-Autopilot.
 To install PX4-Autopilot, follow the following steps:
 
-1. Clone the `PX4-Autopilot <https://github.com/PX4/PX4-Autopilot>`__:
+1. Install the dependencies (to be able to compile PX4-Autopilot):
+
+    .. code:: bash
+
+        # Linux packages
+        sudo apt install git make cmake python3-pip
+       
+        # Python packages
+        pip install kconfiglib jinja2 empy jsonschema pyros-genmsg packaging toml numpy future
+
+2. Clone the `PX4-Autopilot <https://github.com/PX4/PX4-Autopilot>`__:
 
     .. code:: bash
 
@@ -140,7 +190,7 @@ To install PX4-Autopilot, follow the following steps:
         # Option 2: With SSH (you need to setup a github account with ssh keys)
         git clone git@github.com:PX4/PX4-Autopilot.git
 
-2. Checkout to the stable version 1.13.2 and compile the code for software-in-the-loop (SITL) mode:
+3. Checkout to the stable version 1.13.2 and compile the code for software-in-the-loop (SITL) mode:
 
     .. code:: bash
         
@@ -150,9 +200,10 @@ To install PX4-Autopilot, follow the following steps:
         # Checkout to the latest stable release
         git checkout v1.13.2
 
-        # Initiate all the submodules
+        # Initiate all the submodules. Note this will download modules such as SITL-gazebo which we do not need
+        # but this is the safest way to make sure that the PX4-Autopilot and its submodules are all checked out in 
+        # a stable and well tested release
         git submodule update --init --recursive
 
         # Compile the code in SITL mode
         make px4_sitl_default none
-
