@@ -1,5 +1,5 @@
 # all folders starting with _ are local
-_*/
+_build/
 .DS_Store
 **/.vscode/ipch
 
