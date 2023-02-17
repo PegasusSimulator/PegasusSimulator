@@ -24,7 +24,7 @@ Please follow these steps to contribute with code:
 4. Make your changes and commit them.
 5. Update the documentation accordingly.
 6. Push your changes to your forked repository.
-7. Submit a pull request to the main branch of this project.
+7. `Submit a pull request <https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request-from-a-fork>`__ to the main branch of this project.
 8. Ensure all the checks on the pull request are successful.
 
 After sending a pull request, the developer team will review your code, provide feedback.
@@ -52,11 +52,19 @@ Here is an example of a "good" commit:
 .. note::
    We do not enforce strictly this commit policy, but it is highly recommended.
 
+Pull Requests
+~~~~~~~~~~~~~
+
+The description of the Pull Request should include:
+
+- An overview of what is adding, changing or removing; enough to understand the broad purpose of the code
+- Links to related issues, supporting information or research papers (if useful).
+- Information about what code testing has been conducted.
+
 Code Style
 ~~~~~~~~~~
 
-Pull Requests
-~~~~~~~~~~~~~
+
 
 Branch and Version Model
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -68,11 +76,41 @@ I know, everyone hates to write documentation - its boring... but it is needed. 
 to make it easy to contribute to it. 
 
 All the source files for the documentation are located in the ``docs`` directory. The documentation is written in 
-reStructuredText format. We use Sphinx with the Read the Docs Theme for generating the documentation.
+`reStructuredText <https://www.sphinx-doc.org/en/master/>`__ format. We use Sphinx with the 
+`Read the Docs Theme <https://readthedocs.org/projects/sphinx/>`__ for generating the documentation. Sending a pull 
+request for the documentation is the same as sending a pull request for the codebase. Please follow the steps 
+mentioned in the :ref:`Contributing with Code` section. 
 
-Sending a pull request for the documentation is the same as sending a pull request for the codebase. Please follow the steps mentioned in the Contributing Code section.
+To build the documentation, you need to install a few python 
+dependencies. If you do not want to polute your python environment, please use 
+`venv <https://docs.python.org/3/library/venv.html>`__ or `conda <https://docs.conda.io/en/latest/>`__.
 
-To build the documentation, we recommend creating a virtual environment to install the dependencies. This can also be a conda environment.
+To generate the html documentation, execute the following commands:
+
+1. Enter the ``docs`` directory.
+
+   .. code:: bash
+
+     # (relative to the root of the repository)
+     cd docs
+
+2. Install the python dependencies.
+
+   .. code:: bash
+
+     pip install -r requirements.txt
+
+3. Build the documentation.
+
+   .. code:: bash
+
+     make html
+
+4. Open the documentation in a browser.
+
+   .. code:: bash
+
+     xdg-open _build/html/index.html
 
 Contributing with Assets
 ------------------------
