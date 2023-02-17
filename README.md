@@ -1,21 +1,5 @@
 # Pegasus Simulator
 
-## Contributing
-
-We wholeheartedly welcome contributions from the community to make this framework mature and useful for everyone. These may happen in
-form of bug reports, feature requests, or code contributions. For details, please check our [contribution guidelines](https://isaac-orbit.github.io/orbit/source/refs/contributing.html).
-
-## Troubleshooting
-
-Please see the documentation [troubleshooting]() or [submit an issue]().
-
-For issues related to Isaac Sim, we recommend checking its [documentation](https://docs.omniverse.nvidia.com/app_isaacsim/app_isaacsim/overview.html), or opening a question on its [forums](https://forums.developer.nvidia.com/c/agx-autonomous-machines/isaac/67).
-
-## Support
-
-* Please use GitHub [Discussions]() for discussing ideas, asking questions, and requests for new features.
-* Github [Issues]() should only be used to track executable pieces of work with a definite scope and a clear deliverable. These can be fixing bugs, documentation issues or new features.
-
 ## Acknowledgement
 
 NVIDIA Isaac Sim is available freely under [individual license](https://www.nvidia.com/en-us/omniverse/download/). 
@@ -35,60 +19,32 @@ Please cite [this paper]() if you use this framework in your work:
 }
 ```
 
-## Installation
-```
-cd extensions;
-PYTHON_PATH -m pip install --editable pegasus.simulator
-```
+## Developer Team
 
-# Extension Project Template
+* Project Founder
+	* [Marcelo Jacinto](https://github.com/MarceloJacinto), under the supervision of Prof. Rita Cunha (IST/ISR-Lisbon)
+* Architecture
+    * [Marcelo Jacinto](https://github.com/MarceloJacinto)
+	* [Joao Pinto](https://github.com/jschpinto)
+* Multirotor Dynamic Simulation and Control
+    * [Marcelo Jacinto](https://github.com/MarceloJacinto)
 
-This project was automatically generated.
+## Project Roadmap
 
-- `app` - It is a folder link to the location of your *Omniverse Kit* based app.
-- `exts` - It is a folder where you can add new extensions. It was automatically added to extension search path. (Extension Manager -> Gear Icon -> Extension Search Path).
+An high level project roadmap is available [here]().
 
-Open this folder using Visual Studio Code. It will suggest you to install few extensions that will make python experience better.
+## Support and Contributing
 
-Look for "pegasus_isaac" extension in extension manager and enable it. Try applying changes to any python files, it will hot-reload and you can observe results immediately.
+We welcom new contributions from the community to improve this work. Please check the [Contributing]() section in the documentation for the guidelines on how to help improve and support this project.
 
-Alternatively, you can launch your app from console with this folder added to search path and your extension enabled, e.g.:
+* Use [Discussions]() for discussing ideas, asking questions, and requests features.
+* Use [Issues]() to track work in development, bugs and documentation issues.
+* Use [Pull Requests]() to fix bugs or contribute directly with your own ideas, code, examples or improve documentation.
 
-```
-> app\omni.code.bat --ext-folder exts --enable company.hello.world
-```
+## Project Sponsors
+- Dynamics Systems and Ocean Robotics (DSOR) group (Portugal), under Marcelo Jacinto's Ph.D. grant funded by FCT.
 
-# App Link Setup
-
-If `app` folder link doesn't exist or broken it can be created again. For better developer experience it is recommended to create a folder link named `app` to the *Omniverse Kit* app installed from *Omniverse Launcher*. Convenience script to use is included.
-
-Run:
-
-```
-> link_app.bat
-```
-
-If successful you should see `app` folder link in the root of this repo.
-
-If multiple Omniverse apps is installed script will select recommended one. Or you can explicitly pass an app:
-
-```
-> link_app.bat --app create
-```
-
-You can also just pass a path to create link to:
-
-```
-> link_app.bat --path "C:/Users/bob/AppData/Local/ov/pkg/create-2021.3.4"
-```
-
-
-# Sharing Your Extensions
-
-This folder is ready to be pushed to any git repository. Once pushed direct link to a git repository can be added to *Omniverse Kit* extension search paths.
-
-Link might look like this: `git://github.com/[user]/[your_repo].git?branch=main&dir=exts`
-
-Notice `exts` is repo subfolder with extensions. More information can be found in "Git URL as Extension Search Paths" section of developers manual.
-
-To add a link to your *Omniverse Kit* based app go into: Extension Manager -> Gear Icon -> Extension Search Path
+<p float="left" align="center">
+  <img src="docs/_static/dsor_logo.png" width="90" align="center" />
+  <img src="docs/_static/ist_logo.png" width="200" align="center"/> 
+</p>
