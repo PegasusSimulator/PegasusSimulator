@@ -87,7 +87,6 @@ This simulation framework is an open-source effort, started by me, Marcelo Jacin
    source/references/changelog
    source/references/roadmap
    source/references/license
-   source/references/support
    source/references/bibliography
 
 .. automodule::"pegasus_isaac"
@@ -97,6 +96,20 @@ This simulation framework is an open-source effort, started by me, Marcelo Jacin
     :show-inheritance:
     :imported-members:
     :exclude-members: contextmanager
+
+Other Simulation Frameworks
+===========================
+
+In this section, we acknowledge nobel work of those who came before us and inspired this work:
+
+- :cite:p:`gazebo` Gazebo simulator
+- :cite:p:`rotorS` RotorS simulation plugin for gazebo
+- :cite:p:`px4` PX4-SITL simulation plugin for gazebo
+- :cite:p:`airsim` Microsoft Airsim project for Unreal Engine
+- :cite:p:`flightmare` Flightmare simulator for Unity
+- :cite:p:`jmavsim` jMAVSim java simulator
+
+*"If I have seen further than others, it is by standing upon the shoulders of giants."*, Sir Isaac Newton
 
 Project Sponsors
 ================

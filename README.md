@@ -30,7 +30,7 @@ Please cite [this paper]() if you use this framework in your work:
 }
 ```
 
-## Developer Team
+## Main Developer Team
 
 This simulation framework is an open-source effort, started by me, Marcelo Jacinto in January/2023. It is a tool that was created with the original purpose of serving my Ph.D. workplan for the next 4 years, which means that you can expect this repository to be mantained, hopefully at least until 2027.
 
@@ -44,6 +44,13 @@ This simulation framework is an open-source effort, started by me, Marcelo Jacin
 * Example Applications
 	* [Marcelo Jacinto](https://github.com/MarceloJacinto)
 	* [João Pinto](https://github.com/jschpinto)
+* Paper Writting and Revision
+	* [Marcelo Jacinto](https://github.com/MarceloJacinto)
+	* [João Pinto](https://github.com/jschpinto)
+	* [Rita Cunha]()
+	* [António Pascoal]()
+
+Also check the always up-to-date [Github contributors list]()
 
 ## Project Roadmap
 
