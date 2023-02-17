@@ -55,13 +55,9 @@ This simulation framework is an open-source effort, started by me, Marcelo Jacin
    :maxdepth: 2
    :caption: Features
 
-   source/features/vehicles
-   source/features/drag_models
-   source/features/thrust_models
    source/features/environments
-   source/features/backends
+   source/features/vehicles
    source/features/px4_integration
-   source/features/ros2_integration
 
 .. toctree::
    :maxdepth: 1
