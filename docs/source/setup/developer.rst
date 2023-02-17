@@ -8,6 +8,21 @@ the additional documentation pages:
 * `Isaac Sim VSCode support <https://docs.omniverse.nvidia.com/app_isaacsim/app_isaacsim/manual_standalone_python.html#isaac-sim-python-vscode>`__
 * `Debugging with VSCode <https://docs.omniverse.nvidia.com/app_isaacsim/app_isaacsim/tutorial_advanced_python_debugging.html>`__
 
+To enable a better developer experience when contributing or modifying this extension, and have access to features such as
+autocomplete, we recommend linking the Pegasus Simulator repository to the current installation of ``ISAACSIM`` . For that, please
+run the following script provided with the framework:
+
+.. code:: bash
+
+    ./link_app.sh --path $ISAACSIM_PATH
+
+This script will create a symbolic link to ``ISAACSIM`` inside the repository. After this step, you can also launch the 
+``ISAACSIM`` with the extension enabled (without using the GUI presented in Section :ref:`Installing the Pegasus Simulator`), by running:
+
+.. code:: bash
+
+    ./app/isaac-sim.sh --ext-folder extensions --enable pegasus.simulator
+
 Code structure
 --------------
 
@@ -78,8 +93,8 @@ This simulation framework is strucuture according to the following tree:
 The extensions directory contains the source code for the PegasusSimulator API and interactive GUI while the 
 examples directory contains the a set of python scripts to launch standalone applications and pre-programed simulations.
 
-Working in extension mode
--------------------------
+Working in extension mode (Interactive GUI mode)
+------------------------------------------------
 
 As explained in NVIDIA's documentation, extensions are the standard way of developing on top of Isaac Sim and other Omniverse
 tools. The core of our extension is developed in the ``logic`` and the ``ui`` modules.
@@ -105,28 +120,3 @@ of dynamics, spawning assets on the world, etc. are defined in the ``logic`` mod
 Working as a standalone application
 -----------------------------------
 
-Contributing to repository
---------------------------
-
-The Pegasus Simulator is an open-source effort, started by me, Marcelo Jacinto in January/2023. It is a tool that was 
-created with the original purpose of serving my Ph.D. workplan for the next 4 years, which means that you can expect 
-this repository to be mantained by me directly, hopefully until 2027. 
-
-With that said, it is very likely that you will stumble upon bugs on the code or missing features. If you feel that there is
-some critical feature missing and want to contribute to this project, suggest a new feature or just improve the documentation,
-please check the :ref:`Contributing` section.
-
-Sponsor the project
--------------------
-
-At the moment, this project as it stands only has one direct sponsor:
-
-- Dynamics Systems and Ocean Robotics (DSOR) group (Portugal), under my Ph.D. grant funded by FCT.
-
-If you want to be a part of this project, or sponsor my work with some graphics cards, jetson developer boards and other development
-material to keep, please reach out to me directly at ``marcelo.jacinto@tecnico.ulisboa.pt``.
-
-.. image:: /_static/dsor_logo.png
-    :width: 50px
-    :align: center
-    :alt: Pegasus GUI with px4 directory highlighted
