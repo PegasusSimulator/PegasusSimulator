@@ -120,6 +120,7 @@ autodoc_mock_imports = [
     "hid",
     "prettytable",
     "pyyaml",
+    "pymavlink"
 ]
 
 # -- Options for HTML output -------------------------------------------------
