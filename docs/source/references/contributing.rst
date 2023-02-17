@@ -25,14 +25,16 @@ please check and use the issues page on github.
 Sponsor the project
 -------------------
 
+If you want to be a part of this project, or sponsor my work with some graphics cards, jetson developer boards and other development
+material, please reach out to me directly at ``marcelo.jacinto@tecnico.ulisboa.pt``.
+
 At the moment, this project as it stands only has one direct sponsor:
 
-- Dynamics Systems and Ocean Robotics (DSOR) group (Portugal), under my Ph.D. grant funded by FCT.
+- Dynamics Systems and Ocean Robotics (DSOR) group (Portugal), under Marcelo Jacinto's Ph.D. grant funded by FCT.
 
-If you want to be a part of this project, or sponsor my work with some graphics cards, jetson developer boards and other development
-material to keep, please reach out to me directly at ``marcelo.jacinto@tecnico.ulisboa.pt``.
+.. raw:: html
 
-.. image:: /_static/dsor_logo.png
-    :width: 50px
-    :align: center
-    :alt: Pegasus GUI with px4 directory highlighted
+   <p float="left" align="center">
+   <img src="../../_static/dsor_logo.png" alt="DSOR group at ISR-Lisbon" width="90" align="center" />
+   <img src="../../_static/ist_logo.png" alt="Instituto Superior Técnico" width="200" align="center"/> 
+   </p>
