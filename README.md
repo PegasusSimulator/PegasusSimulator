@@ -1,4 +1,7 @@
 # Pegasus Simulator
+<p float="left" align="left">
+  <img src="docs/_static/logo.png" width="250" />
+</p>
 
 ## Citation
 
