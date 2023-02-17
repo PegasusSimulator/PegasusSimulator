@@ -8,7 +8,7 @@ Overview
 Omniverse <https://docs.omniverse.nvidia.com/>`__ and `Isaac
 Sim <https://docs.omniverse.nvidia.com/app_isaacsim/app_isaacsim/overview.html>`__. It is designed to provide an easy, yet
 powerfull way of simulating the dynamics of multirotors vehicles. It provides a simulation interface for PX4
-integration as well as costume python control interface.
+integration as well as custom python control interface.
 
 .. image:: /_static/pegasus_cover.png
         :width: 600px

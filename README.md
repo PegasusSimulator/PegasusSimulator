@@ -1,6 +1,16 @@
 # Pegasus Simulator
-<p float="left" align="left">
-  <img src="docs/_static/logo.png" width="250" />
+
+![IsaacSim 2022.2.0](https://img.shields.io/badge/IsaacSim-2022.2.0-brightgreen.svg)
+![PX4-Autopilot 1.13.2](https://img.shields.io/badge/PX4--Autopilot-1.13.2-brightgreen.svg)
+![Ubuntu 20.04](https://img.shields.io/badge/Ubuntu-20.04LTS-brightgreen.svg)
+![Ubuntu 22.04](https://img.shields.io/badge/Ubuntu-22.04LTS-brightgreen.svg)
+
+**Pegasus Simulator** is a framework built on top of [NVIDIA
+Omniverse](https://docs.omniverse.nvidia.com/) and [Isaac
+Sim](https://docs.omniverse.nvidia.com/app_isaacsim/app_isaacsim/overview.html). It is designed to provide an easy, yet powerfull way of simulating the dynamics of multirotors vehicles. It provides a simulation interface for PX4 integration as well as custom python control interface.
+
+<p align = "center">
+<img src="docs/_static/pegasus_cover.png" width=500 />
 </p>
 
 ## Citation
@@ -8,9 +18,9 @@
 Please cite [this paper]() if you use this framework in your work:
 
 ```
-@misc{mittal2023orbit,
-	author = {},
-	title = {},
+@misc{jacinto2023pegasus,
+	author = {Jacinto, Marcelo and Pinto, João and Pascoal, António and Cunha, Rita},
+	title = {Pegasus Simulator: An Isaac Sim Framework for Multiple Aerial Vehicles Simulation},
 	year = {2023},
 	eprint = {},
 }
@@ -24,12 +34,12 @@ This simulation framework is an open-source effort, started by me, Marcelo Jacin
 	* [Marcelo Jacinto](https://github.com/MarceloJacinto), under the supervision of <u>Prof. Rita Cunha</u> and <u>Prof. Antonio Pascoal</u> (IST/ISR-Lisbon)
 * Architecture
     * [Marcelo Jacinto](https://github.com/MarceloJacinto)
-	* [Joao Pinto](https://github.com/jschpinto)
+	* [João Pinto](https://github.com/jschpinto)
 * Multirotor Dynamic Simulation and Control
     * [Marcelo Jacinto](https://github.com/MarceloJacinto)
 * Example Applications
 	* [Marcelo Jacinto](https://github.com/MarceloJacinto)
-	* [Joao Pinto](https://github.com/jschpinto)
+	* [João Pinto](https://github.com/jschpinto)
 
 ## Project Roadmap
 
