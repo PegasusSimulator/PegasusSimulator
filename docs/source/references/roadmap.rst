@@ -40,6 +40,7 @@ If there is some feature missing that you would like to see added, please check 
   * |check_| Select from Pegasus sample vehicles
   * |uncheck_| Support for custom vehicles in the UI dropdown
   * |uncheck_| Support for custom worlds in the UI dropdown
+  * |uncheck_| Add an option to clone and compile PX4-Autopilot directly from the Pegasus Simulator UI
 
 .. |check| raw:: html
 
