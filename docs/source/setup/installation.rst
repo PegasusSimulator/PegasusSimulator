@@ -36,7 +36,7 @@ from python scripts. As such, we recommend setting up a few custom environment v
     instructions `here <https://docs.omniverse.nvidia.com/app_isaacsim/app_isaacsim/install_python.html>`__, this
     feature was not tested.
 
-Start by locating the `Isaac Sim's Python installation <https://docs.omniverse.nvidia.com/app_isaacsim/app_isaacsim/install_python.html>`__ 
+Start by locating the `Isaac Sim installation <https://docs.omniverse.nvidia.com/app_isaacsim/app_isaacsim/install_python.html>`__ 
 by navigating to Isaac Sim's root folder. Typically, in Linux, this folder can be found under ``${HOME}/.local/share/ov/pkg/isaac_sim-*``,
 where the ``*`` is the version number.
 
