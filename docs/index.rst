@@ -63,11 +63,10 @@ This simulation framework is an open-source effort, started by me, Marcelo Jacin
    :maxdepth: 1
    :caption: Tutorials
 
-   source/tutorials/create_custom_sensor
-   source/tutorials/create_custom_thrust_model
-   source/tutorials/create_custom_drag_model
-   source/tutorials/create_custom_backend
+   source/tutorials/run_extension_mode
+   source/tutorials/create_standalone_application
    source/tutorials/create_custom_vehicle
+   source/tutorials/create_custom_backend
 
 .. toctree::
    :maxdepth: 2
@@ -97,7 +96,7 @@ This simulation framework is an open-source effort, started by me, Marcelo Jacin
 Other Simulation Frameworks
 ===========================
 
-In this section, we acknowledge nobel work of those who came before us and inspired this work:
+In this section, we acknowledge the nobel work of those who came before us and inspired this work:
 
 - :cite:p:`gazebo` Gazebo simulator
 - :cite:p:`rotorS` RotorS simulation plugin for gazebo

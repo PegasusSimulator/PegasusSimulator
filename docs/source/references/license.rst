@@ -4,7 +4,8 @@ License
 Pegasus Simulator License
 -------------------------
 
-The Pegasus Simulator is an open-source framework that follows a `BSD-3 Clause License <https://opensource.org/licenses/BSD-3-Clause/>`__. 
+| The Pegasus Simulator is an open-source framework that follows a `BSD-3 Clause License <https://opensource.org/licenses/BSD-3-Clause/>`__. 
+| **Author and lead developer:** Marcelo Jacinto (marcelo.jacinto@tecnico.ulisboa.pt)
 
 .. code-block:: text 
 
