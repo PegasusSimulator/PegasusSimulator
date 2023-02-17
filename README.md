@@ -7,11 +7,15 @@
 
 **Pegasus Simulator** is a framework built on top of [NVIDIA
 Omniverse](https://docs.omniverse.nvidia.com/) and [Isaac
-Sim](https://docs.omniverse.nvidia.com/app_isaacsim/app_isaacsim/overview.html). It is designed to provide an easy, yet powerfull way of simulating the dynamics of multirotors vehicles. It provides a simulation interface for PX4 integration as well as custom python control interface.
+Sim](https://docs.omniverse.nvidia.com/app_isaacsim/app_isaacsim/overview.html). It is designed to provide an easy, yet powerfull way of simulating the dynamics of multirotors vehicles. It provides a simulation interface for [PX4](https://px4.io/) integration as well as custom python control interface. At the moment, only multirotor vehicles are supported, with support for other vehicle topologies planed for future versions.
 
 <p align = "center">
-<img src="docs/_static/pegasus_cover.png" width=500 />
+<a href="https://youtu.be/_11OCFwf_GE" target="_blank"><img src="docs/_static/pegasus_cover.png" alt="Pegasus Simulator image" height="300"/></a>
+<a href="https://youtu.be/_11OCFwf_GE" target="_blank"><img src="docs/_static/mini demo.gif" alt="Pegasus Simulator gif" height="300"/></a>
 </p>
+
+
+Check the provided documentation [here]() to discover how to install and use this framework.
 
 ## Citation
 
@@ -28,7 +32,7 @@ Please cite [this paper]() if you use this framework in your work:
 
 ## Developer Team
 
-This simulation framework is an open-source effort, started by me, Marcelo Jacinto in January/2023. It is a tool that was created with the original purpose of serving my Ph.D. workplan for the next 4 years, which means that you can expect this repository to be mantained by me directly, hopefully until 2027.
+This simulation framework is an open-source effort, started by me, Marcelo Jacinto in January/2023. It is a tool that was created with the original purpose of serving my Ph.D. workplan for the next 4 years, which means that you can expect this repository to be mantained, hopefully at least until 2027.
 
 * Project Founder
 	* [Marcelo Jacinto](https://github.com/MarceloJacinto), under the supervision of <u>Prof. Rita Cunha</u> and <u>Prof. Antonio Pascoal</u> (IST/ISR-Lisbon)
@@ -55,9 +59,11 @@ We welcom new contributions from the community to improve this work. Please chec
 
 ## Licenses
 
+Pegasus Simulator is released under [BSD-3 License](LICENSE). The license files of its dependencies and assets are present in the [`docs/licenses`](docs/licenses) directory.
+
 NVIDIA Isaac Sim is available freely under [individual license](https://www.nvidia.com/en-us/omniverse/download/). 
 
-Pegasus Simulator is released under [BSD-3 License](LICENSE). The license files of its dependencies and assets are present in the [`docs/licenses`](docs/licenses) directory.
+PX4-Autopilot is available as an open-source project under [BSD-3 License](https://github.com/PX4/PX4-Autopilot).
 
 ## Project Sponsors
 - Dynamics Systems and Ocean Robotics (DSOR) group (Portugal), under Marcelo Jacinto's Ph.D. grant funded by FCT.
