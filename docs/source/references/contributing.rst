@@ -81,7 +81,7 @@ The description of the Pull Request should include:
 Code Style
 ~~~~~~~~~~
 
-The inline code documentation follows the Google Style Guides while the Python code follows the PEP guidelines. We use 
+The inline code documentation follows the `Google Style Guides <https://google.github.io/styleguide/pyguide.html>`__ while the Python code follows the `PEP guidelines <https://peps.python.org/pep-0008/>`__. We use 
 the `pre-commit <https://pre-commit.com/>`__ tool tools for maintaining code quality and consistency over the codebase. 
 You can install ``pre-commit`` by running:
 
@@ -144,6 +144,17 @@ To generate the html documentation, execute the following commands:
 Contributing with Assets
 ------------------------
 
+Creating 3D models is an hard and time consuming task. We encourage people to share their models they feel will be usefull
+with the community, as long as:
+
+1. You make sure the assets are appropriately licensed.
+2. They can be distributed in an open-source repository.
+
+.. note::
+
+   Currently, we still do not have a standard approach for submitting open-source assets to be incorporated into Pegasus Simulator,
+   but a possible solution in the future might lie either on hosting small sized ones on this repository and large
+   worlds in a nucleus server. If you have a great idea regarding this subject, share it with us on the Github Issues tab!
 
 Sponsor the project
 -------------------
