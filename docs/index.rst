@@ -84,6 +84,7 @@ This simulation framework is an open-source effort, started by me, Marcelo Jacin
    :caption: References
 
    source/references/contributing
+   source/references/known_issues
    source/references/changelog
    source/references/roadmap
    source/references/license
