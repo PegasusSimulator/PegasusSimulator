@@ -35,10 +35,11 @@ extensions = [
     "sphinx.ext.intersphinx",
     "myst_parser",
     "sphinx.ext.mathjax",
-    # "sphinxcontrib.bibtex",
+    "sphinxcontrib.bibtex",
     "sphinx.ext.todo",
     "sphinx.ext.githubpages",
-    "sphinx.ext.autosectionlabel"
+    "sphinx.ext.autosectionlabel",
+    "myst_parser"
 ]
 
 intersphinx_mapping = {
@@ -58,12 +59,13 @@ mathjax3_config = {
 intersphinx_disabled_domains = ["std"]
 
 # supported file extensions for source files
-source_suffix = {
-    ".rst": "restructuredtext",
-    ".md": "markdown",
-}
+#source_suffix = {
+#    ".rst": "restructuredtext"
+#}
 
 templates_path = ["_templates"]
+
+suppress_warnings = ["myst.header"]
 
 # -- Options for EPUB output
 epub_show_urls = "footnote"
@@ -88,6 +90,9 @@ autodoc_member_order = "groupwise"
 autodoc_default_options = {
     "autosummary": True,
 }
+
+# BibTeX configuration
+bibtex_bibfiles = ["bibliography.bib"]
 
 # Generate documentation for __special__ methods
 napoleon_include_special_with_doc = True
