@@ -7,29 +7,42 @@ Overview
 **Pegasus Simulator** is a framework built on top of `NVIDIA
 Omniverse <https://docs.omniverse.nvidia.com/>`__ and `Isaac
 Sim <https://docs.omniverse.nvidia.com/app_isaacsim/app_isaacsim/overview.html>`__. It is designed to provide an easy, yet
-powerfull way of simulating the dynamics of multirotors vehicles. It provides a simulation interface for PX4
-integration as well as custom python control interface.
+powerfull way of simulating the dynamics of multirotors vehicles. It provides a simulation interface for `PX4 <https://px4.io/>`__
+integration as well as custom python control interface. At the moment, only multirotor vehicles are supported, with support for other vehicle topologies planed for future versions.
 
-.. image:: /_static/pegasus_cover.png
-        :width: 600px
-        :align: center
-        :alt: Pegasus Simulator cover photo
+.. raw:: html
 
-:Lead Developer and maintainer:
-   Marcelo Jacinto
-:Version: 1.0.0 
-:Date: 2023/02/16
+   <p align = "center">
+   <a href="https://youtu.be/_11OCFwf_GE" target="_blank"><img src="_static/pegasus_cover.png" alt="Pegasus Simulator image" align="center" height="50"/></a>
+   <a href="https://youtu.be/_11OCFwf_GE" target="_blank"><img src="_static/mini demo.gif" alt="Pegasus Simulator gif" align="center" height="50"/></a>
+   </p>
 
 If you use ``PegasusSimulator`` in your work, please cite the `paper <https://arxiv.org/>`_:
 
 .. code-block:: bibtex
 
-   @misc{mittal2023orbit,
-      author = {Marcelo Jacinto and Rita Cunha},
-      title = {Pegasus Simulator},
-      year = {2023},
-      eprint = {arXiv:},
+   @misc{jacinto2023pegasus,
+	   author = {Jacinto, Marcelo and Pinto, João and Pascoal, António and Cunha, Rita},
+	   title = {Pegasus Simulator: An Isaac Sim Framework for Multiple Aerial Vehicles Simulation},
+	   year = {2023},
+	   eprint = {},
    }
+
+Developer Team
+~~~~~~~~~~~~~~
+
+This simulation framework is an open-source effort, started by me, Marcelo Jacinto in January/2023. It is a tool that was created with the original purpose of serving my Ph.D. workplan for the next 4 years, which means that you can expect this repository to be mantained, hopefully at least until 2027.
+
+- Project Founder
+   - `Marcelo Jacinto <https://github.com/MarceloJacinto>`__, under the supervision of Prof. Rita Cunha and Prof. Antonio Pascoal (IST/ISR-Lisbon)
+- Architecture
+   - `Marcelo Jacinto <https://github.com/MarceloJacinto>`__
+   - `João Pinto <https://github.com/jschpinto>`__
+- Multirotor Dynamic Simulation and Control
+   - `Marcelo Jacinto <https://github.com/MarceloJacinto>`__
+- Example Applications
+   - `Marcelo Jacinto <https://github.com/MarceloJacinto>`__
+   - `João Pinto <https://github.com/jschpinto>`__
 
 .. toctree::
    :maxdepth: 2
@@ -84,3 +97,15 @@ If you use ``PegasusSimulator`` in your work, please cite the `paper <https://ar
     :show-inheritance:
     :imported-members:
     :exclude-members: contextmanager
+
+Project Sponsors
+================
+
+- Dynamics Systems and Ocean Robotics (DSOR) group (Portugal), under Marcelo Jacinto's Ph.D. grant funded by FCT.
+
+.. raw:: html
+
+   <p float="left" align="center">
+   <img src="_static/dsor_logo.png" alt="DSOR group at ISR-Lisbon" width="90" align="center" />
+   <img src="_static/ist_logo.png" alt="Instituto Superior Técnico" width="200" align="center"/> 
+   </p>
