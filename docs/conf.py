@@ -65,7 +65,7 @@ intersphinx_disabled_domains = ["std"]
 
 templates_path = ["_templates"]
 
-suppress_warnings = ["myst.header"]
+suppress_warnings = ["myst.header", "autosectionlabel.*"]
 
 # -- Options for EPUB output
 epub_show_urls = "footnote"
