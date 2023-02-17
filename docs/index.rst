@@ -52,21 +52,21 @@ This simulation framework is an open-source effort, started by me, Marcelo Jacin
    source/setup/developer
 
 .. toctree::
+   :maxdepth: 1
+   :caption: Tutorials
+
+   source/tutorials/run_extension_mode
+   source/tutorials/create_standalone_application
+   source/tutorials/create_standalone_simulation
+   source/tutorials/create_custom_backend
+
+.. toctree::
    :maxdepth: 2
    :caption: Features
 
    source/features/environments
    source/features/vehicles
    source/features/px4_integration
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Tutorials
-
-   source/tutorials/run_extension_mode
-   source/tutorials/create_standalone_application
-   source/tutorials/create_custom_vehicle
-   source/tutorials/create_custom_backend
 
 .. toctree::
    :maxdepth: 2

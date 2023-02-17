@@ -1,12 +1,12 @@
-Run in extension mode (GUI)
+Run in Extension Mode (GUI)
 =======================================
 
 This tutorial introduces how to interface with the Pegasus Simulator working in extension mode, i.e. with an interactive GUI. 
 This means that ``ISAACSIM`` will be launched as a standard application and the Pegasus Simulator extension should be 
 enabled from the extension manager.
 
-Preparation
------------
+0. Preparation
+--------------
 
 Before you proceed, check the :ref:`Installing the Pegasus Simulator` section first, if you haven't already. You will
 also require `QGroundControl <http://qgroundcontrol.com/>`__ to control the vehicle. You haven't download it yet, you can
@@ -36,8 +36,8 @@ do it `here <https://docs.qgroundcontrol.com/master/en/getting_started/download_
 
         ./QGroundControl.AppImage
 
-Simulation Steps
-----------------
+1. Simulation Steps
+-------------------
 
 1. Open ``ISAACSIM``, either by using the Omniverse Launcher or the terminal command:
 
