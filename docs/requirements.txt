@@ -5,3 +5,4 @@ sphinx-rtd-theme==1.2.0
 sphinx_mdinclude==0.5.3
 myst-parser==0.18.1
 sphinxcontrib-bibtex==2.5.0
+sphinxcontrib-youtube==1.2.0

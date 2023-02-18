@@ -92,3 +92,13 @@ to confirm the target waypoint for the drone to follow.
 Congratulations 🎉️🎉️🎉️ ! You have just completed your first tutorial and you should now see the vehicle moving on the screen.
 
 A short video of this tutorial is also available `here <https://youtu.be/_11OCFwf_GE>`__.
+
+    ..  youtube:: _11OCFwf_GE
+        :width: 100%
+        :align: center
+        :privacy_mode:
+
+.. note::
+
+    Everything that you can do using the provided GUI can also be achieved by the Pegasus Simulator API in Python. In the next
+    tutorials we will cover how to create standalone Python scripts to perform simulations.
