@@ -31,7 +31,7 @@ If there is some feature missing that you would like to see added, please check 
 * API backends
  
   * |check_| Mavlink (with direct PX4 integration)
-  * |uncheck_| ROS 2 (in the works)
+  * |uncheck_| Direct ROS 2 interface (in the works)
   * |uncheck_| Python backend for Reinforcement Learning (RL)
 
 * UI
