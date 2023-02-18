@@ -1,0 +1,30 @@
+name: Build docs
+
+on: [push]
+
+jobs:
+  build-docs:
+    name: Build documentation
+    runs-on: ubuntu-22.04
+    if: github.repository == 'PegasusResearch/PegasusSimulator' && github.ref == 'refs/heads/main'
+
+    steps:
+    - name: Checkout code
+    uses: actions/checkout@v2
+
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install doc requirements
+      working-directory: ./docs
+      run: pip install -r requirements.txt
+
+    - name: Compile html docs
+      working-directory: ./docs
+      run: make html
+
+    - name: Deploy to github pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./docs/_build/html
