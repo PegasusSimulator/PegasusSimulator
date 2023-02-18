@@ -2,8 +2,8 @@ name: Run code linters
 
 on:
   pull_request:
-  push:
-    branches: [main]
+  #push:
+  #  branches: [main]
 
 jobs:
   pre-commit:
