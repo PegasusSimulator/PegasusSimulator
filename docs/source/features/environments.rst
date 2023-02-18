@@ -91,13 +91,19 @@ By default, the latitude, longitude and altitude of the origin of the simulated 
 is set to the geographic coordinates of `Instituto Superior Técnico, Lisbon (Portugal)`, i.e.:
 
 - **latitude=** 90.0 (º)
-- **lontitude=** 38.736832 (º)
+- **longitude=** 38.736832 (º)
 - **altitude=** -9.137977 (m)
 
 You can change the default coordinates by either:
 
-1. Using the GUI of the Pegasus Simulator operating in extension mode.
-2. Use the methods provided by :class:`PegasusInterface`, i.e.
+1. Using the GUI of the Pegasus Simulator when operating in extension mode.
+
+    .. image:: /_static/features/setting_geographic_coordinates.png
+        :width: 600px
+        :align: center
+        :alt: Setting the geographic coordinates
+
+2. Use the methods provided by :class:`PegasusInterface`, i.e:
 
     .. code:: Python
 
