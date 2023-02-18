@@ -1,6 +1,9 @@
 name: Build docs
 
-on: [push]
+on:
+  pull_request:
+    branches:
+      - main
 
 jobs:
   build-docs:
@@ -9,22 +12,22 @@ jobs:
     if: github.repository == 'PegasusResearch/PegasusSimulator' && github.ref == 'refs/heads/main'
 
     steps:
-    - name: Checkout code
-    uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Install doc requirements
-      working-directory: ./docs
-      run: pip install -r requirements.txt
+      - name: Install doc requirements
+        working-directory: ./docs
+        run: pip install -r requirements.txt
 
-    - name: Compile html docs
-      working-directory: ./docs
-      run: make html
+      - name: Compile html docs
+        working-directory: ./docs
+        run: make html
 
-    - name: Deploy to github pages
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./docs/_build/html
+      - name: Deploy to github pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/_build/html
