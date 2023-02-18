@@ -1,8 +1,8 @@
 API Reference
 =============
 
-Sensors API
------------
+Sensors
+-------
 
 .. toctree::
    :maxdepth: 2
@@ -13,8 +13,8 @@ Sensors API
    sensors.imu
    sensors.magnetometer
 
-Dynamics' API
--------------
+Dynamics
+--------
 
 .. toctree::
    :maxdepth: 2
@@ -22,16 +22,16 @@ Dynamics' API
    dynamics.drag
    dynamics.linear_drag
 
-Thruster' API
--------------
+Thruster
+--------
 
 .. toctree::
    :maxdepth: 2
 
    thrusters.quadratic_thrust_curve
 
-Backends API
--------------
+Control Backends
+----------------
 
 .. toctree::
    :maxdepth: 2
@@ -40,8 +40,8 @@ Backends API
    backends.mavlink_backend
    backends.ros2_backend
 
-Vehicle's API
--------------
+Vehicle
+-------
 .. toctree::
    :maxdepth: 2
 
@@ -49,10 +49,16 @@ Vehicle's API
    vehicles.vehicle_manager
    vehicles.multirotor
 
-Pegasus API
------------
+Pegasus Interace
+----------------
 .. toctree::
    :maxdepth: 2
 
    pegasus_interface
-   
+
+Default Params
+--------------
+.. toctree::
+   :maxdepth: 2
+
+   params

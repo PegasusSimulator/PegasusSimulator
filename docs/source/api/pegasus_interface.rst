@@ -1,5 +1,5 @@
-Pegasus Simulator API
-=====================
+Pegasus Interface
+=================
 
 .. automodule:: pegasus.simulator.logic.interface.pegasus_interface
    :members:
