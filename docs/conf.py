@@ -39,6 +39,7 @@ extensions = [
     "sphinx.ext.todo",
     "sphinx.ext.githubpages",
     "sphinx.ext.autosectionlabel",
+    "sphinxcontrib.youtube",
     "myst_parser"
 ]
 
