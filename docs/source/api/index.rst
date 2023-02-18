@@ -45,9 +45,10 @@ Vehicle
 .. toctree::
    :maxdepth: 2
 
+   state
    vehicles.vehicle
    vehicles.vehicle_manager
-   vehicles.multirotor
+   vehicles.multirotor 
 
 Pegasus Interace
 ----------------

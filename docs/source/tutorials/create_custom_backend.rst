@@ -1,5 +1,5 @@
-Create a Custom Backend
-=======================
+Create a Custom Controller
+==========================
 
 In this tutorial, you will learn how to create a custom ``control backend`` that receives the current state of the vehicle and
 its sensors and computes the control inputs to give to the rotors of the drone. The control laws implemented in this tutorial
@@ -42,7 +42,8 @@ The next code section corresponds to the ``nonlinear_controller.py`` in the ``ex
 2. Explanation
 --------------
 
-To start a simulation that will use our custom ``control backend`` , 
+To start a pre-programed simulation using a different control backend other than ``MAVLink`` we include our custom 
+``control backend`` module written in pure Python. 
 
 .. literalinclude:: ../../../examples/4_python_single_vehicle.py
    :language: python
@@ -50,11 +51,19 @@ To start a simulation that will use our custom ``control backend`` ,
    :linenos:
    :lineno-start: 30
 
+We now create a multirotor configuration and set the multirotor backend to be our ``NonlinearController`` object. That's it! 
+It is that simple! Instead of using the `MAVLink/PX4`` control we will use a pure Python controller written by us. The rest 
+of the script is the same as in the previous tutorial. 
+
 .. literalinclude:: ../../../examples/4_python_single_vehicle.py
    :language: python
    :lines: 68-74
    :linenos:
    :lineno-start: 68
+
+Now, let's take a look on how the ``NonlinearControl`` class is structured and how you can build your own. We must start by
+including the ``Backend`` class found in the ``pegasus.simulator.logic.backends`` API. To explore all the functionalities
+offered by this class, check the :ref:`Backend` API reference page.
 
 .. literalinclude:: ../../../examples/utils/nonlinear_controller.py
    :language: python
@@ -62,11 +71,19 @@ To start a simulation that will use our custom ``control backend`` ,
    :linenos:
    :lineno-start: 6
 
+Next, we define a class that inherits the `Backend`` class. This class must implement a few methods to be compliant
+with the ``Multirotor`` API. In this example we will implement an "hard-coded" nonlinear geometrical controller for the
+multirotor to track a pre-defined trajectory.
+
 .. literalinclude:: ../../../examples/utils/nonlinear_controller.py
    :language: python
    :lines: 13-23
    :linenos:
    :lineno-start: 13
+
+The first method that should be implemented is ``start()`` . This method gets invoked by
+the vehicle when the simulation starts. You should perform any initialization of your algorithm or communication protocol
+here.
 
 .. literalinclude:: ../../../examples/utils/nonlinear_controller.py
    :language: python
@@ -74,11 +91,20 @@ To start a simulation that will use our custom ``control backend`` ,
    :linenos:
    :lineno-start: 78
 
+The ``stop()``  method gets invoked by
+the vehicle when the simulation stops. You should perform any cleanup here.
+
 .. literalinclude:: ../../../examples/utils/nonlinear_controller.py
    :language: python
    :lines: 92-95
    :linenos:
    :lineno-start: 92
+
+The ``update_sensor(sensor_type: str, data)``  method gets invoked by the vehicle at every physics step iteration (it is used as a callback) for 
+each sensor that generated output data. It receives as input a string which describes the type of sensor and the data produced by that sensor.
+It is up to you to decide on how to parse the sensor data and use it. In this case we are not going to use the data produced
+by the simulated sensors for our controller. Instead we will get the state of the vehicle directly from the simulation and 
+use that to feedback into our control law.
 
 .. literalinclude:: ../../../examples/utils/nonlinear_controller.py
    :language: python
@@ -86,17 +112,68 @@ To start a simulation that will use our custom ``control backend`` ,
    :linenos:
    :lineno-start: 110
 
+.. note::
+
+   You can take a look on how the ``MavlinkBackend`` is implemented to check on how to parse sensor data produced by IMU, GPS, etc. 
+   A simple strategy is to use an if-statement to check for which sensor we are receive the data from and parse it accordingly, for example:
+
+   .. code:: Python
+
+      if sensor_type == "imu":
+         # do something
+      elif sensor_type == "gps":
+         # do something else
+      else:
+         # some sensor we do not care about, so ignore
+
+   Check the Sensors :ref:`API Reference` to check what type of data each sensor generates. For most cases, it will be a dictionary.
+
+The ``update_state(state: State)`` method is called at every physics steps with the most up-to-date ``State`` of the vehicle. The state
+object contains:
+
+- **position** of the vehicle's body frame with respect to the inertial frame, expressed in the inertial frame;
+- **attitude** of the vehicle's body frame with respect to the inertial frame, expressed in the inertial frame;
+- **linear velocity** of the vehicle's body frame, with respect to the inertial frame, expressed in the inertial frame;
+- **linear body-velocity** of the vehicle's body frame, with respect to the inertial frame, expressed in the vehicle's body frame;
+- **angular velocity** of the vehicle's body frame, with respect to the inertial frame, expressed in the vehicle's body frame;
+- **linear acceleration** of the vehicle's body frame, with respect to the inertial frame, expressed in the inertial frame.
+
+All of this data is filled adopting a **East-North-Down (ENU)** convention for the Inertial Reference Frame and a **Front-Left-Up (FLU)** 
+for the vehicle's body frame of reference. 
+
+.. note::
+
+   In case you need to adopt other conventions, the ``State`` class also provides methods to return the state of the vehicle in
+   North-East-Down (NED) and Front-Right-Down (FRD) conventions, so you don't have to make those conversions manually. Check
+   the :ref:`State` API reference page for more information.
+
 .. literalinclude:: ../../../examples/utils/nonlinear_controller.py
    :language: python
    :lines: 121-127
    :linenos:
    :lineno-start: 121
 
+The ``input_reference()`` method is called at every physics steps by the vehicle to retrieve from the controller a list of floats 
+with the target angular velocities in [rad/s] to use as reference to apply to each vehicle rotor. The list of floats
+returned by this method should have the same length as the number of rotors of the vehicle.
+
+.. note::
+
+   In order to have a general controller, you might not want to hard-code the number of rotors of the vehicle in the controller.
+   To take this into account, the :ref:`Backend` object is initialized with a reference to the :ref:`Vehicle` object
+   when this gets instantiated. Therefore, it will access to all of its attributes, such as the number of rotors and methods
+   to convert torques and forces in the body-frame to target rotor angular velocities!
+
 .. literalinclude:: ../../../examples/utils/nonlinear_controller.py
    :language: python
    :lines: 135-141
    :linenos:
    :lineno-start: 135
+
+
+The ``update(dt: float)`` method gets invoked at every physics step by the vehicle. It receives as argument the amount of time
+elapsed since the last update (in seconds). This is where you should define your controller/communication layer logic and 
+update the list of reference angular velocities for the rotors.
 
 .. literalinclude:: ../../../examples/utils/nonlinear_controller.py
    :language: python
@@ -112,3 +189,10 @@ Now let's run the Python script:
 .. code:: bash
 
    ISAACSIM_PYTHON examples/4_python_single_vehicle.py
+
+This should open a stage with a blue ground-plane with an 3DR Iris vehicle model in it. The simulation should start playing automatically and the stage being rendered. 
+The vehicle will automatically start flying and performing a very fast relay maneuvre. If you miss it, you can just hit the stop/play
+button again to repeat it. 
+
+Notice now, that unlike the previous tutorial, if you open ``QGroundControl`` you won't see the vehicle. This is normal, because
+now we are not using the ``MAVLink`` control backend, but instead our custom ``NonlinearControl`` backend.
