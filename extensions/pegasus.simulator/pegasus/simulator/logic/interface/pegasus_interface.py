@@ -1,5 +1,5 @@
 """
-| File: pegasus_simulator.py
+| File: pegasus_interface.py
 | Author: Marcelo Jacinto (marcelo.jacinto@tecnico.ulisboa.pt)
 | License: BSD-3-Clause. Copyright (c) 2023, Marcelo Jacinto. All rights reserved.
 | Description: Definition of the PegasusInterface class (a singleton) that is used to manage the Pegasus framework.

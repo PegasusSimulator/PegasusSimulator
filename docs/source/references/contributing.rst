@@ -144,10 +144,10 @@ To generate the html documentation, execute the following commands:
 Contributing with Assets
 ------------------------
 
-Creating 3D models is an hard and time consuming task. We encourage people to share their models they feel will be usefull
-with the community, as long as:
+Creating 3D models is an hard and time consuming task. We encourage people to share models that they feel will be usefull
+for the community, as long as:
 
-1. You make sure the assets are appropriately licensed.
+1. The assets are appropriately licensed.
 2. They can be distributed in an open-source repository.
 
 .. note::

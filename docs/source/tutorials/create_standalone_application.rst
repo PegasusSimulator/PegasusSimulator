@@ -47,7 +47,9 @@ After creating the `World <https://docs.omniverse.nvidia.com/py/isaacsim/source/
 take advantage of its ``callback system`` to declare that some functions defined by us should be called at every physics iteration, 
 render iteration or every time there is a timeline event, such as pressing the start/stop button. In this case, the
 ``physics_callback`` method will be invoked at every physics step, the ``render_callback`` at every render step and 
-``timeline_callback`` every time there is a timeline event. You can add as many callbacks as you want.
+``timeline_callback`` every time there is a timeline event. You can add as many callbacks as you want. After having all your
+callbacks defined, the ``world.reset()`` method should be invoked to initialize the ``physics context`` and set any existing
+robot joints (in this case there is none) to their default state.
 
 .. literalinclude:: ../../../examples/0_template_app.py
    :language: python
