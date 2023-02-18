@@ -29,78 +29,13 @@ Code structure
 This simulation framework is strucuture according to the following tree:
 
 .. code:: bash
-    
+
     PegasusSimulator:
     ├── .vscode
     ├── docs
     ├── examples
     ├── tools
     ├── extensions
-    │   ├── pegasus.simulator
-    │   │   ├── config
-    │   │   │   ├── configs.yaml
-    │   │   │   ├── extension.toml
-    │   │   ├── data
-    │   │   ├── docs
-    │   │   ├── setup.py
-    │   │   ├── pegasus
-    │   │   │   ├── simulator
-    │   │   │   │   ├── __init__.py
-    │   │   │   │   ├── params.py
-    │   │   │   │   ├── extension.py
-    │   │   │   │   ├── assets
-    │   │   │   │   │   ├── Robots
-    │   │   │   │   │   ├── Worlds
-    │   │   │   │   ├── logic
-    │   │   │   │   │   ├── __init__.py
-    │   │   │   │   │   ├── state.py
-    │   │   │   │   │   ├── rotation.py
-    │   │   │   │   │   ├── vehicle_manager.py
-    │   │   │   │   │   ├── backends
-    │   │   │   │   │   │   ├── backend.py
-    │   │   │   │   │   │   ├── mavlink_backend.py
-    │   │   │   │   │   │   ├── ros2_backend.py
-    │   │   │   │   │   │   ├── tools
-    │   │   │   │   │   │   │   ├── px4_launch_tool.py
-    │   │   │   │   │   ├── dynamics
-    │   │   │   │   │   │   ├── __init__.py
-    │   │   │   │   │   │   ├── drag.py
-    │   │   │   │   │   │   ├── linear_drag.py
-    │   │   │   │   │   ├── sensors
-    │   │   │   │   │   │   ├── __init__.py
-    │   │   │   │   │   │   ├── sensor.py
-    │   │   │   │   │   │   ├── gps.py
-    │   │   │   │   │   │   ├── imu.py
-    │   │   │   │   │   │   ├── magnetometer.py
-    │   │   │   │   │   │   ├── barometer.py
-    │   │   │   │   │   │   ├── geo_mag_utils.py
-    │   │   │   │   │   ├── thrusters
-    │   │   │   │   │   │   ├── __init__.py
-    │   │   │   │   │   │   ├── thrust_curve.py
-    │   │   │   │   │   │   ├── quadratic_thrust_curve.py
-    │   │   │   │   │   ├── vehicles
-    │   │   │   │   │   │   ├── __init__.py
-    │   │   │   │   │   │   ├── vehicle.py
-    │   │   │   │   │   │   ├── multirotor.py
-    │   │   │   │   │   ├── interface
-    │   │   │   │   │   │   ├── __init__.py
-    │   │   │   │   │   │   ├── pegasus_interface.py
-    │   │   │   │   ├── ui
-    │   │   │   │   │   ├── __init__.py
-    │   │   │   │   │   ├── ui_delegate.py
-    │   │   │   │   │   ├── ui_window.py
-
-The extensions directory contains the source code for the PegasusSimulator API and interactive GUI while the 
-examples directory contains the a set of python scripts to launch standalone applications and pre-programed simulations.
-
-Working in extension mode (Interactive GUI mode)
-------------------------------------------------
-
-As explained in NVIDIA's documentation, extensions are the standard way of developing on top of Isaac Sim and other Omniverse
-tools. The core of our extension is developed in the ``logic`` and the ``ui`` modules.
-
-.. code:: bash
-
     │   ├── pegasus.simulator
     │   │   ├── config
     │   │   ├── data
@@ -114,9 +49,11 @@ tools. The core of our extension is developed in the ``logic`` and the ``ui`` mo
     │   │   │   │   ├── logic
     │   │   │   │   ├── ui
 
-The main API that allows the simulation
-of dynamics, spawning assets on the world, etc. are defined in the ``logic`` module while the ``ui``
+The extensions directory contains the source code for the PegasusSimulator API and interactive GUI while the 
+examples directory contains the a set of python scripts to launch standalone applications and pre-programed simulations.
 
-Working as a standalone application
------------------------------------
-
+As explained in NVIDIA's documentation, extensions are the standard way of developing on top of Isaac Sim and other Omniverse
+tools. The core of our extension is developed in the ``logic`` and the ``ui`` modules. The ``logic`` API is exposed to the users
+and is used both when operating the Pegasus Simulator in GUI widget/extension mode and via standalone python applications.
+The ``ui`` API is **not exposed/documented** as it is basically defines the widget to call functionalities provided by 
+the ``logic`` module.
