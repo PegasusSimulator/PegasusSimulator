@@ -49,7 +49,7 @@ Next, we initialize the :class:`PegasusInterface` object. This is a singleton, w
 internally, so you do not need to declare your own manually when using this API. By default, when physics engine is set to run
 at ``250 Hz`` and the render engine at ``60Hz``.
 
-The :class:`PegasusInterface` provides methods to set the simulation environment, define the geographic coordinates of the origin of the world and much more. To learn more about this class, refer to the :ref:`Pegasus Interface` API section.
+The :class:`PegasusInterface` provides methods to set the simulation environment, define the geographic coordinates of the origin of the world, setting the default path for the PX4-Autopilot installation and much more. To learn more about this class, refer to the :ref:`Pegasus Interface` API section.
 
 .. literalinclude:: ../../../examples/1_px4_single_vehicle.py
    :language: python
