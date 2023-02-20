@@ -253,7 +253,7 @@ class WidgetWindow(ui.Window):
                         # Buttons that behave like switches to choose which network interface to use to simulate the control of the vehicle
                         px4_button = ui.Button(
                             "PX4",
-                            height=WidgetWindow.BUTTON_HEIGHT,
+                            height=WidgetWindow.BUTTON_HEIGHT * 2,
                             style=WidgetWindow.BUTTON_SELECTED_STYLE,
                             enabled=False,
                         )
@@ -262,6 +262,7 @@ class WidgetWindow(ui.Window):
                             height=WidgetWindow.BUTTON_HEIGHT,
                             style=WidgetWindow.BUTTON_BASE_STYLE,
                             enabled=True,
+                            visible=False
                         )
 
                         # Set the auxiliary function to handle the switch between both backends

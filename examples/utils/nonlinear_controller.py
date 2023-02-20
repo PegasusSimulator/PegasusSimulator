@@ -159,8 +159,6 @@ class NonlinearController(Backend):
         if self.index < self.max_index - 1 and self.total_time >= self.trajectory[self.index + 1, 0]:
             self.index += 1
 
-        carb.log_warn(self.index)
-
         # the target positions [m], velocity [m/s], accelerations [m/s^2], jerk [m/s^3], yaw-angle [rad], yaw-rate [rad/s]
         p_ref = np.array([self.trajectory[self.index, 1], self.trajectory[self.index, 2], self.trajectory[self.index, 3]])
         v_ref = np.array([self.trajectory[self.index, 4], self.trajectory[self.index, 5], self.trajectory[self.index, 6]])
