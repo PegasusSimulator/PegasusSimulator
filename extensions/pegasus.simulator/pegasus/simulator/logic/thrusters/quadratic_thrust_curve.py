@@ -33,7 +33,7 @@ class QuadraticThrustCurve(ThrustCurve):
         self._num_rotors = config.get("num_rotors", 4)
 
         # The rotor constant used for computing the total thrust produced by the rotor: T = rotor_constant * omega^2
-        self._rotor_constant = config.get("rotor_constant", [5.84e-6, 5.84e-6, 5.84e-6, 5.84e-6])
+        self._rotor_constant = config.get("rotor_constant", [8.54858e-6, 8.54858e-6, 8.54858e-6, 8.54858e-6])
         assert len(self._rotor_constant) == self._num_rotors
 
         # The rotor constant used for computing the total torque generated about the vehicle Z-axis

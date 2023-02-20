@@ -35,9 +35,9 @@ class NonlinearController(Backend):
         self.a = np.zeros((3,))                   # The linear acceleration of the vehicle in the inertial frame
 
         # Define the control gains matrix for the outer-loop
-        self.Kp = np.diag([13.0, 13.0, 13.0])
-        self.Kd = np.diag([10.0, 10.0, 10.0])
-        self.Kr = np.diag([5.0, 5.0, 5.0])
+        self.Kp = np.diag([10.0, 10.0, 10.0])
+        self.Kd = np.diag([8.5, 8.5, 8.5])
+        self.Kr = np.diag([2.0, 2.0, 2.0])
         self.Kw = np.diag([0.5, 0.5, 0.5])
 
         # Define the dynamic parameters for the vehicle
@@ -56,6 +56,7 @@ class NonlinearController(Backend):
         # Lists used for analysing performance statistics
         self.results_files = results_file
         self.time_vector = []
+        self.position_over_time = []
         self.position_error_over_time = []
         self.velocity_error_over_time = []
         self.atittude_error_over_time = []
@@ -79,15 +80,8 @@ class NonlinearController(Backend):
         """
         Reset the control and trajectory index
         """
-        self.index = 0
-        self.total_time = 0.0
-
-        # Reset the lists used for analysing performance statistics
-        self.time_vector = []
-        self.position_error_over_time = []
-        self.velocity_error_over_time = []
-        self.atittude_error_over_time = []
-        self.attitude_rate_error_over_time = []
+        self.reset_statistics()
+        
 
     def stop(self):
         """
@@ -100,12 +94,15 @@ class NonlinearController(Backend):
         
         statistics = {}
         statistics["time"] = np.array(self.time_vector)
+        statistics["p"] = np.vstack(self.position_over_time)
         statistics["ep"] = np.vstack(self.position_error_over_time)
         statistics["ev"] = np.vstack(self.velocity_error_over_time)
         statistics["er"] = np.vstack(self.atittude_error_over_time)
         statistics["ew"] = np.vstack(self.attitude_rate_error_over_time)
         np.savez(self.results_files, **statistics)
         carb.log_warn("Statistics saved to: " + self.results_files)
+
+        self.reset_statistics()
 
     def update_sensor(self, sensor_type: str, data):
         """
@@ -161,6 +158,8 @@ class NonlinearController(Backend):
         # Check if we need to update to the next trajectory index
         if self.index < self.max_index - 1 and self.total_time >= self.trajectory[self.index + 1, 0]:
             self.index += 1
+
+        carb.log_warn(self.index)
 
         # the target positions [m], velocity [m/s], accelerations [m/s^2], jerk [m/s^3], yaw-angle [rad], yaw-rate [rad/s]
         p_ref = np.array([self.trajectory[self.index, 1], self.trajectory[self.index, 2], self.trajectory[self.index, 3]])
@@ -244,7 +243,8 @@ class NonlinearController(Backend):
         # ----------------------------
         # Statistics to save for later
         # ----------------------------
-        self.time_vector.append(self.total_time)        
+        self.time_vector.append(self.total_time)
+        self.position_over_time.append(self.p)  
         self.position_error_over_time.append(ep)
         self.velocity_error_over_time.append(ev)
         self.atittude_error_over_time.append(e_R)
@@ -258,3 +258,16 @@ class NonlinearController(Backend):
             S (np.array): A matrix in so(3)
         """
         return np.array([-S[1,2], S[0,2], -S[0,1]])
+    
+    def reset_statistics(self):
+
+        self.index = 0
+        self.total_time = 0.0
+
+        # Reset the lists used for analysing performance statistics
+        self.time_vector = []
+        self.position_over_time = []
+        self.position_error_over_time = []
+        self.velocity_error_over_time = []
+        self.atittude_error_over_time = []
+        self.attitude_rate_error_over_time = []

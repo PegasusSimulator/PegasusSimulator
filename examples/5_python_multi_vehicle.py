@@ -22,8 +22,12 @@ simulation_app = SimulationApp({"headless": False})
 import omni.timeline
 from omni.isaac.core.world import World
 
+# Used for adding extra lights to the environment
+import omni.isaac.core.utils.prims as prim_utils
+
 # Import the Pegasus API for simulating drones
 from pegasus.simulator.params import ROBOTS, SIMULATION_ENVIRONMENTS
+from pegasus.simulator.logic.thrusters.quadratic_thrust_curve import QuadraticThrustCurve
 from pegasus.simulator.logic.vehicles.multirotor import Multirotor, MultirotorConfig
 from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 
@@ -31,11 +35,15 @@ from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 from utils.nonlinear_controller import NonlinearController
 
 # Auxiliary scipy and numpy modules
+import numpy as np
 from scipy.spatial.transform import Rotation
 
 # Use os and pathlib for parsing the desired trajectory from a CSV file
 import os
 from pathlib import Path
+
+import random
+from omni.isaac.debug_draw import _debug_draw
 
 
 class PegasusApp:
@@ -60,7 +68,7 @@ class PegasusApp:
         self.world = self.pg.world
 
         # Launch one of the worlds provided by NVIDIA
-        self.pg.load_environment(SIMULATION_ENVIRONMENTS["Curved Gridroom"])
+        self.pg.load_environment(SIMULATION_ENVIRONMENTS["Default Environment"])
 
         # Get the current directory used to read trajectories and save results
         self.curr_dir = str(Path(os.path.dirname(os.path.realpath(__file__))).resolve())
@@ -76,8 +84,8 @@ class PegasusApp:
             "/World/quadrotor1",
             ROBOTS['Iris'],
             1,
-            [0.0, -1.5, 0.07],
-            Rotation.from_euler("XYZ", [0.0, 0.0, 180.0], degrees=True).as_quat(),
+            [0,-1.5, 0.07],
+            Rotation.from_euler("XYZ", [0.0, 0.0, 0.0], degrees=True).as_quat(),
             config=config_multirotor1,
         )
 
@@ -92,12 +100,40 @@ class PegasusApp:
             "/World/quadrotor2",
             ROBOTS['Iris'],
             2,
-            [2.3, -1.5, 0.07],
+            [2.3,-1.5, 0.07],
             Rotation.from_euler("XYZ", [0.0, 0.0, 0.0], degrees=True).as_quat(),
             config=config_multirotor2,
         )
 
-        # Reset the simulation environment so that all articulations (aka robots) are initialized
+        # Add extra light to the environment
+        index = 0
+        for j in range(-10, 10):
+            for i in range(-10, 10):
+                prim_utils.create_prim(
+                    "/World/Light/GreySphere" + str(index),
+                    "SphereLight",
+                    translation=(i * 10, j*10, 10000.0),
+                    attributes={"radius": 10.0, "intensity": 30000000.0, "color": (0.75, 0.75, 0.75)},
+                )
+
+                index += 1
+
+        # Set the camera to a nice position
+        self.pg.set_viewport_camera([3.0, -2.5, 5.5], [0.0, 3.0, 7.0])
+
+        # Read the trajectories and plot them inside isaac sim
+        trajectory1 = np.flip(np.genfromtxt(self.curr_dir + "/trajectories/pitch_relay_90_deg_1.csv", delimiter=','), axis=0)
+        num_samples1,_ = trajectory1.shape
+        trajectory2 = np.flip(np.genfromtxt(self.curr_dir + "/trajectories/pitch_relay_90_deg_2.csv", delimiter=','), axis=0)
+        num_samples2,_ = trajectory2.shape
+
+        draw = _debug_draw.acquire_debug_draw_interface()
+        point_list_1 = [(trajectory1[i,1], trajectory1[i,2], trajectory1[i,3]) for i in range(num_samples1)]
+        draw.draw_lines_spline(point_list_1, (1, 1, 1, 1), 2, False)
+
+        point_list_2 = [(trajectory2[i,1], trajectory2[i,2], trajectory2[i,3]) for i in range(num_samples2)]
+        draw.draw_lines_spline(point_list_2, (1, 1, 1, 1), 2, False)
+
         self.world.reset()
 
     def run(self):
