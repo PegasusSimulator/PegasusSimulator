@@ -27,7 +27,6 @@ import omni.isaac.core.utils.prims as prim_utils
 
 # Import the Pegasus API for simulating drones
 from pegasus.simulator.params import ROBOTS, SIMULATION_ENVIRONMENTS
-from pegasus.simulator.logic.thrusters.quadratic_thrust_curve import QuadraticThrustCurve
 from pegasus.simulator.logic.vehicles.multirotor import Multirotor, MultirotorConfig
 from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 
@@ -67,8 +66,15 @@ class PegasusApp:
         self.pg._world = World(**self.pg._world_settings)
         self.world = self.pg.world
 
-        # Launch one of the worlds provided by NVIDIA
-        self.pg.load_environment(SIMULATION_ENVIRONMENTS["Default Environment"])
+        # Add a custom light with a high-definition HDR surround environment of an exhibition hall,
+        # instead of the typical ground plane
+        prim_utils.create_prim(
+            "/World/Light/DomeLight",
+            "DomeLight",
+            attributes={
+                "texture:file": "omniverse://localhost/NVIDIA/Assets/Skies/Indoor/ZetoCGcom_ExhibitionHall_Interior1.hdr",
+                "intensity": 1000.0
+        })
 
         # Get the current directory used to read trajectories and save results
         self.curr_dir = str(Path(os.path.dirname(os.path.realpath(__file__))).resolve())
@@ -84,7 +90,7 @@ class PegasusApp:
             "/World/quadrotor1",
             ROBOTS['Iris'],
             1,
-            [0,-1.5, 0.07],
+            [0,-1.5, 8.0],
             Rotation.from_euler("XYZ", [0.0, 0.0, 0.0], degrees=True).as_quat(),
             config=config_multirotor1,
         )
@@ -100,26 +106,13 @@ class PegasusApp:
             "/World/quadrotor2",
             ROBOTS['Iris'],
             2,
-            [2.3,-1.5, 0.07],
+            [2.3,-1.5, 8.0],
             Rotation.from_euler("XYZ", [0.0, 0.0, 0.0], degrees=True).as_quat(),
             config=config_multirotor2,
         )
 
-        # Add extra light to the environment
-        index = 0
-        for j in range(-10, 10):
-            for i in range(-10, 10):
-                prim_utils.create_prim(
-                    "/World/Light/GreySphere" + str(index),
-                    "SphereLight",
-                    translation=(i * 10, j*10, 10000.0),
-                    attributes={"radius": 10.0, "intensity": 30000000.0, "color": (0.75, 0.75, 0.75)},
-                )
-
-                index += 1
-
-        # Set the camera to a nice position
-        self.pg.set_viewport_camera([3.0, -2.5, 5.5], [0.0, 3.0, 7.0])
+        # Set the camera to a nice position so that we can see the 2 drones almost touching each other
+        self.pg.set_viewport_camera([7.53, -1.6, 4.96], [0.0, 3.3, 7.0])
 
         # Read the trajectories and plot them inside isaac sim
         trajectory1 = np.flip(np.genfromtxt(self.curr_dir + "/trajectories/pitch_relay_90_deg_1.csv", delimiter=','), axis=0)
@@ -127,12 +120,13 @@ class PegasusApp:
         trajectory2 = np.flip(np.genfromtxt(self.curr_dir + "/trajectories/pitch_relay_90_deg_2.csv", delimiter=','), axis=0)
         num_samples2,_ = trajectory2.shape
 
+        # Draw the lines of the desired trajectory in Isaac Sim with the same color as the output plots for the paper
         draw = _debug_draw.acquire_debug_draw_interface()
         point_list_1 = [(trajectory1[i,1], trajectory1[i,2], trajectory1[i,3]) for i in range(num_samples1)]
-        draw.draw_lines_spline(point_list_1, (1, 1, 1, 1), 2, False)
+        draw.draw_lines_spline(point_list_1, (31/255, 119/255, 180/255, 1), 5, False)
 
         point_list_2 = [(trajectory2[i,1], trajectory2[i,2], trajectory2[i,3]) for i in range(num_samples2)]
-        draw.draw_lines_spline(point_list_2, (1, 1, 1, 1), 2, False)
+        draw.draw_lines_spline(point_list_2, (255/255, 0, 0, 1), 5, False)
 
         self.world.reset()
 
