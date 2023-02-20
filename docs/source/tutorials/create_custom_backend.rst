@@ -36,7 +36,7 @@ The next code section corresponds to the ``nonlinear_controller.py`` in the ``ex
 
 .. literalinclude:: ../../../examples/utils/nonlinear_controller.py
    :language: python
-   :emphasize-lines: 6,13-23,78-81,92-95,110-118,121-127,135-141,144-150
+   :emphasize-lines: 6,13-23,79-82,86-89,107-115,118-124,132-138,141-147
    :linenos:
 
 2. Explanation
@@ -87,18 +87,18 @@ here.
 
 .. literalinclude:: ../../../examples/utils/nonlinear_controller.py
    :language: python
-   :lines: 78-81
+   :lines: 79-82
    :linenos:
-   :lineno-start: 78
+   :lineno-start: 79
 
 The ``stop()``  method gets invoked by
 the vehicle when the simulation stops. You should perform any cleanup here.
 
 .. literalinclude:: ../../../examples/utils/nonlinear_controller.py
    :language: python
-   :lines: 92-95
+   :lines: 86-89
    :linenos:
-   :lineno-start: 92
+   :lineno-start: 86
 
 The ``update_sensor(sensor_type: str, data)``  method gets invoked by the vehicle at every physics step iteration (it is used as a callback) for 
 each sensor that generated output data. It receives as input a string which describes the type of sensor and the data produced by that sensor.
@@ -108,9 +108,9 @@ use that to feedback into our control law.
 
 .. literalinclude:: ../../../examples/utils/nonlinear_controller.py
    :language: python
-   :lines: 110-118
+   :lines: 107-115
    :linenos:
-   :lineno-start: 110
+   :lineno-start: 107
 
 .. note::
 
@@ -149,9 +149,9 @@ for the vehicle's body frame of reference.
 
 .. literalinclude:: ../../../examples/utils/nonlinear_controller.py
    :language: python
-   :lines: 121-127
+   :lines: 118-124
    :linenos:
-   :lineno-start: 121
+   :lineno-start: 118
 
 The ``input_reference()`` method is called at every physics steps by the vehicle to retrieve from the controller a list of floats 
 with the target angular velocities in [rad/s] to use as reference to apply to each vehicle rotor. The list of floats
@@ -166,9 +166,9 @@ returned by this method should have the same length as the number of rotors of t
 
 .. literalinclude:: ../../../examples/utils/nonlinear_controller.py
    :language: python
-   :lines: 135-141
+   :lines: 132-138
    :linenos:
-   :lineno-start: 135
+   :lineno-start: 132
 
 
 The ``update(dt: float)`` method gets invoked at every physics step by the vehicle. It receives as argument the amount of time
@@ -177,9 +177,9 @@ update the list of reference angular velocities for the rotors.
 
 .. literalinclude:: ../../../examples/utils/nonlinear_controller.py
    :language: python
-   :lines: 144-150
+   :lines: 141-147
    :linenos:
-   :lineno-start: 144
+   :lineno-start: 141
 
 3. Execution
 ------------
