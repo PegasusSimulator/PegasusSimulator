@@ -36,3 +36,8 @@ _isaac_sim
 _repo
 _build
 .lastformat
+
+# ROS 2
+build/
+install/
+log/
