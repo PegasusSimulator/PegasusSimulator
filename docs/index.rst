@@ -22,7 +22,7 @@ If you use ``PegasusSimulator`` in your work, please cite the `paper <https://ar
 .. code-block:: bibtex
 
    @misc{jacinto2023pegasus,
-	   author = {Jacinto, Marcelo and Pinto, João and Pascoal, António and Cunha, Rita},
+	   author = {Jacinto, Marcelo and Pinto, João and Patrikar, Jay and Keller, John and Cunha, Rita and Scherer, Sebastian and Pascoal, António},
 	   title = {Pegasus Simulator: An Isaac Sim Framework for Multiple Aerial Vehicles Simulation},
 	   year = {2023},
 	   eprint = {},
