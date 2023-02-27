@@ -90,14 +90,14 @@ Addtional Isaac Sim resources:
 Installing the Pegasus Simulator
 --------------------------------
 
-Clone the `Pegasus Simulator <https://www.github.com/PegasusResearch/Pegasus-Simulator.git>`__:
+Clone the `Pegasus Simulator <https://www.github.com/PegasusSimulator/PegasusSimulator.git>`__:
 
 .. code:: bash
 
     # Option 1: With HTTPS
-    git clone https://github.com/PegasusResearch/Pegasus-Simulator.git
+    git clone https://github.com/PegasusSimulator/PegasusSimulator.git
     # Option 2: With SSH (you need to setup a github account with ssh keys)
-    git clone git@github.com:PegasusResearch/Pegasus-Simulator.git
+    git clone git@github.com:PegasusSimulator/PegasusSimulator.git
     
 
 The Pegasus Simulator was originally developed as an Isaac Sim extension with an interactive GUI, but also provides a powerfull
