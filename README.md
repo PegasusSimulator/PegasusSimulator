@@ -44,7 +44,7 @@ This simulation framework is an open-source effort, started by me, Marcelo Jacin
 * Example Applications
 	* [Marcelo Jacinto](https://github.com/MarceloJacinto)
 	* [João Pinto](https://github.com/jschpinto)
-* Paper Writting and Revision
+* Paper Writing and Revision
 	* [Marcelo Jacinto](https://github.com/MarceloJacinto)
 	* [João Pinto](https://github.com/jschpinto)
 	* [Rita Cunha]()
@@ -76,7 +76,7 @@ PX4-Autopilot is available as an open-source project under [BSD-3 License](https
 - Dynamics Systems and Ocean Robotics (DSOR) group of the Institute for Systems and Robotics (ISR), a research unit of the Laboratory of Robotics and Engineering Systems (LARSyS).
 - Instituto Superior Técnico, Universidade de Lisboa
 
-The work developed by Marcelo Jacinto and João Pinto was supported by Ph.D. grants funded by Fundação para as Ciências e Tecnologias (FCT).
+The work developed by Marcelo Jacinto and João Pinto was supported by Ph.D. grants funded by Fundação para as Ciência e Tecnologia (FCT).
 
 <p float="left" align="center">
   <img src="docs/_static/dsor_logo.png" width="90" align="center" />
