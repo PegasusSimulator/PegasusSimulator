@@ -12,7 +12,7 @@ jobs:
   build-docs:
     name: Build documentation
     runs-on: ubuntu-22.04
-    if: github.repository == 'PegasusSimulator/PegasusSimulator' && github.ref == 'refs/heads/main'
+    if: github.repository == 'PegasusSimulator/PegasusSimulator'
 
     steps:
       - name: Checkout code
