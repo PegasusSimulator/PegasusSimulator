@@ -23,10 +23,10 @@ Please cite [this paper]() if you use this framework in your work:
 
 ```
 @misc{jacinto2023pegasus,
-	author = {Jacinto, Marcelo and Pinto, João and ..., and Cunha, Rita and Pascoal, António},
-	title = {Pegasus Simulator: An Isaac Sim Framework for Multiple Aerial Vehicles Simulation},
-	year = {2023},
-	eprint = {},
+	   author = {Jacinto, Marcelo and Pinto, João and Patrikar, Jay and Keller, John and Cunha, Rita and Scherer, Sebastian and Pascoal, António},
+	   title = {Pegasus Simulator: An Isaac Sim Framework for Multiple Aerial Vehicles Simulation},
+	   year = {2023},
+	   eprint = {}
 }
 ```
 
@@ -44,11 +44,6 @@ This simulation framework is an open-source effort, started by me, Marcelo Jacin
 * Example Applications
 	* [Marcelo Jacinto](https://github.com/MarceloJacinto)
 	* [João Pinto](https://github.com/jschpinto)
-* Paper Writing and Revision
-	* [Marcelo Jacinto](https://github.com/MarceloJacinto)
-	* [João Pinto](https://github.com/jschpinto)
-	* [Rita Cunha]()
-	* [António Pascoal]()
 
 Also check the always up-to-date [Github contributors list](https://github.com/PegasusSimulator/PegasusSimulator/graphs/contributors)
 
@@ -60,7 +55,7 @@ An high level project roadmap is available [here](https://pegasussimulator.githu
 
 We welcome new contributions from the community to improve this work. Please check the [Contributing](https://pegasussimulator.github.io/PegasusSimulator/source/references/contributing.html) section in the documentation for the guidelines on how to help improve and support this project.
 
-* Use [Discussions]() for discussing ideas, asking questions, and requests features.
+* Use Discussions for discussing ideas, asking questions, and requests features.
 * Use [Issues](https://github.com/PegasusSimulator/PegasusSimulator/issues) to track work in development, bugs and documentation issues.
 * Use [Pull Requests](https://github.com/PegasusSimulator/PegasusSimulator/pulls) to fix bugs or contribute directly with your own ideas, code, examples or improve documentation.
 
@@ -76,7 +71,7 @@ PX4-Autopilot is available as an open-source project under [BSD-3 License](https
 - Dynamics Systems and Ocean Robotics (DSOR) group of the Institute for Systems and Robotics (ISR), a research unit of the Laboratory of Robotics and Engineering Systems (LARSyS).
 - Instituto Superior Técnico, Universidade de Lisboa
 
-The work developed by Marcelo Jacinto and João Pinto was supported by Ph.D. grants funded by Fundação para as Ciência e Tecnologia (FCT).
+The work developed by Marcelo Jacinto and João Pinto was supported by Ph.D. grants funded by Fundação para a Ciência e Tecnologia (FCT).
 
 <p float="left" align="center">
   <img src="docs/_static/dsor_logo.png" width="90" align="center" />
