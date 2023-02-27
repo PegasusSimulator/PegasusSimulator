@@ -28,7 +28,7 @@ The tutorial corresponds to the ``4_python_single_vehicle.py`` example in the ``
 
 .. literalinclude:: ../../../examples/4_python_single_vehicle.py
    :language: python
-   :emphasize-lines: 30-31,68-74
+   :emphasize-lines: 30-31,68-75
    :linenos:
 
 The next code section corresponds to the ``nonlinear_controller.py`` in the ``examples/utils`` directory.
@@ -36,7 +36,7 @@ The next code section corresponds to the ``nonlinear_controller.py`` in the ``ex
 
 .. literalinclude:: ../../../examples/utils/nonlinear_controller.py
    :language: python
-   :emphasize-lines: 6,13-23,79-82,86-89,107-115,118-124,132-138,141-147
+   :emphasize-lines: 18,24-44,114-117,121-124,143-151,154-160,168-174,177-183
    :linenos:
 
 2. Explanation
@@ -57,7 +57,7 @@ of the script is the same as in the previous tutorial.
 
 .. literalinclude:: ../../../examples/4_python_single_vehicle.py
    :language: python
-   :lines: 68-74
+   :lines: 68-75
    :linenos:
    :lineno-start: 68
 
@@ -67,9 +67,9 @@ offered by this class, check the :ref:`Backend` API reference page.
 
 .. literalinclude:: ../../../examples/utils/nonlinear_controller.py
    :language: python
-   :lines: 6
+   :lines: 18
    :linenos:
-   :lineno-start: 6
+   :lineno-start: 18
 
 Next, we define a class that inherits the `Backend`` class. This class must implement a few methods to be compliant
 with the ``Multirotor`` API. In this example we will implement an "hard-coded" nonlinear geometrical controller for the
@@ -77,9 +77,9 @@ multirotor to track a pre-defined trajectory.
 
 .. literalinclude:: ../../../examples/utils/nonlinear_controller.py
    :language: python
-   :lines: 13-23
+   :lines: 24-44
    :linenos:
-   :lineno-start: 13
+   :lineno-start: 24
 
 The first method that should be implemented is ``start()`` . This method gets invoked by
 the vehicle when the simulation starts. You should perform any initialization of your algorithm or communication protocol
@@ -87,18 +87,18 @@ here.
 
 .. literalinclude:: ../../../examples/utils/nonlinear_controller.py
    :language: python
-   :lines: 79-82
+   :lines: 114-117
    :linenos:
-   :lineno-start: 79
+   :lineno-start: 114
 
 The ``stop()``  method gets invoked by
 the vehicle when the simulation stops. You should perform any cleanup here.
 
 .. literalinclude:: ../../../examples/utils/nonlinear_controller.py
    :language: python
-   :lines: 86-89
+   :lines: 121-124
    :linenos:
-   :lineno-start: 86
+   :lineno-start: 121
 
 The ``update_sensor(sensor_type: str, data)``  method gets invoked by the vehicle at every physics step iteration (it is used as a callback) for 
 each sensor that generated output data. It receives as input a string which describes the type of sensor and the data produced by that sensor.
@@ -108,9 +108,9 @@ use that to feedback into our control law.
 
 .. literalinclude:: ../../../examples/utils/nonlinear_controller.py
    :language: python
-   :lines: 107-115
+   :lines: 143-151
    :linenos:
-   :lineno-start: 107
+   :lineno-start: 143
 
 .. note::
 
@@ -149,9 +149,9 @@ for the vehicle's body frame of reference.
 
 .. literalinclude:: ../../../examples/utils/nonlinear_controller.py
    :language: python
-   :lines: 118-124
+   :lines: 154-160
    :linenos:
-   :lineno-start: 118
+   :lineno-start: 154
 
 The ``input_reference()`` method is called at every physics steps by the vehicle to retrieve from the controller a list of floats 
 with the target angular velocities in [rad/s] to use as reference to apply to each vehicle rotor. The list of floats
@@ -166,9 +166,9 @@ returned by this method should have the same length as the number of rotors of t
 
 .. literalinclude:: ../../../examples/utils/nonlinear_controller.py
    :language: python
-   :lines: 132-138
+   :lines: 168-174
    :linenos:
-   :lineno-start: 132
+   :lineno-start: 168
 
 
 The ``update(dt: float)`` method gets invoked at every physics step by the vehicle. It receives as argument the amount of time
@@ -177,9 +177,9 @@ update the list of reference angular velocities for the rotors.
 
 .. literalinclude:: ../../../examples/utils/nonlinear_controller.py
    :language: python
-   :lines: 141-147
+   :lines: 177-183
    :linenos:
-   :lineno-start: 141
+   :lineno-start: 177
 
 3. Execution
 ------------

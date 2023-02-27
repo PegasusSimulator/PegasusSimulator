@@ -126,7 +126,11 @@ autodoc_mock_imports = [
     "hid",
     "prettytable",
     "pyyaml",
-    "pymavlink"
+    "pymavlink",
+    "rclpy",
+    "std_msgs",
+    "sensor_msgs",
+    "geometry_msgs"
 ]
 
 # -- Options for HTML output -------------------------------------------------

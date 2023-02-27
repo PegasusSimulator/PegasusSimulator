@@ -26,7 +26,7 @@ from omni.isaac.core.world import World
 import omni.isaac.core.utils.prims as prim_utils
 
 # Import the Pegasus API for simulating drones
-from pegasus.simulator.params import ROBOTS, SIMULATION_ENVIRONMENTS
+from pegasus.simulator.params import ROBOTS
 from pegasus.simulator.logic.vehicles.multirotor import Multirotor, MultirotorConfig
 from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 
@@ -84,7 +84,9 @@ class PegasusApp:
         config_multirotor1 = MultirotorConfig()
         config_multirotor1.backends = [NonlinearController(
             trajectory_file=self.curr_dir + "/trajectories/pitch_relay_90_deg_1.csv",
-            results_file=self.curr_dir + "/results/statistics_1.npz")]
+            results_file=self.curr_dir + "/results/statistics_1.npz",
+            Ki=[0.5, 0.5, 0.5],
+            Kr=[2.0, 2.0, 2.0])]
 
         Multirotor(
             "/World/quadrotor1",
@@ -100,7 +102,9 @@ class PegasusApp:
         config_multirotor2 = MultirotorConfig()
         config_multirotor2.backends = [NonlinearController(
             trajectory_file=self.curr_dir + "/trajectories/pitch_relay_90_deg_2.csv",
-            results_file=self.curr_dir + "/results/statistics_2.npz")]
+            results_file=self.curr_dir + "/results/statistics_2.npz",
+            Ki=[0.5, 0.5, 0.5],
+            Kr=[2.0, 2.0, 2.0])]
 
         Multirotor(
             "/World/quadrotor2",

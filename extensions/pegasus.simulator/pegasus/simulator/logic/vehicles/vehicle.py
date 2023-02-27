@@ -205,11 +205,7 @@ class Vehicle(Robot):
         # Get the current position and orientation in the inertial frame
         pose = self._world.dc_interface.get_rigid_body_pose(body)
 
-        # NOTE: the attitude given by get_rigid_body_pose is not updating correctly (I guess this is a bug on the NVidia API)
-        # Now, here is the question: is it a bug or is it a feature? Let me know your opinion - I'm curious XD
-        # But seriously, NVidia, if you are reading this, please fix it and let me know. Robotics people like me do not expect
-        # this behaviour from the get_rigid_body_pose method. It is only giving the me initial orientation the vehicle was spawned with
-        # Get the attitude according to the convention [w, x, y, z] using the internal Pixar library instead
+        # Get the attitude according to the convention [w, x, y, z]
         prim = self._world.stage.GetPrimAtPath(self._stage_prefix + "/body")
         rotation_quat = get_world_transform_xform(prim).GetQuaternion()
         rotation_quat_real = rotation_quat.GetReal()
@@ -242,9 +238,6 @@ class Vehicle(Robot):
             Rotation.from_quat(self._state.attitude).inv().apply(self._state.linear_velocity)
         )
 
-        # NOTE: for some reason, NVIDIA gives the angular velocity in a reference frame that is aligned with
-        # the inertial frame, instead of the vehicle body frame, so we need to manually rotate it.. ARrrr
-        # NVidia, let me know when you fix this. I spent way too many hours debugging, because of this. You can do better!
         # omega = [p,q,r]
         self._state.angular_velocity = Rotation.from_quat(self._state.attitude).inv().apply(np.array(ang_vel))
 
