@@ -118,9 +118,9 @@ The work developed by Marcelo Jacinto and João Pinto was supported by Ph.D. gra
 .. raw:: html
 
    <p float="left" align="center">
-      <img src="../../_static/dsor_logo.png" width="90" align="center" />
-      <img src="../../_static/logo_isr.png" width="200" align="center"/> 
-      <img src="../../_static/larsys_logo.png" width="200" align="center"/> 
-      <img src="../../_static/ist_logo.png" width="200" align="center"/> 
-      <img src="../../_static/logo_fct.png" width="200" align="center"/> 
+      <img src="_static/dsor_logo.png" width="90" align="center" />
+      <img src="_static/logo_isr.png" width="200" align="center"/> 
+      <img src="_static/larsys_logo.png" width="200" align="center"/> 
+      <img src="_static/ist_logo.png" width="200" align="center"/> 
+      <img src="_static/logo_fct.png" width="200" align="center"/> 
    </p>
