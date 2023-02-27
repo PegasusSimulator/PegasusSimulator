@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vehicles &mdash; Pegasus Simulator  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="PX4 Integration" href="px4_integration.html" />
+    <link rel="prev" title="Environments" href="environments.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #FFD700" >
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../setup/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup/developer.html">Development</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/run_extension_mode.html">Run in Extension Mode (GUI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/create_standalone_application.html">Create a Standalone Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/create_standalone_simulation.html">Your First Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/create_custom_backend.html">Create a Custom Controller</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Features</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="environments.html">Environments</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Vehicles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="px4_integration.html">PX4 Integration</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Source API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../references/contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/known_issues.html">Known Issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/roadmap.html">Roadmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/bibliography.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #FFD700" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Pegasus Simulator</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Vehicles</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/source/features/vehicles.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="vehicles">
+<h1>Vehicles<a class="headerlink" href="#vehicles" title="Permalink to this heading"></a></h1>
+<p>In this first version of the Pegasus Simulator we only provide the implementation for a generic <code class="docutils literal notranslate"><span class="pre">Multirotor</span></code> Vehicles
+and a 3D asset for the <code class="docutils literal notranslate"><span class="pre">3DR</span> <span class="pre">Iris</span> <span class="pre">quadrotor</span></code> . Please check the <a class="reference internal" href="../references/roadmap.html#roadmap"><span class="std std-ref">Roadmap</span></a> section for future plans regarding new vehicles
+topologies and the <a class="reference internal" href="../references/contributing.html#contributing"><span class="std std-ref">Contributing</span></a> section to contribute if you have a new vehicle model that you would like to be added.</p>
+<p>To create a Multirotor object from scratch, consider the following example code:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pegasus.simulator.params</span> <span class="kn">import</span> <span class="n">ROBOTS</span>
+
+<span class="kn">from</span> <span class="nn">pegasus.simulator.logic.dynamics</span> <span class="kn">import</span> <span class="n">LinearDrag</span>
+<span class="kn">from</span> <span class="nn">pegasus.simulator.logic.thrusters</span> <span class="kn">import</span> <span class="n">QuadraticThrustCurve</span>
+<span class="kn">from</span> <span class="nn">pegasus.simulator.logic.sensors</span> <span class="kn">import</span> <span class="n">Barometer</span><span class="p">,</span> <span class="n">IMU</span><span class="p">,</span> <span class="n">Magnetometer</span><span class="p">,</span> <span class="n">GPS</span>
+<span class="kn">from</span> <span class="nn">pegasus.simulator.logic.vehicles.multirotor</span> <span class="kn">import</span> <span class="n">Multirotor</span><span class="p">,</span> <span class="n">MultirotorConfig</span>
+
+<span class="c1"># Auxiliary scipy import to set the rotation of the vehicle in quaternion</span>
+<span class="kn">from</span> <span class="nn">scipy.spatial.transform</span> <span class="kn">import</span> <span class="n">Rotation</span>
+
+<span class="c1"># Create a multirotor configuration object</span>
+<span class="n">multirotor_config</span> <span class="o">=</span> <span class="n">MultirotorConfig</span><span class="p">()</span>
+<span class="n">multirotor_config</span><span class="o">.</span><span class="n">stage_prefix</span><span class="o">=</span><span class="s2">&quot;quadrotor&quot;</span>
+<span class="n">multirotor_config</span><span class="o">.</span><span class="n">usd_file</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+<span class="c1"># The default thrust curve for a quadrotor and dynamics relating to drag</span>
+<span class="n">multirotor_config</span><span class="o">.</span><span class="n">thrust_curve</span> <span class="o">=</span> <span class="n">QuadraticThrustCurve</span><span class="p">()</span>
+<span class="n">multirotor_config</span><span class="o">.</span><span class="n">drag</span> <span class="o">=</span> <span class="n">LinearDrag</span><span class="p">([</span><span class="mf">0.50</span><span class="p">,</span> <span class="mf">0.30</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span>
+
+<span class="c1"># Set the sensors for a quadrotor</span>
+<span class="c1"># For each sensor we are using the default parameters, but you can also pass in a dictionary</span>
+<span class="c1"># to configure them. Check the Sensors API documentation for more information.</span>
+<span class="n">multirotor_config</span><span class="o">.</span><span class="n">sensors</span> <span class="o">=</span> <span class="p">[</span><span class="n">Barometer</span><span class="p">(),</span> <span class="n">IMU</span><span class="p">(),</span> <span class="n">Magnetometer</span><span class="p">(),</span> <span class="n">GPS</span><span class="p">()]</span>
+
+<span class="c1"># The backends for actually sending commands to the vehicle.</span>
+<span class="c1"># By default use mavlink (with default mavlink configurations).</span>
+<span class="c1"># It can also be your own custom Control Backend implementation!</span>
+<span class="c1">#</span>
+<span class="c1"># Note: you can have multiple backends (this is usefull for creating backends</span>
+<span class="c1"># for logging purposes) but only the first backend in the list will be used</span>
+<span class="c1"># to send commands to the vehicles. The others will just be used to receive the</span>
+<span class="c1"># current state of the vehicle and the data produced by the sensors</span>
+<span class="n">multirotor_config</span><span class="o">.</span><span class="n">backends</span> <span class="o">=</span> <span class="p">[</span><span class="n">MavlinkBackend</span><span class="p">()]</span>
+
+<span class="c1"># Create and spawn the multirotor object in the scene</span>
+<span class="n">Multirotor</span><span class="p">(</span>
+        <span class="n">stage_prefix</span><span class="o">=</span><span class="s2">&quot;/World/quadrotor&quot;</span><span class="p">,</span>
+        <span class="c1"># The path to the multirotor USD file</span>
+        <span class="n">usd_file</span><span class="o">=</span><span class="n">ROBOTS</span><span class="p">[</span><span class="s1">&#39;Iris&#39;</span><span class="p">],</span>
+        <span class="n">vehicle_id</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">init_pos</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.07</span><span class="p">],</span>
+        <span class="n">init_orientation</span><span class="o">=</span><span class="n">Rotation</span><span class="o">.</span><span class="n">from_euler</span><span class="p">(</span><span class="s2">&quot;XYZ&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="n">degrees</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">as_quat</span><span class="p">(),</span>
+        <span class="n">config</span><span class="o">=</span><span class="n">config_multirotor</span><span class="p">,</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+<p>To define and use a custom multirotor frame, you must adhere to the adopted convention. Therefore, a vehicle
+must be made in a USD file and have a <code class="docutils literal notranslate"><span class="pre">/body</span></code> and multiple <code class="docutils literal notranslate"><span class="pre">/rotor&lt;id&gt;</span></code> Xform objects. Each rotor <code class="docutils literal notranslate"><span class="pre">/rotor&lt;id&gt;</span></code>
+must have inside a Revolut Joint named <code class="docutils literal notranslate"><span class="pre">/rotor&lt;id&gt;</span></code> where the <code class="docutils literal notranslate"><span class="pre">&lt;id&gt;</span></code> of the joint must coincide with the Xform name.</p>
+<p>An example tree of the 3DR Iris quadrotor is presented bellow.</p>
+<a class="reference internal image-reference" href="../../_images/vehicle_standard.png"><img alt="Vehicle standard for defining the frames" class="align-center" src="../../_images/vehicle_standard.png" style="width: 600px;" /></a>
+<p>Additionally, you should set the mass and moments of inertial of the materials the compose the vehicle directly in the USD file,
+as well as the physics colliders.</p>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="environments.html" class="btn btn-neutral float-left" title="Environments" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="px4_integration.html" class="btn btn-neutral float-right" title="PX4 Integration" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Marcelo Jacinto.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

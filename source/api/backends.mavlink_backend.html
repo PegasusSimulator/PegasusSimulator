@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mavlink Backend &mdash; Pegasus Simulator  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="ROS2 Backend" href="backends.ros2_backend.html" />
+    <link rel="prev" title="Backend" href="backends.backend.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #FFD700" >
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../setup/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup/developer.html">Development</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/run_extension_mode.html">Run in Extension Mode (GUI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/create_standalone_application.html">Create a Standalone Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/create_standalone_simulation.html">Your First Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/create_custom_backend.html">Create a Custom Controller</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Features</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../features/environments.html">Environments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../features/vehicles.html">Vehicles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../features/px4_integration.html">PX4 Integration</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Source API</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="index.html#sensors">Sensors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#dynamics">Dynamics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#thruster">Thruster</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#control-backends">Control Backends</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="backends.backend.html">Backend</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Mavlink Backend</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend"><code class="docutils literal notranslate"><span class="pre">MavlinkBackend</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackendConfig"><code class="docutils literal notranslate"><span class="pre">MavlinkBackendConfig</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="backends.ros2_backend.html">ROS2 Backend</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#vehicle">Vehicle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#pegasus-interace">Pegasus Interace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#default-params">Default Params</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../references/contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/known_issues.html">Known Issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/roadmap.html">Roadmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/bibliography.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #FFD700" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Pegasus Simulator</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API Reference</a></li>
+      <li class="breadcrumb-item active">Mavlink Backend</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/source/api/backends.mavlink_backend.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-pegasus.simulator.logic.backends.mavlink_backend">
+<span id="mavlink-backend"></span><h1>Mavlink Backend<a class="headerlink" href="#module-pegasus.simulator.logic.backends.mavlink_backend" title="Permalink to this heading"></a></h1>
+<div class="line-block">
+<div class="line">File: mavlink_backend.py</div>
+<div class="line">Author: Marcelo Jacinto (<a class="reference external" href="mailto:marcelo&#46;jacinto&#37;&#52;&#48;tecnico&#46;ulisboa&#46;pt">marcelo<span>&#46;</span>jacinto<span>&#64;</span>tecnico<span>&#46;</span>ulisboa<span>&#46;</span>pt</a>)</div>
+<div class="line">Description: File that implements the Mavlink Backend for communication/control with/of the vehicle simulation</div>
+<div class="line">License: BSD-3-Clause. Copyright (c) 2023, Marcelo Jacinto. All rights reserved.</div>
+</div>
+<p><strong>Classes:</strong></p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend" title="pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MavlinkBackend</span></code></a></p></td>
+<td><p>The Mavlink Backend used to receive the vehicle's state and sensor data in order to send to PX4 through mavlink.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackendConfig" title="pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackendConfig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MavlinkBackendConfig</span></code></a></p></td>
+<td><p>An auxiliary data class used to store all the configurations for the mavlink communications.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pegasus.simulator.logic.backends.mavlink_backend.</span></span><span class="sig-name descname"><span class="pre">MavlinkBackend</span></span><a class="headerlink" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="backends.backend.html#pegasus.simulator.logic.backends.backend.Backend" title="pegasus.simulator.logic.backends.backend.Backend"><code class="xref py py-class docutils literal notranslate"><span class="pre">Backend</span></code></a></p>
+<p>The Mavlink Backend used to receive the vehicle’s state and sensor data in order to send to PX4 through mavlink. It also
+receives via mavlink the thruster commands to apply to each vehicle rotor.</p>
+<p><strong>Methods:</strong></p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.__del__" title="pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.__del__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__del__</span></code></a>()</p></td>
+<td><p>Gets called when the MavlinkBackend object gets destroyed.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.__init__" title="pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([config])</p></td>
+<td><p>Initialize the MavlinkBackend</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.handle_control" title="pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.handle_control"><code class="xref py py-obj docutils literal notranslate"><span class="pre">handle_control</span></code></a>(time_usec, controls, mode, flags)</p></td>
+<td><p>Method that when received a control message, compute the forces simulated force that should be applied on each rotor of the vehicle</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.input_reference" title="pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.input_reference"><code class="xref py py-obj docutils literal notranslate"><span class="pre">input_reference</span></code></a>()</p></td>
+<td><p>Method that when implemented, should return a list of desired angular velocities to apply to the vehicle rotors</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.poll_mavlink_messages" title="pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.poll_mavlink_messages"><code class="xref py py-obj docutils literal notranslate"><span class="pre">poll_mavlink_messages</span></code></a>()</p></td>
+<td><p>Method that is used to check if new mavlink messages were received</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.re_initialize_interface" title="pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.re_initialize_interface"><code class="xref py py-obj docutils literal notranslate"><span class="pre">re_initialize_interface</span></code></a>()</p></td>
+<td><p>Auxiliar method used to get the MavlinkInterface to reset the MavlinkInterface to its initial state</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.reset" title="pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.reset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset</span></code></a>()</p></td>
+<td><p>For now does nothing.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.send_gps_msgs" title="pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.send_gps_msgs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">send_gps_msgs</span></code></a>(time_usec)</p></td>
+<td><p>Method that is used to send simulated GPS data through the mavlink protocol.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.send_ground_truth" title="pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.send_ground_truth"><code class="xref py py-obj docutils literal notranslate"><span class="pre">send_ground_truth</span></code></a>(time_usec)</p></td>
+<td><p>Method that is used to send the groundtruth data of the vehicle through mavlink</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.send_heartbeat" title="pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.send_heartbeat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">send_heartbeat</span></code></a>([mav_type])</p></td>
+<td><p>Method that is used to publish an heartbear through mavlink protocol</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.send_sensor_msgs" title="pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.send_sensor_msgs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">send_sensor_msgs</span></code></a>(time_usec)</p></td>
+<td><p>Method that when invoked, will send the simulated sensor data through mavlink</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.send_vision_msgs" title="pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.send_vision_msgs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">send_vision_msgs</span></code></a>(time_usec)</p></td>
+<td><p>Method that is used to send simulated vision/mocap data through the mavlink protocol.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.start" title="pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.start"><code class="xref py py-obj docutils literal notranslate"><span class="pre">start</span></code></a>()</p></td>
+<td><p>Method that handles the begining of the simulation of vehicle.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.stop" title="pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.stop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stop</span></code></a>()</p></td>
+<td><p>Method that when called will handle the stopping of the simulation of vehicle.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.update" title="pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(dt)</p></td>
+<td><p>Method that is called at every physics step to send data to px4 and receive the control inputs via mavlink</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.update_bar_data" title="pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.update_bar_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_bar_data</span></code></a>(data)</p></td>
+<td><p>Gets called by the 'update_sensor' method to update the current Barometer data</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.update_gps_data" title="pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.update_gps_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_gps_data</span></code></a>(data)</p></td>
+<td><p>Gets called by the 'update_sensor' method to update the current GPS data</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.update_imu_data" title="pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.update_imu_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_imu_data</span></code></a>(data)</p></td>
+<td><p>Gets called by the 'update_sensor' method to update the current IMU data</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.update_mag_data" title="pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.update_mag_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_mag_data</span></code></a>(data)</p></td>
+<td><p>Gets called by the 'update_sensor' method to update the current Vision data</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.update_sensor" title="pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.update_sensor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_sensor</span></code></a>(sensor_type, data)</p></td>
+<td><p>Method that is used as callback for the vehicle for every iteration that a sensor produces new data.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.update_state" title="pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.update_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_state</span></code></a>(state)</p></td>
+<td><p>Method that is used as callback and gets called at every physics step with the current state of the vehicle.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.update_vision_data" title="pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.update_vision_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_vision_data</span></code></a>(data)</p></td>
+<td><p>Method that 'in the future' will get called by the 'update_sensor' method to update the current Vision data This callback is currently not being called (TODO in a future simulator version) :param data: The data produced by an Vision sensor :type data: dict</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.wait_for_first_hearbeat" title="pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.wait_for_first_hearbeat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wait_for_first_hearbeat</span></code></a>()</p></td>
+<td><p>Responsible for waiting for the first hearbeat.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.__del__">
+<span class="sig-name descname"><span class="pre">__del__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.__del__" title="Permalink to this definition"></a></dt>
+<dd><p>Gets called when the MavlinkBackend object gets destroyed. When this happens, we make sure
+to close any mavlink connection open for this vehicle.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config=&lt;pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackendConfig</span> <span class="pre">object&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.__init__" title="Permalink to this definition"></a></dt>
+<dd><p>Initialize the MavlinkBackend</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>config</strong> (<a class="reference internal" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackendConfig" title="pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackendConfig"><em>MavlinkBackendConfig</em></a>) – The configuration class for the MavlinkBackend. Defaults to MavlinkBackendConfig().</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.handle_control">
+<span class="sig-name descname"><span class="pre">handle_control</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_usec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">controls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flags</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.handle_control" title="Permalink to this definition"></a></dt>
+<dd><p>Method that when received a control message, compute the forces simulated force that should be applied
+on each rotor of the vehicle</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>time_usec</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a>) – The total time elapsed since the simulation started - Ignored argument</p></li>
+<li><p><strong>controls</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><em>list</em></a>) – A list of ints which contains the thrust_control received via mavlink</p></li>
+<li><p><strong>flags</strong> – Ignored argument</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.input_reference">
+<span class="sig-name descname"><span class="pre">input_reference</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.input_reference" title="Permalink to this definition"></a></dt>
+<dd><p>Method that when implemented, should return a list of desired angular velocities to apply to the vehicle rotors</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.poll_mavlink_messages">
+<span class="sig-name descname"><span class="pre">poll_mavlink_messages</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.poll_mavlink_messages" title="Permalink to this definition"></a></dt>
+<dd><p>Method that is used to check if new mavlink messages were received</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.re_initialize_interface">
+<span class="sig-name descname"><span class="pre">re_initialize_interface</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.re_initialize_interface" title="Permalink to this definition"></a></dt>
+<dd><p>Auxiliar method used to get the MavlinkInterface to reset the MavlinkInterface to its initial state</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.reset" title="Permalink to this definition"></a></dt>
+<dd><p>For now does nothing. Here for compatibility purposes only</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.send_gps_msgs">
+<span class="sig-name descname"><span class="pre">send_gps_msgs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_usec</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.send_gps_msgs" title="Permalink to this definition"></a></dt>
+<dd><p>Method that is used to send simulated GPS data through the mavlink protocol.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>time_usec</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a>) – The total time elapsed since the simulation started</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.send_ground_truth">
+<span class="sig-name descname"><span class="pre">send_ground_truth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_usec</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.send_ground_truth" title="Permalink to this definition"></a></dt>
+<dd><p>Method that is used to send the groundtruth data of the vehicle through mavlink</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>time_usec</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a>) – The total time elapsed since the simulation started</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.send_heartbeat">
+<span class="sig-name descname"><span class="pre">send_heartbeat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mav_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">pymavlink.mavutil.mavlink.MAV_TYPE_GENERIC</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.send_heartbeat" title="Permalink to this definition"></a></dt>
+<dd><p>Method that is used to publish an heartbear through mavlink protocol</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mav_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a>) – The ID that indicates the type of vehicle. Defaults to MAV_TYPE_GENERIC=0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.send_sensor_msgs">
+<span class="sig-name descname"><span class="pre">send_sensor_msgs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_usec</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.send_sensor_msgs" title="Permalink to this definition"></a></dt>
+<dd><p>Method that when invoked, will send the simulated sensor data through mavlink</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>time_usec</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a>) – The total time elapsed since the simulation started</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.send_vision_msgs">
+<span class="sig-name descname"><span class="pre">send_vision_msgs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_usec</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.send_vision_msgs" title="Permalink to this definition"></a></dt>
+<dd><p>Method that is used to send simulated vision/mocap data through the mavlink protocol.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>time_usec</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a>) – The total time elapsed since the simulation started</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.start">
+<span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.start" title="Permalink to this definition"></a></dt>
+<dd><p>Method that handles the begining of the simulation of vehicle. It will try to open the mavlink connection
+interface and also attemp to launch px4 in a background process if that option as specified in the config class</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.stop">
+<span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.stop" title="Permalink to this definition"></a></dt>
+<dd><p>Method that when called will handle the stopping of the simulation of vehicle. It will make sure that any open
+mavlink connection will be closed and also that the PX4 background process gets killed (if it was auto-initialized)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.update" title="Permalink to this definition"></a></dt>
+<dd><p>Method that is called at every physics step to send data to px4 and receive the control inputs via mavlink</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a>) – The time elapsed between the previous and current function calls (s).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.update_bar_data">
+<span class="sig-name descname"><span class="pre">update_bar_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.update_bar_data" title="Permalink to this definition"></a></dt>
+<dd><p>Gets called by the ‘update_sensor’ method to update the current Barometer data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)"><em>dict</em></a>) – The data produced by an Barometer sensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.update_gps_data">
+<span class="sig-name descname"><span class="pre">update_gps_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.update_gps_data" title="Permalink to this definition"></a></dt>
+<dd><p>Gets called by the ‘update_sensor’ method to update the current GPS data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)"><em>dict</em></a>) – The data produced by an GPS sensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.update_imu_data">
+<span class="sig-name descname"><span class="pre">update_imu_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.update_imu_data" title="Permalink to this definition"></a></dt>
+<dd><p>Gets called by the ‘update_sensor’ method to update the current IMU data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)"><em>dict</em></a>) – The data produced by an IMU sensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.update_mag_data">
+<span class="sig-name descname"><span class="pre">update_mag_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.update_mag_data" title="Permalink to this definition"></a></dt>
+<dd><p>Gets called by the ‘update_sensor’ method to update the current Vision data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)"><em>dict</em></a>) – The data produced by an Vision sensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.update_sensor">
+<span class="sig-name descname"><span class="pre">update_sensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sensor_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.update_sensor" title="Permalink to this definition"></a></dt>
+<dd><p>Method that is used as callback for the vehicle for every iteration that a sensor produces new data.
+Only the IMU, GPS, Barometer and  Magnetometer sensor data are stored to be sent through mavlink. Every other
+sensor data that gets passed to this function is discarded.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sensor_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – A name that describes the type of sensor</p></li>
+<li><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)"><em>dict</em></a>) – A dictionary that contains the data produced by the sensor</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.update_state">
+<span class="sig-name descname"><span class="pre">update_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.update_state" title="Permalink to this definition"></a></dt>
+<dd><p>Method that is used as callback and gets called at every physics step with the current state of the vehicle.
+This state is then stored in order to be sent as groundtruth via mavlink</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>state</strong> (<a class="reference internal" href="state.html#pegasus.simulator.logic.state.State" title="pegasus.simulator.logic.state.State"><em>State</em></a>) – The current state of the vehicle.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.update_vision_data">
+<span class="sig-name descname"><span class="pre">update_vision_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.update_vision_data" title="Permalink to this definition"></a></dt>
+<dd><p>Method that ‘in the future’ will get called by the ‘update_sensor’ method to update the current Vision data
+This callback is currently not being called (TODO in a future simulator version)
+:param data: The data produced by an Vision sensor
+:type data: dict</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.wait_for_first_hearbeat">
+<span class="sig-name descname"><span class="pre">wait_for_first_hearbeat</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.wait_for_first_hearbeat" title="Permalink to this definition"></a></dt>
+<dd><p>Responsible for waiting for the first hearbeat. This method is locking and will only return
+if an hearbeat is received via mavlink. When this first heartbeat is received poll for mavlink messages</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackendConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pegasus.simulator.logic.backends.mavlink_backend.</span></span><span class="sig-name descname"><span class="pre">MavlinkBackendConfig</span></span><a class="headerlink" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackendConfig" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>An auxiliary data class used to store all the configurations for the mavlink communications.</p>
+<p><strong>Methods:</strong></p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackendConfig.__init__" title="pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackendConfig.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([config])</p></td>
+<td><p>Initialize the MavlinkBackendConfig class</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackendConfig.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackendConfig.__init__" title="Permalink to this definition"></a></dt>
+<dd><p>Initialize the MavlinkBackendConfig class</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>config</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)"><em>dict</em></a>) – A Dictionary that contains all the parameters for configuring the Mavlink interface - it can be empty or only have some of the parameters used by this backend.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>The dictionary default parameters are</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">{</span><span class="s2">&quot;vehicle_id&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span> <span class="s2">&quot;connection_type&quot;</span><span class="p">:</span> <span class="s2">&quot;tcpin&quot;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span> <span class="s2">&quot;connection_ip&quot;</span><span class="p">:</span> <span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span> <span class="s2">&quot;connection_baseport&quot;</span><span class="p">:</span> <span class="mi">4560</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span> <span class="s2">&quot;px4_autolaunch&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span> <span class="s2">&quot;px4_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;PegasusInterface().px4_path&quot;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span> <span class="s2">&quot;px4_vehicle_model&quot;</span><span class="p">:</span> <span class="s2">&quot;iris&quot;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span> <span class="s2">&quot;enable_lockstep&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span> <span class="s2">&quot;num_rotors&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span> <span class="s2">&quot;input_offset&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+<span class="gp">&gt;&gt;&gt; </span> <span class="s2">&quot;input_scaling&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1000.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">],</span>
+<span class="gp">&gt;&gt;&gt; </span> <span class="s2">&quot;zero_position_armed&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">100.0</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">],</span>
+<span class="gp">&gt;&gt;&gt; </span> <span class="s2">&quot;update_rate&quot;</span><span class="p">:</span> <span class="mf">250.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="backends.backend.html" class="btn btn-neutral float-left" title="Backend" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="backends.ros2_backend.html" class="btn btn-neutral float-right" title="ROS2 Backend" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Marcelo Jacinto.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

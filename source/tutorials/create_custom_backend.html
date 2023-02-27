@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create a Custom Controller &mdash; Pegasus Simulator  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Environments" href="../features/environments.html" />
+    <link rel="prev" title="Your First Simulation" href="create_standalone_simulation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #FFD700" >
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../setup/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup/developer.html">Development</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="run_extension_mode.html">Run in Extension Mode (GUI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="create_standalone_application.html">Create a Standalone Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="create_standalone_simulation.html">Your First Simulation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Create a Custom Controller</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#preparation">0. Preparation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#code">1. Code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#explanation">2. Explanation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#execution">3. Execution</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Features</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../features/environments.html">Environments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../features/vehicles.html">Vehicles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../features/px4_integration.html">PX4 Integration</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Source API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../references/contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/known_issues.html">Known Issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/roadmap.html">Roadmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/bibliography.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #FFD700" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Pegasus Simulator</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Create a Custom Controller</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/source/tutorials/create_custom_backend.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="create-a-custom-controller">
+<h1>Create a Custom Controller<a class="headerlink" href="#create-a-custom-controller" title="Permalink to this heading"></a></h1>
+<p>In this tutorial, you will learn how to create a custom <code class="docutils literal notranslate"><span class="pre">control</span> <span class="pre">backend</span></code> that receives the current state of the vehicle and
+its sensors and computes the control inputs to give to the rotors of the drone. The control laws implemented in this tutorial
+and the math behind them are well described in <span id="id1">[<a class="reference internal" href="../references/bibliography.html#id19" title="João Pinto, Bruno J Guerreiro, and Rita Cunha. Planning Parcel Relay Manoeuvres for Quadrotors. In 2021 International Conference on Unmanned Aircraft Systems (ICUAS), 137–145. IEEE, 2021.">PGC21</a>]</span>, <span id="id2">[<a class="reference internal" href="../references/bibliography.html#id24" title="Daniel Mellinger and Vijay Kumar. Minimum snap trajectory generation and control for quadrotors. In 2011 IEEE International Conference on Robotics and Automation, volume, 2520-2525. 2011. doi:10.1109/ICRA.2011.5980409.">MK11</a>]</span>.</p>
+<p>In this tutorial we will endup with a simulation that does <strong>NOT</strong> use <code class="docutils literal notranslate"><span class="pre">PX4-Autopilot</span></code> , and instead will use a custom nonlinear
+controller to make the vehicle follow a pre-determined trajectory, written in just a few lines of pure Python code.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The Control Backend API is what was used to implement the MAVLink/PX4 backend. This interface is very powerful as it not only allows
+the user to create custom communication protocols (such as ROS) for controlling the vehicle, as well as defining and testing new
+control algorithms directly in pure Python code. This is specially usefull for conducting MATLAB-like simulations,
+as we can implement and test algorithms directly in a 3D environment by writing a few lines of Python code without having to deal
+with <cite>Mavlink</cite>, <cite>PX4</cite> or <cite>ROS</cite> like in other simulators.</p>
+</div>
+<section id="preparation">
+<h2>0. Preparation<a class="headerlink" href="#preparation" title="Permalink to this heading"></a></h2>
+<p>This tutorial assumes that you have followed the <a class="reference internal" href="create_standalone_simulation.html#your-first-simulation"><span class="std std-ref">Your First Simulation</span></a> section first.</p>
+</section>
+<section id="code">
+<h2>1. Code<a class="headerlink" href="#code" title="Permalink to this heading"></a></h2>
+<p>The tutorial corresponds to the <code class="docutils literal notranslate"><span class="pre">4_python_single_vehicle.py</span></code> example in the <code class="docutils literal notranslate"><span class="pre">examples</span></code> directory.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">  1</span><span class="ch">#!/usr/bin/env python</span>
+<span class="linenos">  2</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">  3</span><span class="sd">| File: 4_python_single_vehicle.py</span>
+<span class="linenos">  4</span><span class="sd">| Author: Marcelo Jacinto and Joao Pinto (marcelo.jacinto@tecnico.ulisboa.pt, joao.s.pinto@tecnico.ulisboa.pt)</span>
+<span class="linenos">  5</span><span class="sd">| License: BSD-3-Clause. Copyright (c) 2023, Marcelo Jacinto. All rights reserved.</span>
+<span class="linenos">  6</span><span class="sd">| Description: This files serves as an example on how to use the control backends API to create a custom controller </span>
+<span class="linenos">  7</span><span class="sd">for the vehicle from scratch and use it to perform a simulation, without using PX4 nor ROS.</span>
+<span class="linenos">  8</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">  9</span>
+<span class="linenos"> 10</span><span class="c1"># Imports to start Isaac Sim from this script</span>
+<span class="linenos"> 11</span><span class="kn">import</span> <span class="nn">carb</span>
+<span class="linenos"> 12</span><span class="kn">from</span> <span class="nn">omni.isaac.kit</span> <span class="kn">import</span> <span class="n">SimulationApp</span>
+<span class="linenos"> 13</span>
+<span class="linenos"> 14</span><span class="c1"># Start Isaac Sim&#39;s simulation environment</span>
+<span class="linenos"> 15</span><span class="c1"># Note: this simulation app must be instantiated right after the SimulationApp import, otherwise the simulator will crash</span>
+<span class="linenos"> 16</span><span class="c1"># as this is the object that will load all the extensions and load the actual simulator.</span>
+<span class="linenos"> 17</span><span class="n">simulation_app</span> <span class="o">=</span> <span class="n">SimulationApp</span><span class="p">({</span><span class="s2">&quot;headless&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">})</span>
+<span class="linenos"> 18</span>
+<span class="linenos"> 19</span><span class="c1"># -----------------------------------</span>
+<span class="linenos"> 20</span><span class="c1"># The actual script should start here</span>
+<span class="linenos"> 21</span><span class="c1"># -----------------------------------</span>
+<span class="linenos"> 22</span><span class="kn">import</span> <span class="nn">omni.timeline</span>
+<span class="linenos"> 23</span><span class="kn">from</span> <span class="nn">omni.isaac.core.world</span> <span class="kn">import</span> <span class="n">World</span>
+<span class="linenos"> 24</span>
+<span class="linenos"> 25</span><span class="c1"># Import the Pegasus API for simulating drones</span>
+<span class="linenos"> 26</span><span class="kn">from</span> <span class="nn">pegasus.simulator.params</span> <span class="kn">import</span> <span class="n">ROBOTS</span><span class="p">,</span> <span class="n">SIMULATION_ENVIRONMENTS</span>
+<span class="linenos"> 27</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.vehicles.multirotor</span> <span class="kn">import</span> <span class="n">Multirotor</span><span class="p">,</span> <span class="n">MultirotorConfig</span>
+<span class="linenos"> 28</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.interface.pegasus_interface</span> <span class="kn">import</span> <span class="n">PegasusInterface</span>
+<span class="linenos"> 29</span>
+<span class="hll"><span class="linenos"> 30</span><span class="c1"># Import the custom python control backend</span>
+</span><span class="hll"><span class="linenos"> 31</span><span class="kn">from</span> <span class="nn">utils.nonlinear_controller</span> <span class="kn">import</span> <span class="n">NonlinearController</span>
+</span><span class="linenos"> 32</span>
+<span class="linenos"> 33</span><span class="c1"># Auxiliary scipy and numpy modules</span>
+<span class="linenos"> 34</span><span class="kn">from</span> <span class="nn">scipy.spatial.transform</span> <span class="kn">import</span> <span class="n">Rotation</span>
+<span class="linenos"> 35</span>
+<span class="linenos"> 36</span><span class="c1"># Use os and pathlib for parsing the desired trajectory from a CSV file</span>
+<span class="linenos"> 37</span><span class="kn">import</span> <span class="nn">os</span>
+<span class="linenos"> 38</span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="linenos"> 39</span>
+<span class="linenos"> 40</span>
+<span class="linenos"> 41</span><span class="k">class</span> <span class="nc">PegasusApp</span><span class="p">:</span>
+<span class="linenos"> 42</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos"> 43</span><span class="sd">    A Template class that serves as an example on how to build a simple Isaac Sim standalone App.</span>
+<span class="linenos"> 44</span><span class="sd">    &quot;&quot;&quot;</span>
+<span class="linenos"> 45</span>
+<span class="linenos"> 46</span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos"> 47</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos"> 48</span><span class="sd">        Method that initializes the PegasusApp and is used to setup the simulation environment.</span>
+<span class="linenos"> 49</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos"> 50</span>
+<span class="linenos"> 51</span>        <span class="c1"># Acquire the timeline that will be used to start/stop the simulation</span>
+<span class="linenos"> 52</span>        <span class="bp">self</span><span class="o">.</span><span class="n">timeline</span> <span class="o">=</span> <span class="n">omni</span><span class="o">.</span><span class="n">timeline</span><span class="o">.</span><span class="n">get_timeline_interface</span><span class="p">()</span>
+<span class="linenos"> 53</span>
+<span class="linenos"> 54</span>        <span class="c1"># Start the Pegasus Interface</span>
+<span class="linenos"> 55</span>        <span class="bp">self</span><span class="o">.</span><span class="n">pg</span> <span class="o">=</span> <span class="n">PegasusInterface</span><span class="p">()</span>
+<span class="linenos"> 56</span>
+<span class="linenos"> 57</span>        <span class="c1"># Acquire the World, .i.e, the singleton that controls that is a one stop shop for setting up physics, </span>
+<span class="linenos"> 58</span>        <span class="c1"># spawning asset primitives, etc.</span>
+<span class="linenos"> 59</span>        <span class="bp">self</span><span class="o">.</span><span class="n">pg</span><span class="o">.</span><span class="n">_world</span> <span class="o">=</span> <span class="n">World</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">pg</span><span class="o">.</span><span class="n">_world_settings</span><span class="p">)</span>
+<span class="linenos"> 60</span>        <span class="bp">self</span><span class="o">.</span><span class="n">world</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pg</span><span class="o">.</span><span class="n">world</span>
+<span class="linenos"> 61</span>
+<span class="linenos"> 62</span>        <span class="c1"># Launch one of the worlds provided by NVIDIA</span>
+<span class="linenos"> 63</span>        <span class="bp">self</span><span class="o">.</span><span class="n">pg</span><span class="o">.</span><span class="n">load_environment</span><span class="p">(</span><span class="n">SIMULATION_ENVIRONMENTS</span><span class="p">[</span><span class="s2">&quot;Curved Gridroom&quot;</span><span class="p">])</span>
+<span class="linenos"> 64</span>
+<span class="linenos"> 65</span>        <span class="c1"># Get the current directory used to read trajectories and save results</span>
+<span class="linenos"> 66</span>        <span class="bp">self</span><span class="o">.</span><span class="n">curr_dir</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)))</span><span class="o">.</span><span class="n">resolve</span><span class="p">())</span>
+<span class="linenos"> 67</span>
+<span class="hll"><span class="linenos"> 68</span>        <span class="c1"># Create the vehicle 1</span>
+</span><span class="hll"><span class="linenos"> 69</span>        <span class="c1"># Try to spawn the selected robot in the world to the specified namespace</span>
+</span><span class="hll"><span class="linenos"> 70</span>        <span class="n">config_multirotor1</span> <span class="o">=</span> <span class="n">MultirotorConfig</span><span class="p">()</span>
+</span><span class="hll"><span class="linenos"> 71</span>        <span class="n">config_multirotor1</span><span class="o">.</span><span class="n">backends</span> <span class="o">=</span> <span class="p">[</span><span class="n">NonlinearController</span><span class="p">(</span>
+</span><span class="hll"><span class="linenos"> 72</span>            <span class="n">trajectory_file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">curr_dir</span> <span class="o">+</span> <span class="s2">&quot;/trajectories/pitch_relay_90_deg_2.csv&quot;</span><span class="p">,</span>
+</span><span class="hll"><span class="linenos"> 73</span>            <span class="n">results_file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">curr_dir</span> <span class="o">+</span> <span class="s2">&quot;/results/single_statistics.npz&quot;</span><span class="p">,</span>
+</span><span class="hll"><span class="linenos"> 74</span>            <span class="n">Ki</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span>
+</span><span class="hll"><span class="linenos"> 75</span>            <span class="n">Kr</span><span class="o">=</span><span class="p">[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">]</span>
+</span><span class="linenos"> 76</span>        <span class="p">)]</span>
+<span class="linenos"> 77</span>
+<span class="linenos"> 78</span>        <span class="n">Multirotor</span><span class="p">(</span>
+<span class="linenos"> 79</span>            <span class="s2">&quot;/World/quadrotor1&quot;</span><span class="p">,</span>
+<span class="linenos"> 80</span>            <span class="n">ROBOTS</span><span class="p">[</span><span class="s1">&#39;Iris&#39;</span><span class="p">],</span>
+<span class="linenos"> 81</span>            <span class="mi">0</span><span class="p">,</span>
+<span class="linenos"> 82</span>            <span class="p">[</span><span class="mf">2.3</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">0.07</span><span class="p">],</span>
+<span class="linenos"> 83</span>            <span class="n">Rotation</span><span class="o">.</span><span class="n">from_euler</span><span class="p">(</span><span class="s2">&quot;XYZ&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="n">degrees</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">as_quat</span><span class="p">(),</span>
+<span class="linenos"> 84</span>            <span class="n">config</span><span class="o">=</span><span class="n">config_multirotor1</span><span class="p">,</span>
+<span class="linenos"> 85</span>        <span class="p">)</span>
+<span class="linenos"> 86</span>
+<span class="linenos"> 87</span>        <span class="c1"># Reset the simulation environment so that all articulations (aka robots) are initialized</span>
+<span class="linenos"> 88</span>        <span class="bp">self</span><span class="o">.</span><span class="n">world</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="linenos"> 89</span>
+<span class="linenos"> 90</span>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos"> 91</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos"> 92</span><span class="sd">        Method that implements the application main loop, where the physics steps are executed.</span>
+<span class="linenos"> 93</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos"> 94</span>
+<span class="linenos"> 95</span>        <span class="c1"># Start the simulation</span>
+<span class="linenos"> 96</span>        <span class="bp">self</span><span class="o">.</span><span class="n">timeline</span><span class="o">.</span><span class="n">play</span><span class="p">()</span>
+<span class="linenos"> 97</span>
+<span class="linenos"> 98</span>        <span class="c1"># The &quot;infinite&quot; loop</span>
+<span class="linenos"> 99</span>        <span class="k">while</span> <span class="n">simulation_app</span><span class="o">.</span><span class="n">is_running</span><span class="p">():</span>
+<span class="linenos">100</span>
+<span class="linenos">101</span>            <span class="c1"># Update the UI of the app and perform the physics step</span>
+<span class="linenos">102</span>            <span class="bp">self</span><span class="o">.</span><span class="n">world</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">render</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="linenos">103</span>        
+<span class="linenos">104</span>        <span class="c1"># Cleanup and stop</span>
+<span class="linenos">105</span>        <span class="n">carb</span><span class="o">.</span><span class="n">log_warn</span><span class="p">(</span><span class="s2">&quot;PegasusApp Simulation App is closing.&quot;</span><span class="p">)</span>
+<span class="linenos">106</span>        <span class="bp">self</span><span class="o">.</span><span class="n">timeline</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+<span class="linenos">107</span>        <span class="n">simulation_app</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="linenos">108</span>
+<span class="linenos">109</span><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<span class="linenos">110</span>
+<span class="linenos">111</span>    <span class="c1"># Instantiate the template app</span>
+<span class="linenos">112</span>    <span class="n">pg_app</span> <span class="o">=</span> <span class="n">PegasusApp</span><span class="p">()</span>
+<span class="linenos">113</span>
+<span class="linenos">114</span>    <span class="c1"># Run the application loop</span>
+<span class="linenos">115</span>    <span class="n">pg_app</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="linenos">116</span>
+<span class="linenos">117</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="linenos">118</span>    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The next code section corresponds to the <code class="docutils literal notranslate"><span class="pre">nonlinear_controller.py</span></code> in the <code class="docutils literal notranslate"><span class="pre">examples/utils</span></code> directory.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">  1</span><span class="ch">#!/usr/bin/env python</span>
+<span class="linenos">  2</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">  3</span><span class="sd">| File: nonlinear_controller.py</span>
+<span class="linenos">  4</span><span class="sd">| Author: Marcelo Jacinto and Joao Pinto (marcelo.jacinto@tecnico.ulisboa.pt, joao.s.pinto@tecnico.ulisboa.pt)</span>
+<span class="linenos">  5</span><span class="sd">| License: BSD-3-Clause. Copyright (c) 2023, Marcelo Jacinto. All rights reserved.</span>
+<span class="linenos">  6</span><span class="sd">| Description: This files serves as an example on how to use the control backends API to create a custom controller </span>
+<span class="linenos">  7</span><span class="sd">for the vehicle from scratch and use it to perform a simulation, without using PX4 nor ROS. In this controller, we</span>
+<span class="linenos">  8</span><span class="sd">provide a quick way of following a given trajectory specified in csv files or track an hard-coded trajectory based</span>
+<span class="linenos">  9</span><span class="sd">on exponentials! NOTE: This is just an example, to demonstrate the potential of the API. A much more flexible solution</span>
+<span class="linenos"> 10</span><span class="sd">can be achieved</span>
+<span class="linenos"> 11</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos"> 12</span>
+<span class="linenos"> 13</span><span class="c1"># Imports to be able to log to the terminal with fancy colors</span>
+<span class="linenos"> 14</span><span class="kn">import</span> <span class="nn">carb</span>
+<span class="linenos"> 15</span>
+<span class="linenos"> 16</span><span class="c1"># Imports from the Pegasus library</span>
+<span class="linenos"> 17</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.state</span> <span class="kn">import</span> <span class="n">State</span>
+<span class="hll"><span class="linenos"> 18</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.backends</span> <span class="kn">import</span> <span class="n">Backend</span>
+</span><span class="linenos"> 19</span>
+<span class="linenos"> 20</span><span class="c1"># Auxiliary scipy and numpy modules</span>
+<span class="linenos"> 21</span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="linenos"> 22</span><span class="kn">from</span> <span class="nn">scipy.spatial.transform</span> <span class="kn">import</span> <span class="n">Rotation</span>
+<span class="linenos"> 23</span>
+<span class="hll"><span class="linenos"> 24</span><span class="k">class</span> <span class="nc">NonlinearController</span><span class="p">(</span><span class="n">Backend</span><span class="p">):</span>
+</span><span class="hll"><span class="linenos"> 25</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;A nonlinear controller class. It implements a nonlinear controller that allows a vehicle to track</span>
+</span><span class="hll"><span class="linenos"> 26</span><span class="sd">    aggressive trajectories. This controlers is well described in the papers</span>
+</span><span class="hll"><span class="linenos"> 27</span><span class="sd">    </span>
+</span><span class="hll"><span class="linenos"> 28</span><span class="sd">    [1] J. Pinto, B. J. Guerreiro and R. Cunha, &quot;Planning Parcel Relay Manoeuvres for Quadrotors,&quot; </span>
+</span><span class="hll"><span class="linenos"> 29</span><span class="sd">    2021 International Conference on Unmanned Aircraft Systems (ICUAS), Athens, Greece, 2021, </span>
+</span><span class="hll"><span class="linenos"> 30</span><span class="sd">    pp. 137-145, doi: 10.1109/ICUAS51884.2021.9476757.</span>
+</span><span class="hll"><span class="linenos"> 31</span><span class="sd">    [2] D. Mellinger and V. Kumar, &quot;Minimum snap trajectory generation and control for quadrotors,&quot; </span>
+</span><span class="hll"><span class="linenos"> 32</span><span class="sd">    2011 IEEE International Conference on Robotics and Automation, Shanghai, China, 2011, </span>
+</span><span class="hll"><span class="linenos"> 33</span><span class="sd">    pp. 2520-2525, doi: 10.1109/ICRA.2011.5980409.</span>
+</span><span class="hll"><span class="linenos"> 34</span><span class="sd">    &quot;&quot;&quot;</span>
+</span><span class="hll"><span class="linenos"> 35</span>
+</span><span class="hll"><span class="linenos"> 36</span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+</span><span class="hll"><span class="linenos"> 37</span>        <span class="n">trajectory_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+</span><span class="hll"><span class="linenos"> 38</span>        <span class="n">results_file</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
+</span><span class="hll"><span class="linenos"> 39</span>        <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
+</span><span class="hll"><span class="linenos"> 40</span>        <span class="n">Kp</span><span class="o">=</span><span class="p">[</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">],</span>
+</span><span class="hll"><span class="linenos"> 41</span>        <span class="n">Kd</span><span class="o">=</span><span class="p">[</span><span class="mf">8.5</span><span class="p">,</span> <span class="mf">8.5</span><span class="p">,</span> <span class="mf">8.5</span><span class="p">],</span>
+</span><span class="hll"><span class="linenos"> 42</span>        <span class="n">Ki</span><span class="o">=</span><span class="p">[</span><span class="mf">1.50</span><span class="p">,</span> <span class="mf">1.50</span><span class="p">,</span> <span class="mf">1.50</span><span class="p">],</span>
+</span><span class="hll"><span class="linenos"> 43</span>        <span class="n">Kr</span><span class="o">=</span><span class="p">[</span><span class="mf">3.5</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">],</span>
+</span><span class="hll"><span class="linenos"> 44</span>        <span class="n">Kw</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]):</span>
+</span><span class="linenos"> 45</span>
+<span class="linenos"> 46</span>        <span class="c1"># The current rotor references [rad/s]</span>
+<span class="linenos"> 47</span>        <span class="bp">self</span><span class="o">.</span><span class="n">input_ref</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span>
+<span class="linenos"> 48</span>
+<span class="linenos"> 49</span>        <span class="c1"># The current state of the vehicle expressed in the inertial frame (in ENU)</span>
+<span class="linenos"> 50</span>        <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,))</span>                   <span class="c1"># The vehicle position</span>
+<span class="linenos"> 51</span>        <span class="bp">self</span><span class="o">.</span><span class="n">R</span><span class="p">:</span> <span class="n">Rotation</span> <span class="o">=</span> <span class="n">Rotation</span><span class="o">.</span><span class="n">identity</span><span class="p">()</span>    <span class="c1"># The vehicle attitude</span>
+<span class="linenos"> 52</span>        <span class="bp">self</span><span class="o">.</span><span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,))</span>                   <span class="c1"># The angular velocity of the vehicle</span>
+<span class="linenos"> 53</span>        <span class="bp">self</span><span class="o">.</span><span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,))</span>                   <span class="c1"># The linear velocity of the vehicle in the inertial frame</span>
+<span class="linenos"> 54</span>        <span class="bp">self</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,))</span>                   <span class="c1"># The linear acceleration of the vehicle in the inertial frame</span>
+<span class="linenos"> 55</span>
+<span class="linenos"> 56</span>        <span class="c1"># Define the control gains matrix for the outer-loop</span>
+<span class="linenos"> 57</span>        <span class="bp">self</span><span class="o">.</span><span class="n">Kp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">Kp</span><span class="p">)</span>
+<span class="linenos"> 58</span>        <span class="bp">self</span><span class="o">.</span><span class="n">Kd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">Kd</span><span class="p">)</span>
+<span class="linenos"> 59</span>        <span class="bp">self</span><span class="o">.</span><span class="n">Ki</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">Ki</span><span class="p">)</span>
+<span class="linenos"> 60</span>        <span class="bp">self</span><span class="o">.</span><span class="n">Kr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">Kr</span><span class="p">)</span>
+<span class="linenos"> 61</span>        <span class="bp">self</span><span class="o">.</span><span class="n">Kw</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">Kw</span><span class="p">)</span>
+<span class="linenos"> 62</span>
+<span class="linenos"> 63</span>        <span class="bp">self</span><span class="o">.</span><span class="n">int</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span>
+<span class="linenos"> 64</span>
+<span class="linenos"> 65</span>        <span class="c1"># Define the dynamic parameters for the vehicle</span>
+<span class="linenos"> 66</span>        <span class="bp">self</span><span class="o">.</span><span class="n">m</span> <span class="o">=</span> <span class="mf">1.50</span>        <span class="c1"># Mass in Kg</span>
+<span class="linenos"> 67</span>        <span class="bp">self</span><span class="o">.</span><span class="n">g</span> <span class="o">=</span> <span class="mf">9.81</span>       <span class="c1"># The gravity acceleration ms^-2</span>
+<span class="linenos"> 68</span>
+<span class="linenos"> 69</span>        <span class="c1"># Read the target trajectory from a CSV file inside the trajectories directory</span>
+<span class="linenos"> 70</span>        <span class="c1"># if a trajectory is provided. Otherwise, just perform the hard-coded trajectory provided with this controller</span>
+<span class="linenos"> 71</span>        <span class="k">if</span> <span class="n">trajectory_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos"> 72</span>            <span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_trajectory_from_csv</span><span class="p">(</span><span class="n">trajectory_file</span><span class="p">)</span>
+<span class="linenos"> 73</span>            <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="linenos"> 74</span>            <span class="bp">self</span><span class="o">.</span><span class="n">max_index</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span><span class="o">.</span><span class="n">shape</span>
+<span class="linenos"> 75</span>            <span class="bp">self</span><span class="o">.</span><span class="n">total_time</span> <span class="o">=</span> <span class="mf">0.0</span>
+<span class="linenos"> 76</span>        <span class="c1"># Use the built-in trajectory hard-coded for this controller</span>
+<span class="linenos"> 77</span>        <span class="k">else</span><span class="p">:</span>
+<span class="linenos"> 78</span>            <span class="c1"># Set the initial time for starting when using the built-in trajectory (the time is also used in this case</span>
+<span class="linenos"> 79</span>            <span class="c1"># as the parametric value)</span>
+<span class="linenos"> 80</span>            <span class="bp">self</span><span class="o">.</span><span class="n">total_time</span> <span class="o">=</span> <span class="o">-</span><span class="mf">5.0</span>
+<span class="linenos"> 81</span>            <span class="c1"># Signal that we will not used a received trajectory</span>
+<span class="linenos"> 82</span>            <span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="linenos"> 83</span>            <span class="bp">self</span><span class="o">.</span><span class="n">max_index</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="linenos"> 84</span>
+<span class="linenos"> 85</span>        <span class="bp">self</span><span class="o">.</span><span class="n">reverse</span> <span class="o">=</span> <span class="n">reverse</span>
+<span class="linenos"> 86</span>
+<span class="linenos"> 87</span>        <span class="c1"># Auxiliar variable, so that we only start sending motor commands once we get the state of the vehicle</span>
+<span class="linenos"> 88</span>        <span class="bp">self</span><span class="o">.</span><span class="n">reveived_first_state</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="linenos"> 89</span>
+<span class="linenos"> 90</span>        <span class="c1"># Lists used for analysing performance statistics</span>
+<span class="linenos"> 91</span>        <span class="bp">self</span><span class="o">.</span><span class="n">results_files</span> <span class="o">=</span> <span class="n">results_file</span>
+<span class="linenos"> 92</span>        <span class="bp">self</span><span class="o">.</span><span class="n">time_vector</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="linenos"> 93</span>        <span class="bp">self</span><span class="o">.</span><span class="n">desired_position_over_time</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="linenos"> 94</span>        <span class="bp">self</span><span class="o">.</span><span class="n">position_over_time</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="linenos"> 95</span>        <span class="bp">self</span><span class="o">.</span><span class="n">position_error_over_time</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="linenos"> 96</span>        <span class="bp">self</span><span class="o">.</span><span class="n">velocity_error_over_time</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="linenos"> 97</span>        <span class="bp">self</span><span class="o">.</span><span class="n">atittude_error_over_time</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="linenos"> 98</span>        <span class="bp">self</span><span class="o">.</span><span class="n">attitude_rate_error_over_time</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="linenos"> 99</span>
+<span class="linenos">100</span>    <span class="k">def</span> <span class="nf">read_trajectory_from_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="linenos">101</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Auxiliar method used to read the desired trajectory from a CSV file</span>
+<span class="linenos">102</span>
+<span class="linenos">103</span><span class="sd">        Args:</span>
+<span class="linenos">104</span><span class="sd">            file_name (str): A string with the name of the trajectory inside the trajectories directory</span>
+<span class="linenos">105</span>
+<span class="linenos">106</span><span class="sd">        Returns:</span>
+<span class="linenos">107</span><span class="sd">            np.ndarray: A numpy matrix with the trajectory desired states over time</span>
+<span class="linenos">108</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">109</span>
+<span class="linenos">110</span>        <span class="c1"># Read the trajectory to a pandas frame</span>
+<span class="linenos">111</span>        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">flip</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="linenos">112</span>
+<span class="linenos">113</span>
+<span class="hll"><span class="linenos">114</span>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class="hll"><span class="linenos">115</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span class="hll"><span class="linenos">116</span><span class="sd">        Reset the control and trajectory index</span>
+</span><span class="hll"><span class="linenos">117</span><span class="sd">        &quot;&quot;&quot;</span>
+</span><span class="linenos">118</span>        <span class="bp">self</span><span class="o">.</span><span class="n">reset_statistics</span><span class="p">()</span>
+<span class="linenos">119</span>        
+<span class="linenos">120</span>
+<span class="hll"><span class="linenos">121</span>    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class="hll"><span class="linenos">122</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span class="hll"><span class="linenos">123</span><span class="sd">        Stopping the controller. Saving the statistics data for plotting later</span>
+</span><span class="hll"><span class="linenos">124</span><span class="sd">        &quot;&quot;&quot;</span>
+</span><span class="linenos">125</span>
+<span class="linenos">126</span>        <span class="c1"># Check if we should save the statistics to some file or not</span>
+<span class="linenos">127</span>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">results_files</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">128</span>            <span class="k">return</span>
+<span class="linenos">129</span>        
+<span class="linenos">130</span>        <span class="n">statistics</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="linenos">131</span>        <span class="n">statistics</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_vector</span><span class="p">)</span>
+<span class="linenos">132</span>        <span class="n">statistics</span><span class="p">[</span><span class="s2">&quot;p&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">position_over_time</span><span class="p">)</span>
+<span class="linenos">133</span>        <span class="n">statistics</span><span class="p">[</span><span class="s2">&quot;desired_p&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">desired_position_over_time</span><span class="p">)</span>
+<span class="linenos">134</span>        <span class="n">statistics</span><span class="p">[</span><span class="s2">&quot;ep&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">position_error_over_time</span><span class="p">)</span>
+<span class="linenos">135</span>        <span class="n">statistics</span><span class="p">[</span><span class="s2">&quot;ev&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">velocity_error_over_time</span><span class="p">)</span>
+<span class="linenos">136</span>        <span class="n">statistics</span><span class="p">[</span><span class="s2">&quot;er&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">atittude_error_over_time</span><span class="p">)</span>
+<span class="linenos">137</span>        <span class="n">statistics</span><span class="p">[</span><span class="s2">&quot;ew&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attitude_rate_error_over_time</span><span class="p">)</span>
+<span class="linenos">138</span>        <span class="n">np</span><span class="o">.</span><span class="n">savez</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">results_files</span><span class="p">,</span> <span class="o">**</span><span class="n">statistics</span><span class="p">)</span>
+<span class="linenos">139</span>        <span class="n">carb</span><span class="o">.</span><span class="n">log_warn</span><span class="p">(</span><span class="s2">&quot;Statistics saved to: &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">results_files</span><span class="p">)</span>
+<span class="linenos">140</span>
+<span class="linenos">141</span>        <span class="bp">self</span><span class="o">.</span><span class="n">reset_statistics</span><span class="p">()</span>
+<span class="linenos">142</span>
+<span class="hll"><span class="linenos">143</span>    <span class="k">def</span> <span class="nf">update_sensor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sensor_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+</span><span class="hll"><span class="linenos">144</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span class="hll"><span class="linenos">145</span><span class="sd">        Do nothing. For now ignore all the sensor data and just use the state directly for demonstration purposes. </span>
+</span><span class="hll"><span class="linenos">146</span><span class="sd">        This is a callback that is called at every physics step.</span>
+</span><span class="hll"><span class="linenos">147</span>
+</span><span class="hll"><span class="linenos">148</span><span class="sd">        Args:</span>
+</span><span class="hll"><span class="linenos">149</span><span class="sd">            sensor_type (str): The name of the sensor providing the data</span>
+</span><span class="hll"><span class="linenos">150</span><span class="sd">            data (dict): A dictionary that contains the data produced by the sensor</span>
+</span><span class="hll"><span class="linenos">151</span><span class="sd">        &quot;&quot;&quot;</span>
+</span><span class="linenos">152</span>        <span class="k">pass</span>
+<span class="linenos">153</span>
+<span class="hll"><span class="linenos">154</span>    <span class="k">def</span> <span class="nf">update_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">):</span>
+</span><span class="hll"><span class="linenos">155</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span class="hll"><span class="linenos">156</span><span class="sd">        Method that updates the current state of the vehicle. This is a callback that is called at every physics step</span>
+</span><span class="hll"><span class="linenos">157</span>
+</span><span class="hll"><span class="linenos">158</span><span class="sd">        Args:</span>
+</span><span class="hll"><span class="linenos">159</span><span class="sd">            state (State): The current state of the vehicle.</span>
+</span><span class="hll"><span class="linenos">160</span><span class="sd">        &quot;&quot;&quot;</span>
+</span><span class="linenos">161</span>        <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">position</span>
+<span class="linenos">162</span>        <span class="bp">self</span><span class="o">.</span><span class="n">R</span> <span class="o">=</span> <span class="n">Rotation</span><span class="o">.</span><span class="n">from_quat</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">attitude</span><span class="p">)</span>
+<span class="linenos">163</span>        <span class="bp">self</span><span class="o">.</span><span class="n">w</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">angular_velocity</span>
+<span class="linenos">164</span>        <span class="bp">self</span><span class="o">.</span><span class="n">v</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">linear_velocity</span>
+<span class="linenos">165</span>
+<span class="linenos">166</span>        <span class="bp">self</span><span class="o">.</span><span class="n">reveived_first_state</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="linenos">167</span>
+<span class="hll"><span class="linenos">168</span>    <span class="k">def</span> <span class="nf">input_reference</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class="hll"><span class="linenos">169</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span class="hll"><span class="linenos">170</span><span class="sd">        Method that is used to return the latest target angular velocities to be applied to the vehicle</span>
+</span><span class="hll"><span class="linenos">171</span>
+</span><span class="hll"><span class="linenos">172</span><span class="sd">        Returns:</span>
+</span><span class="hll"><span class="linenos">173</span><span class="sd">            A list with the target angular velocities for each individual rotor of the vehicle</span>
+</span><span class="hll"><span class="linenos">174</span><span class="sd">        &quot;&quot;&quot;</span>
+</span><span class="linenos">175</span>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_ref</span>
+<span class="linenos">176</span>
+<span class="hll"><span class="linenos">177</span>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+</span><span class="hll"><span class="linenos">178</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Method that implements the nonlinear control law and updates the target angular velocities for each rotor. </span>
+</span><span class="hll"><span class="linenos">179</span><span class="sd">        This method will be called by the simulation on every physics step</span>
+</span><span class="hll"><span class="linenos">180</span>
+</span><span class="hll"><span class="linenos">181</span><span class="sd">        Args:</span>
+</span><span class="hll"><span class="linenos">182</span><span class="sd">            dt (float): The time elapsed between the previous and current function calls (s).</span>
+</span><span class="hll"><span class="linenos">183</span><span class="sd">        &quot;&quot;&quot;</span>
+</span><span class="linenos">184</span>        
+<span class="linenos">185</span>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reveived_first_state</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+<span class="linenos">186</span>            <span class="k">return</span>
+<span class="linenos">187</span>
+<span class="linenos">188</span>        <span class="c1"># -------------------------------------------------</span>
+<span class="linenos">189</span>        <span class="c1"># Update the references for the controller to track</span>
+<span class="linenos">190</span>        <span class="c1"># -------------------------------------------------</span>
+<span class="linenos">191</span>        <span class="bp">self</span><span class="o">.</span><span class="n">total_time</span> <span class="o">+=</span> <span class="n">dt</span>
+<span class="linenos">192</span>        
+<span class="linenos">193</span>
+<span class="linenos">194</span>        <span class="c1"># Check if we need to update to the next trajectory index</span>
+<span class="linenos">195</span>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_index</span> <span class="o">-</span> <span class="mi">1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_time</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]:</span>
+<span class="linenos">196</span>            <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
+<span class="linenos">197</span>
+<span class="linenos">198</span>        <span class="c1"># Update using an external trajectory</span>
+<span class="linenos">199</span>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">200</span>            <span class="c1"># the target positions [m], velocity [m/s], accelerations [m/s^2], jerk [m/s^3], yaw-angle [rad], yaw-rate [rad/s]</span>
+<span class="linenos">201</span>            <span class="n">p_ref</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="mi">3</span><span class="p">]])</span>
+<span class="linenos">202</span>            <span class="n">v_ref</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="mi">6</span><span class="p">]])</span>
+<span class="linenos">203</span>            <span class="n">a_ref</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="mi">9</span><span class="p">]])</span>
+<span class="linenos">204</span>            <span class="n">j_ref</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="mi">11</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="mi">12</span><span class="p">]])</span>
+<span class="linenos">205</span>            <span class="n">yaw_ref</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="mi">13</span><span class="p">]</span>
+<span class="linenos">206</span>            <span class="n">yaw_rate_ref</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="mi">14</span><span class="p">]</span>
+<span class="linenos">207</span>        <span class="c1"># Or update the reference using the built-in trajectory</span>
+<span class="linenos">208</span>        <span class="k">else</span><span class="p">:</span>
+<span class="linenos">209</span>            <span class="n">s</span> <span class="o">=</span> <span class="mf">0.6</span>
+<span class="linenos">210</span>            <span class="n">p_ref</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pd</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">total_time</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">)</span>
+<span class="linenos">211</span>            <span class="n">v_ref</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">d_pd</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">total_time</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">)</span>
+<span class="linenos">212</span>            <span class="n">a_ref</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dd_pd</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">total_time</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">)</span>
+<span class="linenos">213</span>            <span class="n">j_ref</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ddd_pd</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">total_time</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">)</span>
+<span class="linenos">214</span>            <span class="n">yaw_ref</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">yaw_d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">total_time</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+<span class="linenos">215</span>            <span class="n">yaw_rate_ref</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">d_yaw_d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">total_time</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+<span class="linenos">216</span>
+<span class="linenos">217</span>        <span class="c1"># -------------------------------------------------</span>
+<span class="linenos">218</span>        <span class="c1"># Start the controller implementation</span>
+<span class="linenos">219</span>        <span class="c1"># -------------------------------------------------</span>
+<span class="linenos">220</span>
+<span class="linenos">221</span>        <span class="c1"># Compute the tracking errors</span>
+<span class="linenos">222</span>        <span class="n">ep</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">-</span> <span class="n">p_ref</span>
+<span class="linenos">223</span>        <span class="n">ev</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">v</span> <span class="o">-</span> <span class="n">v_ref</span>
+<span class="linenos">224</span>        <span class="bp">self</span><span class="o">.</span><span class="n">int</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">int</span> <span class="o">+</span>  <span class="p">(</span><span class="n">ep</span> <span class="o">*</span> <span class="n">dt</span><span class="p">)</span>
+<span class="linenos">225</span>        <span class="n">ei</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">int</span>
+<span class="linenos">226</span>
+<span class="linenos">227</span>        <span class="c1"># Compute F_des term</span>
+<span class="linenos">228</span>        <span class="n">F_des</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Kp</span> <span class="o">@</span> <span class="n">ep</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Kd</span> <span class="o">@</span> <span class="n">ev</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Ki</span> <span class="o">@</span> <span class="n">ei</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">m</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="p">])</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">m</span> <span class="o">*</span> <span class="n">a_ref</span><span class="p">)</span>
+<span class="linenos">229</span>
+<span class="linenos">230</span>        <span class="c1"># Get the current axis Z_B (given by the last column of the rotation matrix)</span>
+<span class="linenos">231</span>        <span class="n">Z_B</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">R</span><span class="o">.</span><span class="n">as_matrix</span><span class="p">()[:,</span><span class="mi">2</span><span class="p">]</span>
+<span class="linenos">232</span>
+<span class="linenos">233</span>        <span class="c1"># Get the desired total thrust in Z_B direction (u_1)</span>
+<span class="linenos">234</span>        <span class="n">u_1</span> <span class="o">=</span> <span class="n">F_des</span> <span class="o">@</span> <span class="n">Z_B</span>
+<span class="linenos">235</span>
+<span class="linenos">236</span>        <span class="c1"># Compute the desired body-frame axis Z_b</span>
+<span class="linenos">237</span>        <span class="n">Z_b_des</span> <span class="o">=</span> <span class="n">F_des</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">F_des</span><span class="p">)</span>
+<span class="linenos">238</span>
+<span class="linenos">239</span>        <span class="c1"># Compute X_C_des </span>
+<span class="linenos">240</span>        <span class="n">X_c_des</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">yaw_ref</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">yaw_ref</span><span class="p">),</span> <span class="mf">0.0</span><span class="p">])</span>
+<span class="linenos">241</span>
+<span class="linenos">242</span>        <span class="c1"># Compute Y_b_des</span>
+<span class="linenos">243</span>        <span class="n">Z_b_cross_X_c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">Z_b_des</span><span class="p">,</span> <span class="n">X_c_des</span><span class="p">)</span>
+<span class="linenos">244</span>        <span class="n">Y_b_des</span> <span class="o">=</span> <span class="n">Z_b_cross_X_c</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">Z_b_cross_X_c</span><span class="p">)</span>
+<span class="linenos">245</span>
+<span class="linenos">246</span>        <span class="c1"># Compute X_b_des</span>
+<span class="linenos">247</span>        <span class="n">X_b_des</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">Y_b_des</span><span class="p">,</span> <span class="n">Z_b_des</span><span class="p">)</span>
+<span class="linenos">248</span>
+<span class="linenos">249</span>        <span class="c1"># Compute the desired rotation R_des = [X_b_des | Y_b_des | Z_b_des]</span>
+<span class="linenos">250</span>        <span class="n">R_des</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">c_</span><span class="p">[</span><span class="n">X_b_des</span><span class="p">,</span> <span class="n">Y_b_des</span><span class="p">,</span> <span class="n">Z_b_des</span><span class="p">]</span>
+<span class="linenos">251</span>        <span class="n">R</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">R</span><span class="o">.</span><span class="n">as_matrix</span><span class="p">()</span>
+<span class="linenos">252</span>
+<span class="linenos">253</span>        <span class="c1"># Compute the rotation error</span>
+<span class="linenos">254</span>        <span class="n">e_R</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">vee</span><span class="p">((</span><span class="n">R_des</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">R</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">R</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">R_des</span><span class="p">))</span>
+<span class="linenos">255</span>
+<span class="linenos">256</span>        <span class="c1"># Compute an approximation of the current vehicle acceleration in the inertial frame (since we cannot measure it directly)</span>
+<span class="linenos">257</span>        <span class="bp">self</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="p">(</span><span class="n">u_1</span> <span class="o">*</span> <span class="n">Z_B</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">m</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="p">])</span>
+<span class="linenos">258</span>
+<span class="linenos">259</span>        <span class="c1"># Compute the desired angular velocity by projecting the angular velocity in the Xb-Yb plane</span>
+<span class="linenos">260</span>        <span class="c1"># projection of angular velocity on xB − yB plane</span>
+<span class="linenos">261</span>        <span class="c1"># see eqn (7) from [2].</span>
+<span class="linenos">262</span>        <span class="n">hw</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">m</span> <span class="o">/</span> <span class="n">u_1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">j_ref</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">Z_b_des</span><span class="p">,</span> <span class="n">j_ref</span><span class="p">)</span> <span class="o">*</span> <span class="n">Z_b_des</span><span class="p">)</span> 
+<span class="linenos">263</span>        
+<span class="linenos">264</span>        <span class="c1"># desired angular velocity</span>
+<span class="linenos">265</span>        <span class="n">w_des</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">hw</span><span class="p">,</span> <span class="n">Y_b_des</span><span class="p">),</span> 
+<span class="linenos">266</span>                           <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">hw</span><span class="p">,</span> <span class="n">X_b_des</span><span class="p">),</span> 
+<span class="linenos">267</span>                           <span class="n">yaw_rate_ref</span> <span class="o">*</span> <span class="n">Z_b_des</span><span class="p">[</span><span class="mi">2</span><span class="p">]])</span>
+<span class="linenos">268</span>
+<span class="linenos">269</span>        <span class="c1"># Compute the angular velocity error</span>
+<span class="linenos">270</span>        <span class="n">e_w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">w</span> <span class="o">-</span> <span class="n">w_des</span>
+<span class="linenos">271</span>
+<span class="linenos">272</span>        <span class="c1"># Compute the torques to apply on the rigid body</span>
+<span class="linenos">273</span>        <span class="n">tau</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Kr</span> <span class="o">@</span> <span class="n">e_R</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Kw</span> <span class="o">@</span> <span class="n">e_w</span><span class="p">)</span>
+<span class="linenos">274</span>
+<span class="linenos">275</span>        <span class="c1"># Use the allocation matrix provided by the Multirotor vehicle to convert the desired force and torque</span>
+<span class="linenos">276</span>        <span class="c1"># to angular velocity [rad/s] references to give to each rotor</span>
+<span class="linenos">277</span>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">vehicle</span><span class="p">:</span>
+<span class="linenos">278</span>            <span class="bp">self</span><span class="o">.</span><span class="n">input_ref</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">force_and_torques_to_velocities</span><span class="p">(</span><span class="n">u_1</span><span class="p">,</span> <span class="n">tau</span><span class="p">)</span>
+<span class="linenos">279</span>
+<span class="linenos">280</span>        <span class="c1"># ----------------------------</span>
+<span class="linenos">281</span>        <span class="c1"># Statistics to save for later</span>
+<span class="linenos">282</span>        <span class="c1"># ----------------------------</span>
+<span class="linenos">283</span>        <span class="bp">self</span><span class="o">.</span><span class="n">time_vector</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">total_time</span><span class="p">)</span>
+<span class="linenos">284</span>        <span class="bp">self</span><span class="o">.</span><span class="n">position_over_time</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">)</span>
+<span class="linenos">285</span>        <span class="bp">self</span><span class="o">.</span><span class="n">desired_position_over_time</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p_ref</span><span class="p">)</span>
+<span class="linenos">286</span>        <span class="bp">self</span><span class="o">.</span><span class="n">position_error_over_time</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ep</span><span class="p">)</span>
+<span class="linenos">287</span>        <span class="bp">self</span><span class="o">.</span><span class="n">velocity_error_over_time</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ev</span><span class="p">)</span>
+<span class="linenos">288</span>        <span class="bp">self</span><span class="o">.</span><span class="n">atittude_error_over_time</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e_R</span><span class="p">)</span>
+<span class="linenos">289</span>        <span class="bp">self</span><span class="o">.</span><span class="n">attitude_rate_error_over_time</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e_w</span><span class="p">)</span>
+<span class="linenos">290</span>
+<span class="linenos">291</span>    <span class="nd">@staticmethod</span>
+<span class="linenos">292</span>    <span class="k">def</span> <span class="nf">vee</span><span class="p">(</span><span class="n">S</span><span class="p">):</span>
+<span class="linenos">293</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Auxiliary function that computes the &#39;v&#39; map which takes elements from so(3) to R^3.</span>
+<span class="linenos">294</span>
+<span class="linenos">295</span><span class="sd">        Args:</span>
+<span class="linenos">296</span><span class="sd">            S (np.array): A matrix in so(3)</span>
+<span class="linenos">297</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">298</span>        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="n">S</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span> <span class="n">S</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span> <span class="o">-</span><span class="n">S</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]])</span>
+<span class="linenos">299</span>    
+<span class="linenos">300</span>    <span class="k">def</span> <span class="nf">reset_statistics</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos">301</span>
+<span class="linenos">302</span>        <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="linenos">303</span>        <span class="c1"># If we received an external trajectory, reset the time to 0.0</span>
+<span class="linenos">304</span>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">305</span>            <span class="bp">self</span><span class="o">.</span><span class="n">total_time</span> <span class="o">=</span> <span class="mf">0.0</span>
+<span class="linenos">306</span>        <span class="c1"># if using the internal trajectory, make the parametric value start at -5.0</span>
+<span class="linenos">307</span>        <span class="k">else</span><span class="p">:</span>
+<span class="linenos">308</span>            <span class="bp">self</span><span class="o">.</span><span class="n">total_time</span> <span class="o">=</span> <span class="o">-</span><span class="mf">5.0</span>
+<span class="linenos">309</span>
+<span class="linenos">310</span>        <span class="c1"># Reset the lists used for analysing performance statistics</span>
+<span class="linenos">311</span>        <span class="bp">self</span><span class="o">.</span><span class="n">time_vector</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="linenos">312</span>        <span class="bp">self</span><span class="o">.</span><span class="n">desired_position_over_time</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="linenos">313</span>        <span class="bp">self</span><span class="o">.</span><span class="n">position_over_time</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="linenos">314</span>        <span class="bp">self</span><span class="o">.</span><span class="n">position_error_over_time</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="linenos">315</span>        <span class="bp">self</span><span class="o">.</span><span class="n">velocity_error_over_time</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="linenos">316</span>        <span class="bp">self</span><span class="o">.</span><span class="n">atittude_error_over_time</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="linenos">317</span>        <span class="bp">self</span><span class="o">.</span><span class="n">attitude_rate_error_over_time</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="linenos">318</span>
+<span class="linenos">319</span>    <span class="c1"># ---------------------------------------------------</span>
+<span class="linenos">320</span>    <span class="c1"># Definition of an exponential trajectory for example</span>
+<span class="linenos">321</span>    <span class="c1"># This can be used as a reference if not trajectory file is passed</span>
+<span class="linenos">322</span>    <span class="c1"># as an argument to the constructor of this class</span>
+<span class="linenos">323</span>    <span class="c1"># ---------------------------------------------------</span>
+<span class="linenos">324</span>
+<span class="linenos">325</span>    <span class="k">def</span> <span class="nf">pd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="linenos">326</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;The desired position of the built-in trajectory</span>
+<span class="linenos">327</span>
+<span class="linenos">328</span><span class="sd">        Args:</span>
+<span class="linenos">329</span><span class="sd">            t (float): The parametric value that guides the equation</span>
+<span class="linenos">330</span><span class="sd">            s (float): How steep and agressive the curve is</span>
+<span class="linenos">331</span><span class="sd">            reverse (bool, optional): Choose whether we want to flip the curve (so that we can have 2 drones almost touching). Defaults to False.</span>
+<span class="linenos">332</span>
+<span class="linenos">333</span><span class="sd">        Returns:</span>
+<span class="linenos">334</span><span class="sd">            np.ndarray: A 3x1 array with the x, y ,z desired [m]</span>
+<span class="linenos">335</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">336</span>
+<span class="linenos">337</span>        <span class="n">x</span> <span class="o">=</span> <span class="n">t</span>
+<span class="linenos">338</span>        <span class="n">z</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">s</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">t</span><span class="o">/</span><span class="n">s</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span> <span class="o">+</span> <span class="mf">1.0</span>
+<span class="linenos">339</span>        <span class="n">y</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">s</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">t</span><span class="o">/</span><span class="n">s</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="linenos">340</span>
+<span class="linenos">341</span>        <span class="k">if</span> <span class="n">reverse</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+<span class="linenos">342</span>            <span class="n">y</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">/</span> <span class="n">s</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">t</span><span class="o">/</span><span class="n">s</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span> <span class="o">+</span> <span class="mf">4.5</span>
+<span class="linenos">343</span>
+<span class="linenos">344</span>        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">])</span>
+<span class="linenos">345</span>
+<span class="linenos">346</span>    <span class="k">def</span> <span class="nf">d_pd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="linenos">347</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;The desired velocity of the built-in trajectory</span>
+<span class="linenos">348</span>
+<span class="linenos">349</span><span class="sd">        Args:</span>
+<span class="linenos">350</span><span class="sd">            t (float): The parametric value that guides the equation</span>
+<span class="linenos">351</span><span class="sd">            s (float): How steep and agressive the curve is</span>
+<span class="linenos">352</span><span class="sd">            reverse (bool, optional): Choose whether we want to flip the curve (so that we can have 2 drones almost touching). Defaults to False.</span>
+<span class="linenos">353</span>
+<span class="linenos">354</span><span class="sd">        Returns:</span>
+<span class="linenos">355</span><span class="sd">            np.ndarray: A 3x1 array with the d_x, d_y ,d_z desired [m/s]</span>
+<span class="linenos">356</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">357</span>
+<span class="linenos">358</span>        <span class="n">x</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="linenos">359</span>        <span class="n">y</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">t</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="mi">2</span><span class="p">))))</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+<span class="linenos">360</span>        <span class="n">z</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">t</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="mi">2</span><span class="p">))))</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+<span class="linenos">361</span>
+<span class="linenos">362</span>        <span class="k">if</span> <span class="n">reverse</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+<span class="linenos">363</span>            <span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="n">t</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="mi">2</span><span class="p">))))</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+<span class="linenos">364</span>
+<span class="linenos">365</span>        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">])</span>
+<span class="linenos">366</span>
+<span class="linenos">367</span>    <span class="k">def</span> <span class="nf">dd_pd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="linenos">368</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;The desired acceleration of the built-in trajectory</span>
+<span class="linenos">369</span>
+<span class="linenos">370</span><span class="sd">        Args:</span>
+<span class="linenos">371</span><span class="sd">            t (float): The parametric value that guides the equation</span>
+<span class="linenos">372</span><span class="sd">            s (float): How steep and agressive the curve is</span>
+<span class="linenos">373</span><span class="sd">            reverse (bool, optional): Choose whether we want to flip the curve (so that we can have 2 drones almost touching). Defaults to False.</span>
+<span class="linenos">374</span>
+<span class="linenos">375</span><span class="sd">        Returns:</span>
+<span class="linenos">376</span><span class="sd">            np.ndarray: A 3x1 array with the dd_x, dd_y ,dd_z desired [m/s^2]</span>
+<span class="linenos">377</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">378</span>
+<span class="linenos">379</span>        <span class="n">x</span> <span class="o">=</span> <span class="mf">0.0</span>
+<span class="linenos">380</span>        <span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="mi">2</span><span class="p">))))</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="mi">2</span><span class="p">)))</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+<span class="linenos">381</span>        <span class="n">z</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="mi">2</span><span class="p">))))</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="mi">2</span><span class="p">)))</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+<span class="linenos">382</span>
+<span class="linenos">383</span>        <span class="k">if</span> <span class="n">reverse</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+<span class="linenos">384</span>            <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="mi">2</span><span class="p">)))</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="mi">2</span><span class="p">))))</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span>
+<span class="linenos">385</span>
+<span class="linenos">386</span>        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">])</span>
+<span class="linenos">387</span>
+<span class="linenos">388</span>    <span class="k">def</span> <span class="nf">ddd_pd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="linenos">389</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;The desired jerk of the built-in trajectory</span>
+<span class="linenos">390</span>
+<span class="linenos">391</span><span class="sd">        Args:</span>
+<span class="linenos">392</span><span class="sd">            t (float): The parametric value that guides the equation</span>
+<span class="linenos">393</span><span class="sd">            s (float): How steep and agressive the curve is</span>
+<span class="linenos">394</span><span class="sd">            reverse (bool, optional): Choose whether we want to flip the curve (so that we can have 2 drones almost touching). Defaults to False.</span>
+<span class="linenos">395</span>
+<span class="linenos">396</span><span class="sd">        Returns:</span>
+<span class="linenos">397</span><span class="sd">            np.ndarray: A 3x1 array with the ddd_x, ddd_y ,ddd_z desired [m/s^3]</span>
+<span class="linenos">398</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">399</span>        <span class="n">x</span> <span class="o">=</span> <span class="mf">0.0</span>
+<span class="linenos">400</span>        <span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">t</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="mi">2</span><span class="p">))))</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="mi">2</span><span class="p">))))</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="mi">7</span><span class="p">)</span>
+<span class="linenos">401</span>        <span class="n">z</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">t</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="mi">2</span><span class="p">))))</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="mi">2</span><span class="p">))))</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="mi">7</span><span class="p">)</span>
+<span class="linenos">402</span>
+<span class="linenos">403</span>        <span class="k">if</span> <span class="n">reverse</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+<span class="linenos">404</span>            <span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="mi">2</span><span class="p">))))</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="mi">7</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">t</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="mi">2</span><span class="p">))))</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span>
+<span class="linenos">405</span>
+<span class="linenos">406</span>        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">])</span>
+<span class="linenos">407</span>
+<span class="linenos">408</span>    <span class="k">def</span> <span class="nf">yaw_d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+<span class="linenos">409</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;The desired yaw of the built-in trajectory</span>
+<span class="linenos">410</span>
+<span class="linenos">411</span><span class="sd">        Args:</span>
+<span class="linenos">412</span><span class="sd">            t (float): The parametric value that guides the equation</span>
+<span class="linenos">413</span><span class="sd">            s (float): How steep and agressive the curve is</span>
+<span class="linenos">414</span><span class="sd">            reverse (bool, optional): Choose whether we want to flip the curve (so that we can have 2 drones almost touching). Defaults to False.</span>
+<span class="linenos">415</span>
+<span class="linenos">416</span><span class="sd">        Returns:</span>
+<span class="linenos">417</span><span class="sd">            np.ndarray: A float with the desired yaw in rad</span>
+<span class="linenos">418</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">419</span>        <span class="k">return</span> <span class="mf">0.0</span>
+<span class="linenos">420</span>    
+<span class="linenos">421</span>    <span class="k">def</span> <span class="nf">d_yaw_d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+<span class="linenos">422</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;The desired yaw_rate of the built-in trajectory</span>
+<span class="linenos">423</span>
+<span class="linenos">424</span><span class="sd">        Args:</span>
+<span class="linenos">425</span><span class="sd">            t (float): The parametric value that guides the equation</span>
+<span class="linenos">426</span><span class="sd">            s (float): How steep and agressive the curve is</span>
+<span class="linenos">427</span><span class="sd">            reverse (bool, optional): Choose whether we want to flip the curve (so that we can have 2 drones almost touching). Defaults to False.</span>
+<span class="linenos">428</span>
+<span class="linenos">429</span><span class="sd">        Returns:</span>
+<span class="linenos">430</span><span class="sd">            np.ndarray: A float with the desired yaw_rate in rad/s</span>
+<span class="linenos">431</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">432</span>        <span class="k">return</span> <span class="mf">0.0</span>
+</pre></div>
+</div>
+</section>
+<section id="explanation">
+<h2>2. Explanation<a class="headerlink" href="#explanation" title="Permalink to this heading"></a></h2>
+<p>To start a pre-programed simulation using a different control backend other than <code class="docutils literal notranslate"><span class="pre">MAVLink</span></code> we include our custom
+<code class="docutils literal notranslate"><span class="pre">control</span> <span class="pre">backend</span></code> module written in pure Python.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">30</span><span class="c1"># Import the custom python control backend</span>
+<span class="linenos">31</span><span class="kn">from</span> <span class="nn">utils.nonlinear_controller</span> <span class="kn">import</span> <span class="n">NonlinearController</span>
+</pre></div>
+</div>
+<p>We now create a multirotor configuration and set the multirotor backend to be our <code class="docutils literal notranslate"><span class="pre">NonlinearController</span></code> object. That’s it!
+It is that simple! Instead of using the <cite>MAVLink/PX4`</cite> control we will use a pure Python controller written by us. The rest
+of the script is the same as in the previous tutorial.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">68</span>        <span class="c1"># Create the vehicle 1</span>
+<span class="linenos">69</span>        <span class="c1"># Try to spawn the selected robot in the world to the specified namespace</span>
+<span class="linenos">70</span>        <span class="n">config_multirotor1</span> <span class="o">=</span> <span class="n">MultirotorConfig</span><span class="p">()</span>
+<span class="linenos">71</span>        <span class="n">config_multirotor1</span><span class="o">.</span><span class="n">backends</span> <span class="o">=</span> <span class="p">[</span><span class="n">NonlinearController</span><span class="p">(</span>
+<span class="linenos">72</span>            <span class="n">trajectory_file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">curr_dir</span> <span class="o">+</span> <span class="s2">&quot;/trajectories/pitch_relay_90_deg_2.csv&quot;</span><span class="p">,</span>
+<span class="linenos">73</span>            <span class="n">results_file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">curr_dir</span> <span class="o">+</span> <span class="s2">&quot;/results/single_statistics.npz&quot;</span><span class="p">,</span>
+<span class="linenos">74</span>            <span class="n">Ki</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span>
+<span class="linenos">75</span>            <span class="n">Kr</span><span class="o">=</span><span class="p">[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Now, let’s take a look on how the <code class="docutils literal notranslate"><span class="pre">NonlinearControl</span></code> class is structured and how you can build your own. We must start by
+including the <code class="docutils literal notranslate"><span class="pre">Backend</span></code> class found in the <code class="docutils literal notranslate"><span class="pre">pegasus.simulator.logic.backends</span></code> API. To explore all the functionalities
+offered by this class, check the <a class="reference internal" href="../api/backends.backend.html#module-pegasus.simulator.logic.backends.backend"><span class="std std-ref">Backend</span></a> API reference page.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">18</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.backends</span> <span class="kn">import</span> <span class="n">Backend</span>
+</pre></div>
+</div>
+<p>Next, we define a class that inherits the <cite>Backend`</cite> class. This class must implement a few methods to be compliant
+with the <code class="docutils literal notranslate"><span class="pre">Multirotor</span></code> API. In this example we will implement an “hard-coded” nonlinear geometrical controller for the
+multirotor to track a pre-defined trajectory.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">24</span><span class="k">class</span> <span class="nc">NonlinearController</span><span class="p">(</span><span class="n">Backend</span><span class="p">):</span>
+<span class="linenos">25</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;A nonlinear controller class. It implements a nonlinear controller that allows a vehicle to track</span>
+<span class="linenos">26</span><span class="sd">    aggressive trajectories. This controlers is well described in the papers</span>
+<span class="linenos">27</span><span class="sd">    </span>
+<span class="linenos">28</span><span class="sd">    [1] J. Pinto, B. J. Guerreiro and R. Cunha, &quot;Planning Parcel Relay Manoeuvres for Quadrotors,&quot; </span>
+<span class="linenos">29</span><span class="sd">    2021 International Conference on Unmanned Aircraft Systems (ICUAS), Athens, Greece, 2021, </span>
+<span class="linenos">30</span><span class="sd">    pp. 137-145, doi: 10.1109/ICUAS51884.2021.9476757.</span>
+<span class="linenos">31</span><span class="sd">    [2] D. Mellinger and V. Kumar, &quot;Minimum snap trajectory generation and control for quadrotors,&quot; </span>
+<span class="linenos">32</span><span class="sd">    2011 IEEE International Conference on Robotics and Automation, Shanghai, China, 2011, </span>
+<span class="linenos">33</span><span class="sd">    pp. 2520-2525, doi: 10.1109/ICRA.2011.5980409.</span>
+<span class="linenos">34</span><span class="sd">    &quot;&quot;&quot;</span>
+<span class="linenos">35</span>
+<span class="linenos">36</span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+<span class="linenos">37</span>        <span class="n">trajectory_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+<span class="linenos">38</span>        <span class="n">results_file</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
+<span class="linenos">39</span>        <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
+<span class="linenos">40</span>        <span class="n">Kp</span><span class="o">=</span><span class="p">[</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">],</span>
+<span class="linenos">41</span>        <span class="n">Kd</span><span class="o">=</span><span class="p">[</span><span class="mf">8.5</span><span class="p">,</span> <span class="mf">8.5</span><span class="p">,</span> <span class="mf">8.5</span><span class="p">],</span>
+<span class="linenos">42</span>        <span class="n">Ki</span><span class="o">=</span><span class="p">[</span><span class="mf">1.50</span><span class="p">,</span> <span class="mf">1.50</span><span class="p">,</span> <span class="mf">1.50</span><span class="p">],</span>
+<span class="linenos">43</span>        <span class="n">Kr</span><span class="o">=</span><span class="p">[</span><span class="mf">3.5</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">],</span>
+<span class="linenos">44</span>        <span class="n">Kw</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]):</span>
+</pre></div>
+</div>
+<p>The first method that should be implemented is <code class="docutils literal notranslate"><span class="pre">start()</span></code> . This method gets invoked by
+the vehicle when the simulation starts. You should perform any initialization of your algorithm or communication protocol
+here.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">114</span>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos">115</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">116</span><span class="sd">        Reset the control and trajectory index</span>
+<span class="linenos">117</span><span class="sd">        &quot;&quot;&quot;</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">stop()</span></code>  method gets invoked by
+the vehicle when the simulation stops. You should perform any cleanup here.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">121</span>    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos">122</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">123</span><span class="sd">        Stopping the controller. Saving the statistics data for plotting later</span>
+<span class="linenos">124</span><span class="sd">        &quot;&quot;&quot;</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">update_sensor(sensor_type:</span> <span class="pre">str,</span> <span class="pre">data)</span></code>  method gets invoked by the vehicle at every physics step iteration (it is used as a callback) for
+each sensor that generated output data. It receives as input a string which describes the type of sensor and the data produced by that sensor.
+It is up to you to decide on how to parse the sensor data and use it. In this case we are not going to use the data produced
+by the simulated sensors for our controller. Instead we will get the state of the vehicle directly from the simulation and
+use that to feedback into our control law.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">143</span>    <span class="k">def</span> <span class="nf">update_sensor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sensor_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<span class="linenos">144</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">145</span><span class="sd">        Do nothing. For now ignore all the sensor data and just use the state directly for demonstration purposes. </span>
+<span class="linenos">146</span><span class="sd">        This is a callback that is called at every physics step.</span>
+<span class="linenos">147</span>
+<span class="linenos">148</span><span class="sd">        Args:</span>
+<span class="linenos">149</span><span class="sd">            sensor_type (str): The name of the sensor providing the data</span>
+<span class="linenos">150</span><span class="sd">            data (dict): A dictionary that contains the data produced by the sensor</span>
+<span class="linenos">151</span><span class="sd">        &quot;&quot;&quot;</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You can take a look on how the <code class="docutils literal notranslate"><span class="pre">MavlinkBackend</span></code> is implemented to check on how to parse sensor data produced by IMU, GPS, etc.
+A simple strategy is to use an if-statement to check for which sensor we are receive the data from and parse it accordingly, for example:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">sensor_type</span> <span class="o">==</span> <span class="s2">&quot;imu&quot;</span><span class="p">:</span>
+   <span class="c1"># do something</span>
+<span class="k">elif</span> <span class="n">sensor_type</span> <span class="o">==</span> <span class="s2">&quot;gps&quot;</span><span class="p">:</span>
+   <span class="c1"># do something else</span>
+<span class="k">else</span><span class="p">:</span>
+   <span class="c1"># some sensor we do not care about, so ignore</span>
+</pre></div>
+</div>
+<p>Check the Sensors <a class="reference internal" href="../api/index.html#api-reference"><span class="std std-ref">API Reference</span></a> to check what type of data each sensor generates. For most cases, it will be a dictionary.</p>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">update_state(state:</span> <span class="pre">State)</span></code> method is called at every physics steps with the most up-to-date <code class="docutils literal notranslate"><span class="pre">State</span></code> of the vehicle. The state
+object contains:</p>
+<ul class="simple">
+<li><p><strong>position</strong> of the vehicle’s body frame with respect to the inertial frame, expressed in the inertial frame;</p></li>
+<li><p><strong>attitude</strong> of the vehicle’s body frame with respect to the inertial frame, expressed in the inertial frame;</p></li>
+<li><p><strong>linear velocity</strong> of the vehicle’s body frame, with respect to the inertial frame, expressed in the inertial frame;</p></li>
+<li><p><strong>linear body-velocity</strong> of the vehicle’s body frame, with respect to the inertial frame, expressed in the vehicle’s body frame;</p></li>
+<li><p><strong>angular velocity</strong> of the vehicle’s body frame, with respect to the inertial frame, expressed in the vehicle’s body frame;</p></li>
+<li><p><strong>linear acceleration</strong> of the vehicle’s body frame, with respect to the inertial frame, expressed in the inertial frame.</p></li>
+</ul>
+<p>All of this data is filled adopting a <strong>East-North-Down (ENU)</strong> convention for the Inertial Reference Frame and a <strong>Front-Left-Up (FLU)</strong>
+for the vehicle’s body frame of reference.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In case you need to adopt other conventions, the <code class="docutils literal notranslate"><span class="pre">State</span></code> class also provides methods to return the state of the vehicle in
+North-East-Down (NED) and Front-Right-Down (FRD) conventions, so you don’t have to make those conversions manually. Check
+the <a class="reference internal" href="../api/state.html#module-pegasus.simulator.logic.state"><span class="std std-ref">State</span></a> API reference page for more information.</p>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">154</span>    <span class="k">def</span> <span class="nf">update_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">):</span>
+<span class="linenos">155</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">156</span><span class="sd">        Method that updates the current state of the vehicle. This is a callback that is called at every physics step</span>
+<span class="linenos">157</span>
+<span class="linenos">158</span><span class="sd">        Args:</span>
+<span class="linenos">159</span><span class="sd">            state (State): The current state of the vehicle.</span>
+<span class="linenos">160</span><span class="sd">        &quot;&quot;&quot;</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">input_reference()</span></code> method is called at every physics steps by the vehicle to retrieve from the controller a list of floats
+with the target angular velocities in [rad/s] to use as reference to apply to each vehicle rotor. The list of floats
+returned by this method should have the same length as the number of rotors of the vehicle.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In order to have a general controller, you might not want to hard-code the number of rotors of the vehicle in the controller.
+To take this into account, the <a class="reference internal" href="../api/backends.backend.html#module-pegasus.simulator.logic.backends.backend"><span class="std std-ref">Backend</span></a> object is initialized with a reference to the <a class="reference internal" href="../api/vehicles.vehicle.html#module-pegasus.simulator.logic.vehicles.vehicle"><span class="std std-ref">Vehicle</span></a> object
+when this gets instantiated. Therefore, it will access to all of its attributes, such as the number of rotors and methods
+to convert torques and forces in the body-frame to target rotor angular velocities!</p>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">168</span>    <span class="k">def</span> <span class="nf">input_reference</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos">169</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">170</span><span class="sd">        Method that is used to return the latest target angular velocities to be applied to the vehicle</span>
+<span class="linenos">171</span>
+<span class="linenos">172</span><span class="sd">        Returns:</span>
+<span class="linenos">173</span><span class="sd">            A list with the target angular velocities for each individual rotor of the vehicle</span>
+<span class="linenos">174</span><span class="sd">        &quot;&quot;&quot;</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">update(dt:</span> <span class="pre">float)</span></code> method gets invoked at every physics step by the vehicle. It receives as argument the amount of time
+elapsed since the last update (in seconds). This is where you should define your controller/communication layer logic and
+update the list of reference angular velocities for the rotors.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">177</span>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+<span class="linenos">178</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Method that implements the nonlinear control law and updates the target angular velocities for each rotor. </span>
+<span class="linenos">179</span><span class="sd">        This method will be called by the simulation on every physics step</span>
+<span class="linenos">180</span>
+<span class="linenos">181</span><span class="sd">        Args:</span>
+<span class="linenos">182</span><span class="sd">            dt (float): The time elapsed between the previous and current function calls (s).</span>
+<span class="linenos">183</span><span class="sd">        &quot;&quot;&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="execution">
+<h2>3. Execution<a class="headerlink" href="#execution" title="Permalink to this heading"></a></h2>
+<p>Now let’s run the Python script:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ISAACSIM_PYTHON<span class="w"> </span>examples/4_python_single_vehicle.py
+</pre></div>
+</div>
+<p>This should open a stage with a blue ground-plane with an 3DR Iris vehicle model in it. The simulation should start playing automatically and the stage being rendered.
+The vehicle will automatically start flying and performing a very fast relay maneuvre. If you miss it, you can just hit the stop/play
+button again to repeat it.</p>
+<p>Notice now, that unlike the previous tutorial, if you open <code class="docutils literal notranslate"><span class="pre">QGroundControl</span></code> you won’t see the vehicle. This is normal, because
+now we are not using the <code class="docutils literal notranslate"><span class="pre">MAVLink</span></code> control backend, but instead our custom <code class="docutils literal notranslate"><span class="pre">NonlinearControl</span></code> backend.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="create_standalone_simulation.html" class="btn btn-neutral float-left" title="Your First Simulation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../features/environments.html" class="btn btn-neutral float-right" title="Environments" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Marcelo Jacinto.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

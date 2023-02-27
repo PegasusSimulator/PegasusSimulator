@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vehicle &mdash; Pegasus Simulator  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Vehicle Manager" href="vehicles.vehicle_manager.html" />
+    <link rel="prev" title="State" href="state.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #FFD700" >
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../setup/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup/developer.html">Development</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/run_extension_mode.html">Run in Extension Mode (GUI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/create_standalone_application.html">Create a Standalone Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/create_standalone_simulation.html">Your First Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/create_custom_backend.html">Create a Custom Controller</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Features</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../features/environments.html">Environments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../features/vehicles.html">Vehicles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../features/px4_integration.html">PX4 Integration</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Source API</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="index.html#sensors">Sensors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#dynamics">Dynamics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#thruster">Thruster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#control-backends">Control Backends</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#vehicle">Vehicle</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="state.html">State</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Vehicle</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pegasus.simulator.logic.vehicles.vehicle.Vehicle"><code class="docutils literal notranslate"><span class="pre">Vehicle</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pegasus.simulator.logic.vehicles.vehicle.get_world_transform_xform"><code class="docutils literal notranslate"><span class="pre">get_world_transform_xform()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="vehicles.vehicle_manager.html">Vehicle Manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="vehicles.multirotor.html">Multirotor</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#pegasus-interace">Pegasus Interace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#default-params">Default Params</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../references/contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/known_issues.html">Known Issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/roadmap.html">Roadmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/bibliography.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #FFD700" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Pegasus Simulator</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API Reference</a></li>
+      <li class="breadcrumb-item active">Vehicle</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/source/api/vehicles.vehicle.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-pegasus.simulator.logic.vehicles.vehicle">
+<span id="vehicle"></span><h1>Vehicle<a class="headerlink" href="#module-pegasus.simulator.logic.vehicles.vehicle" title="Permalink to this heading"></a></h1>
+<div class="line-block">
+<div class="line">File: vehicle.py</div>
+<div class="line">Author: Marcelo Jacinto (<a class="reference external" href="mailto:marcelo&#46;jacinto&#37;&#52;&#48;tecnico&#46;ulisboa&#46;pt">marcelo<span>&#46;</span>jacinto<span>&#64;</span>tecnico<span>&#46;</span>ulisboa<span>&#46;</span>pt</a>)</div>
+<div class="line">License: BSD-3-Clause. Copyright (c) 2023, Marcelo Jacinto. All rights reserved.</div>
+<div class="line">Description: Definition of the Vehicle class which is used as the base for all the vehicles.</div>
+</div>
+<p><strong>Classes:</strong></p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.vehicles.vehicle.Vehicle" title="pegasus.simulator.logic.vehicles.vehicle.Vehicle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Vehicle</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Functions:</strong></p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.vehicles.vehicle.get_world_transform_xform" title="pegasus.simulator.logic.vehicles.vehicle.get_world_transform_xform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_world_transform_xform</span></code></a>(prim)</p></td>
+<td><p>Get the local transformation of a prim using omni.usd.get_world_transform_matrix().</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.vehicles.vehicle.Vehicle">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pegasus.simulator.logic.vehicles.vehicle.</span></span><span class="sig-name descname"><span class="pre">Vehicle</span></span><a class="headerlink" href="#pegasus.simulator.logic.vehicles.vehicle.Vehicle" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Robot</span></code></p>
+<p><strong>Methods:</strong></p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.vehicles.vehicle.Vehicle.__del__" title="pegasus.simulator.logic.vehicles.vehicle.Vehicle.__del__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__del__</span></code></a>()</p></td>
+<td><p>Method that is invoked when a vehicle object gets destroyed.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.vehicles.vehicle.Vehicle.__init__" title="pegasus.simulator.logic.vehicles.vehicle.Vehicle.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(stage_prefix[, usd_path, init_pos, ...])</p></td>
+<td><p>Class that initializes a vehicle in the isaac sim's curent stage</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.vehicles.vehicle.Vehicle.apply_force" title="pegasus.simulator.logic.vehicles.vehicle.Vehicle.apply_force"><code class="xref py py-obj docutils literal notranslate"><span class="pre">apply_force</span></code></a>(force[, pos, body_part])</p></td>
+<td><p>Method that will apply a force on the rigidbody, on the part specified in the 'body_part' at its relative position given by 'pos' (following a FLU) convention.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.vehicles.vehicle.Vehicle.apply_torque" title="pegasus.simulator.logic.vehicles.vehicle.Vehicle.apply_torque"><code class="xref py py-obj docutils literal notranslate"><span class="pre">apply_torque</span></code></a>(torque[, body_part])</p></td>
+<td><p>Method that when invoked applies a given torque vector to /&lt;rigid_body_name&gt;/&quot;body&quot; or to /&lt;rigid_body_name&gt;/&lt;body_part&gt;.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.vehicles.vehicle.Vehicle.sim_start_stop" title="pegasus.simulator.logic.vehicles.vehicle.Vehicle.sim_start_stop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sim_start_stop</span></code></a>(event)</p></td>
+<td><p>Callback that is called every time there is a timeline event such as starting/stoping the simulation.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.vehicles.vehicle.Vehicle.start" title="pegasus.simulator.logic.vehicles.vehicle.Vehicle.start"><code class="xref py py-obj docutils literal notranslate"><span class="pre">start</span></code></a>()</p></td>
+<td><p>Method that should be implemented by the class that inherits the vehicle object.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.vehicles.vehicle.Vehicle.stop" title="pegasus.simulator.logic.vehicles.vehicle.Vehicle.stop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stop</span></code></a>()</p></td>
+<td><p>Method that should be implemented by the class that inherits the vehicle object.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.vehicles.vehicle.Vehicle.update" title="pegasus.simulator.logic.vehicles.vehicle.Vehicle.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(dt)</p></td>
+<td><p>Method that computes and applies the forces to the vehicle in simulation based on the motor speed.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.vehicles.vehicle.Vehicle.update_state" title="pegasus.simulator.logic.vehicles.vehicle.Vehicle.update_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_state</span></code></a>(dt)</p></td>
+<td><p>Method that is called at every physics step to retrieve and update the current state of the vehicle, i.e., get the current position, orientation, linear and angular velocities and acceleration of the vehicle.</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Attributes:</strong></p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.vehicles.vehicle.Vehicle.state" title="pegasus.simulator.logic.vehicles.vehicle.Vehicle.state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">state</span></code></a></p></td>
+<td><p>The state of the vehicle.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.vehicles.vehicle.Vehicle.__del__">
+<span class="sig-name descname"><span class="pre">__del__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.vehicles.vehicle.Vehicle.__del__" title="Permalink to this definition"></a></dt>
+<dd><p>Method that is invoked when a vehicle object gets destroyed. When this happens, we also invoke the
+‘remove_vehicle’ from the VehicleManager in order to remove the vehicle from the list of active vehicles.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.vehicles.vehicle.Vehicle.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stage_prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usd_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0.0,</span> <span class="pre">0.0,</span> <span class="pre">0.0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_orientation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0.0,</span> <span class="pre">0.0,</span> <span class="pre">0.0,</span> <span class="pre">1.0]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.vehicles.vehicle.Vehicle.__init__" title="Permalink to this definition"></a></dt>
+<dd><p>Class that initializes a vehicle in the isaac sim’s curent stage</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>stage_prefix</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – The name the vehicle will present in the simulator when spawned. Defaults to “quadrotor”.</p></li>
+<li><p><strong>usd_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – The USD file that describes the looks and shape of the vehicle. Defaults to “”.</p></li>
+<li><p><strong>init_pos</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><em>list</em></a>) – The initial position of the vehicle in the inertial frame (in ENU convention). Defaults to [0.0, 0.0, 0.0].</p></li>
+<li><p><strong>init_orientation</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><em>list</em></a>) – The initial orientation of the vehicle in quaternion [qx, qy, qz, qw]. Defaults to [0.0, 0.0, 0.0, 1.0].</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.vehicles.vehicle.Vehicle.apply_force">
+<span class="sig-name descname"><span class="pre">apply_force</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">force</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0.0,</span> <span class="pre">0.0,</span> <span class="pre">0.0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">body_part</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'/body'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.vehicles.vehicle.Vehicle.apply_force" title="Permalink to this definition"></a></dt>
+<dd><p>Method that will apply a force on the rigidbody, on the part specified in the ‘body_part’ at its relative position
+given by ‘pos’ (following a FLU) convention.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>force</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><em>list</em></a>) – A 3-dimensional vector of floats with the force [Fx, Fy, Fz] on the body axis of the vehicle according to a FLU convention.</p></li>
+<li><p><strong>pos</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><em>list</em></a>) – _description_. Defaults to [0.0, 0.0, 0.0].</p></li>
+<li><p><strong>body_part</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – . Defaults to “/body”.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.vehicles.vehicle.Vehicle.apply_torque">
+<span class="sig-name descname"><span class="pre">apply_torque</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">torque</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">body_part</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'/body'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.vehicles.vehicle.Vehicle.apply_torque" title="Permalink to this definition"></a></dt>
+<dd><p>Method that when invoked applies a given torque vector to /&lt;rigid_body_name&gt;/”body” or to /&lt;rigid_body_name&gt;/&lt;body_part&gt;.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>torque</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><em>list</em></a>) – A 3-dimensional vector of floats with the force [Tx, Ty, Tz] on the body axis of the vehicle according to a FLU convention.</p></li>
+<li><p><strong>body_part</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – . Defaults to “/body”.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.vehicles.vehicle.Vehicle.sim_start_stop">
+<span class="sig-name descname"><span class="pre">sim_start_stop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.vehicles.vehicle.Vehicle.sim_start_stop" title="Permalink to this definition"></a></dt>
+<dd><p>Callback that is called every time there is a timeline event such as starting/stoping the simulation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>event</strong> – A timeline event generated from Isaac Sim, such as starting or stoping the simulation.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.vehicles.vehicle.Vehicle.start">
+<span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.vehicles.vehicle.Vehicle.start" title="Permalink to this definition"></a></dt>
+<dd><p>Method that should be implemented by the class that inherits the vehicle object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.vehicles.vehicle.Vehicle.stop">
+<span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.vehicles.vehicle.Vehicle.stop" title="Permalink to this definition"></a></dt>
+<dd><p>Method that should be implemented by the class that inherits the vehicle object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.vehicles.vehicle.Vehicle.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.vehicles.vehicle.Vehicle.update" title="Permalink to this definition"></a></dt>
+<dd><p>Method that computes and applies the forces to the vehicle in
+simulation based on the motor speed. This method must be implemented
+by a class that inherits this type and it’s called periodically by the physics engine.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a>) – The time elapsed between the previous and current function calls (s).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.vehicles.vehicle.Vehicle.update_state">
+<span class="sig-name descname"><span class="pre">update_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.vehicles.vehicle.Vehicle.update_state" title="Permalink to this definition"></a></dt>
+<dd><p>Method that is called at every physics step to retrieve and update the current state of the vehicle, i.e., get
+the current position, orientation, linear and angular velocities and acceleration of the vehicle.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a>) – The time elapsed between the previous and current function calls (s).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.vehicles.vehicle.Vehicle.state">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">state</span></span><a class="headerlink" href="#pegasus.simulator.logic.vehicles.vehicle.Vehicle.state" title="Permalink to this definition"></a></dt>
+<dd><p>The state of the vehicle.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The current state of the vehicle, i.e., position, orientation, linear and angular velocities…</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="state.html#pegasus.simulator.logic.state.State" title="pegasus.simulator.logic.state.State">State</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.vehicles.vehicle.get_world_transform_xform">
+<span class="sig-prename descclassname"><span class="pre">pegasus.simulator.logic.vehicles.vehicle.</span></span><span class="sig-name descname"><span class="pre">get_world_transform_xform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prim</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.vehicles.vehicle.get_world_transform_xform" title="Permalink to this definition"></a></dt>
+<dd><p>Get the local transformation of a prim using omni.usd.get_world_transform_matrix().
+See <a class="reference external" href="https://docs.omniverse.nvidia.com/kit/docs/omni.usd/latest/omni.usd/omni.usd.get_world_transform_matrix.html">https://docs.omniverse.nvidia.com/kit/docs/omni.usd/latest/omni.usd/omni.usd.get_world_transform_matrix.html</a>
+:param prim: The prim to calculate the world transformation.
+:type prim: Usd.Prim</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p>Translation vector.</p></li>
+<li><p>Rotation quaternion, i.e. 3d vector plus angle.</p></li>
+<li><p>Scale vector.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tuple of</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="state.html" class="btn btn-neutral float-left" title="State" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="vehicles.vehicle_manager.html" class="btn btn-neutral float-right" title="Vehicle Manager" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Marcelo Jacinto.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

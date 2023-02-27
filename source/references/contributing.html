@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contributing &mdash; Pegasus Simulator  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Known Issues" href="known_issues.html" />
+    <link rel="prev" title="Params" href="../api/params.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #FFD700" >
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../setup/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup/developer.html">Development</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/run_extension_mode.html">Run in Extension Mode (GUI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/create_standalone_application.html">Create a Standalone Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/create_standalone_simulation.html">Your First Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/create_custom_backend.html">Create a Custom Controller</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Features</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../features/environments.html">Environments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../features/vehicles.html">Vehicles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../features/px4_integration.html">PX4 Integration</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Source API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Contributing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#issues-bug-reporting-and-feature-requests">Issues, Bug Reporting and Feature Requests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#branch-and-version-model">Branch and Version Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#contributing-with-code">Contributing with Code</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#commit-messages">Commit Messages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pull-requests">Pull Requests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#code-style">Code Style</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#contributing-with-documentation">Contributing with Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#contributing-with-assets">Contributing with Assets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sponsor-the-project">Sponsor the project</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="known_issues.html">Known Issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="roadmap.html">Roadmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bibliography.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #FFD700" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Pegasus Simulator</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Contributing</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/source/references/contributing.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="contributing">
+<h1>Contributing<a class="headerlink" href="#contributing" title="Permalink to this heading"></a></h1>
+<p>The Pegasus Simulator is an open-source effort, started by me, Marcelo Jacinto in January/2023. It is a tool that was
+created with the original purpose of serving my Ph.D. workplan for the next 4 years, which means that you can expect
+this repository to be mantained by me directly, hopefully until 2027.</p>
+<p>With that said, it is very likely that you will stumble upon bugs on the code or missing features. Information on how
+to contribute with code, documentation or suggestions for the project roadmap can be found in the following sections.</p>
+<section id="issues-bug-reporting-and-feature-requests">
+<h2>Issues, Bug Reporting and Feature Requests<a class="headerlink" href="#issues-bug-reporting-and-feature-requests" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Bug reports:</strong> Report bugs you find in the Github Issue tab.</p></li>
+<li><p><strong>Feature requests:</strong> Suggest new features you would like to see in the Github Discussions tab.</p></li>
+<li><p><strong>Code contributions:</strong> Submit a Github Pull Request (read the next section).</p></li>
+</ul>
+</section>
+<section id="branch-and-version-model">
+<h2>Branch and Version Model<a class="headerlink" href="#branch-and-version-model" title="Permalink to this heading"></a></h2>
+<p>This project uses a two-branch Git model:</p>
+<ul class="simple">
+<li><p><strong>main:</strong> By default points to the latest stable tag version of the project.</p></li>
+<li><p><strong>dev:</strong> Corresponds to an unstable versions of the code that are not well tested yet.</p></li>
+</ul>
+<p>In this project, we avoid performing merges and give preference to a fork/pull-request structure. All code contributions
+have to be made under the permissive BSD 3-clause license and all code must not impose any further constraints on the use.</p>
+</section>
+<section id="contributing-with-code">
+<h2>Contributing with Code<a class="headerlink" href="#contributing-with-code" title="Permalink to this heading"></a></h2>
+<p>Please follow these steps to contribute with code:</p>
+<ol class="arabic simple">
+<li><p>Create an issue in Github issue tab to discuss new changes or additions to the code.</p></li>
+<li><p><a class="reference external" href="https://docs.github.com/en/get-started/quickstart/fork-a-repo">Fork</a> the repository.</p></li>
+<li><p><a class="reference external" href="https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-and-deleting-branches-within-your-repository">Create a new branch</a> for your changes.</p></li>
+<li><p>Make your changes.</p></li>
+<li><p>Run pre-commit on all files to make sure the code is well formated (check <a class="reference internal" href="#code-style"><span class="std std-ref">Code Style</span></a> section).</p></li>
+<li><p>Commit the changes following the guide in the <a class="reference internal" href="#commit-messages"><span class="std std-ref">Commit Messages</span></a> section.</p></li>
+<li><p>Update the documentation accordingly (check <a class="reference internal" href="#contributing-with-documentation"><span class="std std-ref">Contributing with Documentation</span></a> section).</p></li>
+<li><p>Push your changes to your forked repository.</p></li>
+<li><p><a class="reference external" href="https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request-from-a-fork">Submit a pull request</a> to the main branch of this project.</p></li>
+<li><p>Ensure all the checks on the pull request are successful.</p></li>
+</ol>
+<p>After sending a pull request, the developer team will review your code, provide feedback.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Ensure that your code is well-formatted, documented and working.</p>
+</div>
+<section id="commit-messages">
+<h3>Commit Messages<a class="headerlink" href="#commit-messages" title="Permalink to this heading"></a></h3>
+<p>Each commit message should be short and provide a good description of what is being changed or added to the code. As such,
+we suggest that every commit message start by:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">feat</span></code>: For new features.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fix</span></code>: For bug fixes.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rem</span></code>: For removing code or features.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">doc</span></code>: For adding or changing documentation.</p></li>
+</ul>
+</div></blockquote>
+<p>Here is an example of a “good” commit:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;feat: new vehicle thurster dynamics&quot;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>We do not enforce strictly this commit policy, but it is highly recommended.</p>
+</div>
+</section>
+<section id="pull-requests">
+<h3>Pull Requests<a class="headerlink" href="#pull-requests" title="Permalink to this heading"></a></h3>
+<p>The description of the Pull Request should include:</p>
+<ul class="simple">
+<li><p>An overview of what is adding, changing or removing; enough to understand the broad purpose of the code</p></li>
+<li><p>Links to related issues, supporting information or research papers (if useful).</p></li>
+<li><p>Information about what code testing has been conducted.</p></li>
+</ul>
+</section>
+<section id="code-style">
+<h3>Code Style<a class="headerlink" href="#code-style" title="Permalink to this heading"></a></h3>
+<p>The inline code documentation follows the <a class="reference external" href="https://google.github.io/styleguide/pyguide.html">Google Style Guides</a> while the Python code follows the <a class="reference external" href="https://peps.python.org/pep-0008/">PEP guidelines</a>. We use
+the <a class="reference external" href="https://pre-commit.com/">pre-commit</a> tool tools for maintaining code quality and consistency over the codebase.
+You can install <code class="docutils literal notranslate"><span class="pre">pre-commit</span></code> by running:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>pre-commit
+</pre></div>
+</div>
+</div></blockquote>
+<p>If you do not want to polute your python environment, please use
+<a class="reference external" href="https://docs.python.org/3/library/venv.html">venv</a> or <a class="reference external" href="https://docs.conda.io/en/latest/">conda</a>.</p>
+<p>To run <code class="docutils literal notranslate"><span class="pre">pre-commit</span></code> over the entire repository, execute:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pre-commit<span class="w"> </span>run<span class="w"> </span>--all-files
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+</section>
+<section id="contributing-with-documentation">
+<h2>Contributing with Documentation<a class="headerlink" href="#contributing-with-documentation" title="Permalink to this heading"></a></h2>
+<p>I know, everyone hates to write documentation - its boring… but it is needed. That’s why we tried
+to make it easy to contribute to it.</p>
+<p>All the source files for the documentation are located in the <code class="docutils literal notranslate"><span class="pre">docs</span></code> directory. The documentation is written in
+<a class="reference external" href="https://www.sphinx-doc.org/en/master/">reStructuredText</a> format. We use Sphinx with the
+<a class="reference external" href="https://readthedocs.org/projects/sphinx/">Read the Docs Theme</a> for generating the documentation. Sending a pull
+request for the documentation is the same as sending a pull request for the codebase. Please follow the steps
+mentioned in the <a class="reference internal" href="#contributing-with-code"><span class="std std-ref">Contributing with Code</span></a> section.</p>
+<p>To build the documentation, you need to install a few python
+dependencies. If you do not want to polute your python environment, please use
+<a class="reference external" href="https://docs.python.org/3/library/venv.html">venv</a> or <a class="reference external" href="https://docs.conda.io/en/latest/">conda</a>.</p>
+<p>To generate the html documentation, execute the following commands:</p>
+<ol class="arabic">
+<li><p>Enter the <code class="docutils literal notranslate"><span class="pre">docs</span></code> directory.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># (relative to the root of the repository)</span>
+<span class="nb">cd</span><span class="w"> </span>docs
+</pre></div>
+</div>
+</li>
+<li><p>Install the python dependencies.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+</pre></div>
+</div>
+</li>
+<li><p>Build the documentation.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>html
+</pre></div>
+</div>
+</li>
+<li><p>Open the documentation in a browser.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>xdg-open<span class="w"> </span>_build/html/index.html
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="contributing-with-assets">
+<h2>Contributing with Assets<a class="headerlink" href="#contributing-with-assets" title="Permalink to this heading"></a></h2>
+<p>Creating 3D models is an hard and time consuming task. We encourage people to share models that they feel will be usefull
+for the community, as long as:</p>
+<ol class="arabic simple">
+<li><p>The assets are appropriately licensed.</p></li>
+<li><p>They can be distributed in an open-source repository.</p></li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Currently, we still do not have a standard approach for submitting open-source assets to be incorporated into Pegasus Simulator,
+but a possible solution in the future might lie either on hosting small sized ones on this repository and large
+worlds in a nucleus server. If you have a great idea regarding this subject, share it with us on the Github Issues tab!</p>
+</div>
+</section>
+<section id="sponsor-the-project">
+<h2>Sponsor the project<a class="headerlink" href="#sponsor-the-project" title="Permalink to this heading"></a></h2>
+<p>If you want to be a part of this project, or sponsor my work with some graphics cards, jetson developer boards and other development
+material, please reach out to me directly at <code class="docutils literal notranslate"><span class="pre">marcelo.jacinto&#64;tecnico.ulisboa.pt</span></code>.</p>
+<p>Current sponsors:</p>
+<ul class="simple">
+<li><p>Dynamics Systems and Ocean Robotics (DSOR) group of the Institute for Systems and Robotics (ISR), a research unit of the Laboratory of Robotics and Engineering Systems (LARSyS).</p></li>
+<li><p>Instituto Superior Técnico, Universidade de Lisboa</p></li>
+</ul>
+<p>The work developed by Marcelo Jacinto and João Pinto was supported by Ph.D. grants funded by Fundação para as Ciências e Tecnologias (FCT).</p>
+<p float="left" align="center">
+   <img src="../../_static/dsor_logo.png" width="90" align="center" />
+   <img src="../../_static/logo_isr.png" width="200" align="center"/>
+   <img src="../../_static/larsys_logo.png" width="200" align="center"/>
+   <img src="../../_static/ist_logo.png" width="200" align="center"/>
+   <img src="../../_static/logo_fct.png" width="200" align="center"/>
+</p></section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../api/params.html" class="btn btn-neutral float-left" title="Params" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="known_issues.html" class="btn btn-neutral float-right" title="Known Issues" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Marcelo Jacinto.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

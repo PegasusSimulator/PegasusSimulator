@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Backend &mdash; Pegasus Simulator  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Mavlink Backend" href="backends.mavlink_backend.html" />
+    <link rel="prev" title="Quadratic Thrust Curve" href="thrusters.quadratic_thrust_curve.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #FFD700" >
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../setup/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup/developer.html">Development</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/run_extension_mode.html">Run in Extension Mode (GUI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/create_standalone_application.html">Create a Standalone Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/create_standalone_simulation.html">Your First Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/create_custom_backend.html">Create a Custom Controller</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Features</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../features/environments.html">Environments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../features/vehicles.html">Vehicles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../features/px4_integration.html">PX4 Integration</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Source API</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="index.html#sensors">Sensors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#dynamics">Dynamics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#thruster">Thruster</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#control-backends">Control Backends</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Backend</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pegasus.simulator.logic.backends.backend.Backend"><code class="docutils literal notranslate"><span class="pre">Backend</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="backends.mavlink_backend.html">Mavlink Backend</a></li>
+<li class="toctree-l3"><a class="reference internal" href="backends.ros2_backend.html">ROS2 Backend</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#vehicle">Vehicle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#pegasus-interace">Pegasus Interace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#default-params">Default Params</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../references/contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/known_issues.html">Known Issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/roadmap.html">Roadmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/bibliography.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #FFD700" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Pegasus Simulator</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API Reference</a></li>
+      <li class="breadcrumb-item active">Backend</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/source/api/backends.backend.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-pegasus.simulator.logic.backends.backend">
+<span id="backend"></span><h1>Backend<a class="headerlink" href="#module-pegasus.simulator.logic.backends.backend" title="Permalink to this heading"></a></h1>
+<div class="line-block">
+<div class="line">File: backend.py</div>
+<div class="line">Author: Marcelo Jacinto (<a class="reference external" href="mailto:marcelo&#46;jacinto&#37;&#52;&#48;tecnico&#46;ulisboa&#46;pt">marcelo<span>&#46;</span>jacinto<span>&#64;</span>tecnico<span>&#46;</span>ulisboa<span>&#46;</span>pt</a>)</div>
+<div class="line">Description:</div>
+<div class="line">License: BSD-3-Clause. Copyright (c) 2023, Marcelo Jacinto. All rights reserved.</div>
+</div>
+<p><strong>Classes:</strong></p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.backend.Backend" title="pegasus.simulator.logic.backends.backend.Backend"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Backend</span></code></a></p></td>
+<td><p>This class defines the templates for the communication and control backend.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.backend.Backend">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pegasus.simulator.logic.backends.backend.</span></span><span class="sig-name descname"><span class="pre">Backend</span></span><a class="headerlink" href="#pegasus.simulator.logic.backends.backend.Backend" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>This class defines the templates for the communication and control backend. Every vehicle can have at least one backend
+at the same time. Every timestep, the methods ‘update_state’ and ‘update_sensor’ are called to update the data produced
+by the simulation, i.e. for every time step the backend will receive teh current state of the vehicle and its sensors.
+Additionally, the backend must provide a method named ‘input_reference’ which will be used by the vehicle simulation
+to know the desired angular velocities to apply to the rotors of the vehicle. The method ‘update’ is called on every
+physics step and can be use to implement some logic or send data to another interface (such as PX4 through mavlink or ROS2).
+The methods ‘start’, ‘stop’ and ‘reset’ are callbacks that get called when the simulation is started, stoped and reset as the name implies.</p>
+<p><strong>Methods:</strong></p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.backend.Backend.__init__" title="pegasus.simulator.logic.backends.backend.Backend.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>()</p></td>
+<td><p>Initialize the Backend class</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.backend.Backend.initialize" title="pegasus.simulator.logic.backends.backend.Backend.initialize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">initialize</span></code></a>(vehicle)</p></td>
+<td><p>A method that can be invoked when the simulation is starting to give access to the control backend to the entire vehicle object.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.backend.Backend.input_reference" title="pegasus.simulator.logic.backends.backend.Backend.input_reference"><code class="xref py py-obj docutils literal notranslate"><span class="pre">input_reference</span></code></a>()</p></td>
+<td><p>Method that when implemented, should return a list of desired angular velocities to apply to the vehicle rotors</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.backend.Backend.reset" title="pegasus.simulator.logic.backends.backend.Backend.reset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset</span></code></a>()</p></td>
+<td><p>Method that when implemented, should handle the reset of the vehicle simulation to its original state</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.backend.Backend.start" title="pegasus.simulator.logic.backends.backend.Backend.start"><code class="xref py py-obj docutils literal notranslate"><span class="pre">start</span></code></a>()</p></td>
+<td><p>Method that when implemented should handle the begining of the simulation of vehicle</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.backend.Backend.stop" title="pegasus.simulator.logic.backends.backend.Backend.stop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stop</span></code></a>()</p></td>
+<td><p>Method that when implemented should handle the stopping of the simulation of vehicle</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.backend.Backend.update" title="pegasus.simulator.logic.backends.backend.Backend.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(dt)</p></td>
+<td><p>Method that when implemented, should be used to update the state of the backend and the information being sent/received from the communication interface.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.backend.Backend.update_sensor" title="pegasus.simulator.logic.backends.backend.Backend.update_sensor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_sensor</span></code></a>(sensor_type, data)</p></td>
+<td><p>Method that when implemented, should handle the receival of sensor data</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.backend.Backend.update_state" title="pegasus.simulator.logic.backends.backend.Backend.update_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_state</span></code></a>(state)</p></td>
+<td><p>Method that when implemented, should handle the receival of the state of the vehicle using this callback</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Attributes:</strong></p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.backend.Backend.vehicle" title="pegasus.simulator.logic.backends.backend.Backend.vehicle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vehicle</span></code></a></p></td>
+<td><p>A reference to the vehicle associated with this backend.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.backend.Backend.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.backend.Backend.__init__" title="Permalink to this definition"></a></dt>
+<dd><p>Initialize the Backend class</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.backend.Backend.initialize">
+<span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vehicle</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.backend.Backend.initialize" title="Permalink to this definition"></a></dt>
+<dd><p>A method that can be invoked when the simulation is starting to give access to the control backend
+to the entire vehicle object. Even though we provide update_sensor and update_state callbacks that are called
+at every physics step with the latest vehicle state and its sensor data, having access to the full vehicle
+object may prove usefull under some circumstances. This is nice to give users the possibility of overiding
+default vehicle behaviour via this control backend structure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>vehicle</strong> (<a class="reference internal" href="vehicles.vehicle.html#pegasus.simulator.logic.vehicles.vehicle.Vehicle" title="pegasus.simulator.logic.vehicles.vehicle.Vehicle"><em>Vehicle</em></a>) – A reference to the vehicle that this sensor is associated with</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.backend.Backend.input_reference">
+<span class="sig-name descname"><span class="pre">input_reference</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.backend.Backend.input_reference" title="Permalink to this definition"></a></dt>
+<dd><p>Method that when implemented, should return a list of desired angular velocities to apply to the vehicle rotors</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.backend.Backend.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.backend.Backend.reset" title="Permalink to this definition"></a></dt>
+<dd><p>Method that when implemented, should handle the reset of the vehicle simulation to its original state</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.backend.Backend.start">
+<span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.backend.Backend.start" title="Permalink to this definition"></a></dt>
+<dd><p>Method that when implemented should handle the begining of the simulation of vehicle</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.backend.Backend.stop">
+<span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.backend.Backend.stop" title="Permalink to this definition"></a></dt>
+<dd><p>Method that when implemented should handle the stopping of the simulation of vehicle</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.backend.Backend.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.backend.Backend.update" title="Permalink to this definition"></a></dt>
+<dd><p>Method that when implemented, should be used to update the state of the backend and the information being sent/received
+from the communication interface. This method will be called by the simulation on every physics step</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a>) – The time elapsed between the previous and current function calls (s).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.backend.Backend.update_sensor">
+<span class="sig-name descname"><span class="pre">update_sensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sensor_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.backend.Backend.update_sensor" title="Permalink to this definition"></a></dt>
+<dd><p>Method that when implemented, should handle the receival of sensor data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sensor_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – A name that describes the type of sensor</p></li>
+<li><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)"><em>dict</em></a>) – A dictionary that contains the data produced by the sensor</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.backend.Backend.update_state">
+<span class="sig-name descname"><span class="pre">update_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.backend.Backend.update_state" title="Permalink to this definition"></a></dt>
+<dd><p>Method that when implemented, should handle the receival of the state of the vehicle using this callback</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>state</strong> (<a class="reference internal" href="state.html#pegasus.simulator.logic.state.State" title="pegasus.simulator.logic.state.State"><em>State</em></a>) – The current state of the vehicle.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.backend.Backend.vehicle">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">vehicle</span></span><a class="headerlink" href="#pegasus.simulator.logic.backends.backend.Backend.vehicle" title="Permalink to this definition"></a></dt>
+<dd><p>A reference to the vehicle associated with this backend.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A reference to the vehicle associated with this backend.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="vehicles.vehicle.html#pegasus.simulator.logic.vehicles.vehicle.Vehicle" title="pegasus.simulator.logic.vehicles.vehicle.Vehicle">Vehicle</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="thrusters.quadratic_thrust_curve.html" class="btn btn-neutral float-left" title="Quadratic Thrust Curve" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="backends.mavlink_backend.html" class="btn btn-neutral float-right" title="Mavlink Backend" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Marcelo Jacinto.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pegasus Simulator &mdash; Pegasus Simulator  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Installation" href="source/setup/installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #FFD700" >
+
+          
+          
+          <a href="#">
+            
+              <img src="_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="source/setup/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/setup/developer.html">Development</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="source/tutorials/run_extension_mode.html">Run in Extension Mode (GUI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/tutorials/create_standalone_application.html">Create a Standalone Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/tutorials/create_standalone_simulation.html">Your First Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/tutorials/create_custom_backend.html">Create a Custom Controller</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Features</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="source/features/environments.html">Environments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/features/vehicles.html">Vehicles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/features/px4_integration.html">PX4 Integration</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Source API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="source/api/index.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="source/references/contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/references/known_issues.html">Known Issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/references/changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/references/roadmap.html">Roadmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/references/license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/references/bibliography.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #FFD700" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">Pegasus Simulator</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Pegasus Simulator</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="pegasus-simulator">
+<h1>Pegasus Simulator<a class="headerlink" href="#pegasus-simulator" title="Permalink to this heading"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h2>
+<p><strong>Pegasus Simulator</strong> is a framework built on top of <a class="reference external" href="https://docs.omniverse.nvidia.com/">NVIDIA
+Omniverse</a> and <a class="reference external" href="https://docs.omniverse.nvidia.com/app_isaacsim/app_isaacsim/overview.html">Isaac
+Sim</a>. It is designed to provide an easy, yet
+powerfull way of simulating the dynamics of multirotors vehicles. It provides a simulation interface for <a class="reference external" href="https://px4.io/">PX4</a>
+integration as well as custom python control interface. At the moment, only multirotor vehicles are supported, with support for other vehicle topologies planned for future versions.</p>
+<p align = "center">
+<a href="https://youtu.be/_11OCFwf_GE" target="_blank"><img src="_static/pegasus_cover.png" alt="Pegasus Simulator image" align="center" height="50"/></a>
+<a href="https://youtu.be/_11OCFwf_GE" target="_blank"><img src="_static/mini demo.gif" alt="Pegasus Simulator gif" align="center" height="50"/></a>
+</p><p>If you use <code class="docutils literal notranslate"><span class="pre">PegasusSimulator</span></code> in your work, please cite the <a class="reference external" href="https://arxiv.org/">paper</a>:</p>
+<div class="highlight-bibtex notranslate"><div class="highlight"><pre><span></span><span class="nc">@misc</span><span class="p">{</span><span class="nl">jacinto2023pegasus</span><span class="p">,</span>
+<span class="w">        </span><span class="na">author</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{Jacinto, Marcelo and Pinto, João and Pascoal, António and Cunha, Rita}</span><span class="p">,</span>
+<span class="w">        </span><span class="na">title</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{Pegasus Simulator: An Isaac Sim Framework for Multiple Aerial Vehicles Simulation}</span><span class="p">,</span>
+<span class="w">        </span><span class="na">year</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{2023}</span><span class="p">,</span>
+<span class="w">        </span><span class="na">eprint</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{}</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<section id="developer-team">
+<h3>Developer Team<a class="headerlink" href="#developer-team" title="Permalink to this heading"></a></h3>
+<p>This simulation framework is an open-source effort, started by me, Marcelo Jacinto in January/2023. It is a tool that was created with the original purpose of serving my Ph.D. workplan for the next 4 years, which means that you can expect this repository to be mantained, hopefully at least until 2027.</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>Project Founder</dt><dd><ul>
+<li><p><a class="reference external" href="https://github.com/MarceloJacinto">Marcelo Jacinto</a>, under the supervision of Prof. Rita Cunha and Prof. Antonio Pascoal (IST/ISR-Lisbon)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Architecture</dt><dd><ul>
+<li><p><a class="reference external" href="https://github.com/MarceloJacinto">Marcelo Jacinto</a></p></li>
+<li><p><a class="reference external" href="https://github.com/jschpinto">João Pinto</a></p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Multirotor Dynamic Simulation and Control</dt><dd><ul>
+<li><p><a class="reference external" href="https://github.com/MarceloJacinto">Marcelo Jacinto</a></p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Example Applications</dt><dd><ul>
+<li><p><a class="reference external" href="https://github.com/MarceloJacinto">Marcelo Jacinto</a></p></li>
+<li><p><a class="reference external" href="https://github.com/jschpinto">João Pinto</a></p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="source/setup/installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="source/setup/installation.html#installing-nvidia-isaac-sim">Installing NVIDIA Isaac Sim</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/setup/installation.html#configuring-the-environment-variables">Configuring the environment variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/setup/installation.html#installing-the-pegasus-simulator">Installing the Pegasus Simulator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/setup/installation.html#installing-px4-autopilot">Installing PX4-Autopilot</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="source/setup/developer.html">Development</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="source/setup/developer.html#code-structure">Code structure</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="source/tutorials/run_extension_mode.html">Run in Extension Mode (GUI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/tutorials/create_standalone_application.html">Create a Standalone Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/tutorials/create_standalone_simulation.html">Your First Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/tutorials/create_custom_backend.html">Create a Custom Controller</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Features</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="source/features/environments.html">Environments</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="source/features/environments.html#list-of-provided-simulation-environments">List of provided simulation environments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/features/environments.html#setting-the-map-global-coordinates">Setting the Map Global Coordinates</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="source/features/vehicles.html">Vehicles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/features/px4_integration.html">PX4 Integration</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Source API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="source/api/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="source/api/index.html#sensors">Sensors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/api/index.html#dynamics">Dynamics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/api/index.html#thruster">Thruster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/api/index.html#control-backends">Control Backends</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/api/index.html#vehicle">Vehicle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/api/index.html#pegasus-interace">Pegasus Interace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/api/index.html#default-params">Default Params</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="source/references/contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/references/known_issues.html">Known Issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/references/changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/references/roadmap.html">Roadmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/references/license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/references/bibliography.html">Bibliography</a></li>
+</ul>
+</div>
+</section>
+</section>
+<section id="other-simulation-frameworks">
+<h2>Other Simulation Frameworks<a class="headerlink" href="#other-simulation-frameworks" title="Permalink to this heading"></a></h2>
+<p>In this section, we acknowledge the nobel work of those who came before us and inspired this work:</p>
+<ul class="simple">
+<li><p><span id="id1">[<a class="reference internal" href="source/references/bibliography.html#id9" title="N. Koenig and A. Howard. Design and use paradigms for gazebo, an open-source multi-robot simulator. In 2004 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS), volume 3, 2149–2154. 2004. doi:10.1109/IROS.2004.1389727.">KH04</a>]</span> Gazebo simulator</p></li>
+<li><p><span id="id2">[<a class="reference internal" href="source/references/bibliography.html#id4" title="Fadri Furrer, Michael Burri, Markus Achtelik, and Roland Siegwart. RotorS—A Modular Gazebo MAV Simulator Framework, pages 595–625. Springer International Publishing, Cham, 2016. URL: https://doi.org/10.1007/978-3-319-26054-9_23, doi:10.1007/978-3-319-26054-9_23.">FBAS16</a>]</span> RotorS simulation plugin for gazebo</p></li>
+<li><p><span id="id3">[<a class="reference internal" href="source/references/bibliography.html#id2" title="Lorenz Meier, Dominik Honegger, and Marc Pollefeys. Px4: a node-based multithreaded open source robotics framework for deeply embedded platforms. In 2015 IEEE International Conference on Robotics and Automation (ICRA), volume, 6235-6240. 2015. doi:10.1109/ICRA.2015.7140074.">MHP15</a>]</span> PX4-SITL simulation plugin for gazebo</p></li>
+<li><p><span id="id4">[<a class="reference internal" href="source/references/bibliography.html#id5" title="Shital Shah, Debadeepta Dey, Chris Lovett, and Ashish Kapoor. Airsim: high-fidelity visual and physical simulation for autonomous vehicles. In Marco Hutter and Roland Siegwart, editors, Field and Service Robotics, 621–635. Cham, 2018. Springer International Publishing.">SDLK18</a>]</span> Microsoft Airsim project for Unreal Engine</p></li>
+<li><p><span id="id5">[<a class="reference internal" href="source/references/bibliography.html#id10" title="Yunlong Song, Selim Naji, Elia Kaufmann, Antonio Loquercio, and Davide Scaramuzza. Flightmare: a flexible quadrotor simulator. In Proceedings of the 2020 Conference on Robot Learning, 1147–1157. 2021.">SNK+21</a>]</span> Flightmare simulator for Unity</p></li>
+<li><p><span id="id6">[<a class="reference internal" href="source/references/bibliography.html#id16" title="Anton Babushkin. Jmavsim. 2013. [Accessed 01-Feb-2023]. URL: https://github.com/PX4/jMAVSim.">Bab13</a>]</span> jMAVSim java simulator</p></li>
+</ul>
+<p><em>“If I have seen further than others, it is by standing upon the shoulders of giants.”</em>, Sir Isaac Newton</p>
+</section>
+<section id="project-sponsors">
+<h2>Project Sponsors<a class="headerlink" href="#project-sponsors" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>Dynamics Systems and Ocean Robotics (DSOR) group of the Institute for Systems and Robotics (ISR), a research unit of the Laboratory of Robotics and Engineering Systems (LARSyS).</p></li>
+<li><p>Instituto Superior Técnico, Universidade de Lisboa</p></li>
+</ul>
+<p>The work developed by Marcelo Jacinto and João Pinto was supported by Ph.D. grants funded by Fundação para as Ciências e Tecnologias (FCT).</p>
+<p float="left" align="center">
+   <img src="../../_static/dsor_logo.png" width="90" align="center" />
+   <img src="../../_static/logo_isr.png" width="200" align="center"/>
+   <img src="../../_static/larsys_logo.png" width="200" align="center"/>
+   <img src="../../_static/ist_logo.png" width="200" align="center"/>
+   <img src="../../_static/logo_fct.png" width="200" align="center"/>
+</p></section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="source/setup/installation.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Marcelo Jacinto.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

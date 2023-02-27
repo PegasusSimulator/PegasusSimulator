@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Multirotor &mdash; Pegasus Simulator  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Pegasus Interface" href="pegasus_interface.html" />
+    <link rel="prev" title="Vehicle Manager" href="vehicles.vehicle_manager.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #FFD700" >
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../setup/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup/developer.html">Development</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/run_extension_mode.html">Run in Extension Mode (GUI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/create_standalone_application.html">Create a Standalone Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/create_standalone_simulation.html">Your First Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/create_custom_backend.html">Create a Custom Controller</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Features</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../features/environments.html">Environments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../features/vehicles.html">Vehicles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../features/px4_integration.html">PX4 Integration</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Source API</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="index.html#sensors">Sensors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#dynamics">Dynamics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#thruster">Thruster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#control-backends">Control Backends</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#vehicle">Vehicle</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="state.html">State</a></li>
+<li class="toctree-l3"><a class="reference internal" href="vehicles.vehicle.html">Vehicle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="vehicles.vehicle_manager.html">Vehicle Manager</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Multirotor</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pegasus.simulator.logic.vehicles.multirotor.Multirotor"><code class="docutils literal notranslate"><span class="pre">Multirotor</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pegasus.simulator.logic.vehicles.multirotor.MultirotorConfig"><code class="docutils literal notranslate"><span class="pre">MultirotorConfig</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#pegasus-interace">Pegasus Interace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#default-params">Default Params</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../references/contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/known_issues.html">Known Issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/roadmap.html">Roadmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/bibliography.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #FFD700" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Pegasus Simulator</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API Reference</a></li>
+      <li class="breadcrumb-item active">Multirotor</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/source/api/vehicles.multirotor.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-pegasus.simulator.logic.vehicles.multirotor">
+<span id="multirotor"></span><h1>Multirotor<a class="headerlink" href="#module-pegasus.simulator.logic.vehicles.multirotor" title="Permalink to this heading"></a></h1>
+<div class="line-block">
+<div class="line">File: multirotor.py</div>
+<div class="line">Author: Marcelo Jacinto (<a class="reference external" href="mailto:marcelo&#46;jacinto&#37;&#52;&#48;tecnico&#46;ulisboa&#46;pt">marcelo<span>&#46;</span>jacinto<span>&#64;</span>tecnico<span>&#46;</span>ulisboa<span>&#46;</span>pt</a>)</div>
+<div class="line">License: BSD-3-Clause. Copyright (c) 2023, Marcelo Jacinto. All rights reserved.</div>
+<div class="line">Description: Definition of the Multirotor class which is used as the base for all the multirotor vehicles.</div>
+</div>
+<p><strong>Classes:</strong></p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.vehicles.multirotor.Multirotor" title="pegasus.simulator.logic.vehicles.multirotor.Multirotor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Multirotor</span></code></a></p></td>
+<td><p>Multirotor class - It defines a base interface for creating a multirotor</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.vehicles.multirotor.MultirotorConfig" title="pegasus.simulator.logic.vehicles.multirotor.MultirotorConfig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MultirotorConfig</span></code></a></p></td>
+<td><p>A data class that is used for configuring a Multirotor</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.vehicles.multirotor.Multirotor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pegasus.simulator.logic.vehicles.multirotor.</span></span><span class="sig-name descname"><span class="pre">Multirotor</span></span><a class="headerlink" href="#pegasus.simulator.logic.vehicles.multirotor.Multirotor" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="vehicles.vehicle.html#pegasus.simulator.logic.vehicles.vehicle.Vehicle" title="pegasus.simulator.logic.vehicles.vehicle.Vehicle"><code class="xref py py-class docutils literal notranslate"><span class="pre">Vehicle</span></code></a></p>
+<p>Multirotor class - It defines a base interface for creating a multirotor</p>
+<p><strong>Methods:</strong></p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.vehicles.multirotor.Multirotor.__init__" title="pegasus.simulator.logic.vehicles.multirotor.Multirotor.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([stage_prefix, usd_file, ...])</p></td>
+<td><p>Initializes the multirotor object</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.vehicles.multirotor.Multirotor.force_and_torques_to_velocities" title="pegasus.simulator.logic.vehicles.multirotor.Multirotor.force_and_torques_to_velocities"><code class="xref py py-obj docutils literal notranslate"><span class="pre">force_and_torques_to_velocities</span></code></a>(force, torque)</p></td>
+<td><p>Auxiliar method used to get the target angular velocities for each rotor, given the total desired thrust [N] and torque [Nm] to be applied in the multirotor's body frame.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.vehicles.multirotor.Multirotor.handle_propeller_visual" title="pegasus.simulator.logic.vehicles.multirotor.Multirotor.handle_propeller_visual"><code class="xref py py-obj docutils literal notranslate"><span class="pre">handle_propeller_visual</span></code></a>(rotor_number, force, ...)</p></td>
+<td><p>Auxiliar method used to set the joint velocity of each rotor (for animation purposes) based on the amount of force being applied on each joint</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.vehicles.multirotor.Multirotor.start" title="pegasus.simulator.logic.vehicles.multirotor.Multirotor.start"><code class="xref py py-obj docutils literal notranslate"><span class="pre">start</span></code></a>()</p></td>
+<td><p>Intializes the communication with all the backends.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.vehicles.multirotor.Multirotor.stop" title="pegasus.simulator.logic.vehicles.multirotor.Multirotor.stop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stop</span></code></a>()</p></td>
+<td><p>Signal all the backends that the simulation has stoped.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.vehicles.multirotor.Multirotor.update" title="pegasus.simulator.logic.vehicles.multirotor.Multirotor.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(dt)</p></td>
+<td><p>Method that computes and applies the forces to the vehicle in simulation based on the motor speed.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.vehicles.multirotor.Multirotor.update_sensors" title="pegasus.simulator.logic.vehicles.multirotor.Multirotor.update_sensors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_sensors</span></code></a>(dt)</p></td>
+<td><p>Callback that is called at every physics steps and will call the sensor.update method to generate new sensor data.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.vehicles.multirotor.Multirotor.update_sim_state" title="pegasus.simulator.logic.vehicles.multirotor.Multirotor.update_sim_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_sim_state</span></code></a>(dt)</p></td>
+<td><p>Callback that is used to &quot;send&quot; the current state for each backend being used to control the vehicle.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.vehicles.multirotor.Multirotor.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">stage_prefix='quadrotor',</span> <span class="pre">usd_file='',</span> <span class="pre">vehicle_id=0,</span> <span class="pre">init_pos=[0.0,</span> <span class="pre">0.0,</span> <span class="pre">0.07],</span> <span class="pre">init_orientation=[0.0,</span> <span class="pre">0.0,</span> <span class="pre">0.0,</span> <span class="pre">1.0],</span> <span class="pre">config=&lt;pegasus.simulator.logic.vehicles.multirotor.MultirotorConfig</span> <span class="pre">object&gt;</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.vehicles.multirotor.Multirotor.__init__" title="Permalink to this definition"></a></dt>
+<dd><p>Initializes the multirotor object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>stage_prefix</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – The name the vehicle will present in the simulator when spawned. Defaults to “quadrotor”.</p></li>
+<li><p><strong>usd_file</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – The USD file that describes the looks and shape of the vehicle. Defaults to “”.</p></li>
+<li><p><strong>vehicle_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a>) – The id to be used for the vehicle. Defaults to 0.</p></li>
+<li><p><strong>init_pos</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><em>list</em></a>) – The initial position of the vehicle in the inertial frame (in ENU convention). Defaults to [0.0, 0.0, 0.07].</p></li>
+<li><p><strong>init_orientation</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><em>list</em></a>) – The initial orientation of the vehicle in quaternion [qx, qy, qz, qw]. Defaults to [0.0, 0.0, 0.0, 1.0].</p></li>
+<li><p><strong>config</strong> (<em>_type_</em><em>, </em><em>optional</em>) – _description_. Defaults to MultirotorConfig().</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.vehicles.multirotor.Multirotor.force_and_torques_to_velocities">
+<span class="sig-name descname"><span class="pre">force_and_torques_to_velocities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">force</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">torque</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.vehicles.multirotor.Multirotor.force_and_torques_to_velocities" title="Permalink to this definition"></a></dt>
+<dd><p>Auxiliar method used to get the target angular velocities for each rotor, given the total desired thrust [N] and
+torque [Nm] to be applied in the multirotor’s body frame.</p>
+<p>Note: This method assumes a quadratic thrust curve. This method will be improved in a future update,
+and a general thrust allocation scheme will be adopted. For now, it is made to work with multirotors directly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>force</strong> (<em>np.ndarray</em>) – A vector of the force to be applied in the body frame of the vehicle [N]</p></li>
+<li><p><strong>torque</strong> (<em>np.ndarray</em>) – A vector of the torque to be applied in the body frame of the vehicle [Nm]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of angular velocities [rad/s] to apply in reach rotor to accomplish suchs forces and torques</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)">list</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.vehicles.multirotor.Multirotor.handle_propeller_visual">
+<span class="sig-name descname"><span class="pre">handle_propeller_visual</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rotor_number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">articulation</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.vehicles.multirotor.Multirotor.handle_propeller_visual" title="Permalink to this definition"></a></dt>
+<dd><p>Auxiliar method used to set the joint velocity of each rotor (for animation purposes) based on the
+amount of force being applied on each joint</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rotor_number</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a>) – The number of the rotor to generate the rotation animation</p></li>
+<li><p><strong>force</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a>) – The force that is being applied on that rotor</p></li>
+<li><p><strong>articulation</strong> (<em>_type_</em>) – The articulation group the joints of the rotors belong to</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.vehicles.multirotor.Multirotor.start">
+<span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.vehicles.multirotor.Multirotor.start" title="Permalink to this definition"></a></dt>
+<dd><p>Intializes the communication with all the backends. This method is invoked automatically when the simulation starts</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.vehicles.multirotor.Multirotor.stop">
+<span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.vehicles.multirotor.Multirotor.stop" title="Permalink to this definition"></a></dt>
+<dd><p>Signal all the backends that the simulation has stoped. This method is invoked automatically when the simulation stops</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.vehicles.multirotor.Multirotor.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.vehicles.multirotor.Multirotor.update" title="Permalink to this definition"></a></dt>
+<dd><p>Method that computes and applies the forces to the vehicle in simulation based on the motor speed.
+This method must be implemented by a class that inherits this type. This callback
+is called on every physics step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a>) – The time elapsed between the previous and current function calls (s).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.vehicles.multirotor.Multirotor.update_sensors">
+<span class="sig-name descname"><span class="pre">update_sensors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.vehicles.multirotor.Multirotor.update_sensors" title="Permalink to this definition"></a></dt>
+<dd><p>Callback that is called at every physics steps and will call the sensor.update method to generate new
+sensor data. For each data that the sensor generates, the backend.update_sensor method will also be called for
+every backend. For example, if new data is generated for an IMU and we have a MavlinkBackend, then the update_sensor
+method will be called for that backend so that this data can latter be sent thorugh mavlink.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a>) – The time elapsed between the previous and current function calls (s).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.vehicles.multirotor.Multirotor.update_sim_state">
+<span class="sig-name descname"><span class="pre">update_sim_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.vehicles.multirotor.Multirotor.update_sim_state" title="Permalink to this definition"></a></dt>
+<dd><p>Callback that is used to “send” the current state for each backend being used to control the vehicle. This callback
+is called on every physics step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a>) – The time elapsed between the previous and current function calls (s).</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.vehicles.multirotor.MultirotorConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pegasus.simulator.logic.vehicles.multirotor.</span></span><span class="sig-name descname"><span class="pre">MultirotorConfig</span></span><a class="headerlink" href="#pegasus.simulator.logic.vehicles.multirotor.MultirotorConfig" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>A data class that is used for configuring a Multirotor</p>
+<p><strong>Methods:</strong></p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.vehicles.multirotor.MultirotorConfig.__init__" title="pegasus.simulator.logic.vehicles.multirotor.MultirotorConfig.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>()</p></td>
+<td><p>Initialization of the MultirotorConfig class</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.vehicles.multirotor.MultirotorConfig.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.vehicles.multirotor.MultirotorConfig.__init__" title="Permalink to this definition"></a></dt>
+<dd><p>Initialization of the MultirotorConfig class</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="vehicles.vehicle_manager.html" class="btn btn-neutral float-left" title="Vehicle Manager" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pegasus_interface.html" class="btn btn-neutral float-right" title="Pegasus Interface" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Marcelo Jacinto.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

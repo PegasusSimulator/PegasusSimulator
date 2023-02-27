@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your First Simulation &mdash; Pegasus Simulator  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Create a Custom Controller" href="create_custom_backend.html" />
+    <link rel="prev" title="Create a Standalone Application" href="create_standalone_application.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #FFD700" >
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../setup/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup/developer.html">Development</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="run_extension_mode.html">Run in Extension Mode (GUI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="create_standalone_application.html">Create a Standalone Application</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Your First Simulation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#preparation">0. Preparation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#code">1. Code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#explanation">2. Explanation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#execution">3. Execution</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="create_custom_backend.html">Create a Custom Controller</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Features</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../features/environments.html">Environments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../features/vehicles.html">Vehicles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../features/px4_integration.html">PX4 Integration</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Source API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../references/contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/known_issues.html">Known Issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/roadmap.html">Roadmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/bibliography.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #FFD700" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Pegasus Simulator</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Your First Simulation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/source/tutorials/create_standalone_simulation.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="your-first-simulation">
+<h1>Your First Simulation<a class="headerlink" href="#your-first-simulation" title="Permalink to this heading"></a></h1>
+<p>In this tutorial, you will create a standalone Python application to perform a simulation using 1 vehicle and <code class="docutils literal notranslate"><span class="pre">PX4-Autopilot</span></code>.
+The end result should be the equivalent to the <a class="reference internal" href="run_extension_mode.html#run-in-extension-mode-gui"><span class="std std-ref">Run in Extension Mode (GUI)</span></a> tutorial. To achieve this, we will cover the
+basics of the Pegasus Simulator <a class="reference internal" href="../api/index.html#api-reference"><span class="std std-ref">API Reference</span></a>.</p>
+<section id="preparation">
+<h2>0. Preparation<a class="headerlink" href="#preparation" title="Permalink to this heading"></a></h2>
+<p>Before you proceed, make sure you have read the <a class="reference internal" href="../setup/installation.html#installing-the-pegasus-simulator"><span class="std std-ref">Installing the Pegasus Simulator</span></a> section first and that your system
+is correctly configured. Also, we will assume that you already followed the <a class="reference internal" href="create_standalone_application.html#create-a-standalone-application"><span class="std std-ref">Create a Standalone Application</span></a> tutorial, as in this tutorial
+we will resort to concepts introduced in it.</p>
+<p>Additionally, you will also be required to have <code class="docutils literal notranslate"><span class="pre">QGroundControl</span></code> installed to operate the simulated vehicle. If you haven’t
+already, follow the Preparation section in the <a class="reference internal" href="run_extension_mode.html#run-in-extension-mode-gui"><span class="std std-ref">Run in Extension Mode (GUI)</span></a> tutorial.</p>
+</section>
+<section id="code">
+<h2>1. Code<a class="headerlink" href="#code" title="Permalink to this heading"></a></h2>
+<p>The tutorial corresponds to the <code class="docutils literal notranslate"><span class="pre">1_px4_single_vehicle.py</span></code> example in the <code class="docutils literal notranslate"><span class="pre">examples</span></code> directory.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">  1</span><span class="ch">#!/usr/bin/env python</span>
+<span class="linenos">  2</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">  3</span><span class="sd">| File: 1_px4_single_vehicle.py</span>
+<span class="linenos">  4</span><span class="sd">| Author: Marcelo Jacinto (marcelo.jacinto@tecnico.ulisboa.pt)</span>
+<span class="linenos">  5</span><span class="sd">| License: BSD-3-Clause. Copyright (c) 2023, Marcelo Jacinto. All rights reserved.</span>
+<span class="linenos">  6</span><span class="sd">| Description: This files serves as an example on how to build an app that makes use of the Pegasus API to run a simulation with a single vehicle, controlled using the MAVLink control backend.</span>
+<span class="linenos">  7</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">  8</span>
+<span class="linenos">  9</span><span class="c1"># Imports to start Isaac Sim from this script</span>
+<span class="linenos"> 10</span><span class="kn">import</span> <span class="nn">carb</span>
+<span class="linenos"> 11</span><span class="kn">from</span> <span class="nn">omni.isaac.kit</span> <span class="kn">import</span> <span class="n">SimulationApp</span>
+<span class="linenos"> 12</span>
+<span class="linenos"> 13</span><span class="c1"># Start Isaac Sim&#39;s simulation environment</span>
+<span class="linenos"> 14</span><span class="c1"># Note: this simulation app must be instantiated right after the SimulationApp import, otherwise the simulator will crash</span>
+<span class="linenos"> 15</span><span class="c1"># as this is the object that will load all the extensions and load the actual simulator.</span>
+<span class="linenos"> 16</span><span class="n">simulation_app</span> <span class="o">=</span> <span class="n">SimulationApp</span><span class="p">({</span><span class="s2">&quot;headless&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">})</span>
+<span class="linenos"> 17</span>
+<span class="linenos"> 18</span><span class="c1"># -----------------------------------</span>
+<span class="linenos"> 19</span><span class="c1"># The actual script should start here</span>
+<span class="linenos"> 20</span><span class="c1"># -----------------------------------</span>
+<span class="linenos"> 21</span><span class="kn">import</span> <span class="nn">omni.timeline</span>
+<span class="linenos"> 22</span><span class="kn">from</span> <span class="nn">omni.isaac.core.world</span> <span class="kn">import</span> <span class="n">World</span>
+<span class="linenos"> 23</span>
+<span class="hll"><span class="linenos"> 24</span><span class="c1"># Import the Pegasus API for simulating drones</span>
+</span><span class="hll"><span class="linenos"> 25</span><span class="kn">from</span> <span class="nn">pegasus.simulator.params</span> <span class="kn">import</span> <span class="n">ROBOTS</span><span class="p">,</span> <span class="n">SIMULATION_ENVIRONMENTS</span>
+</span><span class="hll"><span class="linenos"> 26</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.state</span> <span class="kn">import</span> <span class="n">State</span>
+</span><span class="hll"><span class="linenos"> 27</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.backends.mavlink_backend</span> <span class="kn">import</span> <span class="n">MavlinkBackend</span><span class="p">,</span> <span class="n">MavlinkBackendConfig</span>
+</span><span class="hll"><span class="linenos"> 28</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.vehicles.multirotor</span> <span class="kn">import</span> <span class="n">Multirotor</span><span class="p">,</span> <span class="n">MultirotorConfig</span>
+</span><span class="hll"><span class="linenos"> 29</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.interface.pegasus_interface</span> <span class="kn">import</span> <span class="n">PegasusInterface</span>
+</span><span class="linenos"> 30</span>
+<span class="linenos"> 31</span><span class="c1"># Auxiliary scipy and numpy modules</span>
+<span class="linenos"> 32</span><span class="kn">from</span> <span class="nn">scipy.spatial.transform</span> <span class="kn">import</span> <span class="n">Rotation</span>
+<span class="linenos"> 33</span>
+<span class="linenos"> 34</span><span class="k">class</span> <span class="nc">PegasusApp</span><span class="p">:</span>
+<span class="linenos"> 35</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos"> 36</span><span class="sd">    A Template class that serves as an example on how to build a simple Isaac Sim standalone App.</span>
+<span class="linenos"> 37</span><span class="sd">    &quot;&quot;&quot;</span>
+<span class="linenos"> 38</span>
+<span class="linenos"> 39</span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos"> 40</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos"> 41</span><span class="sd">        Method that initializes the PegasusApp and is used to setup the simulation environment.</span>
+<span class="linenos"> 42</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos"> 43</span>
+<span class="linenos"> 44</span>        <span class="c1"># Acquire the timeline that will be used to start/stop the simulation</span>
+<span class="linenos"> 45</span>        <span class="bp">self</span><span class="o">.</span><span class="n">timeline</span> <span class="o">=</span> <span class="n">omni</span><span class="o">.</span><span class="n">timeline</span><span class="o">.</span><span class="n">get_timeline_interface</span><span class="p">()</span>
+<span class="linenos"> 46</span>
+<span class="hll"><span class="linenos"> 47</span>        <span class="c1"># Start the Pegasus Interface</span>
+</span><span class="hll"><span class="linenos"> 48</span>        <span class="bp">self</span><span class="o">.</span><span class="n">pg</span> <span class="o">=</span> <span class="n">PegasusInterface</span><span class="p">()</span>
+</span><span class="linenos"> 49</span>
+<span class="linenos"> 50</span>        <span class="c1"># Acquire the World, .i.e, the singleton that controls that is a one stop shop for setting up physics, </span>
+<span class="linenos"> 51</span>        <span class="c1"># spawning asset primitives, etc.</span>
+<span class="linenos"> 52</span>        <span class="bp">self</span><span class="o">.</span><span class="n">pg</span><span class="o">.</span><span class="n">_world</span> <span class="o">=</span> <span class="n">World</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">pg</span><span class="o">.</span><span class="n">_world_settings</span><span class="p">)</span>
+<span class="linenos"> 53</span>        <span class="bp">self</span><span class="o">.</span><span class="n">world</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pg</span><span class="o">.</span><span class="n">world</span>
+<span class="linenos"> 54</span>
+<span class="hll"><span class="linenos"> 55</span>        <span class="c1"># Launch one of the worlds provided by NVIDIA</span>
+</span><span class="hll"><span class="linenos"> 56</span>        <span class="bp">self</span><span class="o">.</span><span class="n">pg</span><span class="o">.</span><span class="n">load_environment</span><span class="p">(</span><span class="n">SIMULATION_ENVIRONMENTS</span><span class="p">[</span><span class="s2">&quot;Curved Gridroom&quot;</span><span class="p">])</span>
+</span><span class="linenos"> 57</span>
+<span class="hll"><span class="linenos"> 58</span>        <span class="c1"># Create the vehicle</span>
+</span><span class="hll"><span class="linenos"> 59</span>        <span class="c1"># Try to spawn the selected robot in the world to the specified namespace</span>
+</span><span class="hll"><span class="linenos"> 60</span>        <span class="n">config_multirotor</span> <span class="o">=</span> <span class="n">MultirotorConfig</span><span class="p">()</span>
+</span><span class="hll"><span class="linenos"> 61</span>        <span class="c1"># Create the multirotor configuration</span>
+</span><span class="hll"><span class="linenos"> 62</span>        <span class="n">mavlink_config</span> <span class="o">=</span> <span class="n">MavlinkBackendConfig</span><span class="p">({</span>
+</span><span class="hll"><span class="linenos"> 63</span>            <span class="s2">&quot;vehicle_id&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+</span><span class="hll"><span class="linenos"> 64</span>            <span class="s2">&quot;px4_autolaunch&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+</span><span class="hll"><span class="linenos"> 65</span>            <span class="s2">&quot;px4_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;/home/marcelo/PX4-Autopilot&quot;</span><span class="p">,</span>
+</span><span class="hll"><span class="linenos"> 66</span>            <span class="s2">&quot;px4_vehicle_model&quot;</span><span class="p">:</span> <span class="s1">&#39;iris&#39;</span>
+</span><span class="hll"><span class="linenos"> 67</span>        <span class="p">})</span>
+</span><span class="hll"><span class="linenos"> 68</span>        <span class="n">config_multirotor</span><span class="o">.</span><span class="n">backends</span> <span class="o">=</span> <span class="p">[</span><span class="n">MavlinkBackend</span><span class="p">(</span><span class="n">mavlink_config</span><span class="p">)]</span>
+</span><span class="hll"><span class="linenos"> 69</span>
+</span><span class="hll"><span class="linenos"> 70</span>        <span class="n">Multirotor</span><span class="p">(</span>
+</span><span class="hll"><span class="linenos"> 71</span>            <span class="s2">&quot;/World/quadrotor&quot;</span><span class="p">,</span>
+</span><span class="hll"><span class="linenos"> 72</span>            <span class="n">ROBOTS</span><span class="p">[</span><span class="s1">&#39;Iris&#39;</span><span class="p">],</span>
+</span><span class="hll"><span class="linenos"> 73</span>            <span class="mi">0</span><span class="p">,</span>
+</span><span class="hll"><span class="linenos"> 74</span>            <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.07</span><span class="p">],</span>
+</span><span class="hll"><span class="linenos"> 75</span>            <span class="n">Rotation</span><span class="o">.</span><span class="n">from_euler</span><span class="p">(</span><span class="s2">&quot;XYZ&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="n">degrees</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">as_quat</span><span class="p">(),</span>
+</span><span class="hll"><span class="linenos"> 76</span>            <span class="n">config</span><span class="o">=</span><span class="n">config_multirotor</span><span class="p">,</span>
+</span><span class="hll"><span class="linenos"> 77</span>        <span class="p">)</span>
+</span><span class="linenos"> 78</span>
+<span class="hll"><span class="linenos"> 79</span>        <span class="c1"># Reset the simulation environment so that all articulations (aka robots) are initialized</span>
+</span><span class="hll"><span class="linenos"> 80</span>        <span class="bp">self</span><span class="o">.</span><span class="n">world</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+</span><span class="linenos"> 81</span>
+<span class="linenos"> 82</span>        <span class="c1"># Auxiliar variable for the timeline callback example</span>
+<span class="linenos"> 83</span>        <span class="bp">self</span><span class="o">.</span><span class="n">stop_sim</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="linenos"> 84</span>
+<span class="linenos"> 85</span>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos"> 86</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos"> 87</span><span class="sd">        Method that implements the application main loop, where the physics steps are executed.</span>
+<span class="linenos"> 88</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos"> 89</span>
+<span class="linenos"> 90</span>        <span class="c1"># Start the simulation</span>
+<span class="linenos"> 91</span>        <span class="bp">self</span><span class="o">.</span><span class="n">timeline</span><span class="o">.</span><span class="n">play</span><span class="p">()</span>
+<span class="linenos"> 92</span>
+<span class="linenos"> 93</span>        <span class="c1"># The &quot;infinite&quot; loop</span>
+<span class="linenos"> 94</span>        <span class="k">while</span> <span class="n">simulation_app</span><span class="o">.</span><span class="n">is_running</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop_sim</span><span class="p">:</span>
+<span class="linenos"> 95</span>
+<span class="linenos"> 96</span>            <span class="c1"># Update the UI of the app and perform the physics step</span>
+<span class="linenos"> 97</span>            <span class="bp">self</span><span class="o">.</span><span class="n">world</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">render</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="linenos"> 98</span>        
+<span class="linenos"> 99</span>        <span class="c1"># Cleanup and stop</span>
+<span class="linenos">100</span>        <span class="n">carb</span><span class="o">.</span><span class="n">log_warn</span><span class="p">(</span><span class="s2">&quot;PegasusApp Simulation App is closing.&quot;</span><span class="p">)</span>
+<span class="linenos">101</span>        <span class="bp">self</span><span class="o">.</span><span class="n">timeline</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+<span class="linenos">102</span>        <span class="n">simulation_app</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="linenos">103</span>
+<span class="linenos">104</span><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<span class="linenos">105</span>
+<span class="linenos">106</span>    <span class="c1"># Instantiate the template app</span>
+<span class="linenos">107</span>    <span class="n">pg_app</span> <span class="o">=</span> <span class="n">PegasusApp</span><span class="p">()</span>
+<span class="linenos">108</span>
+<span class="linenos">109</span>    <span class="c1"># Run the application loop</span>
+<span class="linenos">110</span>    <span class="n">pg_app</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="linenos">111</span>
+<span class="linenos">112</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="linenos">113</span>    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="explanation">
+<h2>2. Explanation<a class="headerlink" href="#explanation" title="Permalink to this heading"></a></h2>
+<p>In order to start using the functionalities provided by the <code class="docutils literal notranslate"><span class="pre">Pegasus</span> <span class="pre">Simulator</span></code>, we import some of the most commonly
+used classes from the <code class="docutils literal notranslate"><span class="pre">pegasus.simulator.logic</span></code> module, which contains all the core APIs. To check all the classes and
+methods currently provided, please refer to the <a class="reference internal" href="../api/index.html#api-reference"><span class="std std-ref">API Reference</span></a> section.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">24</span><span class="c1"># Import the Pegasus API for simulating drones</span>
+<span class="linenos">25</span><span class="kn">from</span> <span class="nn">pegasus.simulator.params</span> <span class="kn">import</span> <span class="n">ROBOTS</span><span class="p">,</span> <span class="n">SIMULATION_ENVIRONMENTS</span>
+<span class="linenos">26</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.state</span> <span class="kn">import</span> <span class="n">State</span>
+<span class="linenos">27</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.backends.mavlink_backend</span> <span class="kn">import</span> <span class="n">MavlinkBackend</span><span class="p">,</span> <span class="n">MavlinkBackendConfig</span>
+<span class="linenos">28</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.vehicles.multirotor</span> <span class="kn">import</span> <span class="n">Multirotor</span><span class="p">,</span> <span class="n">MultirotorConfig</span>
+<span class="linenos">29</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.interface.pegasus_interface</span> <span class="kn">import</span> <span class="n">PegasusInterface</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Some APIs may not be documented in the <a class="reference internal" href="../api/index.html#api-reference"><span class="std std-ref">API Reference</span></a> section. This means one of three things:
+i) they are not meant for public use; ii) under development (untested); iii) or just deprecated and about to be replaced.</p>
+</div>
+<p>Next, we initialize the <code class="xref py py-class docutils literal notranslate"><span class="pre">PegasusInterface</span></code> object. This is a singleton, which means that there exists only one
+<code class="xref py py-class docutils literal notranslate"><span class="pre">PegasusInterface</span></code> in memory at any time. This interface creates a <a class="reference external" href="https://docs.omniverse.nvidia.com/py/isaacsim/source/extensions/omni.isaac.core/docs/index.html?highlight=world#omni.isaac.core.world.World">World</a> class environment. The <a class="reference external" href="https://docs.omniverse.nvidia.com/py/isaacsim/source/extensions/omni.isaac.core/docs/index.html?highlight=world#omni.isaac.core.world.World">World</a>  class inherits the <a class="reference external" href="https://docs.omniverse.nvidia.com/py/isaacsim/source/extensions/omni.isaac.core/docs/index.html#module-omni.isaac.core.simulation_context">Simulation Context</a>
+internally, so you do not need to declare your own manually when using this API. By default, when physics engine is set to run
+at <code class="docutils literal notranslate"><span class="pre">250</span> <span class="pre">Hz</span></code> and the render engine at <code class="docutils literal notranslate"><span class="pre">60Hz</span></code>.</p>
+<p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">PegasusInterface</span></code> provides methods to set the simulation environment, define the geographic coordinates of the origin of the world, setting the default path for the PX4-Autopilot installation and much more. To learn more about this class, refer to the <a class="reference internal" href="../api/pegasus_interface.html#module-pegasus.simulator.logic.interface.pegasus_interface"><span class="std std-ref">Pegasus Interface</span></a> API section.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">47</span>        <span class="c1"># Start the Pegasus Interface</span>
+<span class="linenos">48</span>        <span class="bp">self</span><span class="o">.</span><span class="n">pg</span> <span class="o">=</span> <span class="n">PegasusInterface</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Next, we load the 3D world environment. For this purpose, we provide the auxiliary method <code class="docutils literal notranslate"><span class="pre">load_environment(usd_file)</span></code> for
+loading pre-made environments stored in <a class="reference external" href="https://developer.nvidia.com/usd">Universal Scene Description (.usd)</a> files. In this
+example, we load one of the simulation environments already provided by NVIDIA, whose path in stored in the <code class="docutils literal notranslate"><span class="pre">SIMULATION_ENVIRONMENTS</span></code>
+dictionary. To known all provided environments, check the <a class="reference internal" href="../api/params.html#module-pegasus.simulator.params"><span class="std std-ref">Params</span></a> API section.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">55</span>        <span class="c1"># Launch one of the worlds provided by NVIDIA</span>
+<span class="linenos">56</span>        <span class="bp">self</span><span class="o">.</span><span class="n">pg</span><span class="o">.</span><span class="n">load_environment</span><span class="p">(</span><span class="n">SIMULATION_ENVIRONMENTS</span><span class="p">[</span><span class="s2">&quot;Curved Gridroom&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>The next step is to create a multirotor vehicle object. For that we start by creating a <code class="docutils literal notranslate"><span class="pre">MultirotorConfig</span></code>, which contains
+by default a <code class="xref py py-class docutils literal notranslate"><span class="pre">QuadraticThrustCurve</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Linear</span> <span class="pre">Drag</span></code> model, a list of <code class="docutils literal notranslate"><span class="pre">Sensors</span></code> composed of a <code class="xref py py-class docutils literal notranslate"><span class="pre">GPS</span></code>,
+<code class="xref py py-class docutils literal notranslate"><span class="pre">IMU</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Magnetometer</span></code> and <code class="xref py py-class docutils literal notranslate"><span class="pre">Barometer</span></code>, and a list of control <code class="xref py py-class docutils literal notranslate"><span class="pre">Backend</span></code>.</p>
+<p>In this tutorial, we whish to control the vehicle via <code class="docutils literal notranslate"><span class="pre">MAVLink</span></code>, <code class="docutils literal notranslate"><span class="pre">PX4-Autopilot</span></code> and <code class="docutils literal notranslate"><span class="pre">QGroundControl</span></code>. Therefore,
+we create a <code class="docutils literal notranslate"><span class="pre">MAVLink</span></code> control backend configured to also launch <code class="docutils literal notranslate"><span class="pre">PX4-Autopilot</span></code> in SITL mode in the background.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">58</span>        <span class="c1"># Create the vehicle</span>
+<span class="linenos">59</span>        <span class="c1"># Try to spawn the selected robot in the world to the specified namespace</span>
+<span class="linenos">60</span>        <span class="n">config_multirotor</span> <span class="o">=</span> <span class="n">MultirotorConfig</span><span class="p">()</span>
+<span class="linenos">61</span>        <span class="c1"># Create the multirotor configuration</span>
+<span class="linenos">62</span>        <span class="n">mavlink_config</span> <span class="o">=</span> <span class="n">MavlinkBackendConfig</span><span class="p">({</span>
+<span class="linenos">63</span>            <span class="s2">&quot;vehicle_id&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+<span class="linenos">64</span>            <span class="s2">&quot;px4_autolaunch&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+<span class="linenos">65</span>            <span class="s2">&quot;px4_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;/home/marcelo/PX4-Autopilot&quot;</span><span class="p">,</span>
+<span class="linenos">66</span>            <span class="s2">&quot;px4_vehicle_model&quot;</span><span class="p">:</span> <span class="s1">&#39;iris&#39;</span>
+<span class="linenos">67</span>        <span class="p">})</span>
+<span class="linenos">68</span>        <span class="n">config_multirotor</span><span class="o">.</span><span class="n">backends</span> <span class="o">=</span> <span class="p">[</span><span class="n">MavlinkBackend</span><span class="p">(</span><span class="n">mavlink_config</span><span class="p">)]</span>
+</pre></div>
+</div>
+<p>To create the actual <code class="docutils literal notranslate"><span class="pre">Multirotor</span></code> object, we must specify the <code class="docutils literal notranslate"><span class="pre">stage_path</span></code>, i.e. the name that the vehicle will have inside
+the simulation tree and the <code class="docutils literal notranslate"><span class="pre">usd_path</span></code> which defines where the 3D model of the vehicle is stored. Once again, to known all
+provided vehicle models, check the <a class="reference internal" href="../api/params.html#module-pegasus.simulator.params"><span class="std std-ref">Params</span></a> API section. Additionally, we can provide the original position and orientation
+of the vehicle, according to an East-North-DOWN (ENU) convention.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">70</span>        <span class="n">Multirotor</span><span class="p">(</span>
+<span class="linenos">71</span>            <span class="s2">&quot;/World/quadrotor&quot;</span><span class="p">,</span>
+<span class="linenos">72</span>            <span class="n">ROBOTS</span><span class="p">[</span><span class="s1">&#39;Iris&#39;</span><span class="p">],</span>
+<span class="linenos">73</span>            <span class="mi">0</span><span class="p">,</span>
+<span class="linenos">74</span>            <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.07</span><span class="p">],</span>
+<span class="linenos">75</span>            <span class="n">Rotation</span><span class="o">.</span><span class="n">from_euler</span><span class="p">(</span><span class="s2">&quot;XYZ&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="n">degrees</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">as_quat</span><span class="p">(),</span>
+<span class="linenos">76</span>            <span class="n">config</span><span class="o">=</span><span class="n">config_multirotor</span><span class="p">,</span>
+<span class="linenos">77</span>        <span class="p">)</span>
+</pre></div>
+</div>
+<p>After the simulation is setup, the <code class="docutils literal notranslate"><span class="pre">world.reset()</span></code> method should be invoked to initialize the <code class="docutils literal notranslate"><span class="pre">physics</span> <span class="pre">context</span></code> and set any existing
+robot joints (the multirotor rotor joints) to their default state.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">79</span>        <span class="c1"># Reset the simulation environment so that all articulations (aka robots) are initialized</span>
+<span class="linenos">80</span>        <span class="bp">self</span><span class="o">.</span><span class="n">world</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="execution">
+<h2>3. Execution<a class="headerlink" href="#execution" title="Permalink to this heading"></a></h2>
+<p>Now let’s run the Python script:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ISAACSIM_PYTHON<span class="w"> </span>examples/1_px4_single_vehicle.py
+</pre></div>
+</div>
+<p>This should open a stage with a blue ground-plane with an 3DR Iris vehicle model in it. The simulation should start playing automatically and the stage being rendered.
+PX4-Autopilot will start running automatically in the background, receiving data from the simulated sensors and sending
+target angular velocities for the vehicle rotors. You can now play with the vehicle using <code class="docutils literal notranslate"><span class="pre">QGroundControl</span></code> similarly to
+what was shown in <a class="reference internal" href="run_extension_mode.html#run-in-extension-mode-gui"><span class="std std-ref">Run in Extension Mode (GUI)</span></a> tutorial.</p>
+<p>To stop the simulation, you can either <code class="docutils literal notranslate"><span class="pre">close</span> <span class="pre">the</span> <span class="pre">window</span></code>, press the <code class="docutils literal notranslate"><span class="pre">STOP</span> <span class="pre">button</span></code> in the UI, or press <code class="docutils literal notranslate"><span class="pre">Ctrl+C</span></code> in the terminal.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="create_standalone_application.html" class="btn btn-neutral float-left" title="Create a Standalone Application" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="create_custom_backend.html" class="btn btn-neutral float-right" title="Create a Custom Controller" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Marcelo Jacinto.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

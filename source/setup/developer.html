@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Development &mdash; Pegasus Simulator  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Run in Extension Mode (GUI)" href="../tutorials/run_extension_mode.html" />
+    <link rel="prev" title="Installation" href="installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #FFD700" >
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Development</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#code-structure">Code structure</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/run_extension_mode.html">Run in Extension Mode (GUI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/create_standalone_application.html">Create a Standalone Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/create_standalone_simulation.html">Your First Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/create_custom_backend.html">Create a Custom Controller</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Features</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../features/environments.html">Environments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../features/vehicles.html">Vehicles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../features/px4_integration.html">PX4 Integration</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Source API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../references/contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/known_issues.html">Known Issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/roadmap.html">Roadmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/bibliography.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #FFD700" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Pegasus Simulator</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Development</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/source/setup/developer.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="development">
+<h1>Development<a class="headerlink" href="#development" title="Permalink to this heading"></a></h1>
+<p>We developed this extension using <a class="reference external" href="https://code.visualstudio.com/">Visual Studio Code</a>, the
+recommended tool on NVIDIA’s Omniverse official documentation. To setup Visual Studio Code with hot-reloading features, follow
+the additional documentation pages:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://docs.omniverse.nvidia.com/app_isaacsim/app_isaacsim/manual_standalone_python.html#isaac-sim-python-vscode">Isaac Sim VSCode support</a></p></li>
+<li><p><a class="reference external" href="https://docs.omniverse.nvidia.com/app_isaacsim/app_isaacsim/tutorial_advanced_python_debugging.html">Debugging with VSCode</a></p></li>
+</ul>
+<p>To enable a better developer experience when contributing or modifying this extension, and have access to features such as
+autocomplete, we recommend linking the Pegasus Simulator repository to the current installation of <code class="docutils literal notranslate"><span class="pre">ISAACSIM</span></code> . For that, please
+run the following script provided with the framework:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./link_app.sh<span class="w"> </span>--path<span class="w"> </span><span class="nv">$ISAACSIM_PATH</span>
+</pre></div>
+</div>
+<p>This script will create a symbolic link to <code class="docutils literal notranslate"><span class="pre">ISAACSIM</span></code> inside the repository. After this step, you can also launch the
+<code class="docutils literal notranslate"><span class="pre">ISAACSIM</span></code> with the extension enabled (without using the GUI presented in Section <a class="reference internal" href="installation.html#installing-the-pegasus-simulator"><span class="std std-ref">Installing the Pegasus Simulator</span></a>), by running:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./app/isaac-sim.sh<span class="w"> </span>--ext-folder<span class="w"> </span>extensions<span class="w"> </span>--enable<span class="w"> </span>pegasus.simulator
+</pre></div>
+</div>
+<section id="code-structure">
+<h2>Code structure<a class="headerlink" href="#code-structure" title="Permalink to this heading"></a></h2>
+<p>This simulation framework is strucuture according to the following tree:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>PegasusSimulator:
+├──<span class="w"> </span>.vscode
+├──<span class="w"> </span>docs
+├──<span class="w"> </span>examples
+├──<span class="w"> </span>tools
+├──<span class="w"> </span>extensions
+│<span class="w">   </span>├──<span class="w"> </span>pegasus.simulator
+│<span class="w">   </span>│<span class="w">   </span>├──<span class="w"> </span>config
+│<span class="w">   </span>│<span class="w">   </span>├──<span class="w"> </span>data
+│<span class="w">   </span>│<span class="w">   </span>├──<span class="w"> </span>docs
+│<span class="w">   </span>│<span class="w">   </span>├──<span class="w"> </span>setup.py
+│<span class="w">   </span>│<span class="w">   </span>├──<span class="w"> </span>pegasus.simulator
+│<span class="w">   </span>│<span class="w">   </span>│<span class="w">   </span>│<span class="w">   </span>├──<span class="w"> </span>__init__.py
+│<span class="w">   </span>│<span class="w">   </span>│<span class="w">   </span>│<span class="w">   </span>├──<span class="w"> </span>params.py
+│<span class="w">   </span>│<span class="w">   </span>│<span class="w">   </span>│<span class="w">   </span>├──<span class="w"> </span>extension.py
+│<span class="w">   </span>│<span class="w">   </span>│<span class="w">   </span>│<span class="w">   </span>├──<span class="w"> </span>assets
+│<span class="w">   </span>│<span class="w">   </span>│<span class="w">   </span>│<span class="w">   </span>├──<span class="w"> </span>logic
+│<span class="w">   </span>│<span class="w">   </span>│<span class="w">   </span>│<span class="w">   </span>├──<span class="w"> </span>ui
+</pre></div>
+</div>
+<p>The extensions directory contains the source code for the PegasusSimulator API and interactive GUI while the
+examples directory contains the a set of python scripts to launch standalone applications and pre-programed simulations.</p>
+<p>As explained in NVIDIA’s documentation, extensions are the standard way of developing on top of Isaac Sim and other Omniverse
+tools. The core of our extension is developed in the <code class="docutils literal notranslate"><span class="pre">logic</span></code> and the <code class="docutils literal notranslate"><span class="pre">ui</span></code> modules. The <code class="docutils literal notranslate"><span class="pre">logic</span></code> API is exposed to the users
+and is used both when operating the Pegasus Simulator in GUI widget/extension mode and via standalone python applications.
+The <code class="docutils literal notranslate"><span class="pre">ui</span></code> API is <strong>not exposed/documented</strong> as it is basically defines the widget to call functionalities provided by
+the <code class="docutils literal notranslate"><span class="pre">logic</span></code> module.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../tutorials/run_extension_mode.html" class="btn btn-neutral float-right" title="Run in Extension Mode (GUI)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Marcelo Jacinto.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

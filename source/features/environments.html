@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Environments &mdash; Pegasus Simulator  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Vehicles" href="vehicles.html" />
+    <link rel="prev" title="Create a Custom Controller" href="../tutorials/create_custom_backend.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #FFD700" >
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../setup/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup/developer.html">Development</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/run_extension_mode.html">Run in Extension Mode (GUI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/create_standalone_application.html">Create a Standalone Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/create_standalone_simulation.html">Your First Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/create_custom_backend.html">Create a Custom Controller</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Features</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Environments</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#list-of-provided-simulation-environments">List of provided simulation environments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#setting-the-map-global-coordinates">Setting the Map Global Coordinates</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="vehicles.html">Vehicles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="px4_integration.html">PX4 Integration</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Source API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../references/contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/known_issues.html">Known Issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/roadmap.html">Roadmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/bibliography.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #FFD700" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Pegasus Simulator</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Environments</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/source/features/environments.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="environments">
+<h1>Environments<a class="headerlink" href="#environments" title="Permalink to this heading"></a></h1>
+<p>At the moment, we only provide in the <a class="reference internal" href="../api/params.html#module-pegasus.simulator.params"><span class="std std-ref">Params</span></a> API a dictionary named <code class="docutils literal notranslate"><span class="pre">SIMULATION_ENVIRONMENTS</span></code>
+which stores the path to <code class="docutils literal notranslate"><span class="pre">Isaac</span> <span class="pre">Sim</span></code> pre-made worlds. As we update this simulation framework, expect
+the list of default simulation environments to grow.</p>
+<section id="list-of-provided-simulation-environments">
+<h2>List of provided simulation environments<a class="headerlink" href="#list-of-provided-simulation-environments" title="Permalink to this heading"></a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 60%" />
+<col style="width: 40%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>World</p></th>
+<th class="head"><p>Name</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><img alt="default_environment" src="../../_images/Default%20Environment.png" /></p></td>
+<td><p>Default Environment</p></td>
+</tr>
+<tr class="row-odd"><td><p><img alt="black_gridroom" src="../../_images/Black%20Gridroom.png" /></p></td>
+<td><p>Black Gridroom</p></td>
+</tr>
+<tr class="row-even"><td><p><img alt="curved_gridroom" src="../../_images/Curved%20Gridroom.png" /></p></td>
+<td><p>Curved Gridroom</p></td>
+</tr>
+<tr class="row-odd"><td><p><img alt="hospital" src="../../_images/Hospital.png" /></p></td>
+<td><p>Hospital</p></td>
+</tr>
+<tr class="row-even"><td><p><img alt="office" src="../../_images/Office.png" /></p></td>
+<td><p>Office</p></td>
+</tr>
+<tr class="row-odd"><td><p><img alt="simple_room" src="../../_images/Simple%20Room.png" /></p></td>
+<td><p>Simple Room</p></td>
+</tr>
+<tr class="row-even"><td><p><img alt="warehouse" src="../../_images/Warehouse.png" /></p></td>
+<td><p>Warehouse</p></td>
+</tr>
+<tr class="row-odd"><td><p><img alt="warehouse_with_forklifts" src="../../_images/Warehouse%20with%20Forklifts.png" /></p></td>
+<td><p>Warehouse with Forklifts</p></td>
+</tr>
+<tr class="row-even"><td><p><img alt="warehouse_with_shelves" src="../../_images/Warehouse%20with%20Shelves.png" /></p></td>
+<td><p>Warehouse with Shelves</p></td>
+</tr>
+<tr class="row-odd"><td><p><img alt="full_warehouse" src="../../_images/Full%20Warehouse.png" /></p></td>
+<td><p>Full Warehouse</p></td>
+</tr>
+<tr class="row-even"><td><p><img alt="flat_plane" src="../../_images/Flat%20Plane.png" /></p></td>
+<td><p>Flat Plane</p></td>
+</tr>
+<tr class="row-odd"><td><p><img alt="rought_plane" src="../../_images/Rough%20Plane.png" /></p></td>
+<td><p>Rough Plane</p></td>
+</tr>
+<tr class="row-even"><td><p><img alt="slope_plane" src="../../_images/Slope%20Plane.png" /></p></td>
+<td><p>Slope Plane</p></td>
+</tr>
+<tr class="row-odd"><td><p><img alt="stairs_plane" src="../../_images/Stairs%20Plane.png" /></p></td>
+<td><p>Stairs Plane</p></td>
+</tr>
+</tbody>
+</table>
+<p>To spawn one of the provided environments when using the Pegasus Simulator
+in standalone application mode, you can just add to your code:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pegasus.simulator.params</span> <span class="kn">import</span> <span class="n">SIMULATION_ENVIRONMENTS</span>
+<span class="kn">from</span> <span class="nn">pegasus.simulator.logic.interface.pegasus_interface</span> <span class="kn">import</span> <span class="n">PegasusInterface</span>
+
+<span class="c1"># Start the Pegasus Interface</span>
+<span class="n">pg</span> <span class="o">=</span> <span class="n">PegasusInterface</span><span class="p">()</span>
+
+<span class="c1"># Load the environment</span>
+<span class="n">pg</span><span class="o">.</span><span class="n">load_environment</span><span class="p">(</span><span class="n">SIMULATION_ENVIRONMENTS</span><span class="p">[</span><span class="s2">&quot;Curved Gridroom&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>To index the dictionary of pre-made simulation environments, just use the names of the columns table.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In this initial version it is not possible to spawn a custom 3D USD world using the Pegasus Simulator GUI.
+If you use the Pegasus Simulator in extension mode and want to use your custom worlds, for now you need
+manually drag and drop the assets into the viewport like a cavemen 👌️. This is for sure a feature in the <a class="reference internal" href="../references/roadmap.html#roadmap"><span class="std std-ref">Roadmap</span></a>.</p>
+<p>However, when using the Pegasus Simulator in standalone application mode, i.e. Python scripting,
+you can load your own custom USD files using the <code class="docutils literal notranslate"><span class="pre">load_environment(usd_path)</span></code> method.</p>
+</div>
+</section>
+<section id="setting-the-map-global-coordinates">
+<h2>Setting the Map Global Coordinates<a class="headerlink" href="#setting-the-map-global-coordinates" title="Permalink to this heading"></a></h2>
+<p>By default, the latitude, longitude and altitude of the origin of the simulated world
+is set to the geographic coordinates of <cite>Instituto Superior Técnico, Lisbon (Portugal)</cite>, i.e.:</p>
+<ul class="simple">
+<li><p><strong>latitude=</strong> 90.0 (º)</p></li>
+<li><p><strong>longitude=</strong> 38.736832 (º)</p></li>
+<li><p><strong>altitude=</strong> -9.137977 (m)</p></li>
+</ul>
+<p>You can change the default coordinates by either:</p>
+<ol class="arabic">
+<li><p>Using the GUI of the Pegasus Simulator when operating in extension mode.</p>
+<blockquote>
+<div><a class="reference internal image-reference" href="../../_images/setting_geographic_coordinates.png"><img alt="Setting the geographic coordinates" class="align-center" src="../../_images/setting_geographic_coordinates.png" style="width: 600px;" /></a>
+</div></blockquote>
+</li>
+<li><p>Use the methods provided by <code class="xref py py-class docutils literal notranslate"><span class="pre">PegasusInterface</span></code>, i.e:</p>
+<blockquote>
+<div><div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pegasus.simulator.params</span> <span class="kn">import</span> <span class="n">SIMULATION_ENVIRONMENTS</span>
+<span class="kn">from</span> <span class="nn">pegasus.simulator.logic.interface.pegasus_interface</span> <span class="kn">import</span> <span class="n">PegasusInterface</span>
+
+<span class="c1"># Start the Pegasus Interface</span>
+<span class="n">pg</span> <span class="o">=</span> <span class="n">PegasusInterface</span><span class="p">()</span>
+
+<span class="c1"># Change only the global coordinates for this instance of the code</span>
+<span class="c1"># Future code runs will keep the same default coordinates</span>
+<span class="n">pg</span><span class="o">.</span><span class="n">set_global_coordinates</span><span class="p">(</span><span class="n">latitude</span><span class="p">,</span> <span class="n">longitude</span><span class="p">,</span> <span class="n">altitude</span><span class="p">)</span>
+
+<span class="c1"># Change the default global coordinates for the simulator</span>
+<span class="c1"># This will be saved for future runs</span>
+<span class="n">pg</span><span class="o">.</span><span class="n">set_new_global_coordinates</span><span class="p">(</span><span class="n">latitude</span><span class="p">,</span> <span class="n">longitude</span><span class="p">,</span> <span class="n">altitude</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../tutorials/create_custom_backend.html" class="btn btn-neutral float-left" title="Create a Custom Controller" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="vehicles.html" class="btn btn-neutral float-right" title="Vehicles" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Marcelo Jacinto.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Run in Extension Mode (GUI) &mdash; Pegasus Simulator  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Create a Standalone Application" href="create_standalone_application.html" />
+    <link rel="prev" title="Development" href="../setup/developer.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #FFD700" >
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../setup/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup/developer.html">Development</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Run in Extension Mode (GUI)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#preparation">0. Preparation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#simulation-steps">1. Simulation Steps</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="create_standalone_application.html">Create a Standalone Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="create_standalone_simulation.html">Your First Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="create_custom_backend.html">Create a Custom Controller</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Features</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../features/environments.html">Environments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../features/vehicles.html">Vehicles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../features/px4_integration.html">PX4 Integration</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Source API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../references/contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/known_issues.html">Known Issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/roadmap.html">Roadmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/bibliography.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #FFD700" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Pegasus Simulator</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Run in Extension Mode (GUI)</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/source/tutorials/run_extension_mode.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="run-in-extension-mode-gui">
+<h1>Run in Extension Mode (GUI)<a class="headerlink" href="#run-in-extension-mode-gui" title="Permalink to this heading"></a></h1>
+<p>This tutorial introduces how to interface with the Pegasus Simulator working in extension mode, i.e. with an interactive GUI.
+This means that <code class="docutils literal notranslate"><span class="pre">ISAACSIM</span></code> will be launched as a standard application and the Pegasus Simulator extension should be
+enabled from the extension manager.</p>
+<section id="preparation">
+<h2>0. Preparation<a class="headerlink" href="#preparation" title="Permalink to this heading"></a></h2>
+<p>Before you proceed, check the <a class="reference internal" href="../setup/installation.html#installing-the-pegasus-simulator"><span class="std std-ref">Installing the Pegasus Simulator</span></a> section first, if you haven’t already. You will
+also require <a class="reference external" href="http://qgroundcontrol.com/">QGroundControl</a> to control the vehicle. You haven’t download it yet, you can
+do it <a class="reference external" href="https://docs.qgroundcontrol.com/master/en/getting_started/download_and_install.html">here</a> or follow these steps:</p>
+<ol class="arabic">
+<li><p>Open a new terminal and run:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>usermod<span class="w"> </span>-a<span class="w"> </span>-G<span class="w"> </span>dialout<span class="w"> </span><span class="nv">$USER</span>
+sudo<span class="w"> </span>apt-get<span class="w"> </span>remove<span class="w"> </span>modemmanager<span class="w"> </span>-y
+sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>gstreamer1.0-plugins-bad<span class="w"> </span>gstreamer1.0-libav<span class="w"> </span>gstreamer1.0-gl<span class="w"> </span>-y
+sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>libqt5gui5<span class="w"> </span>-y
+sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>libfuse2<span class="w"> </span>-y
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p>Download the <a class="reference external" href="https://d176tv9ibo4jno.cloudfront.net/latest/QGroundControl.AppImage">QGroundControl App Image</a>.</p></li>
+<li><p>Make the App image executable</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>chmod<span class="w"> </span>+x<span class="w"> </span>./QGroundControl.AppImage
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p>Execute QGroundControl by double-clicking or running:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./QGroundControl.AppImage
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+</section>
+<section id="simulation-steps">
+<h2>1. Simulation Steps<a class="headerlink" href="#simulation-steps" title="Permalink to this heading"></a></h2>
+<ol class="arabic">
+<li><p>Open <code class="docutils literal notranslate"><span class="pre">ISAACSIM</span></code>, either by using the Omniverse Launcher or the terminal command:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ISAACSIM
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p>Make sure the Pegasus Simulator Extension is enabled.</p>
+<blockquote>
+<div><a class="reference internal image-reference" href="../../_images/pegasus_inside_extensions_menu.png"><img alt="Enable the Pegasus Simulator extension inside Isaac Sim" class="align-center" src="../../_images/pegasus_inside_extensions_menu.png" style="width: 600px;" /></a>
+</div></blockquote>
+</li>
+<li><p>On the Pegasus Simulator tab in the bottom-right corner, click on the <code class="docutils literal notranslate"><span class="pre">Load</span> <span class="pre">Scene</span></code> button.</p>
+<blockquote>
+<div><a class="reference internal image-reference" href="../../_images/load_scene.png"><img alt="Load a 3D Scene" class="align-center" src="../../_images/load_scene.png" style="width: 600px;" /></a>
+</div></blockquote>
+</li>
+<li><p>Again, on the Pegasus Simulator tab, click on the <code class="docutils literal notranslate"><span class="pre">Load</span> <span class="pre">Vehicle</span></code> button.</p>
+<blockquote>
+<div><a class="reference internal image-reference" href="../../_images/load_vehicle.png"><img alt="Load the vehicle" class="align-center" src="../../_images/load_vehicle.png" style="width: 600px;" /></a>
+</div></blockquote>
+</li>
+<li><p>Press the <code class="docutils literal notranslate"><span class="pre">play</span></code> button on the simulator’s control bar on the left corner.</p>
+<blockquote>
+<div><a class="reference internal image-reference" href="../../_images/play.png"><img alt="Start the simulation environment" class="align-center" src="../../_images/play.png" style="width: 600px;" /></a>
+</div></blockquote>
+</li>
+</ol>
+<p>6. On QGroundControl, an arrow representing the vehicle should pop-up. You can now perform a take-off, but pressing the
+<code class="docutils literal notranslate"><span class="pre">take-off</span></code> button on top-left corner of QGroundControl.</p>
+<blockquote>
+<div><a class="reference internal image-reference" href="../../_images/take_off.png"><img alt="Perform a take-off with the drone" class="align-center" src="../../_images/take_off.png" style="width: 600px;" /></a>
+</div></blockquote>
+<p>7. On QGroundControl, left-click on a place on the map, press <code class="docutils literal notranslate"><span class="pre">Go</span> <span class="pre">to</span> <span class="pre">location</span></code> and slide at the bottom of the screen
+to confirm the target waypoint for the drone to follow.</p>
+<blockquote>
+<div><a class="reference internal image-reference" href="../../_images/go_to_location.png"><img alt="Perform a go-to waypoint with the drone" class="align-center" src="../../_images/go_to_location.png" style="width: 600px;" /></a>
+</div></blockquote>
+<p>Congratulations 🎉️🎉️🎉️ ! You have just completed your first tutorial and you should now see the vehicle moving on the screen.</p>
+<p>A short video of this tutorial is also available <a class="reference external" href="https://youtu.be/_11OCFwf_GE">here</a>.</p>
+<blockquote>
+<div><div class="video_wrapper align-center" style="padding-bottom: 56.250000%; padding-top: 30px; position: relative; text-align: center; width: 100%">
+<iframe allowfullscreen="true" src="https://www.youtube.com/embed/_11OCFwf_GE" style="border: 0; height: 100%; left: 0; position: absolute; top: 0; width: 100%">
+</iframe></div></div></blockquote>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Everything that you can do using the provided GUI can also be achieved by the Pegasus Simulator API in Python. In the next
+tutorials we will cover how to create standalone Python scripts to perform simulations.</p>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../setup/developer.html" class="btn btn-neutral float-left" title="Development" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="create_standalone_application.html" class="btn btn-neutral float-right" title="Create a Standalone Application" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Marcelo Jacinto.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create a Standalone Application &mdash; Pegasus Simulator  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Your First Simulation" href="create_standalone_simulation.html" />
+    <link rel="prev" title="Run in Extension Mode (GUI)" href="run_extension_mode.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #FFD700" >
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../setup/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup/developer.html">Development</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="run_extension_mode.html">Run in Extension Mode (GUI)</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Create a Standalone Application</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#code">1. Code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#explanation">2. Explanation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#execution">3. Execution</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="create_standalone_simulation.html">Your First Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="create_custom_backend.html">Create a Custom Controller</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Features</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../features/environments.html">Environments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../features/vehicles.html">Vehicles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../features/px4_integration.html">PX4 Integration</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Source API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../references/contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/known_issues.html">Known Issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/roadmap.html">Roadmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/bibliography.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #FFD700" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Pegasus Simulator</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Create a Standalone Application</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/source/tutorials/create_standalone_application.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="create-a-standalone-application">
+<h1>Create a Standalone Application<a class="headerlink" href="#create-a-standalone-application" title="Permalink to this heading"></a></h1>
+<p>This tutorial introduces how to create a standalone python script to set up an empty scene.
+It introduces the main class used by <code class="docutils literal notranslate"><span class="pre">Isaac</span> <span class="pre">Sim</span></code> simulator, <code class="xref py py-class docutils literal notranslate"><span class="pre">SimulationApp</span></code>, as well as the <code class="xref py py-class docutils literal notranslate"><span class="pre">timeline</span></code>
+concept that helps to launch and control the simulation timeline. In this tutorial we do <strong>NOT</strong> expose the
+<code class="docutils literal notranslate"><span class="pre">Pegasus</span> <span class="pre">API</span></code> yet.</p>
+<section id="code">
+<h2>1. Code<a class="headerlink" href="#code" title="Permalink to this heading"></a></h2>
+<p>The tutorial corresponds to the <code class="docutils literal notranslate"><span class="pre">0_template_app.py</span></code> example in the <code class="docutils literal notranslate"><span class="pre">examples</span></code> directory.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">  1</span><span class="ch">#!/usr/bin/env python</span>
+<span class="linenos">  2</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">  3</span><span class="sd">| File: 0_template_app.py</span>
+<span class="linenos">  4</span><span class="sd">| Author: Marcelo Jacinto (marcelo.jacinto@tecnico.ulisboa.pt)</span>
+<span class="linenos">  5</span><span class="sd">| License: BSD-3-Clause. Copyright (c) 2023, Marcelo Jacinto. All rights reserved.</span>
+<span class="linenos">  6</span><span class="sd">| Description: This files serves as a template on how to build a clean and simple Isaac Sim based standalone App.</span>
+<span class="linenos">  7</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">  8</span>
+<span class="linenos">  9</span><span class="c1"># Imports to start Isaac Sim from this script</span>
+<span class="linenos"> 10</span><span class="kn">import</span> <span class="nn">carb</span>
+<span class="hll"><span class="linenos"> 11</span><span class="kn">from</span> <span class="nn">omni.isaac.kit</span> <span class="kn">import</span> <span class="n">SimulationApp</span>
+</span><span class="hll"><span class="linenos"> 12</span>
+</span><span class="hll"><span class="linenos"> 13</span><span class="c1"># Start Isaac Sim&#39;s simulation environment</span>
+</span><span class="hll"><span class="linenos"> 14</span><span class="c1"># Note: this simulation app must be instantiated right after the SimulationApp import, otherwise the simulator will crash</span>
+</span><span class="hll"><span class="linenos"> 15</span><span class="c1"># as this is the object that will load all the extensions and load the actual simulator.</span>
+</span><span class="hll"><span class="linenos"> 16</span><span class="n">simulation_app</span> <span class="o">=</span> <span class="n">SimulationApp</span><span class="p">({</span><span class="s2">&quot;headless&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">})</span>
+</span><span class="linenos"> 17</span>
+<span class="linenos"> 18</span><span class="c1"># -----------------------------------</span>
+<span class="linenos"> 19</span><span class="c1"># The actual script should start here</span>
+<span class="linenos"> 20</span><span class="c1"># -----------------------------------</span>
+<span class="linenos"> 21</span><span class="kn">import</span> <span class="nn">omni.timeline</span>
+<span class="linenos"> 22</span><span class="kn">from</span> <span class="nn">omni.isaac.core</span> <span class="kn">import</span> <span class="n">World</span>
+<span class="linenos"> 23</span>
+<span class="linenos"> 24</span><span class="k">class</span> <span class="nc">Template</span><span class="p">:</span>
+<span class="linenos"> 25</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos"> 26</span><span class="sd">    A Template class that serves as an example on how to build a simple Isaac Sim standalone App.</span>
+<span class="linenos"> 27</span><span class="sd">    &quot;&quot;&quot;</span>
+<span class="linenos"> 28</span>
+<span class="linenos"> 29</span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos"> 30</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos"> 31</span><span class="sd">        Method that initializes the template App and is used to setup the simulation environment.</span>
+<span class="linenos"> 32</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos"> 33</span>        
+<span class="linenos"> 34</span>        <span class="c1"># Acquire the timeline that will be used to start/stop the simulation</span>
+<span class="hll"><span class="linenos"> 35</span>        <span class="bp">self</span><span class="o">.</span><span class="n">timeline</span> <span class="o">=</span> <span class="n">omni</span><span class="o">.</span><span class="n">timeline</span><span class="o">.</span><span class="n">get_timeline_interface</span><span class="p">()</span>
+</span><span class="hll"><span class="linenos"> 36</span>
+</span><span class="hll"><span class="linenos"> 37</span>        <span class="c1"># Acquire the World, .i.e, the singleton that controls that is a one stop shop for setting up physics, </span>
+</span><span class="hll"><span class="linenos"> 38</span>        <span class="c1"># spawning asset primitives, etc.</span>
+</span><span class="hll"><span class="linenos"> 39</span>        <span class="bp">self</span><span class="o">.</span><span class="n">world</span> <span class="o">=</span> <span class="n">World</span><span class="p">()</span>
+</span><span class="hll"><span class="linenos"> 40</span>
+</span><span class="hll"><span class="linenos"> 41</span>        <span class="c1"># Create a ground plane for the simulation</span>
+</span><span class="hll"><span class="linenos"> 42</span>        <span class="bp">self</span><span class="o">.</span><span class="n">world</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">add_default_ground_plane</span><span class="p">()</span>
+</span><span class="hll"><span class="linenos"> 43</span>
+</span><span class="hll"><span class="linenos"> 44</span>        <span class="c1"># Create an example physics callback</span>
+</span><span class="hll"><span class="linenos"> 45</span>        <span class="bp">self</span><span class="o">.</span><span class="n">world</span><span class="o">.</span><span class="n">add_physics_callback</span><span class="p">(</span><span class="s1">&#39;template_physics_callback&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">physics_callback</span><span class="p">)</span>
+</span><span class="hll"><span class="linenos"> 46</span>
+</span><span class="hll"><span class="linenos"> 47</span>        <span class="c1"># Create an example render callback</span>
+</span><span class="hll"><span class="linenos"> 48</span>        <span class="bp">self</span><span class="o">.</span><span class="n">world</span><span class="o">.</span><span class="n">add_render_callback</span><span class="p">(</span><span class="s1">&#39;template_render_callback&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">render_callback</span><span class="p">)</span>
+</span><span class="hll"><span class="linenos"> 49</span>
+</span><span class="hll"><span class="linenos"> 50</span>        <span class="c1"># Create an example timeline callback</span>
+</span><span class="hll"><span class="linenos"> 51</span>        <span class="bp">self</span><span class="o">.</span><span class="n">world</span><span class="o">.</span><span class="n">add_timeline_callback</span><span class="p">(</span><span class="s1">&#39;template_timeline_callback&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">timeline_callback</span><span class="p">)</span>
+</span><span class="hll"><span class="linenos"> 52</span>
+</span><span class="hll"><span class="linenos"> 53</span>        <span class="c1"># Reset the simulation environment so that all articulations (aka robots) are initialized</span>
+</span><span class="hll"><span class="linenos"> 54</span>        <span class="bp">self</span><span class="o">.</span><span class="n">world</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+</span><span class="linenos"> 55</span>
+<span class="linenos"> 56</span>        <span class="c1"># Auxiliar variable for the timeline callback example</span>
+<span class="linenos"> 57</span>        <span class="bp">self</span><span class="o">.</span><span class="n">stop_sim</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="linenos"> 58</span>
+<span class="linenos"> 59</span>    <span class="k">def</span> <span class="nf">physics_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+<span class="linenos"> 60</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;An example physics callback. It will get invoked every physics step.</span>
+<span class="linenos"> 61</span>
+<span class="linenos"> 62</span><span class="sd">        Args:</span>
+<span class="linenos"> 63</span><span class="sd">            dt (float): The time difference between the previous and current function call, in seconds.</span>
+<span class="linenos"> 64</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos"> 65</span>        <span class="n">carb</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s2">&quot;This is a physics callback. It is called every &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; seconds!&quot;</span><span class="p">)</span>
+<span class="linenos"> 66</span>
+<span class="linenos"> 67</span>    <span class="k">def</span> <span class="nf">render_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<span class="linenos"> 68</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;An example render callback. It will get invoked for every rendered frame.</span>
+<span class="linenos"> 69</span>
+<span class="linenos"> 70</span><span class="sd">        Args:</span>
+<span class="linenos"> 71</span><span class="sd">            data: Rendering data.</span>
+<span class="linenos"> 72</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos"> 73</span>        <span class="n">carb</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s2">&quot;This is a render callback. It is called every frame!&quot;</span><span class="p">)</span>
+<span class="linenos"> 74</span>
+<span class="linenos"> 75</span>    <span class="k">def</span> <span class="nf">timeline_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeline_event</span><span class="p">):</span>
+<span class="linenos"> 76</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;An example timeline callback. It will get invoked every time a timeline event occurs. In this example,</span>
+<span class="linenos"> 77</span><span class="sd">        we will check if the event is for a &#39;simulation stop&#39;. If so, we will attempt to close the app</span>
+<span class="linenos"> 78</span>
+<span class="linenos"> 79</span><span class="sd">        Args:</span>
+<span class="linenos"> 80</span><span class="sd">            timeline_event: A timeline event</span>
+<span class="linenos"> 81</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos"> 82</span>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">world</span><span class="o">.</span><span class="n">is_stopped</span><span class="p">():</span>
+<span class="linenos"> 83</span>            <span class="bp">self</span><span class="o">.</span><span class="n">stop_sim</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="linenos"> 84</span>
+<span class="hll"><span class="linenos"> 85</span>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class="hll"><span class="linenos"> 86</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span class="hll"><span class="linenos"> 87</span><span class="sd">        Method that implements the application main loop, where the physics steps are executed.</span>
+</span><span class="hll"><span class="linenos"> 88</span><span class="sd">        &quot;&quot;&quot;</span>
+</span><span class="hll"><span class="linenos"> 89</span>
+</span><span class="hll"><span class="linenos"> 90</span>        <span class="c1"># Start the simulation</span>
+</span><span class="hll"><span class="linenos"> 91</span>        <span class="bp">self</span><span class="o">.</span><span class="n">timeline</span><span class="o">.</span><span class="n">play</span><span class="p">()</span>
+</span><span class="hll"><span class="linenos"> 92</span>
+</span><span class="hll"><span class="linenos"> 93</span>        <span class="c1"># The &quot;infinite&quot; loop</span>
+</span><span class="hll"><span class="linenos"> 94</span>        <span class="k">while</span> <span class="n">simulation_app</span><span class="o">.</span><span class="n">is_running</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop_sim</span><span class="p">:</span>
+</span><span class="hll"><span class="linenos"> 95</span>
+</span><span class="hll"><span class="linenos"> 96</span>            <span class="c1"># Update the UI of the app and perform the physics step</span>
+</span><span class="hll"><span class="linenos"> 97</span>            <span class="bp">self</span><span class="o">.</span><span class="n">world</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">render</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span class="hll"><span class="linenos"> 98</span>        
+</span><span class="hll"><span class="linenos"> 99</span>        <span class="c1"># Cleanup and stop</span>
+</span><span class="hll"><span class="linenos">100</span>        <span class="n">carb</span><span class="o">.</span><span class="n">log_warn</span><span class="p">(</span><span class="s2">&quot;Template Simulation App is closing.&quot;</span><span class="p">)</span>
+</span><span class="hll"><span class="linenos">101</span>        <span class="bp">self</span><span class="o">.</span><span class="n">timeline</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+</span><span class="hll"><span class="linenos">102</span>        <span class="n">simulation_app</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span class="linenos">103</span>
+<span class="linenos">104</span><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<span class="linenos">105</span>
+<span class="linenos">106</span>    <span class="c1"># Instantiate the template app</span>
+<span class="linenos">107</span>    <span class="n">template_app</span> <span class="o">=</span> <span class="n">Template</span><span class="p">()</span>
+<span class="linenos">108</span>
+<span class="linenos">109</span>    <span class="c1"># Run the application loop</span>
+<span class="linenos">110</span>    <span class="n">template_app</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="linenos">111</span>
+<span class="linenos">112</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="linenos">113</span>    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="explanation">
+<h2>2. Explanation<a class="headerlink" href="#explanation" title="Permalink to this heading"></a></h2>
+<p>The first step, when creating a <code class="docutils literal notranslate"><span class="pre">standalone</span> <span class="pre">application</span></code> with <code class="docutils literal notranslate"><span class="pre">Isaac</span> <span class="pre">Sim</span></code> is to instantiate the <code class="xref py py-class docutils literal notranslate"><span class="pre">SimulationApp</span></code>
+object, and it takes a dictionary of parameters that can be used to configure the application. This
+object will be responsible for opening a <code class="docutils literal notranslate"><span class="pre">bare</span> <span class="pre">bones</span></code> version of the simulator. The <code class="docutils literal notranslate"><span class="pre">headless</span></code> parameter
+selects whether to launch the GUI window or not.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">11</span><span class="kn">from</span> <span class="nn">omni.isaac.kit</span> <span class="kn">import</span> <span class="n">SimulationApp</span>
+<span class="linenos">12</span>
+<span class="linenos">13</span><span class="c1"># Start Isaac Sim&#39;s simulation environment</span>
+<span class="linenos">14</span><span class="c1"># Note: this simulation app must be instantiated right after the SimulationApp import, otherwise the simulator will crash</span>
+<span class="linenos">15</span><span class="c1"># as this is the object that will load all the extensions and load the actual simulator.</span>
+<span class="linenos">16</span><span class="n">simulation_app</span> <span class="o">=</span> <span class="n">SimulationApp</span><span class="p">({</span><span class="s2">&quot;headless&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">})</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You can <strong>NOT</strong> import other omniverse modules before instantiating the <code class="xref py py-class docutils literal notranslate"><span class="pre">SimulationApp</span></code>, otherwise the simulation crashes
+before the window it’s even open. For a deeper understanding on how the <code class="xref py py-class docutils literal notranslate"><span class="pre">SimulationApp</span></code> works, check
+<a class="reference external" href="https://docs.omniverse.nvidia.com/py/isaacsim/source/extensions/omni.isaac.kit/docs/index.html#simulation-application-omni-isaac-kit">NVIDIA’s offical documentation</a>.</p>
+</div>
+<p>In order to create a <a class="reference external" href="https://docs.omniverse.nvidia.com/py/isaacsim/source/extensions/omni.isaac.core/docs/index.html#module-omni.isaac.core.simulation_context">Simulation Context</a>,
+we resort to the <a class="reference external" href="https://docs.omniverse.nvidia.com/py/isaacsim/source/extensions/omni.isaac.core/docs/index.html?highlight=world#omni.isaac.core.world.World">World</a> class environment. The <a class="reference external" href="https://docs.omniverse.nvidia.com/py/isaacsim/source/extensions/omni.isaac.core/docs/index.html?highlight=world#omni.isaac.core.world.World">World</a>  class inherits the <a class="reference external" href="https://docs.omniverse.nvidia.com/py/isaacsim/source/extensions/omni.isaac.core/docs/index.html#module-omni.isaac.core.simulation_context">Simulation Context</a>,
+and provides already some default parameters for setting up a simulation for us. You can pass as arguments the physics
+time step and rendering time step (in seconds). The rendering and physics can be set to run at different rates. For now let’s use the defaults: 60Hz for both rendering and physics.</p>
+<p>After creating the <a class="reference external" href="https://docs.omniverse.nvidia.com/py/isaacsim/source/extensions/omni.isaac.core/docs/index.html?highlight=world#omni.isaac.core.world.World">World</a> class environment. The <a class="reference external" href="https://docs.omniverse.nvidia.com/py/isaacsim/source/extensions/omni.isaac.core/docs/index.html?highlight=world#omni.isaac.core.world.World">World</a>  class inherits the <a class="reference external" href="https://docs.omniverse.nvidia.com/py/isaacsim/source/extensions/omni.isaac.core/docs/index.html#module-omni.isaac.core.simulation_context">Simulation Context</a>, we will
+take advantage of its <code class="docutils literal notranslate"><span class="pre">callback</span> <span class="pre">system</span></code> to declare that some functions defined by us should be called at every physics iteration,
+render iteration or every time there is a timeline event, such as pressing the start/stop button. In this case, the
+<code class="docutils literal notranslate"><span class="pre">physics_callback</span></code> method will be invoked at every physics step, the <code class="docutils literal notranslate"><span class="pre">render_callback</span></code> at every render step and
+<code class="docutils literal notranslate"><span class="pre">timeline_callback</span></code> every time there is a timeline event. You can add as many callbacks as you want. After having all your
+callbacks defined, the <code class="docutils literal notranslate"><span class="pre">world.reset()</span></code> method should be invoked to initialize the <code class="docutils literal notranslate"><span class="pre">physics</span> <span class="pre">context</span></code> and set any existing
+robot joints (in this case there is none) to their default state.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">35</span>        <span class="bp">self</span><span class="o">.</span><span class="n">timeline</span> <span class="o">=</span> <span class="n">omni</span><span class="o">.</span><span class="n">timeline</span><span class="o">.</span><span class="n">get_timeline_interface</span><span class="p">()</span>
+<span class="linenos">36</span>
+<span class="linenos">37</span>        <span class="c1"># Acquire the World, .i.e, the singleton that controls that is a one stop shop for setting up physics, </span>
+<span class="linenos">38</span>        <span class="c1"># spawning asset primitives, etc.</span>
+<span class="linenos">39</span>        <span class="bp">self</span><span class="o">.</span><span class="n">world</span> <span class="o">=</span> <span class="n">World</span><span class="p">()</span>
+<span class="linenos">40</span>
+<span class="linenos">41</span>        <span class="c1"># Create a ground plane for the simulation</span>
+<span class="linenos">42</span>        <span class="bp">self</span><span class="o">.</span><span class="n">world</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">add_default_ground_plane</span><span class="p">()</span>
+<span class="linenos">43</span>
+<span class="linenos">44</span>        <span class="c1"># Create an example physics callback</span>
+<span class="linenos">45</span>        <span class="bp">self</span><span class="o">.</span><span class="n">world</span><span class="o">.</span><span class="n">add_physics_callback</span><span class="p">(</span><span class="s1">&#39;template_physics_callback&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">physics_callback</span><span class="p">)</span>
+<span class="linenos">46</span>
+<span class="linenos">47</span>        <span class="c1"># Create an example render callback</span>
+<span class="linenos">48</span>        <span class="bp">self</span><span class="o">.</span><span class="n">world</span><span class="o">.</span><span class="n">add_render_callback</span><span class="p">(</span><span class="s1">&#39;template_render_callback&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">render_callback</span><span class="p">)</span>
+<span class="linenos">49</span>
+<span class="linenos">50</span>        <span class="c1"># Create an example timeline callback</span>
+<span class="linenos">51</span>        <span class="bp">self</span><span class="o">.</span><span class="n">world</span><span class="o">.</span><span class="n">add_timeline_callback</span><span class="p">(</span><span class="s1">&#39;template_timeline_callback&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">timeline_callback</span><span class="p">)</span>
+<span class="linenos">52</span>
+<span class="linenos">53</span>        <span class="c1"># Reset the simulation environment so that all articulations (aka robots) are initialized</span>
+<span class="linenos">54</span>        <span class="bp">self</span><span class="o">.</span><span class="n">world</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>To start the actual simulation, we invoke the timeline’s <code class="docutils literal notranslate"><span class="pre">play()</span></code> method. This is necessary in order to ensure that
+every previously defined callback gets invoked. In order for the <code class="docutils literal notranslate"><span class="pre">Isaac</span> <span class="pre">Sim</span></code> app to remain responsive, we need to create
+a <code class="docutils literal notranslate"><span class="pre">while</span> <span class="pre">loop</span></code> that invokes <code class="docutils literal notranslate"><span class="pre">world.step(render=True)</span></code> to make sure that the UI get’s rendered.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 85</span>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos"> 86</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos"> 87</span><span class="sd">        Method that implements the application main loop, where the physics steps are executed.</span>
+<span class="linenos"> 88</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos"> 89</span>
+<span class="linenos"> 90</span>        <span class="c1"># Start the simulation</span>
+<span class="linenos"> 91</span>        <span class="bp">self</span><span class="o">.</span><span class="n">timeline</span><span class="o">.</span><span class="n">play</span><span class="p">()</span>
+<span class="linenos"> 92</span>
+<span class="linenos"> 93</span>        <span class="c1"># The &quot;infinite&quot; loop</span>
+<span class="linenos"> 94</span>        <span class="k">while</span> <span class="n">simulation_app</span><span class="o">.</span><span class="n">is_running</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop_sim</span><span class="p">:</span>
+<span class="linenos"> 95</span>
+<span class="linenos"> 96</span>            <span class="c1"># Update the UI of the app and perform the physics step</span>
+<span class="linenos"> 97</span>            <span class="bp">self</span><span class="o">.</span><span class="n">world</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">render</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="linenos"> 98</span>        
+<span class="linenos"> 99</span>        <span class="c1"># Cleanup and stop</span>
+<span class="linenos">100</span>        <span class="n">carb</span><span class="o">.</span><span class="n">log_warn</span><span class="p">(</span><span class="s2">&quot;Template Simulation App is closing.&quot;</span><span class="p">)</span>
+<span class="linenos">101</span>        <span class="bp">self</span><span class="o">.</span><span class="n">timeline</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+<span class="linenos">102</span>        <span class="n">simulation_app</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>As you may have noticed, our <code class="docutils literal notranslate"><span class="pre">infinite</span> <span class="pre">loop</span></code> is very clean. In this work, similarly to the ROS 2 standard,
+we prefer to perform all the logic by resorting to function callbacks instead of cramming all the logic inside
+the while loop. This structure allows our code to be more organized and more modular. As you will learn in the following
+tutorials, the <code class="docutils literal notranslate"><span class="pre">Pegasus</span> <span class="pre">Simulator</span> <span class="pre">API</span></code> is built on top of this idea of <code class="docutils literal notranslate"><span class="pre">callbacks</span></code>.</p>
+</section>
+<section id="execution">
+<h2>3. Execution<a class="headerlink" href="#execution" title="Permalink to this heading"></a></h2>
+<p>Now let’s run the Python script:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ISAACSIM_PYTHON<span class="w"> </span>examples/0_template_app.py
+</pre></div>
+</div>
+<p>This should open a stage with a blue ground-plane. The simulation should start playing automatically and the stage being rendered.
+To stop the simulation, you can either <code class="docutils literal notranslate"><span class="pre">close</span> <span class="pre">the</span> <span class="pre">window</span></code>, press the <code class="docutils literal notranslate"><span class="pre">STOP</span> <span class="pre">button</span></code> in the UI, or press <code class="docutils literal notranslate"><span class="pre">Ctrl+C</span></code> in the terminal.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Notice that the window will only close when pressing the <code class="docutils literal notranslate"><span class="pre">STOP</span> <span class="pre">button</span></code>, because we defined a method called
+<code class="docutils literal notranslate"><span class="pre">timeline_callback</span></code> that get’s invoked for every <code class="docutils literal notranslate"><span class="pre">timeline</span> <span class="pre">event</span></code>, such as pressing the <code class="docutils literal notranslate"><span class="pre">STOP</span> <span class="pre">button</span></code>.</p>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="run_extension_mode.html" class="btn btn-neutral float-left" title="Run in Extension Mode (GUI)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="create_standalone_simulation.html" class="btn btn-neutral float-right" title="Your First Simulation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Marcelo Jacinto.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

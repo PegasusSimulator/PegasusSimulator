@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vehicle Manager &mdash; Pegasus Simulator  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Multirotor" href="vehicles.multirotor.html" />
+    <link rel="prev" title="Vehicle" href="vehicles.vehicle.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #FFD700" >
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../setup/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup/developer.html">Development</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/run_extension_mode.html">Run in Extension Mode (GUI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/create_standalone_application.html">Create a Standalone Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/create_standalone_simulation.html">Your First Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/create_custom_backend.html">Create a Custom Controller</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Features</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../features/environments.html">Environments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../features/vehicles.html">Vehicles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../features/px4_integration.html">PX4 Integration</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Source API</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="index.html#sensors">Sensors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#dynamics">Dynamics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#thruster">Thruster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#control-backends">Control Backends</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#vehicle">Vehicle</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="state.html">State</a></li>
+<li class="toctree-l3"><a class="reference internal" href="vehicles.vehicle.html">Vehicle</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Vehicle Manager</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pegasus.simulator.logic.vehicle_manager.VehicleManager"><code class="docutils literal notranslate"><span class="pre">VehicleManager</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="vehicles.multirotor.html">Multirotor</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#pegasus-interace">Pegasus Interace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#default-params">Default Params</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../references/contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/known_issues.html">Known Issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/roadmap.html">Roadmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/bibliography.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #FFD700" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Pegasus Simulator</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API Reference</a></li>
+      <li class="breadcrumb-item active">Vehicle Manager</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/source/api/vehicles.vehicle_manager.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-pegasus.simulator.logic.vehicle_manager">
+<span id="vehicle-manager"></span><h1>Vehicle Manager<a class="headerlink" href="#module-pegasus.simulator.logic.vehicle_manager" title="Permalink to this heading"></a></h1>
+<div class="line-block">
+<div class="line">File: vehicle_manager.py</div>
+<div class="line">Author: Marcelo Jacinto (<a class="reference external" href="mailto:marcelo&#46;jacinto&#37;&#52;&#48;tecnico&#46;ulisboa&#46;pt">marcelo<span>&#46;</span>jacinto<span>&#64;</span>tecnico<span>&#46;</span>ulisboa<span>&#46;</span>pt</a>)</div>
+<div class="line">License: BSD-3-Clause. Copyright (c) 2023, Marcelo Jacinto. All rights reserved.</div>
+<div class="line">Description: Definition of the VehicleManager class - a singleton used to manage the vehiles that are spawned in the simulation world</div>
+</div>
+<p><strong>Classes:</strong></p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.vehicle_manager.VehicleManager" title="pegasus.simulator.logic.vehicle_manager.VehicleManager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VehicleManager</span></code></a></p></td>
+<td><p>The VehicleManager class is implemented following a singleton pattern.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.vehicle_manager.VehicleManager">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pegasus.simulator.logic.vehicle_manager.</span></span><span class="sig-name descname"><span class="pre">VehicleManager</span></span><a class="headerlink" href="#pegasus.simulator.logic.vehicle_manager.VehicleManager" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>The VehicleManager class is implemented following a singleton pattern. This means that once a vehicle is spawned
+on the world or an instance of the VehicleManager is created, no either will be running at the same time.</p>
+<p>This class keeps track of all the vehicles that are spawned in the simulation world, either trough the extension UI
+or via Python script. Every time a new vehicle object is created, the ‘add_vehicle’ method is invoked. Additionally,
+a vehicle is removed, i.e. ‘remove_vehicle’ gets invoked, every time the ‘__del__’ function of the “Vehicle” object
+gets invoked.</p>
+<p><strong>Methods:</strong></p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.vehicle_manager.VehicleManager.__del__" title="pegasus.simulator.logic.vehicle_manager.VehicleManager.__del__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__del__</span></code></a>()</p></td>
+<td><p>Destructor for the object</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.vehicle_manager.VehicleManager.__init__" title="pegasus.simulator.logic.vehicle_manager.VehicleManager.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>()</p></td>
+<td><p>Constructor for the vehicle manager class.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.vehicle_manager.VehicleManager.__new__" title="pegasus.simulator.logic.vehicle_manager.VehicleManager.__new__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__new__</span></code></a>(cls)</p></td>
+<td><p>Method that allocated memory for a new vehicle_manager.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.vehicle_manager.VehicleManager.add_vehicle" title="pegasus.simulator.logic.vehicle_manager.VehicleManager.add_vehicle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_vehicle</span></code></a>(stage_prefix, vehicle)</p></td>
+<td><p>Method that adds the vehicles to the vehicle manager.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.vehicle_manager.VehicleManager.get_vehicle" title="pegasus.simulator.logic.vehicle_manager.VehicleManager.get_vehicle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_vehicle</span></code></a>(stage_prefix)</p></td>
+<td><p>Method that returns the vehicle object given its stage prefix.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.vehicle_manager.VehicleManager.get_vehicle_manager" title="pegasus.simulator.logic.vehicle_manager.VehicleManager.get_vehicle_manager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_vehicle_manager</span></code></a>()</p></td>
+<td><p>Method that returns the current vehicle manager.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.vehicle_manager.VehicleManager.remove_all_vehicles" title="pegasus.simulator.logic.vehicle_manager.VehicleManager.remove_all_vehicles"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_all_vehicles</span></code></a>()</p></td>
+<td><p>Method that will delete all the vehicles that were spawned from the vehicle manager.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.vehicle_manager.VehicleManager.remove_vehicle" title="pegasus.simulator.logic.vehicle_manager.VehicleManager.remove_vehicle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_vehicle</span></code></a>(stage_prefix)</p></td>
+<td><p>Method that deletes a vehicle from the vehicle manager.</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Attributes:</strong></p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.vehicle_manager.VehicleManager.vehicles" title="pegasus.simulator.logic.vehicle_manager.VehicleManager.vehicles"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vehicles</span></code></a></p></td>
+<td><p>Returns: (list) List of vehicles that were spawned.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.vehicle_manager.VehicleManager.__del__">
+<span class="sig-name descname"><span class="pre">__del__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.vehicle_manager.VehicleManager.__del__" title="Permalink to this definition"></a></dt>
+<dd><p>Destructor for the object</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.vehicle_manager.VehicleManager.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.vehicle_manager.VehicleManager.__init__" title="Permalink to this definition"></a></dt>
+<dd><p>Constructor for the vehicle manager class.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.vehicle_manager.VehicleManager.__new__">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__new__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.vehicle_manager.VehicleManager.__new__" title="Permalink to this definition"></a></dt>
+<dd><p>Method that allocated memory for a new vehicle_manager. Since the VehicleManager follows a singleton pattern,
+only one instance of VehicleManger object can be in memory at any time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the single instance of the VehicleManager class.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>VehicleManger</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.vehicle_manager.VehicleManager.add_vehicle">
+<span class="sig-name descname"><span class="pre">add_vehicle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stage_prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vehicle</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.vehicle_manager.VehicleManager.add_vehicle" title="Permalink to this definition"></a></dt>
+<dd><p>Method that adds the vehicles to the vehicle manager.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>stage_prefix</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – A string with the name that the vehicle is spawned in the simulator</p></li>
+<li><p><strong>vehicle</strong> (<a class="reference internal" href="vehicles.vehicle.html#pegasus.simulator.logic.vehicles.vehicle.Vehicle" title="pegasus.simulator.logic.vehicles.vehicle.Vehicle"><em>Vehicle</em></a>) – The vehicle object being added to the vehicle manager.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.vehicle_manager.VehicleManager.get_vehicle">
+<span class="sig-name descname"><span class="pre">get_vehicle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stage_prefix</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.vehicle_manager.VehicleManager.get_vehicle" title="Permalink to this definition"></a></dt>
+<dd><p>Method that returns the vehicle object given its stage prefix. Returns None if there is no vehicle
+associated with that stage prefix</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>stage_prefix</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – A string with the name that the vehicle is spawned in the simulator</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The vehicle object associated with the stage_prefix</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="vehicles.vehicle.html#pegasus.simulator.logic.vehicles.vehicle.Vehicle" title="pegasus.simulator.logic.vehicles.vehicle.Vehicle">Vehicle</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.vehicle_manager.VehicleManager.get_vehicle_manager">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_vehicle_manager</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.vehicle_manager.VehicleManager.get_vehicle_manager" title="Permalink to this definition"></a></dt>
+<dd><p>Method that returns the current vehicle manager.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.vehicle_manager.VehicleManager.remove_all_vehicles">
+<span class="sig-name descname"><span class="pre">remove_all_vehicles</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.vehicle_manager.VehicleManager.remove_all_vehicles" title="Permalink to this definition"></a></dt>
+<dd><p>Method that will delete all the vehicles that were spawned from the vehicle manager.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.vehicle_manager.VehicleManager.remove_vehicle">
+<span class="sig-name descname"><span class="pre">remove_vehicle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stage_prefix</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.vehicle_manager.VehicleManager.remove_vehicle" title="Permalink to this definition"></a></dt>
+<dd><p>Method that deletes a vehicle from the vehicle manager.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>stage_prefix</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – A string with the name that the vehicle is spawned in the simulator.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.vehicle_manager.VehicleManager.vehicles">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">vehicles</span></span><a class="headerlink" href="#pegasus.simulator.logic.vehicle_manager.VehicleManager.vehicles" title="Permalink to this definition"></a></dt>
+<dd><p>Returns:
+(list) List of vehicles that were spawned.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="vehicles.vehicle.html" class="btn btn-neutral float-left" title="Vehicle" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="vehicles.multirotor.html" class="btn btn-neutral float-right" title="Multirotor" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Marcelo Jacinto.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

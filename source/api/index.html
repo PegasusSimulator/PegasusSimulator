@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API Reference &mdash; Pegasus Simulator  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Sensor" href="sensors.sensor.html" />
+    <link rel="prev" title="PX4 Integration" href="../features/px4_integration.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #FFD700" >
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../setup/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup/developer.html">Development</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/run_extension_mode.html">Run in Extension Mode (GUI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/create_standalone_application.html">Create a Standalone Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/create_standalone_simulation.html">Your First Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/create_custom_backend.html">Create a Custom Controller</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Features</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../features/environments.html">Environments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../features/vehicles.html">Vehicles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../features/px4_integration.html">PX4 Integration</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Source API</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#sensors">Sensors</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sensors.sensor.html">Sensor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sensors.barometer.html">Barometer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sensors.gps.html">GPS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sensors.imu.html">Imu</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sensors.magnetometer.html">Magnetometer</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#dynamics">Dynamics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dynamics.drag.html">Drag</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dynamics.linear_drag.html">Linear Drag</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#thruster">Thruster</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="thrusters.quadratic_thrust_curve.html">Quadratic Thrust Curve</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#control-backends">Control Backends</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="backends.backend.html">Backend</a></li>
+<li class="toctree-l3"><a class="reference internal" href="backends.mavlink_backend.html">Mavlink Backend</a></li>
+<li class="toctree-l3"><a class="reference internal" href="backends.ros2_backend.html">ROS2 Backend</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#vehicle">Vehicle</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="state.html">State</a></li>
+<li class="toctree-l3"><a class="reference internal" href="vehicles.vehicle.html">Vehicle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="vehicles.vehicle_manager.html">Vehicle Manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="vehicles.multirotor.html">Multirotor</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#pegasus-interace">Pegasus Interace</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pegasus_interface.html">Pegasus Interface</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#default-params">Default Params</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="params.html">Params</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../references/contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/known_issues.html">Known Issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/roadmap.html">Roadmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/bibliography.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #FFD700" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Pegasus Simulator</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">API Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/source/api/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="api-reference">
+<h1>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this heading"></a></h1>
+<section id="sensors">
+<h2>Sensors<a class="headerlink" href="#sensors" title="Permalink to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="sensors.sensor.html">Sensor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sensors.sensor.html#pegasus.simulator.logic.sensors.sensor.Sensor"><code class="docutils literal notranslate"><span class="pre">Sensor</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sensors.barometer.html">Barometer</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sensors.barometer.html#pegasus.simulator.logic.sensors.barometer.Barometer"><code class="docutils literal notranslate"><span class="pre">Barometer</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sensors.gps.html">GPS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sensors.gps.html#pegasus.simulator.logic.sensors.gps.GPS"><code class="docutils literal notranslate"><span class="pre">GPS</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sensors.imu.html">Imu</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sensors.imu.html#pegasus.simulator.logic.sensors.imu.IMU"><code class="docutils literal notranslate"><span class="pre">IMU</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sensors.magnetometer.html">Magnetometer</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sensors.magnetometer.html#pegasus.simulator.logic.sensors.magnetometer.Magnetometer"><code class="docutils literal notranslate"><span class="pre">Magnetometer</span></code></a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="dynamics">
+<h2>Dynamics<a class="headerlink" href="#dynamics" title="Permalink to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dynamics.drag.html">Drag</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dynamics.drag.html#pegasus.simulator.logic.dynamics.drag.Drag"><code class="docutils literal notranslate"><span class="pre">Drag</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dynamics.linear_drag.html">Linear Drag</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dynamics.linear_drag.html#pegasus.simulator.logic.dynamics.linear_drag.LinearDrag"><code class="docutils literal notranslate"><span class="pre">LinearDrag</span></code></a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="thruster">
+<h2>Thruster<a class="headerlink" href="#thruster" title="Permalink to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="thrusters.quadratic_thrust_curve.html">Quadratic Thrust Curve</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="thrusters.quadratic_thrust_curve.html#pegasus.simulator.logic.thrusters.quadratic_thrust_curve.QuadraticThrustCurve"><code class="docutils literal notranslate"><span class="pre">QuadraticThrustCurve</span></code></a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="control-backends">
+<h2>Control Backends<a class="headerlink" href="#control-backends" title="Permalink to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="backends.backend.html">Backend</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="backends.backend.html#pegasus.simulator.logic.backends.backend.Backend"><code class="docutils literal notranslate"><span class="pre">Backend</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="backends.mavlink_backend.html">Mavlink Backend</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="backends.mavlink_backend.html#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend"><code class="docutils literal notranslate"><span class="pre">MavlinkBackend</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="backends.mavlink_backend.html#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackendConfig"><code class="docutils literal notranslate"><span class="pre">MavlinkBackendConfig</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="backends.ros2_backend.html">ROS2 Backend</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="backends.ros2_backend.html#pegasus.simulator.logic.backends.ros2_backend.ROS2Backend"><code class="docutils literal notranslate"><span class="pre">ROS2Backend</span></code></a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="vehicle">
+<h2>Vehicle<a class="headerlink" href="#vehicle" title="Permalink to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="state.html">State</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="state.html#pegasus.simulator.logic.state.State"><code class="docutils literal notranslate"><span class="pre">State</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="vehicles.vehicle.html">Vehicle</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="vehicles.vehicle.html#pegasus.simulator.logic.vehicles.vehicle.Vehicle"><code class="docutils literal notranslate"><span class="pre">Vehicle</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="vehicles.vehicle.html#pegasus.simulator.logic.vehicles.vehicle.get_world_transform_xform"><code class="docutils literal notranslate"><span class="pre">get_world_transform_xform()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="vehicles.vehicle_manager.html">Vehicle Manager</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="vehicles.vehicle_manager.html#pegasus.simulator.logic.vehicle_manager.VehicleManager"><code class="docutils literal notranslate"><span class="pre">VehicleManager</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="vehicles.multirotor.html">Multirotor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="vehicles.multirotor.html#pegasus.simulator.logic.vehicles.multirotor.Multirotor"><code class="docutils literal notranslate"><span class="pre">Multirotor</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="vehicles.multirotor.html#pegasus.simulator.logic.vehicles.multirotor.MultirotorConfig"><code class="docutils literal notranslate"><span class="pre">MultirotorConfig</span></code></a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="pegasus-interace">
+<h2>Pegasus Interace<a class="headerlink" href="#pegasus-interace" title="Permalink to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="pegasus_interface.html">Pegasus Interface</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pegasus_interface.html#pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface"><code class="docutils literal notranslate"><span class="pre">PegasusInterface</span></code></a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="default-params">
+<h2>Default Params<a class="headerlink" href="#default-params" title="Permalink to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="params.html">Params</a></li>
+</ul>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../features/px4_integration.html" class="btn btn-neutral float-left" title="PX4 Integration" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="sensors.sensor.html" class="btn btn-neutral float-right" title="Sensor" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Marcelo Jacinto.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
