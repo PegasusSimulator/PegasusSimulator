@@ -162,13 +162,19 @@ Sponsor the project
 If you want to be a part of this project, or sponsor my work with some graphics cards, jetson developer boards and other development
 material, please reach out to me directly at ``marcelo.jacinto@tecnico.ulisboa.pt``.
 
-At the moment, this project as it stands only has one direct sponsor:
+Current sponsors:
 
-- Dynamics Systems and Ocean Robotics (DSOR) group (Portugal), under Marcelo Jacinto's Ph.D. grant funded by FCT.
+- Dynamics Systems and Ocean Robotics (DSOR) group of the Institute for Systems and Robotics (ISR), a research unit of the Laboratory of Robotics and Engineering Systems (LARSyS).
+- Instituto Superior Técnico, Universidade de Lisboa
+
+The work developed by Marcelo Jacinto and João Pinto was supported by Ph.D. grants funded by Fundação para as Ciências e Tecnologias (FCT).
 
 .. raw:: html
 
    <p float="left" align="center">
-   <img src="../../_static/dsor_logo.png" alt="DSOR group at ISR-Lisbon" width="90" align="center" />
-   <img src="../../_static/ist_logo.png" alt="Instituto Superior Técnico" width="200" align="center"/> 
+      <img src="../../_static/dsor_logo.png" width="90" align="center" />
+      <img src="../../_static/logo_isr.png" width="200" align="center"/> 
+      <img src="../../_static/larsys_logo.png" width="200" align="center"/> 
+      <img src="../../_static/ist_logo.png" width="200" align="center"/> 
+      <img src="../../_static/logo_fct.png" width="200" align="center"/> 
    </p>

@@ -157,8 +157,6 @@ class Multirotor(Vehicle):
         articulation = self._world.dc_interface.get_articulation(self._stage_prefix)
 
         # Get the desired angular velocities for each rotor from the first backend (can be mavlink or other) expressed in rad/s
-        # For now we are only getting the desired inputs from the first backend. TODO - add a more dynamic way of getting
-        # the controls of the vehicles from multiple places to allow overriding of controls - That would be way coooler
         if len(self._backends) != 0:
             desired_rotor_velocities = self._backends[0].input_reference()
         else:

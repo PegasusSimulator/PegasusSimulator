@@ -7,7 +7,7 @@ authors = ["Marcelo Jacinto"]
 
 # The title and description fields are primarily for displaying extension info in UI
 title = "Pegasus Simulator"
-description="Extension providing the main framework interfaces for simulating aerial vehicles using PX4 or ROS as a backend"
+description="Extension providing the main framework interfaces for simulating aerial vehicles using PX4, Python or ROS 2 as a backend"
 
 # Path (relative to the root) or content of readme markdown file for UI.
 readme  = "docs/README.md"

@@ -70,7 +70,9 @@ class PegasusApp:
         config_multirotor1 = MultirotorConfig()
         config_multirotor1.backends = [NonlinearController(
             trajectory_file=self.curr_dir + "/trajectories/pitch_relay_90_deg_2.csv",
-            results_file=self.curr_dir + "/results/single_statistics.npz"
+            results_file=self.curr_dir + "/results/single_statistics.npz",
+            Ki=[0.5, 0.5, 0.5],
+            Kr=[2.0, 2.0, 2.0]
         )]
 
         Multirotor(

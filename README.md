@@ -7,7 +7,7 @@
 
 **Pegasus Simulator** is a framework built on top of [NVIDIA
 Omniverse](https://docs.omniverse.nvidia.com/) and [Isaac
-Sim](https://docs.omniverse.nvidia.com/app_isaacsim/app_isaacsim/overview.html). It is designed to provide an easy, yet powerfull way of simulating the dynamics of multirotors vehicles. It provides a simulation interface for [PX4](https://px4.io/) integration as well as custom python control interface. At the moment, only multirotor vehicles are supported, with support for other vehicle topologies planned for future versions.
+Sim](https://docs.omniverse.nvidia.com/app_isaacsim/app_isaacsim/overview.html). It is designed to provide an easy, yet powerfull way of simulating the dynamics of vehicles. It provides a simulation interface for [PX4](https://px4.io/) integration as well as a custom python control interface. At the moment, only multirotor vehicles are supported, with support for other vehicle topologies planned for future versions.
 
 <p align = "center">
 <a href="https://youtu.be/_11OCFwf_GE" target="_blank"><img src="docs/_static/pegasus_cover.png" alt="Pegasus Simulator image" height="300"/></a>
@@ -23,7 +23,7 @@ Please cite [this paper]() if you use this framework in your work:
 
 ```
 @misc{jacinto2023pegasus,
-	author = {Jacinto, Marcelo and Pinto, João and Pascoal, António and Cunha, Rita},
+	author = {Jacinto, Marcelo and Pinto, João and ..., and Cunha, Rita and Pascoal, António},
 	title = {Pegasus Simulator: An Isaac Sim Framework for Multiple Aerial Vehicles Simulation},
 	year = {2023},
 	eprint = {},
@@ -73,9 +73,15 @@ NVIDIA Isaac Sim is available freely under [individual license](https://www.nvid
 PX4-Autopilot is available as an open-source project under [BSD-3 License](https://github.com/PX4/PX4-Autopilot).
 
 ## Project Sponsors
-- Dynamics Systems and Ocean Robotics (DSOR) group (Portugal), under Marcelo Jacinto's Ph.D. grant funded by FCT.
+- Dynamics Systems and Ocean Robotics (DSOR) group of the Institute for Systems and Robotics (ISR), a research unit of the Laboratory of Robotics and Engineering Systems (LARSyS).
+- Instituto Superior Técnico, Universidade de Lisboa
+
+The work developed by Marcelo Jacinto and João Pinto was supported by Ph.D. grants funded by Fundação para as Ciências e Tecnologias (FCT).
 
 <p float="left" align="center">
   <img src="docs/_static/dsor_logo.png" width="90" align="center" />
+  <img src="docs/_static/logo_isr.png" width="200" align="center"/> 
+  <img src="docs/_static/larsys_logo.png" width="200" align="center"/> 
   <img src="docs/_static/ist_logo.png" width="200" align="center"/> 
+  <img src="docs/_static/logo_fct.png" width="200" align="center"/> 
 </p>

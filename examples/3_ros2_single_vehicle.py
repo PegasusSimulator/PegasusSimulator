@@ -5,7 +5,8 @@
 | License: BSD-3-Clause. Copyright (c) 2023, Marcelo Jacinto. All rights reserved.
 | Description: This files serves as an example on how to build an app that makes use of the Pegasus API to run a 
 simulation with a single vehicle, controlled using the ROS2 backend system. NOTE: this ROS2 interface only works on Ubuntu 20.04LTS
-for now.
+for now. Check the website https://docs.omniverse.nvidia.com/app_isaacsim/app_isaacsim/install_ros.html#enabling-the-ros-ros-2-bridge-extension
+and follow the steps 1, 2 and 3 to make sure that the ROS2 example runs properly
 """
 
 # Imports to start Isaac Sim from this script
@@ -60,7 +61,7 @@ class PegasusApp:
         # Create the vehicle
         # Try to spawn the selected robot in the world to the specified namespace
         config_multirotor = MultirotorConfig()
-        config_multirotor.backends = [ROS2Backend(1)]
+        config_multirotor.backends = [ROS2Backend(vehicle_id=1)]
 
         Multirotor(
             "/World/quadrotor",
