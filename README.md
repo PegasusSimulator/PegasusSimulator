@@ -15,7 +15,7 @@ Sim](https://docs.omniverse.nvidia.com/app_isaacsim/app_isaacsim/overview.html).
 </p>
 
 
-Check the provided documentation [here]() to discover how to install and use this framework.
+Check the provided documentation [here](https://pegasussimulator.github.io/PegasusSimulator/) to discover how to install and use this framework.
 
 ## Citation
 
@@ -50,19 +50,19 @@ This simulation framework is an open-source effort, started by me, Marcelo Jacin
 	* [Rita Cunha]()
 	* [António Pascoal]()
 
-Also check the always up-to-date [Github contributors list]()
+Also check the always up-to-date [Github contributors list](https://github.com/PegasusSimulator/PegasusSimulator/graphs/contributors)
 
 ## Project Roadmap
 
-An high level project roadmap is available [here]().
+An high level project roadmap is available [here](https://pegasussimulator.github.io/PegasusSimulator/source/references/roadmap.html).
 
 ## Support and Contributing
 
-We welcome new contributions from the community to improve this work. Please check the [Contributing]() section in the documentation for the guidelines on how to help improve and support this project.
+We welcome new contributions from the community to improve this work. Please check the [Contributing](https://pegasussimulator.github.io/PegasusSimulator/source/references/contributing.html) section in the documentation for the guidelines on how to help improve and support this project.
 
 * Use [Discussions]() for discussing ideas, asking questions, and requests features.
-* Use [Issues]() to track work in development, bugs and documentation issues.
-* Use [Pull Requests]() to fix bugs or contribute directly with your own ideas, code, examples or improve documentation.
+* Use [Issues](https://github.com/PegasusSimulator/PegasusSimulator/issues) to track work in development, bugs and documentation issues.
+* Use [Pull Requests](https://github.com/PegasusSimulator/PegasusSimulator/pulls) to fix bugs or contribute directly with your own ideas, code, examples or improve documentation.
 
 ## Licenses
 
