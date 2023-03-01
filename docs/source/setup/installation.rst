@@ -23,6 +23,12 @@ Installing NVIDIA Isaac Sim
 .. note::
 	We have tested Pegasus Simulator with Isaac Sim 2022.2 release on Ubuntu 22.04LTS with NVIDIA driver 525.85. The PX4-Autopilot used during development was v.13.2. Older versions Ubuntu and PX4-Autopilot were not tested. This extension was not tested on Windows. 
 
+In order to install Isaac Sim on linux, download the `Omniverse AppImage here <https://install.launcher.omniverse.nvidia.com/installers/omniverse-launcher-linux.AppImage>`__ or run the following line on the terminal:
+
+.. code:: bash
+
+    wget https://install.launcher.omniverse.nvidia.com/installers/omniverse-launcher-linux.AppImage
+
 
 Configuring the environment variables
 -------------------------------------
@@ -154,7 +160,7 @@ extension as a ``pip`` python module for the built-in ``ISAACSIM_PYTHON`` to rec
 .. code:: bash
 
         # Go to the repository of the pegasus simulator
-        cd pegasus_simulator
+        cd PegasusSimulator
 
         # Go into the extensions directory
         cd extensions
