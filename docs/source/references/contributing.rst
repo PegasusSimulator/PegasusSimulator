@@ -59,6 +59,7 @@ we suggest that every commit message start by:
    * ``fix``: For bug fixes.
    * ``rem``: For removing code or features.
    * ``doc``: For adding or changing documentation.
+   * ``chore``: When none of the above are a good fit.
 
 Here is an example of a "good" commit:
 
