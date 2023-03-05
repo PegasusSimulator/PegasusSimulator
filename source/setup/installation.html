@@ -125,8 +125,17 @@
 <a class="reference external image-reference" href="https://releases.ubuntu.com/22.04/"><img alt="Ubuntu 22.04" src="https://img.shields.io/badge/Ubuntu-22.04LTS-brightgreen.svg" /></a>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>We have tested Pegasus Simulator with Isaac Sim 2022.2 release on Ubuntu 22.04LTS with NVIDIA driver 525.85. The PX4-Autopilot used during development was v.13.2. Older versions Ubuntu and PX4-Autopilot were not tested. This extension was not tested on Windows.</p>
+<p>We have tested Pegasus Simulator with Isaac Sim 2022.2 release on Ubuntu 22.04LTS and Ubuntu 20.04LTS with NVIDIA driver 525.85. The PX4-Autopilot used during development was v.13.2. Older versions Ubuntu and PX4-Autopilot were not tested. This extension was not tested on Windows.</p>
 </div>
+<p>In order to install Isaac Sim on linux, download the <a class="reference external" href="https://install.launcher.omniverse.nvidia.com/installers/omniverse-launcher-linux.AppImage">Omniverse AppImage here</a> or run the following line on the terminal:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>wget<span class="w"> </span>https://install.launcher.omniverse.nvidia.com/installers/omniverse-launcher-linux.AppImage
+</pre></div>
+</div>
+<p>A short video with the installation guide for Pegasus Simulator is also available <a class="reference external" href="https://youtu.be/YCp5E8nazag">here</a>.</p>
+<blockquote>
+<div><div class="video_wrapper align-center" style="padding-bottom: 56.250000%; padding-top: 30px; position: relative; text-align: center; width: 100%">
+<iframe allowfullscreen="true" src="https://www.youtube.com/embed/YCp5E8nazag" style="border: 0; height: 100%; left: 0; position: absolute; top: 0; width: 100%">
+</iframe></div></div></blockquote>
 </section>
 <section id="configuring-the-environment-variables">
 <h2>Configuring the environment variables<a class="headerlink" href="#configuring-the-environment-variables" title="Permalink to this heading"></a></h2>
@@ -239,7 +248,7 @@ add a path to the Pegasus-Simulator repository.</p>
 <p>In order to be able to use the Pegasus Simulator API from python scripts and standalone apps, we must install this
 extension as a <code class="docutils literal notranslate"><span class="pre">pip</span></code> python module for the built-in <code class="docutils literal notranslate"><span class="pre">ISAACSIM_PYTHON</span></code> to recognize. For that, run:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Go to the repository of the pegasus simulator</span>
-<span class="nb">cd</span><span class="w"> </span>pegasus_simulator
+<span class="nb">cd</span><span class="w"> </span>PegasusSimulator
 
 <span class="c1"># Go into the extensions directory</span>
 <span class="nb">cd</span><span class="w"> </span>extensions
