@@ -30,6 +30,14 @@ In order to install Isaac Sim on linux, download the `Omniverse AppImage here <h
     wget https://install.launcher.omniverse.nvidia.com/installers/omniverse-launcher-linux.AppImage
 
 
+A short video with the installation guide for Pegasus Simulator is also available `here <https://youtu.be/YCp5E8nazag>`__.
+
+    ..  youtube:: YCp5E8nazag
+        :width: 100%
+        :align: center
+        :privacy_mode:
+
+
 Configuring the environment variables
 -------------------------------------
 
