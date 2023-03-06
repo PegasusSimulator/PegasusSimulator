@@ -6,8 +6,8 @@ Overview
 
 **Pegasus Simulator** is a framework built on top of `NVIDIA
 Omniverse <https://docs.omniverse.nvidia.com/>`__ and `Isaac
-Sim <https://docs.omniverse.nvidia.com/app_isaacsim/app_isaacsim/overview.html>`__. It is designed to provide an easy, yet
-powerfull way of simulating the dynamics of multirotors vehicles. It provides a simulation interface for `PX4 <https://px4.io/>`__
+Sim <https://docs.omniverse.nvidia.com/app_isaacsim/app_isaacsim/overview.html>`__. It is designed to provide an easy yet
+powerful way of simulating the dynamics of multirotors vehicles. It provides a simulation interface for `PX4 <https://px4.io/>`__
 integration as well as custom python control interface. At the moment, only multirotor vehicles are supported, with support for other vehicle topologies planned for future versions.
 
 .. raw:: html
