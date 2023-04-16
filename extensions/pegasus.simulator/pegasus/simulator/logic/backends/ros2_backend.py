@@ -4,21 +4,31 @@
 | Description: File that implements the ROS2 Backend for communication/control with/of the vehicle simulation through ROS2 topics
 | License: BSD-3-Clause. Copyright (c) 2023, Marcelo Jacinto. All rights reserved.
 """
-import carb
+import os
 from omni.isaac.core.utils.extensions import disable_extension, enable_extension
 
-# Perform some checks, because Isaac Sim some times does not play nice when using ROS/ROS2
-disable_extension("omni.isaac.ros_bridge")
-enable_extension("omni.isaac.ros2_bridge")
+# Get the environment variable for the ROS2 distribution
+ROS_DISTRO = os.getenv("ROS_DISTRO", "foxy")
 
-# Inform the user that now we are actually import the ROS2 dependencies 
-# Note: we are performing the imports here to make sure that ROS2 extension was load correctly
+# Enable the correct ROS2 extension
+if ROS_DISTRO == "foxy" or ROS_DISTRO == "humble":
+    
+    # Ensure that the ROS1 extension is disabled and we are enabling the ROS2 extension
+    disable_extension("omni.isaac.ros_bridge")
+    disable_extension("omni.isaac.ros2_bridge-humble")
+    enable_extension("omni.isaac.ros2_bridge")
+
+# TODO - ROS2 humble provided by nvidia is not working properly. For some reason we can also use the foxy extension
+# even when using ROS2 humble on ubuntu 22.04LTS. This is a temporary fix until NVIDIA figures this thing out (hopefully)
+# elif ROS_DISTRO == "humble":
+#     disable_extension("omni.isaac.ros2_bridge")
+#     enable_extension("omni.isaac.ros2_bridge-humble")
+
 import rclpy
 from std_msgs.msg import Float64
-from sensor_msgs.msg import Imu, MagneticField, NavSatFix, NavSatStatus
+from sensor_msgs.msg import Imu, MagneticField, NavSatFix, NavSatStatus, Image
 from geometry_msgs.msg import PoseStamped, TwistStamped, AccelStamped
 
-import omni.kit.app
 from pegasus.simulator.logic.backends.backend import Backend
 
 class ROS2Backend(Backend):
@@ -41,9 +51,12 @@ class ROS2Backend(Backend):
 
         # Create publishers for some sensor data
         self.imu_pub = self.node.create_publisher(Imu, "vehicle" + str(self._id) + "/sensors/imu", 10)
-        self.mag_pub = self.node.create_publisher(MagneticField, "vehicle" + str(self._id) + "/sensors/imu", 10)
+        self.mag_pub = self.node.create_publisher(MagneticField, "vehicle" + str(self._id) + "/sensors/mag", 10)
         self.gps_pub = self.node.create_publisher(NavSatFix, "vehicle" + str(self._id) + "/sensors/gps", 10)
         self.gps_vel_pub = self.node.create_publisher(TwistStamped, "vehicle" + str(self._id) + "/sensors/gps_twist", 10)
+
+        # Create publishers for the camera images
+        self.cam_pubs = {}
 
         # Subscribe to vector of floats with the target angular velocities to control the vehicle
         # This is not ideal, but we need to reach out to NVIDIA so that they can improve the ROS2 support with custom messages
@@ -54,6 +67,7 @@ class ROS2Backend(Backend):
     
         # Setup zero input reference for the thrusters
         self.input_ref = [0.0 for i in range(self._num_rotors)]
+
 
     def update_state(self, state):
         """
@@ -111,7 +125,7 @@ class ROS2Backend(Backend):
         self.twist_inertial_pub.publish(twist_inertial)
         self.accel_pub.publish(accel)
 
-    def rotor_callback(self, ros_msg: Float64, rotor_id):
+    def rotor_callback(self, ros_msg, rotor_id):
         # Update the reference for the rotor of the vehicle
         self.input_ref[rotor_id] = float(ros_msg.data)
 
@@ -126,8 +140,48 @@ class ROS2Backend(Backend):
             self.update_gps_data(data)
         elif sensor_type == "Magnetometer":
             self.update_mag_data(data)
-        elif sensor_type == "Barometer":        # TODO - create a topic for the barometer later on
-            pass
+        elif sensor_type == "Barometer":        
+            pass    # TODO - create a topic for the barometer later on
+        elif sensor_type == "RGBCamera":
+            self.update_camera_data(data)
+
+    def update_camera_data(self, data):
+        """
+        Method used to update the data received by the RGB camera. Note: since
+        encoding the image to bytes is a costly operation, we will we will only
+        do this step in another thread, and we will only publish the image
+        message in this thread after the encoding is done.
+
+        Args:
+            data (dict): Dictionary with the frame and its metadata
+        """
+
+        # Check if we already have a publisher for that camera id. If not, create one
+        if data["id"] not in self.cam_pubs:
+            self.cam_pubs[data["id"]] = self.node.create_publisher(Image, "vehicle" + str(self._id) + "/camera" + str(data["id"]) + "/image_raw", 10)
+
+        # Create an empty image message
+        image_msg = Image()
+
+        # Check if the camera is already registered (the first frames are usually empty)
+        if data["frame"].shape[0] > 0 and data["frame"].shape[1] > 0:
+
+            # Fill the image message
+            image_msg.header.stamp = self.node.get_clock().now().to_msg()
+            image_msg.header.frame_id = "camera" + str(data["id"])
+            image_msg.height = data["frame"].shape[0]
+            image_msg.width = data["frame"].shape[1]
+            image_msg.step = image_msg.width * 3
+
+            # Note: Assign the _data object directly. 
+            # This is a workaround, because the assignment of the data object is painfully slow
+            image_msg._data = data["frame"][:, :, 0:3].tobytes()
+
+            image_msg.encoding = "rgb8"
+            image_msg.is_bigendian = 0
+
+        # Publish the image message
+        self.cam_pubs[data["id"]].publish(image_msg)
 
     def update_imu_data(self, data):
 
@@ -194,7 +248,7 @@ class ROS2Backend(Backend):
         msg.magnetic_field.z = data["magnetic_field"][2]
 
         # Publish the message with the current magnetic data
-        self.mag_pub.publish(msg)
+        #self.mag_pub.publish(msg)
 
     def input_reference(self):
         """
@@ -236,20 +290,3 @@ class ROS2Backend(Backend):
         """
         # Reset the reference for the thrusters
         self.input_ref = [0.0 for i in range(self._num_rotors)]
-
-    def check_ros_extension(self):
-        """
-        Method that checks which ROS extension is installed.
-        """
-
-        # Get the handle for the extension manager
-        extension_manager = omni.kit.app.get_app().get_extension_manager()
-
-        version = ""
-
-        if self._ext_manager.is_extension_enabled("omni.isaac.ros_bridge"):
-            version = "ros"
-        elif self._ext_manager.is_extension_enabled("omni.isaac.ros2_bridge"):
-            version = "ros2"
-        else:
-            carb.log_warn("Neither extension 'omni.isaac.ros_bridge' nor 'omni.isaac.ros2_bridge' is enabled")

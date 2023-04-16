@@ -38,7 +38,10 @@ class Sensor:
         self._origin_lon = -999
         self._origin_alt = 0.0
 
-    def initialize(self, origin_lat, origin_lon, origin_alt):
+        # The vehicle that this sensor is attached to
+        self._vehicle = None
+
+    def initialize(self, origin_lat, origin_lon, origin_alt, vehicle=None):
         """Method that initializes the sensor latitude, longitude and altitude attributes.
         
         Note:
@@ -49,10 +52,15 @@ class Sensor:
             origin_lat (float): The latitude of the origin of the world in degrees (might get used by some sensors).
             origin_lon (float): The longitude of the origin of the world in degrees (might get used by some sensors).
             origin_alt (float): The altitude of the origin of the world relative to sea water level (might get used by some sensors).
+            vehicle (Vehicle): The vehicle that this sensor is attached to.
         """
         self._origin_lat = origin_lat
         self._origin_lon = origin_lon
         self._origin_alt = origin_alt
+
+        # Set the vehicle that this sensor is attached to - this is usefull in sensors such as camera
+        # wehre we need to know the vehicle's pose to compute the camera's pose
+        self._vehicle = vehicle
 
     def set_update_rate(self, update_rate: float):
         """Method that changes the update rate and period of the sensor

@@ -20,7 +20,7 @@ INSTALL_REQUIRES = [
     "numpy",
     "pymavlink",
     "scipy",
-    "pyyaml",
+    "pyyaml"
 ]
 
 # Installation operation
