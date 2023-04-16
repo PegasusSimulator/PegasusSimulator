@@ -19,7 +19,7 @@ Check the provided documentation [here](https://pegasussimulator.github.io/Pegas
 
 ## Citation
 
-Paper comming out soon...
+Paper coming out soon...
 
 ```
 @misc{jacinto2023pegasus,
