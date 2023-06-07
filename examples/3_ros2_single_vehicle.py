@@ -31,8 +31,11 @@ from pegasus.simulator.logic.backends.ros2_backend import ROS2Backend
 from pegasus.simulator.logic.vehicles.multirotor import Multirotor, MultirotorConfig
 from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 
+import rospy
+
 # Auxiliary scipy and numpy modules
 from scipy.spatial.transform import Rotation
+
 
 class PegasusApp:
     """
@@ -50,7 +53,7 @@ class PegasusApp:
         # Start the Pegasus Interface
         self.pg = PegasusInterface()
 
-        # Acquire the World, .i.e, the singleton that controls that is a one stop shop for setting up physics, 
+        # Acquire the World, .i.e, the singleton that controls that is a one stop shop for setting up physics,
         # spawning asset primitives, etc.
         self.pg._world = World(**self.pg._world_settings)
         self.world = self.pg.world
@@ -65,7 +68,7 @@ class PegasusApp:
 
         Multirotor(
             "/World/quadrotor",
-            ROBOTS['Iris'],
+            ROBOTS["Iris"],
             0,
             [0.0, 0.0, 0.07],
             Rotation.from_euler("XYZ", [0.0, 0.0, 0.0], degrees=True).as_quat(),
@@ -86,24 +89,27 @@ class PegasusApp:
         # Start the simulation
         self.timeline.play()
 
+        rate = rospy.Rate(100)
         # The "infinite" loop
         while simulation_app.is_running() and not self.stop_sim:
-
             # Update the UI of the app and perform the physics step
             self.world.step(render=True)
-        
+            # rospy.spin()
+            rate.sleep()
+
         # Cleanup and stop
         carb.log_warn("PegasusApp Simulation App is closing.")
         self.timeline.stop()
         simulation_app.close()
 
-def main():
 
+def main():
     # Instantiate the template app
     pg_app = PegasusApp()
 
     # Run the application loop
     pg_app.run()
+
 
 if __name__ == "__main__":
     main()
