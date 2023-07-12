@@ -19,8 +19,7 @@ Check the provided documentation [here](https://pegasussimulator.github.io/Pegas
 
 ## Citation
 
-Paper comming out soon...
-
+If you find Pegasus Simulator useful in your academic work, please cite the paper below. It is also available [here](https://arxiv.org/abs/2307.05263).
 ```
 @misc{jacinto2023pegasus,
       title={Pegasus Simulator: An Isaac Sim Framework for Multiple Aerial Vehicles Simulation}, 
