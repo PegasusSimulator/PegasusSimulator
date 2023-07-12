@@ -17,16 +17,18 @@ integration as well as custom python control interface. At the moment, only mult
    <a href="https://youtu.be/_11OCFwf_GE" target="_blank"><img src="_static/mini demo.gif" alt="Pegasus Simulator gif" align="center" height="50"/></a>
    </p>
 
-If you use ``PegasusSimulator`` in your work, please cite the `paper <https://arxiv.org/>`_:
+If you find ``Pegasus Simulator`` useful in your academic work, please cite the paper below. It is also available `here <https://arxiv.org/abs/2307.05263>`_.
 
 .. code-block:: bibtex
 
    @misc{jacinto2023pegasus,
-	   author = {Jacinto, Marcelo and Pinto, João and Patrikar, Jay and Keller, John and Cunha, Rita and Scherer, Sebastian and Pascoal, António},
-	   title = {Pegasus Simulator: An Isaac Sim Framework for Multiple Aerial Vehicles Simulation},
-	   year = {2023},
-	   eprint = {},
-   }
+      title={Pegasus Simulator: An Isaac Sim Framework for Multiple Aerial Vehicles Simulation}, 
+      author={Marcelo Jacinto and João Pinto and Jay Patrikar and John Keller and Rita Cunha and Sebastian Scherer and António Pascoal},
+      year={2023},
+      eprint={2307.05263},
+      archivePrefix={arXiv},
+      primaryClass={cs.RO}
+    }
 
 Developer Team
 ~~~~~~~~~~~~~~
