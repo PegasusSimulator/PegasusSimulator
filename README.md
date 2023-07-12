@@ -23,10 +23,12 @@ Paper comming out soon...
 
 ```
 @misc{jacinto2023pegasus,
-	   author = {Jacinto, Marcelo and Pinto, João and Patrikar, Jay and Keller, John and Cunha, Rita and Scherer, Sebastian and Pascoal, António},
-	   title = {Pegasus Simulator: An Isaac Sim Framework for Multiple Aerial Vehicles Simulation},
-	   year = {2023},
-	   eprint = {}
+      title={Pegasus Simulator: An Isaac Sim Framework for Multiple Aerial Vehicles Simulation}, 
+      author={Marcelo Jacinto and João Pinto and Jay Patrikar and John Keller and Rita Cunha and Sebastian Scherer and António Pascoal},
+      year={2023},
+      eprint={2307.05263},
+      archivePrefix={arXiv},
+      primaryClass={cs.RO}
 }
 ```
 
