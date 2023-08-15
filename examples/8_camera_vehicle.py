@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
 | File: 8_camera_vehicle.py
-| License: BSD-3-Clause. Copyright (c) 2023, Marcelo Jacinto. All rights reserved.
+| License: BSD-3-Clause. Copyright (c) 2023, Marcelo Jacinto and F1rrel (github alias). All rights reserved.
 | Description: This files serves as an example on how to build an app that makes use of the Pegasus API to run a simulation
 with a single vehicle equipped with a camera, producing rgb and camera info ROS2 Humble topics.
 """
