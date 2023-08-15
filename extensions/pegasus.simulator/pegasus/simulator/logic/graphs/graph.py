@@ -1,5 +1,5 @@
 """
-| License: BSD-3-Clause. Copyright (c) 2023, Marcelo Jacinto. All rights reserved.
+| License: BSD-3-Clause. Copyright (c) 2023, Marcelo Jacinto and F1rrel (github alias). All rights reserved.
 """
 __all__ = ["Graph"]
 
