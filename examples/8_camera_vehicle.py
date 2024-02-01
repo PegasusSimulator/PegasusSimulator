@@ -3,7 +3,7 @@
 | File: 8_camera_vehicle.py
 | License: BSD-3-Clause. Copyright (c) 2023, Marcelo Jacinto and F1rrel (github alias). All rights reserved.
 | Description: This files serves as an example on how to build an app that makes use of the Pegasus API to run a simulation
-with a single vehicle equipped with a camera, producing rgb and camera info ROS2 Humble topics.
+with a single vehicle equipped with a camera, producing rgb and camera info ROS2 topics.
 """
 
 # Imports to start Isaac Sim from this script
@@ -22,10 +22,9 @@ import omni.timeline
 from omni.isaac.core.world import World
 from omni.isaac.core.utils.extensions import disable_extension, enable_extension
 
-# Enable/disable ROS bridge extensions to keep only ROS2 Humble Bridge
+# Enable/disable ROS bridge extensions to keep only ROS2 Bridge
 disable_extension("omni.isaac.ros_bridge")
-disable_extension("omni.isaac.ros2_bridge")
-enable_extension("omni.isaac.ros2_bridge-humble")
+enable_extension("omni.isaac.ros2_bridge")
 
 # Import the Pegasus API for simulating drones
 from pegasus.simulator.params import ROBOTS, SIMULATION_ENVIRONMENTS
@@ -69,7 +68,7 @@ class PegasusApp:
         mavlink_config = MavlinkBackendConfig({
             "vehicle_id": 0,
             "px4_autolaunch": True,
-            "px4_dir": "/home/fstec/Projects/PX4-Autopilot",
+            "px4_dir": "/home/marcelo/PX4-Autopilot",
             "px4_vehicle_model": 'iris'
         })
         config_multirotor.backends = [MavlinkBackend(mavlink_config)]
