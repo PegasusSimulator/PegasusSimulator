@@ -138,7 +138,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="pegasus.simulator.logic.sensors.sensor.Sensor">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pegasus.simulator.logic.sensors.sensor.</span></span><span class="sig-name descname"><span class="pre">Sensor</span></span><a class="headerlink" href="#pegasus.simulator.logic.sensors.sensor.Sensor" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>The base class for implementing a sensor</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pegasus.simulator.logic.sensors.sensor.Sensor.update_period">
@@ -146,7 +146,7 @@
 <dd><p>The period for each sensor update: update_period = 1 / update_rate (in s).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)">float</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)">float</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -157,7 +157,7 @@
 <dd><p>The latitude of the origin of the world in degrees (might get used by some sensors).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)">float</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)">float</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -168,7 +168,7 @@
 <dd><p>The longitude of the origin of the world in degrees (might get used by some sensors).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)">float</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)">float</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -179,7 +179,7 @@
 <dd><p>The altitude of the origin of the world relative to sea water level (might get used by some sensors)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)">float</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)">float</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -228,8 +228,8 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>sensor_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – A name that describes the type of sensor</p></li>
-<li><p><strong>update_rate</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a>) – The rate at which the data in the sensor should be refreshed (in Hz)</p></li>
+<li><p><strong>sensor_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – A name that describes the type of sensor</p></li>
+<li><p><strong>update_rate</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The rate at which the data in the sensor should be refreshed (in Hz)</p></li>
 </ul>
 </dd>
 </dl>
@@ -242,7 +242,7 @@
 sensor based on a dictionary input should be performed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>config_dict</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)"><em>dict</em></a>) – A dictionary containing the configurations of the sensor</p>
+<dd class="field-odd"><p><strong>config_dict</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a>) – A dictionary containing the configurations of the sensor</p>
 </dd>
 </dl>
 </dd></dl>
@@ -259,9 +259,9 @@ of the world, then we might as well just save this information for whatever sens
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>origin_lat</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a>) – The latitude of the origin of the world in degrees (might get used by some sensors).</p></li>
-<li><p><strong>origin_lon</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a>) – The longitude of the origin of the world in degrees (might get used by some sensors).</p></li>
-<li><p><strong>origin_alt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a>) – The altitude of the origin of the world relative to sea water level (might get used by some sensors).</p></li>
+<li><p><strong>origin_lat</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The latitude of the origin of the world in degrees (might get used by some sensors).</p></li>
+<li><p><strong>origin_lon</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The longitude of the origin of the world in degrees (might get used by some sensors).</p></li>
+<li><p><strong>origin_alt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The altitude of the origin of the world relative to sea water level (might get used by some sensors).</p></li>
 </ul>
 </dd>
 </dl>
@@ -273,7 +273,7 @@ of the world, then we might as well just save this information for whatever sens
 <dd><p>Method that changes the update rate and period of the sensor</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>update_rate</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a>) – The new rate at which the data in the sensor should be refreshed (in Hz)</p>
+<dd class="field-odd"><p><strong>update_rate</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The new rate at which the data in the sensor should be refreshed (in Hz)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -287,7 +287,7 @@ of the sensor should be performed.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>state</strong> (<a class="reference internal" href="state.html#pegasus.simulator.logic.state.State" title="pegasus.simulator.logic.state.State"><em>State</em></a>) – The current state of the vehicle.</p></li>
-<li><p><strong>dt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a>) – The time elapsed between the previous and current function calls (s).</p></li>
+<li><p><strong>dt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The time elapsed between the previous and current function calls (s).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

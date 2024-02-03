@@ -180,11 +180,11 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>stage_prefix</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – The name the vehicle will present in the simulator when spawned. Defaults to “quadrotor”.</p></li>
-<li><p><strong>usd_file</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – The USD file that describes the looks and shape of the vehicle. Defaults to “”.</p></li>
-<li><p><strong>vehicle_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a>) – The id to be used for the vehicle. Defaults to 0.</p></li>
-<li><p><strong>init_pos</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><em>list</em></a>) – The initial position of the vehicle in the inertial frame (in ENU convention). Defaults to [0.0, 0.0, 0.07].</p></li>
-<li><p><strong>init_orientation</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><em>list</em></a>) – The initial orientation of the vehicle in quaternion [qx, qy, qz, qw]. Defaults to [0.0, 0.0, 0.0, 1.0].</p></li>
+<li><p><strong>stage_prefix</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The name the vehicle will present in the simulator when spawned. Defaults to “quadrotor”.</p></li>
+<li><p><strong>usd_file</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The USD file that describes the looks and shape of the vehicle. Defaults to “”.</p></li>
+<li><p><strong>vehicle_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – The id to be used for the vehicle. Defaults to 0.</p></li>
+<li><p><strong>init_pos</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a>) – The initial position of the vehicle in the inertial frame (in ENU convention). Defaults to [0.0, 0.0, 0.07].</p></li>
+<li><p><strong>init_orientation</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a>) – The initial orientation of the vehicle in quaternion [qx, qy, qz, qw]. Defaults to [0.0, 0.0, 0.0, 1.0].</p></li>
 <li><p><strong>config</strong> (<em>_type_</em><em>, </em><em>optional</em>) – _description_. Defaults to MultirotorConfig().</p></li>
 </ul>
 </dd>
@@ -209,7 +209,7 @@ and a general thrust allocation scheme will be adopted. For now, it is made to w
 <dd class="field-even"><p>A list of angular velocities [rad/s] to apply in reach rotor to accomplish suchs forces and torques</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)">list</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)">list</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -222,8 +222,8 @@ amount of force being applied on each joint</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>rotor_number</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a>) – The number of the rotor to generate the rotation animation</p></li>
-<li><p><strong>force</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a>) – The force that is being applied on that rotor</p></li>
+<li><p><strong>rotor_number</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – The number of the rotor to generate the rotation animation</p></li>
+<li><p><strong>force</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The force that is being applied on that rotor</p></li>
 <li><p><strong>articulation</strong> (<em>_type_</em>) – The articulation group the joints of the rotors belong to</p></li>
 </ul>
 </dd>
@@ -250,7 +250,7 @@ This method must be implemented by a class that inherits this type. This callbac
 is called on every physics step.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>dt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a>) – The time elapsed between the previous and current function calls (s).</p>
+<dd class="field-odd"><p><strong>dt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The time elapsed between the previous and current function calls (s).</p>
 </dd>
 </dl>
 </dd></dl>
@@ -264,7 +264,7 @@ every backend. For example, if new data is generated for an IMU and we have a Ma
 method will be called for that backend so that this data can latter be sent thorugh mavlink.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>dt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a>) – The time elapsed between the previous and current function calls (s).</p>
+<dd class="field-odd"><p><strong>dt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The time elapsed between the previous and current function calls (s).</p>
 </dd>
 </dl>
 </dd></dl>
@@ -276,7 +276,7 @@ method will be called for that backend so that this data can latter be sent thor
 is called on every physics step.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>dt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a>) – The time elapsed between the previous and current function calls (s).</p>
+<dd class="field-odd"><p><strong>dt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The time elapsed between the previous and current function calls (s).</p>
 </dd>
 </dl>
 </dd></dl>
@@ -286,7 +286,7 @@ is called on every physics step.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="pegasus.simulator.logic.vehicles.multirotor.MultirotorConfig">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pegasus.simulator.logic.vehicles.multirotor.</span></span><span class="sig-name descname"><span class="pre">MultirotorConfig</span></span><a class="headerlink" href="#pegasus.simulator.logic.vehicles.multirotor.MultirotorConfig" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>A data class that is used for configuring a Multirotor</p>
 <p><strong>Methods:</strong></p>
 <table class="autosummary longtable docutils align-default">

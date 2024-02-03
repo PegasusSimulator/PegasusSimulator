@@ -137,7 +137,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="pegasus.simulator.logic.backends.backend.Backend">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pegasus.simulator.logic.backends.backend.</span></span><span class="sig-name descname"><span class="pre">Backend</span></span><a class="headerlink" href="#pegasus.simulator.logic.backends.backend.Backend" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>This class defines the templates for the communication and control backend. Every vehicle can have at least one backend
 at the same time. Every timestep, the methods ‘update_state’ and ‘update_sensor’ are called to update the data produced
 by the simulation, i.e. for every time step the backend will receive teh current state of the vehicle and its sensors.
@@ -237,7 +237,7 @@ default vehicle behaviour via this control backend structure.</p>
 from the communication interface. This method will be called by the simulation on every physics step</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>dt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a>) – The time elapsed between the previous and current function calls (s).</p>
+<dd class="field-odd"><p><strong>dt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The time elapsed between the previous and current function calls (s).</p>
 </dd>
 </dl>
 </dd></dl>
@@ -249,8 +249,8 @@ from the communication interface. This method will be called by the simulation o
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>sensor_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – A name that describes the type of sensor</p></li>
-<li><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)"><em>dict</em></a>) – A dictionary that contains the data produced by the sensor</p></li>
+<li><p><strong>sensor_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – A name that describes the type of sensor</p></li>
+<li><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a>) – A dictionary that contains the data produced by the sensor</p></li>
 </ul>
 </dd>
 </dl>

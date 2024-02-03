@@ -202,10 +202,10 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>stage_prefix</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – The name the vehicle will present in the simulator when spawned. Defaults to “quadrotor”.</p></li>
-<li><p><strong>usd_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – The USD file that describes the looks and shape of the vehicle. Defaults to “”.</p></li>
-<li><p><strong>init_pos</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><em>list</em></a>) – The initial position of the vehicle in the inertial frame (in ENU convention). Defaults to [0.0, 0.0, 0.0].</p></li>
-<li><p><strong>init_orientation</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><em>list</em></a>) – The initial orientation of the vehicle in quaternion [qx, qy, qz, qw]. Defaults to [0.0, 0.0, 0.0, 1.0].</p></li>
+<li><p><strong>stage_prefix</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The name the vehicle will present in the simulator when spawned. Defaults to “quadrotor”.</p></li>
+<li><p><strong>usd_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The USD file that describes the looks and shape of the vehicle. Defaults to “”.</p></li>
+<li><p><strong>init_pos</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a>) – The initial position of the vehicle in the inertial frame (in ENU convention). Defaults to [0.0, 0.0, 0.0].</p></li>
+<li><p><strong>init_orientation</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a>) – The initial orientation of the vehicle in quaternion [qx, qy, qz, qw]. Defaults to [0.0, 0.0, 0.0, 1.0].</p></li>
 </ul>
 </dd>
 </dl>
@@ -219,9 +219,9 @@ given by ‘pos’ (following a FLU) convention.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>force</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><em>list</em></a>) – A 3-dimensional vector of floats with the force [Fx, Fy, Fz] on the body axis of the vehicle according to a FLU convention.</p></li>
-<li><p><strong>pos</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><em>list</em></a>) – _description_. Defaults to [0.0, 0.0, 0.0].</p></li>
-<li><p><strong>body_part</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – . Defaults to “/body”.</p></li>
+<li><p><strong>force</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a>) – A 3-dimensional vector of floats with the force [Fx, Fy, Fz] on the body axis of the vehicle according to a FLU convention.</p></li>
+<li><p><strong>pos</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a>) – _description_. Defaults to [0.0, 0.0, 0.0].</p></li>
+<li><p><strong>body_part</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – . Defaults to “/body”.</p></li>
 </ul>
 </dd>
 </dl>
@@ -234,8 +234,8 @@ given by ‘pos’ (following a FLU) convention.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>torque</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><em>list</em></a>) – A 3-dimensional vector of floats with the force [Tx, Ty, Tz] on the body axis of the vehicle according to a FLU convention.</p></li>
-<li><p><strong>body_part</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – . Defaults to “/body”.</p></li>
+<li><p><strong>torque</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a>) – A 3-dimensional vector of floats with the force [Tx, Ty, Tz] on the body axis of the vehicle according to a FLU convention.</p></li>
+<li><p><strong>body_part</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – . Defaults to “/body”.</p></li>
 </ul>
 </dd>
 </dl>
@@ -272,7 +272,7 @@ simulation based on the motor speed. This method must be implemented
 by a class that inherits this type and it’s called periodically by the physics engine.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>dt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a>) – The time elapsed between the previous and current function calls (s).</p>
+<dd class="field-odd"><p><strong>dt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The time elapsed between the previous and current function calls (s).</p>
 </dd>
 </dl>
 </dd></dl>
@@ -284,7 +284,7 @@ by a class that inherits this type and it’s called periodically by the physics
 the current position, orientation, linear and angular velocities and acceleration of the vehicle.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>dt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a>) – The time elapsed between the previous and current function calls (s).</p>
+<dd class="field-odd"><p><strong>dt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The time elapsed between the previous and current function calls (s).</p>
 </dd>
 </dl>
 </dd></dl>
