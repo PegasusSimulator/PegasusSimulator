@@ -80,7 +80,7 @@ class Pegasus_SimulatorExtension(omni.ext.IExt):
         if get_active_viewport() != None and type(get_active_viewport().stage) == pxr.Usd.Stage and str(get_active_viewport().stage.GetPrimAtPath("/OmniverseKit_Persp")) != "invalid null prim":
             self._pegasus_sim.initialize_world()
         else:
-            Timer(0.1, self.autoload_helper).start()
+            Timer(1.0, self.autoload_helper).start()
 
     def show_window(self, menu, show):
         """

@@ -16,8 +16,9 @@ from threading import Lock
 
 # NVidia API imports
 import carb
+import omni.kit.app
 from omni.isaac.core.world import World
-from omni.isaac.core.utils.stage import clear_stage
+from omni.isaac.core.utils.stage import clear_stage, create_new_stage_async, update_stage_async
 from omni.isaac.core.utils.viewports import set_camera_view
 import omni.isaac.core.utils.nucleus as nucleus
 
@@ -222,12 +223,20 @@ class PegasusInterface:
 
         Args:
             usd_path (str): The path where the USD file describing the world is located.
-            force_clear (bool): Whether to perform a clear before loading the asset. Defaults to False.
+            force_clear (bool): Whether to perform a clear before loading the asset. Defaults to False. 
+            It should be set to True only if the method is invoked from an App (GUI mode).
         """
 
         # Reset and pause the world simulation (only if force_clear is true)
         # This is done to maximize the support between running in GUI as extension vs App
         if force_clear == True:
+
+            # Create a new stage and initialize (or re-initialized) the world
+            await create_new_stage_async()
+            self._world = World(**self._world_settings)
+            await self._world.initialize_simulation_context_async()
+            self._world = World.instance()
+
             await self.world.reset_async()
             await self.world.stop_async()
 
