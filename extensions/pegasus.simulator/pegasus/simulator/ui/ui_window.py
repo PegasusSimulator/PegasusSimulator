@@ -26,7 +26,7 @@ class WidgetWindow(ui.Window):
     BUTTON_HEIGHT = 50
     GENERAL_SPACING = 5
 
-    WINDOW_WIDTH = 300
+    WINDOW_WIDTH = 325
     WINDOW_HEIGHT = 850
 
     BUTTON_SELECTED_STYLE = {
@@ -87,21 +87,23 @@ class WidgetWindow(ui.Window):
 
         # Define the UI of the widget window
         with self.frame:
+        
+            with ui.ScrollingFrame(horizontal_scrollbar_policy=ui.ScrollBarPolicy.SCROLLBAR_ALWAYS_ON, vertical_scrollbar_policy=ui.ScrollBarPolicy.SCROLLBAR_ALWAYS_ON):
 
-            # Vertical Stack of menus
-            with ui.VStack():
+                # Vertical Stack of menus
+                with ui.VStack():
 
-                # Create a frame for selecting which scene to load
-                self._scene_selection_frame()
-                ui.Spacer(height=5)
+                    # Create a frame for selecting which scene to load
+                    self._scene_selection_frame()
+                    ui.Spacer(height=5)
 
-                # Create a frame for selecting which vehicle to load in the simulation environment
-                self._robot_selection_frame()
-                ui.Spacer(height=5)
+                    # Create a frame for selecting which vehicle to load in the simulation environment
+                    self._robot_selection_frame()
+                    ui.Spacer(height=5)
 
-                # Create a frame for selecting the camera position, and what it should point torwards to
-                self._viewport_camera_frame()
-                ui.Spacer()
+                    # Create a frame for selecting the camera position, and what it should point torwards to
+                    self._viewport_camera_frame()
+                    ui.Spacer()
 
     def _scene_selection_frame(self):
         """
