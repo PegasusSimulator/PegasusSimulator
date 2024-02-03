@@ -189,13 +189,16 @@ to</p>
 <tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.set_new_default_global_coordinates" title="pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.set_new_default_global_coordinates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_new_default_global_coordinates</span></code></a>([...])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.set_px4_path" title="pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.set_px4_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_px4_path</span></code></a>(path)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.set_px4_default_airframe" title="pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.set_px4_default_airframe"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_px4_default_airframe</span></code></a>(airframe)</p></td>
+<td><p>Method that allows a user to save a new px4 default airframe for the extension.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.set_px4_path" title="pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.set_px4_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_px4_path</span></code></a>(path)</p></td>
 <td><p>Method that allows a user to save a new px4 directory in the configuration files of the extension.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.set_viewport_camera" title="pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.set_viewport_camera"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_viewport_camera</span></code></a>(camera_position, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.set_viewport_camera" title="pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.set_viewport_camera"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_viewport_camera</span></code></a>(camera_position, ...)</p></td>
 <td><p>Sets the viewport camera to given position and makes it point to another target position.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.set_world_settings" title="pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.set_world_settings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_world_settings</span></code></a>([physics_dt, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.set_world_settings" title="pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.set_world_settings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_world_settings</span></code></a>([physics_dt, ...])</p></td>
 <td><p>Set the current world settings to the pre-defined settings.</p></td>
 </tr>
 </tbody>
@@ -212,13 +215,16 @@ to</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.longitude" title="pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.longitude"><code class="xref py py-obj docutils literal notranslate"><span class="pre">longitude</span></code></a></p></td>
 <td><p>The longitude of the origin of the simulated world in degrees.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.px4_path" title="pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.px4_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">px4_path</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.px4_default_airframe" title="pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.px4_default_airframe"><code class="xref py py-obj docutils literal notranslate"><span class="pre">px4_default_airframe</span></code></a></p></td>
+<td><p>A string with the PX4 default airframe (if it was setup).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.px4_path" title="pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.px4_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">px4_path</span></code></a></p></td>
 <td><p>A string with the installation directory for PX4 (if it was setup).</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.vehicle_manager" title="pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.vehicle_manager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vehicle_manager</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.vehicle_manager" title="pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.vehicle_manager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vehicle_manager</span></code></a></p></td>
 <td><p>The instance of the VehicleManager.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.world" title="pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.world"><code class="xref py py-obj docutils literal notranslate"><span class="pre">world</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.world" title="pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.world"><code class="xref py py-obj docutils literal notranslate"><span class="pre">world</span></code></a></p></td>
 <td><p>The current omni.isaac.core.world World instance</p></td>
 </tr>
 </tbody>
@@ -402,6 +408,17 @@ default global coordinates specified in the extension configuration file</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.set_px4_default_airframe">
+<span class="sig-name descname"><span class="pre">set_px4_default_airframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">airframe</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.set_px4_default_airframe" title="Permalink to this definition"></a></dt>
+<dd><p>Method that allows a user to save a new px4 default airframe for the extension.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>absolute_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The new px4 default airframe</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.set_px4_path">
 <span class="sig-name descname"><span class="pre">set_px4_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.set_px4_path" title="Permalink to this definition"></a></dt>
 <dd><p>Method that allows a user to save a new px4 directory in the configuration files of the extension.</p>
@@ -471,6 +488,20 @@ For now these new setting will never override the default ones.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.px4_default_airframe">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">px4_default_airframe</span></span><a class="headerlink" href="#pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.px4_default_airframe" title="Permalink to this definition"></a></dt>
+<dd><p>A string with the PX4 default airframe (if it was setup). Otherwise it is None.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A string with the PX4 default airframe (if it was setup). Otherwise it is None.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)">str</a></p>
 </dd>
 </dl>
 </dd></dl>

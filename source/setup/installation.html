@@ -119,13 +119,12 @@
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this heading"></a></h1>
 <section id="installing-nvidia-isaac-sim">
 <h2>Installing NVIDIA Isaac Sim<a class="headerlink" href="#installing-nvidia-isaac-sim" title="Permalink to this heading"></a></h2>
-<a class="reference external image-reference" href="https://developer.nvidia.com/isaac-sim"><img alt="IsaacSim 2022.2.0" src="https://img.shields.io/badge/IsaacSim-2022.2.0-brightgreen.svg" /></a>
-<a class="reference external image-reference" href="https://github.com/PX4/PX4-Autopilot"><img alt="PX4-Autopilot 1.13.2" src="https://img.shields.io/badge/PX4--Autopilot-1.13.2-brightgreen.svg" /></a>
-<a class="reference external image-reference" href="https://releases.ubuntu.com/20.04/"><img alt="Ubuntu 20.04" src="https://img.shields.io/badge/Ubuntu-20.04LTS-brightgreen.svg" /></a>
+<a class="reference external image-reference" href="https://developer.nvidia.com/isaac-sim"><img alt="IsaacSim 2023.1.1" src="https://img.shields.io/badge/IsaacSim-2023.1.1-brightgreen.svg" /></a>
+<a class="reference external image-reference" href="https://github.com/PX4/PX4-Autopilot"><img alt="PX4-Autopilot 1.14.1" src="https://img.shields.io/badge/PX4--Autopilot-1.14.1-brightgreen.svg" /></a>
 <a class="reference external image-reference" href="https://releases.ubuntu.com/22.04/"><img alt="Ubuntu 22.04" src="https://img.shields.io/badge/Ubuntu-22.04LTS-brightgreen.svg" /></a>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>We have tested Pegasus Simulator with Isaac Sim 2022.2 release on Ubuntu 22.04LTS and Ubuntu 20.04LTS with NVIDIA driver 525.85. The PX4-Autopilot used during development was v.13.2. Older versions Ubuntu and PX4-Autopilot were not tested. This extension was not tested on Windows.</p>
+<p>We have tested Pegasus Simulator with Isaac Sim 2023.1.1 release on Ubuntu 22.04LTS with NVIDIA driver 545.23.08. The PX4-Autopilot used during development was v.14.1. Older versions Ubuntu and PX4-Autopilot were not tested. This extension was not tested on Windows.</p>
 </div>
 <p>In order to install Isaac Sim on linux, download the <a class="reference external" href="https://install.launcher.omniverse.nvidia.com/installers/omniverse-launcher-linux.AppImage">Omniverse AppImage here</a> or run the following line on the terminal:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>wget<span class="w"> </span>https://install.launcher.omniverse.nvidia.com/installers/omniverse-launcher-linux.AppImage
@@ -287,13 +286,13 @@ git<span class="w"> </span>clone<span class="w"> </span>git@github.com:PX4/PX4-A
 </div>
 </div></blockquote>
 </li>
-<li><p>Checkout to the stable version 1.13.2 and compile the code for software-in-the-loop (SITL) mode:</p>
+<li><p>Checkout to the stable version 1.14.1 and compile the code for software-in-the-loop (SITL) mode:</p>
 <blockquote>
 <div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Go to the PX4 directory</span>
 <span class="nb">cd</span><span class="w"> </span>PX4-Autopilot
 
 <span class="c1"># Checkout to the latest stable release</span>
-git<span class="w"> </span>checkout<span class="w"> </span>v1.13.2
+git<span class="w"> </span>checkout<span class="w"> </span>v1.14.1
 
 <span class="c1"># Initiate all the submodules. Note this will download modules such as SITL-gazebo which we do not need</span>
 <span class="c1"># but this is the safest way to make sure that the PX4-Autopilot and its submodules are all checked out in</span>
@@ -307,6 +306,22 @@ make<span class="w"> </span>px4_sitl_default<span class="w"> </span>none
 </div></blockquote>
 </li>
 </ol>
+<p>Note: If you are installing a version of PX4 prior to v1.14.1, you may need to go to change the default airframe to
+be used by PX4. This can be achieved by:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Go inside the config folder of the pegasus simulator extension</span>
+<span class="nb">cd</span><span class="w"> </span>PegasusSimulator/extensions/pegasus/simulator/config
+
+<span class="c1"># Open the file configs.yaml</span>
+nano<span class="w"> </span>configs.yaml
+
+<span class="c1"># And change the line:</span>
+px4_default_airframe:<span class="w"> </span>iris
+</pre></div>
+</div>
+</div></blockquote>
+<p>You can also set the PX4 installation path inside the Pegasus Simulator GUI, as shown in the next section, or by editing
+the file <code class="docutils literal notranslate"><span class="pre">PegasusSimulator/extensions/pegasus/simulator/config/config.yaml</span></code> and setting the <code class="docutils literal notranslate"><span class="pre">px4_dir</span></code> field to the correct path.</p>
 <section id="setting-the-px4-path-inside-the-pegasus-simulator">
 <h3>Setting the PX4 path inside the Pegasus Simulator<a class="headerlink" href="#setting-the-px4-path-inside-the-pegasus-simulator" title="Permalink to this heading"></a></h3>
 <p>The simulator provides a feature to auto-launch PX4-Autopilot for every vehicle that is spawned in the simulation world.

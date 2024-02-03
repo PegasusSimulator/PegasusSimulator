@@ -151,8 +151,8 @@ already, follow the Preparation section in the <a class="reference internal" hre
 </span><span class="hll"><span class="linenos"> 27</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.backends.mavlink_backend</span> <span class="kn">import</span> <span class="n">MavlinkBackend</span><span class="p">,</span> <span class="n">MavlinkBackendConfig</span>
 </span><span class="hll"><span class="linenos"> 28</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.vehicles.multirotor</span> <span class="kn">import</span> <span class="n">Multirotor</span><span class="p">,</span> <span class="n">MultirotorConfig</span>
 </span><span class="hll"><span class="linenos"> 29</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.interface.pegasus_interface</span> <span class="kn">import</span> <span class="n">PegasusInterface</span>
-</span><span class="linenos"> 30</span>
-<span class="linenos"> 31</span><span class="c1"># Auxiliary scipy and numpy modules</span>
+</span><span class="linenos"> 30</span><span class="c1"># Auxiliary scipy and numpy modules</span>
+<span class="linenos"> 31</span><span class="kn">import</span> <span class="nn">os.path</span>
 <span class="linenos"> 32</span><span class="kn">from</span> <span class="nn">scipy.spatial.transform</span> <span class="kn">import</span> <span class="n">Rotation</span>
 <span class="linenos"> 33</span>
 <span class="linenos"> 34</span><span class="k">class</span> <span class="nc">PegasusApp</span><span class="p">:</span>
@@ -186,8 +186,8 @@ already, follow the Preparation section in the <a class="reference internal" hre
 </span><span class="hll"><span class="linenos"> 62</span>        <span class="n">mavlink_config</span> <span class="o">=</span> <span class="n">MavlinkBackendConfig</span><span class="p">({</span>
 </span><span class="hll"><span class="linenos"> 63</span>            <span class="s2">&quot;vehicle_id&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
 </span><span class="hll"><span class="linenos"> 64</span>            <span class="s2">&quot;px4_autolaunch&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-</span><span class="hll"><span class="linenos"> 65</span>            <span class="s2">&quot;px4_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;/home/marcelo/PX4-Autopilot&quot;</span><span class="p">,</span>
-</span><span class="hll"><span class="linenos"> 66</span>            <span class="s2">&quot;px4_vehicle_model&quot;</span><span class="p">:</span> <span class="s1">&#39;iris&#39;</span>
+</span><span class="hll"><span class="linenos"> 65</span>            <span class="s2">&quot;px4_dir&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pg</span><span class="o">.</span><span class="n">px4_path</span><span class="p">,</span>
+</span><span class="hll"><span class="linenos"> 66</span>            <span class="s2">&quot;px4_vehicle_model&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pg</span><span class="o">.</span><span class="n">px4_default_airframe</span> <span class="c1"># CHANGE this line to &#39;iris&#39; if using PX4 version bellow v1.14</span>
 </span><span class="hll"><span class="linenos"> 67</span>        <span class="p">})</span>
 </span><span class="hll"><span class="linenos"> 68</span>        <span class="n">config_multirotor</span><span class="o">.</span><span class="n">backends</span> <span class="o">=</span> <span class="p">[</span><span class="n">MavlinkBackend</span><span class="p">(</span><span class="n">mavlink_config</span><span class="p">)]</span>
 </span><span class="hll"><span class="linenos"> 69</span>
@@ -285,8 +285,8 @@ we create a <code class="docutils literal notranslate"><span class="pre">MAVLink
 <span class="linenos">62</span>        <span class="n">mavlink_config</span> <span class="o">=</span> <span class="n">MavlinkBackendConfig</span><span class="p">({</span>
 <span class="linenos">63</span>            <span class="s2">&quot;vehicle_id&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
 <span class="linenos">64</span>            <span class="s2">&quot;px4_autolaunch&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-<span class="linenos">65</span>            <span class="s2">&quot;px4_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;/home/marcelo/PX4-Autopilot&quot;</span><span class="p">,</span>
-<span class="linenos">66</span>            <span class="s2">&quot;px4_vehicle_model&quot;</span><span class="p">:</span> <span class="s1">&#39;iris&#39;</span>
+<span class="linenos">65</span>            <span class="s2">&quot;px4_dir&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pg</span><span class="o">.</span><span class="n">px4_path</span><span class="p">,</span>
+<span class="linenos">66</span>            <span class="s2">&quot;px4_vehicle_model&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pg</span><span class="o">.</span><span class="n">px4_default_airframe</span> <span class="c1"># CHANGE this line to &#39;iris&#39; if using PX4 version bellow v1.14</span>
 <span class="linenos">67</span>        <span class="p">})</span>
 <span class="linenos">68</span>        <span class="n">config_multirotor</span><span class="o">.</span><span class="n">backends</span> <span class="o">=</span> <span class="p">[</span><span class="n">MavlinkBackend</span><span class="p">(</span><span class="n">mavlink_config</span><span class="p">)]</span>
 </pre></div>
