@@ -35,7 +35,7 @@ setup(
     keywords=EXTENSION_TOML_DATA["package"]["keywords"],
     license="BSD-3-Clause",
     include_package_data=True,
-    python_requires=">=3.7.*",
+    python_requires=">=3.7",
     install_requires=INSTALL_REQUIRES,
     packages=["pegasus.simulator"],
     classifiers=["Natural Language :: English", "Programming Language :: Python :: 3.7"],
