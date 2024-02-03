@@ -71,6 +71,9 @@ class Vehicle(Robot):
         self._stage_prefix = get_stage_next_free_path(self._current_stage, stage_prefix, False)
         self._usd_file = usd_path
 
+        # Get the vehicle name by taking the last part of vehicle stage prefix
+        self._vehicle_name = self._stage_prefix.rpartition("/")[-1]
+
         # Spawn the vehicle primitive in the world's stage
         self._prim = define_prim(self._stage_prefix, "Xform")
         self._prim = get_prim_at_path(self._stage_prefix)
@@ -136,6 +139,15 @@ class Vehicle(Robot):
             State: The current state of the vehicle, i.e., position, orientation, linear and angular velocities...
         """
         return self._state
+    
+    @property
+    def vehicle_name(self) -> str:
+        """Vehicle name.
+
+        Returns:
+            Vehicle name (str): last prim name in vehicle prim path
+        """
+        return self._vehicle_name
 
     """
     Operations
