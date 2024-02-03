@@ -12,6 +12,7 @@ Sensors
    sensors.gps
    sensors.imu
    sensors.magnetometer
+   sensors.vision
 
 Dynamics
 --------
@@ -48,7 +49,7 @@ Vehicle
    state
    vehicles.vehicle
    vehicles.vehicle_manager
-   vehicles.multirotor 
+   vehicles.multirotor
 
 Pegasus Interace
 ----------------
