@@ -71,10 +71,13 @@ class PegasusApp:
         prim_utils.create_prim(
             "/World/Light/DomeLight",
             "DomeLight",
+            position=np.array([1.0, 1.0, 1.0]),
             attributes={
-                "texture:file": "omniverse://localhost/NVIDIA/Assets/Skies/Indoor/ZetoCGcom_ExhibitionHall_Interior1.hdr",
-                "intensity": 1000.0
-        })
+                "inputs:intensity": 5e3,
+                "inputs:color": (1.0, 1.0, 1.0),
+                "inputs:texture:file": "omniverse://localhost/NVIDIA/Assets/Skies/Indoor/ZetoCGcom_ExhibitionHall_Interior1.hdr"
+            }
+        )
 
         # Get the current directory used to read trajectories and save results
         self.curr_dir = str(Path(os.path.dirname(os.path.realpath(__file__))).resolve())
