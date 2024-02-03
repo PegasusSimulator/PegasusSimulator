@@ -1,8 +1,7 @@
 # Pegasus Simulator
 
-![IsaacSim 2022.2.0](https://img.shields.io/badge/IsaacSim-2022.2.0-brightgreen.svg)
-![PX4-Autopilot 1.13.2](https://img.shields.io/badge/PX4--Autopilot-1.13.2-brightgreen.svg)
-![Ubuntu 20.04](https://img.shields.io/badge/Ubuntu-20.04LTS-brightgreen.svg)
+![IsaacSim 2023.1.1](https://img.shields.io/badge/IsaacSim-2023.1.1-brightgreen.svg)
+![PX4-Autopilot 1.14.1](https://img.shields.io/badge/PX4--Autopilot-1.14.1-brightgreen.svg)
 ![Ubuntu 22.04](https://img.shields.io/badge/Ubuntu-22.04LTS-brightgreen.svg)
 
 **Pegasus Simulator** is a framework built on top of [NVIDIA

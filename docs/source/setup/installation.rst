@@ -4,24 +4,20 @@ Installation
 Installing NVIDIA Isaac Sim
 ---------------------------
 
-.. image:: https://img.shields.io/badge/IsaacSim-2022.2.0-brightgreen.svg
+.. image:: https://img.shields.io/badge/IsaacSim-2023.1.1-brightgreen.svg
    :target: https://developer.nvidia.com/isaac-sim
-   :alt: IsaacSim 2022.2.0
+   :alt: IsaacSim 2023.1.1
 
-.. image:: https://img.shields.io/badge/PX4--Autopilot-1.13.2-brightgreen.svg
+.. image:: https://img.shields.io/badge/PX4--Autopilot-1.14.1-brightgreen.svg
    :target: https://github.com/PX4/PX4-Autopilot
-   :alt: PX4-Autopilot 1.13.2
-
-.. image:: https://img.shields.io/badge/Ubuntu-20.04LTS-brightgreen.svg
-   :target: https://releases.ubuntu.com/20.04/
-   :alt: Ubuntu 20.04
+   :alt: PX4-Autopilot 1.14.1
 
 .. image:: https://img.shields.io/badge/Ubuntu-22.04LTS-brightgreen.svg
    :target: https://releases.ubuntu.com/22.04/
    :alt: Ubuntu 22.04
 
 .. note::
-	We have tested Pegasus Simulator with Isaac Sim 2022.2 release on Ubuntu 22.04LTS and Ubuntu 20.04LTS with NVIDIA driver 525.85. The PX4-Autopilot used during development was v.13.2. Older versions Ubuntu and PX4-Autopilot were not tested. This extension was not tested on Windows. 
+	We have tested Pegasus Simulator with Isaac Sim 2023.1.1 release on Ubuntu 22.04LTS with NVIDIA driver 545.23.08. The PX4-Autopilot used during development was v.14.1. Older versions Ubuntu and PX4-Autopilot were not tested. This extension was not tested on Windows. 
 
 In order to install Isaac Sim on linux, download the `Omniverse AppImage here <https://install.launcher.omniverse.nvidia.com/installers/omniverse-launcher-linux.AppImage>`__ or run the following line on the terminal:
 
@@ -204,7 +200,7 @@ To install PX4-Autopilot, follow the following steps:
         # Option 2: With SSH (you need to setup a github account with ssh keys)
         git clone git@github.com:PX4/PX4-Autopilot.git
 
-3. Checkout to the stable version 1.13.2 and compile the code for software-in-the-loop (SITL) mode:
+3. Checkout to the stable version 1.14.1 and compile the code for software-in-the-loop (SITL) mode:
 
     .. code:: bash
         
@@ -212,7 +208,7 @@ To install PX4-Autopilot, follow the following steps:
         cd PX4-Autopilot
 
         # Checkout to the latest stable release
-        git checkout v1.13.2
+        git checkout v1.14.1
 
         # Initiate all the submodules. Note this will download modules such as SITL-gazebo which we do not need
         # but this is the safest way to make sure that the PX4-Autopilot and its submodules are all checked out in 
@@ -221,6 +217,23 @@ To install PX4-Autopilot, follow the following steps:
 
         # Compile the code in SITL mode
         make px4_sitl_default none
+
+Note: If you are installing a version of PX4 prior to v1.14.1, you may need to go to change the default airframe to 
+be used by PX4. This can be achieved by:
+
+    .. code:: bash
+        
+        # Go inside the config folder of the pegasus simulator extension
+        cd PegasusSimulator/extensions/pegasus/simulator/config
+
+        # Open the file configs.yaml
+        nano configs.yaml
+
+        # And change the line:
+        px4_default_airframe: iris
+
+You can also set the PX4 installation path inside the Pegasus Simulator GUI, as shown in the next section, or by editing
+the file ``PegasusSimulator/extensions/pegasus/simulator/config/config.yaml`` and setting the ``px4_dir`` field to the correct path.
 
 Setting the PX4 path inside the Pegasus Simulator
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
