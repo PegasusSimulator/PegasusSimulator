@@ -92,6 +92,7 @@ class SensorMsg:
         self.vision_pitch: float = 0.0
         self.vision_yaw: float = 0.0
         self.vision_covariance = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+        self.vision_reset_counter: int = 0
 
         # Simulation State
         self.new_sim_state: bool = False
@@ -306,8 +307,8 @@ class MavlinkBackend(Backend):
         self._current_utime: int = 0
 
     def update_sensor(self, sensor_type: str, data):
-        """Method that is used as callback for the vehicle for every iteration that a sensor produces new data. 
-        Only the IMU, GPS, Barometer and  Magnetometer sensor data are stored to be sent through mavlink. Every other 
+        """Method that is used as callback for the vehicle for every iteration that a sensor produces new data.
+        Only the IMU, GPS, Barometer and  Magnetometer sensor data are stored to be sent through mavlink. Every other
         sensor data that gets passed to this function is discarded.
 
         Args:
@@ -319,6 +320,8 @@ class MavlinkBackend(Backend):
             self.update_imu_data(data)
         elif sensor_type == "GPS":
             self.update_gps_data(data)
+        elif sensor_type == "Vision":
+            self.update_vision_data(data)
         elif sensor_type == "Barometer":
             self.update_bar_data(data)
         elif sensor_type == "Magnetometer":
@@ -422,6 +425,8 @@ class MavlinkBackend(Backend):
         self._sensor_data.vision_roll = data["roll"]
         self._sensor_data.vision_pitch = data["pitch"]
         self._sensor_data.vision_yaw = data["yaw"]
+        self._sensor_data.vision_covariance = data["covariance"]
+        self._sensor_data.vision_reset_counter = data["reset_counter"]
 
         # Signal that we have new vision or mocap data
         self._sensor_data.new_vision_data = True
@@ -607,6 +612,9 @@ class MavlinkBackend(Backend):
         # Send the GPS messages
         self.send_gps_msgs(self._current_utime)
 
+        # Send the Vision messages
+        self.send_vision_msgs(self._current_utime)
+
     def poll_mavlink_messages(self):
         """
         Method that is used to check if new mavlink messages were received
@@ -763,7 +771,7 @@ class MavlinkBackend(Backend):
         self._sensor_data.new_vision_data = False
 
         try:
-            self._connection.mav.global_vision_position_estimate_send(
+            self._connection.mav.vision_position_estimate_send(
                 time_usec,
                 self._sensor_data.vision_x,
                 self._sensor_data.vision_y,
@@ -772,6 +780,7 @@ class MavlinkBackend(Backend):
                 self._sensor_data.vision_pitch,
                 self._sensor_data.vision_yaw,
                 self._sensor_data.vision_covariance,
+                self._sensor_data.vision_reset_counter,
             )
         except:
             carb.log_warn("Could not send vision/mocap data through mavlink")
