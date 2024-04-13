@@ -41,7 +41,7 @@ class ROS2Backend(Backend):
 
         # Create publishers for some sensor data
         self.imu_pub = self.node.create_publisher(Imu, "vehicle" + str(self._id) + "/sensors/imu", 10)
-        self.mag_pub = self.node.create_publisher(MagneticField, "vehicle" + str(self._id) + "/sensors/imu", 10)
+        self.mag_pub = self.node.create_publisher(MagneticField, "vehicle" + str(self._id) + "/sensors/mag", 10)
         self.gps_pub = self.node.create_publisher(NavSatFix, "vehicle" + str(self._id) + "/sensors/gps", 10)
         self.gps_vel_pub = self.node.create_publisher(TwistStamped, "vehicle" + str(self._id) + "/sensors/gps_twist", 10)
 
