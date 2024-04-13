@@ -45,7 +45,7 @@ This simulation framework is an open-source effort, started by me, Marcelo Jacin
 	* [Marcelo Jacinto](https://github.com/MarceloJacinto)
 	* [João Pinto](https://github.com/jschpinto)
 
-Also check the always up-to-date [Github contributors list](https://github.com/PegasusSimulator/PegasusSimulator/graphs/contributors)
+Also check the always up-to-date [Github contributors list](https://github.com/PegasusSimulator/PegasusSimulator/graphs/contributors) with all the open-source contributors.
 
 ## Project Roadmap
 
