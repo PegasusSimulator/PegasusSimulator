@@ -13,6 +13,15 @@ Sensors
    sensors.imu
    sensors.magnetometer
 
+Graphs
+------
+
+.. toctree::
+   :maxdepth: 2
+
+   graphs.graph
+   graphs.ros2_camera
+
 Dynamics
 --------
 

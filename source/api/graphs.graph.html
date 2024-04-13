@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Drag &mdash; Pegasus Simulator  documentation</title>
+  <title>Graph &mdash; Pegasus Simulator  documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -20,8 +20,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Linear Drag" href="dynamics.linear_drag.html" />
-    <link rel="prev" title="ROS2 Camera" href="graphs.ros2_camera.html" /> 
+    <link rel="next" title="ROS2 Camera" href="graphs.ros2_camera.html" />
+    <link rel="prev" title="Magnetometer" href="sensors.magnetometer.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -66,15 +66,15 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">API Reference</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="index.html#sensors">Sensors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="index.html#graphs">Graphs</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="index.html#dynamics">Dynamics</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Drag</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#pegasus.simulator.logic.dynamics.drag.Drag"><code class="docutils literal notranslate"><span class="pre">Drag</span></code></a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#graphs">Graphs</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Graph</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pegasus.simulator.logic.graphs.graph.Graph"><code class="docutils literal notranslate"><span class="pre">Graph</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="dynamics.linear_drag.html">Linear Drag</a></li>
+<li class="toctree-l3"><a class="reference internal" href="graphs.ros2_camera.html">ROS2 Camera</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#dynamics">Dynamics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#thruster">Thruster</a></li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#control-backends">Control Backends</a></li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#vehicle">Vehicle</a></li>
@@ -108,9 +108,9 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">API Reference</a></li>
-      <li class="breadcrumb-item active">Drag</li>
+      <li class="breadcrumb-item active">Graph</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../../_sources/source/api/dynamics.drag.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/source/api/graphs.graph.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -118,83 +118,80 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-pegasus.simulator.logic.dynamics.drag">
-<span id="drag"></span><h1>Drag<a class="headerlink" href="#module-pegasus.simulator.logic.dynamics.drag" title="Permalink to this heading"></a></h1>
+  <section id="module-pegasus.simulator.logic.graphs.graph">
+<span id="graph"></span><h1>Graph<a class="headerlink" href="#module-pegasus.simulator.logic.graphs.graph" title="Permalink to this heading"></a></h1>
 <div class="line-block">
-<div class="line">File: drag.py</div>
-<div class="line">Author: Marcelo Jacinto (<a class="reference external" href="mailto:marcelo&#46;jacinto&#37;&#52;&#48;tecnico&#46;ulisboa&#46;pt">marcelo<span>&#46;</span>jacinto<span>&#64;</span>tecnico<span>&#46;</span>ulisboa<span>&#46;</span>pt</a>)</div>
-<div class="line">Description: Base interface used to implement forces that should actuate on a rigidbody such as linear drag</div>
-<div class="line">License: BSD-3-Clause. Copyright (c) 2023, Marcelo Jacinto. All rights reserved.</div>
+<div class="line">License: BSD-3-Clause. Copyright (c) 2023, Marcelo Jacinto and Filip Stec. All rights reserved.</div>
 </div>
 <p><strong>Classes:</strong></p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.dynamics.drag.Drag" title="pegasus.simulator.logic.dynamics.drag.Drag"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Drag</span></code></a></p></td>
-<td><p>Class that serves as a template for the implementation of Drag forces that actuate on a rigid body</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.graphs.graph.Graph" title="pegasus.simulator.logic.graphs.graph.Graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Graph</span></code></a></p></td>
+<td><p>The base class for implementing OmniGraphs</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py class">
-<dt class="sig sig-object py" id="pegasus.simulator.logic.dynamics.drag.Drag">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pegasus.simulator.logic.dynamics.drag.</span></span><span class="sig-name descname"><span class="pre">Drag</span></span><a class="headerlink" href="#pegasus.simulator.logic.dynamics.drag.Drag" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="pegasus.simulator.logic.graphs.graph.Graph">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pegasus.simulator.logic.graphs.graph.</span></span><span class="sig-name descname"><span class="pre">Graph</span></span><a class="headerlink" href="#pegasus.simulator.logic.graphs.graph.Graph" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p>Class that serves as a template for the implementation of Drag forces that actuate on a rigid body</p>
+<p>The base class for implementing OmniGraphs</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.graphs.graph.Graph.graph_prim_path">
+<span class="sig-name descname"><span class="pre">graph_prim_path</span></span><a class="headerlink" href="#pegasus.simulator.logic.graphs.graph.Graph.graph_prim_path" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
 <p><strong>Methods:</strong></p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.dynamics.drag.Drag.__init__" title="pegasus.simulator.logic.dynamics.drag.Drag.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>()</p></td>
-<td><p>Receives as input the drag coefficients of the vehicle as a 3x1 vector of constants</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.graphs.graph.Graph.__init__" title="pegasus.simulator.logic.graphs.graph.Graph.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(graph_type)</p></td>
+<td><p>Initialize Graph class</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.dynamics.drag.Drag.update" title="pegasus.simulator.logic.dynamics.drag.Drag.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(state, dt)</p></td>
-<td><p>Method that should be implemented to update the drag force to be applied on the body frame of the vehicle</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.graphs.graph.Graph.initialize" title="pegasus.simulator.logic.graphs.graph.Graph.initialize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">initialize</span></code></a>(graph_prim_path)</p></td>
+<td><p>Method that should be implemented and called by the class that inherits the graph object.</p></td>
 </tr>
 </tbody>
 </table>
 <p><strong>Attributes:</strong></p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.dynamics.drag.Drag.drag" title="pegasus.simulator.logic.dynamics.drag.Drag.drag"><code class="xref py py-obj docutils literal notranslate"><span class="pre">drag</span></code></a></p></td>
-<td><p>The drag force to be applied on the body frame of the vehicle</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#id0" title="pegasus.simulator.logic.graphs.graph.Graph.graph_prim_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">graph_prim_path</span></code></a></p></td>
+<td><p>(str) Path to the graph.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.graphs.graph.Graph.graph_type" title="pegasus.simulator.logic.graphs.graph.Graph.graph_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">graph_type</span></code></a></p></td>
+<td><p>(str) A name that describes the type of graph.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py method">
-<dt class="sig sig-object py" id="pegasus.simulator.logic.dynamics.drag.Drag.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.dynamics.drag.Drag.__init__" title="Permalink to this definition"></a></dt>
-<dd><p>Receives as input the drag coefficients of the vehicle as a 3x1 vector of constants</p>
+<dt class="sig sig-object py" id="pegasus.simulator.logic.graphs.graph.Graph.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph_type</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.graphs.graph.Graph.__init__" title="Permalink to this definition"></a></dt>
+<dd><p>Initialize Graph class</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>graph_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – A name that describes the type of graph</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="pegasus.simulator.logic.dynamics.drag.Drag.update">
-<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.dynamics.drag.Drag.update" title="Permalink to this definition"></a></dt>
-<dd><p>Method that should be implemented to update the drag force to be applied on the body frame of the vehicle</p>
+<dt class="sig sig-object py" id="pegasus.simulator.logic.graphs.graph.Graph.initialize">
+<span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph_prim_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.graphs.graph.Graph.initialize" title="Permalink to this definition"></a></dt>
+<dd><p>Method that should be implemented and called by the class that inherits the graph object.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>state</strong> (<a class="reference internal" href="state.html#pegasus.simulator.logic.state.State" title="pegasus.simulator.logic.state.State"><em>State</em></a>) – The current state of the vehicle.
-dt (float): The time elapsed between the previous and current function calls (s).</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A list with len==3 containing the drag force to be applied on the rigid body according to a FLU body reference</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)">list</a></p>
-</dd>
 </dl>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="pegasus.simulator.logic.dynamics.drag.Drag.drag">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">drag</span></span><a class="headerlink" href="#pegasus.simulator.logic.dynamics.drag.Drag.drag" title="Permalink to this definition"></a></dt>
-<dd><p>The drag force to be applied on the body frame of the vehicle</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A list with len==3 containing the drag force to be applied on the rigid body according to a FLU body reference
-frame, expressed in Newton (N) [dx, dy, dz]</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)">list</a></p>
-</dd>
-</dl>
+<dt class="sig sig-object py" id="id0">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">graph_prim_path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#id0" title="Permalink to this definition"></a></dt>
+<dd><p>(str) Path to the graph.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.graphs.graph.Graph.graph_type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">graph_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#pegasus.simulator.logic.graphs.graph.Graph.graph_type" title="Permalink to this definition"></a></dt>
+<dd><p>(str) A name that describes the type of graph.</p>
 </dd></dl>
 
 </dd></dl>
@@ -205,8 +202,8 @@ frame, expressed in Newton (N) [dx, dy, dz]</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="graphs.ros2_camera.html" class="btn btn-neutral float-left" title="ROS2 Camera" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="dynamics.linear_drag.html" class="btn btn-neutral float-right" title="Linear Drag" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="sensors.magnetometer.html" class="btn btn-neutral float-left" title="Magnetometer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="graphs.ros2_camera.html" class="btn btn-neutral float-right" title="ROS2 Camera" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
