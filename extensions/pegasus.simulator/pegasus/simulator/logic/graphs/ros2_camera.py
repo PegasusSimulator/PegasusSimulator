@@ -31,7 +31,10 @@ class ROS2Camera(Graph):
             >>> {"graph_evaluator": "execution",            # type of the omnigraph to create (execution, push)
             >>>  "resolution": [640, 480],                  # output video stream resolution in pixels [width, height]
             >>>  "types": ['rgb', 'camera_info'],           # rgb, depth, depth_pcl, instance_segmentation, semantic_segmentation, bbox_2d_tight, bbox_2d_loose, bbox_3d, camera_info
-            >>>  "publish_labels": True}                    # publish labels for instance_segmentation, semantic_segmentation, bbox_2d_tight, bbox_2d_loose and bbox_3d camera types
+            >>>  "publish_labels": True,                    # publish labels for instance_segmentation, semantic_segmentation, bbox_2d_tight, bbox_2d_loose and bbox_3d camera types
+            >>>  "topic": ""                                # base topic name for the camera (default is camera name in Isaac Sim)
+            >>>  "namespace": ""                            # namespace for the camera (default is vehicle name in Isaac Sim)
+            >>>  "tf_frame_id": ""}                         # tf frame id for the camera (default is camera name in Isaac Sim)
         """
 
         # Initialize the Super class "object" attribute
@@ -40,7 +43,9 @@ class ROS2Camera(Graph):
         # Save camera path, frame id and ros topic name
         self._camera_prim_path = camera_prim_path
         self._frame_id = camera_prim_path.rpartition("/")[-1] # frame_id of the camera is the last prim path part after `/`
-        self._base_topic = ""
+        self._base_topic = config.get("topic", "")
+        self._namespace = config.get("namespace", "")
+        self._tf_frame_id = config.get("tf_frame_id", "")
 
         # Process the config dictionary
         self._graph_evaluator = config.get("graph_evaluator", "execution")
@@ -55,8 +60,17 @@ class ROS2Camera(Graph):
             vehicle (Vehicle): The vehicle that this graph is attached to.
         """
 
-        self._namespace = f"/{vehicle.vehicle_name}"
-        self._base_topic = f"/{self._frame_id}"
+        # Set the namespace for the camera if non is provided
+        if self._namespace == "":
+            self._namespace = f"/{vehicle.vehicle_name}"
+
+        # Set the base topic for the camera if non is provided
+        if self._base_topic == "":
+            self._base_topic = f"/{self._frame_id}"
+
+        # Set the tf frame id for the camera if non is provided
+        if self._tf_frame_id == "":
+            self._tf_frame_id = self._frame_id
 
         # Set the prim_path for the camera
         if self._camera_prim_path[0] != '/':
@@ -130,7 +144,7 @@ class ROS2Camera(Graph):
             ]
             graph_config[keys.SET_VALUES] += [
                 (f"{camera_helper_name}.inputs:nodeNamespace", self._namespace),
-                (f"{camera_helper_name}.inputs:frameId", self._frame_id),
+                (f"{camera_helper_name}.inputs:frameId", self._tf_frame_id),
                 (f"{camera_helper_name}.inputs:topicName", f"{self._base_topic}/{camera_type}"),
                 (f"{camera_helper_name}.inputs:type", camera_type)
             ]
