@@ -42,6 +42,9 @@ class MultirotorConfig:
         # The default sensors for a quadrotor
         self.sensors = [Barometer(), IMU(), Magnetometer(), GPS()]
 
+        # The default graphs
+        self.graphs = []
+
         # The backends for actually sending commands to the vehicle. By default use mavlink (with default mavlink configurations)
         # [Can be None as well, if we do not desired to use PX4 with this simulated vehicle]. It can also be a ROS2 backend
         # or your own custom Backend implementation!
@@ -85,12 +88,17 @@ class Multirotor(Vehicle):
         # and let the sensor decide depending on its internal update rate whether to generate new data
         self._world.add_physics_callback(self._stage_prefix + "/Sensors", self.update_sensors)
 
-        # 3. Setup the dynamics of the system
+        # 3. Initialize all the vehicle graphs
+        self._graphs = config.graphs
+        for graph in self._graphs:
+            graph.initialize(self)
+
+        # 4. Setup the dynamics of the system
         # Get the thrust curve of the vehicle from the configuration
         self._thrusters = config.thrust_curve
         self._drag = config.drag
 
-        # 4. Save the backend interface (if given in the configuration of the multirotor)
+        # 5. Save the backend interface (if given in the configuration of the multirotor)
         # and initialize them
         self._backends = config.backends
         for backend in self._backends:
