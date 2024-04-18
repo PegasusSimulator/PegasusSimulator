@@ -4,3 +4,4 @@ global_coordinates:
   longitude: -9.137977
 px4_dir: ~/PX4-Autopilot
 px4_default_airframe: gazebo-classic_iris # Change to 'iris' if using PX4 version lower than v1.14
+extra_ros_python_lib_path: "" # Customize the extra ROS Python package that may be used
