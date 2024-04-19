@@ -12,6 +12,7 @@ Sensors
    sensors.gps
    sensors.imu
    sensors.magnetometer
+   sensors.lidar
 
 Graphs
 ------
@@ -21,6 +22,7 @@ Graphs
 
    graphs.graph
    graphs.ros2_camera
+   graphs.ros2_lidar
 
 Dynamics
 --------
