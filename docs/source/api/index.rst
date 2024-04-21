@@ -21,6 +21,7 @@ Graphs
 
    graphs.graph
    graphs.ros2_camera
+   graphs.ros1_graphs
 
 Dynamics
 --------
@@ -48,6 +49,7 @@ Control Backends
    backends.backend
    backends.mavlink_backend
    backends.ros2_backend
+   backends.utils
 
 Vehicle
 -------
