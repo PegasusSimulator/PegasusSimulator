@@ -4,3 +4,4 @@
 
 from .graph import Graph
 from .ros2_camera import ROS2Camera
+from .ros2_clock import ROS2Clock
