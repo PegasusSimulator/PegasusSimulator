@@ -27,6 +27,9 @@ from pegasus.simulator.logic.people.person_controller import PersonController
 from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 
 class Person:
+    """
+    Class that implements a person in the simulation world. The person can be controlled by a controller that inherits from the PersonController class.
+    """
 
     # Get root assets path from setting, if not set, get the Isaac-Sim asset path
     setting_dict = carb.settings.get_settings()

@@ -61,6 +61,7 @@ This simulation framework is an open-source effort, started by me, Marcelo Jacin
    source/tutorials/create_standalone_application
    source/tutorials/create_standalone_simulation
    source/tutorials/create_custom_backend
+   source/tutorials/create_simulation_with_people
 
 .. toctree::
    :maxdepth: 2

@@ -66,8 +66,6 @@ class CirclePersonControler(PersonController):
         super().__init__()
 
         self._radius = 5.0
-        self._angular_velocity = 0.1
-
         self.gamma = 0.0
         self.gamma_dot = 0.3
         

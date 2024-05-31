@@ -19,8 +19,7 @@ Graphs
 .. toctree::
    :maxdepth: 2
 
-   graphs.graph
-   graphs.ros2_camera
+   graphs_api
 
 Dynamics
 --------
@@ -58,6 +57,13 @@ Vehicle
    vehicles.vehicle
    vehicles.vehicle_manager
    vehicles.multirotor 
+
+People
+------
+.. toctree::
+   :maxdepth: 2
+
+   people
 
 Pegasus Interace
 ----------------
