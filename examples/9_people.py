@@ -68,7 +68,7 @@ class PegasusApp:
 
         # Acquire the World, .i.e, the singleton that controls that is a one stop shop for setting up physics,
         # spawning asset primitives, etc.
-        omni.usd.get_context().open_stage("/home/marcelo/pegasus/pegasus/src/TargetTracking/ros_implementation/pegasus_target_tracking/isaac_assets/almost_empty.usd", None)
+        omni.usd.get_context().open_stage("/home/marcelo/pegasus/pegasus/src/TargetTracking/ros_implementation/pegasus_target_tracking/isaac_assets/empty.usd", None)
         self.pg._world = World(**self.pg._world_settings)
         self.world = self.pg.world
 
@@ -78,8 +78,8 @@ class PegasusApp:
             print(person)
 
         # Spawn the person in the world
-        p1 = Person("person1", "original_male_adult_construction_05", init_pos=[1.0, 0.0, 0.0], init_yaw=0.0)
-        p2 = Person("person2", "original_female_adult_business_02", init_pos=[2.0, 0.0, 0.0], init_yaw=0.0)
+        p1 = Person("person1", "original_male_adult_construction_05", init_pos=[1.0, 0.0, 0.0], init_yaw=1.0)
+        p2 = Person("person2", "original_female_adult_business_02", init_pos=[2.0, 0.0, 0.0])
 
         p1.update_target_position([10.0, 0.0, 0.0], 0.1)
         p2.update_target_position([-10.0, 0.0, 0.0], 0.1)

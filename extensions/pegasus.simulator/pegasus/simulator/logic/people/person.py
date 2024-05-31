@@ -6,6 +6,7 @@
 """
 
 import numpy as np
+from scipy.spatial.transform import Rotation
 
 # Low level APIs
 import carb
@@ -22,6 +23,7 @@ from omni.isaac.core.utils.nucleus import get_assets_root_path
 # Extension APIs
 from pegasus.simulator.logic.state import State
 from pegasus.simulator.logic.people_manager import PeopleManager
+from pegasus.simulator.logic.people.person_controller import PersonController
 from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 
 class Person:
@@ -47,8 +49,18 @@ class Person:
         stage_prefix: str,
         character_name: str = None,
         init_pos=[0.0, 0.0, 0.0],
-        init_yaw=0.0
+        init_yaw=0.0,
+        controller: PersonController=None
     ):
+        """Initializes the person object
+
+        Args:
+            stage_prefix (str): The name the person will present in the simulator when spawned on the stage.
+            character_name (str): The name of the person in the USD file. Use the Person.get_character_asset_list() method to get the list of available characters.
+            init_pos (list): The initial position of the vehicle in the inertial frame (in ENU convention). Defaults to [0.0, 0.0, 0.0].
+            init_yaw (float): The initial orientation of the person in rad. Defaults to 0.0.
+            controller (PersonController): A controller to add some custom behaviour to the movement of the person. Defaults to None.
+        """
 
         # Get the current world at which we want to spawn the vehicle
         self._world = PegasusInterface().world
@@ -56,10 +68,12 @@ class Person:
 
         # Variable that will hold the current state of the vehicle
         self._state = State()
+        self._state.position = np.array(init_pos)
+        self._state.orientation = Rotation.from_euler('z', init_yaw, degrees=False).as_quat()
 
         # Set the target position for the character
         self._target_position = np.array(init_pos)
-        self._target_speed = 1.0
+        self._target_speed = 0.0
 
         # Save the name with which the vehicle will appear in the stage
         # and the character model that will be loaded into the simulator
@@ -67,10 +81,6 @@ class Person:
 
         # The name of the character in the USD file
         self._character_name = character_name
-
-        # If there is no XForm primitive in the stage to hold all the people, create one
-        if not self._current_stage.GetPrimAtPath(Person.character_root_prim_path):
-            prims.create_prim(Person.character_root_prim_path, "Xform")
 
         # Get the USD file corresponding to the character
         self.char_usd_file = Person.get_path_for_character_prim(character_name)
@@ -82,12 +92,16 @@ class Person:
         self.character_graph = None
         self.add_animation_graph_to_agent()
 
-        # Add a callback to the physics engine to update the current state of the system
+        # Set the controller for the person if any and initialize it
+        self._controller = controller
+        if self._controller:
+            self._controller.initialize(self)
+
+        # Add a callback to the physics engine to update the current state of the person
         self._world.add_physics_callback(self._stage_prefix + "/state", self.update_state)
 
         # Add the update method to the physics callback if the world was received
-        # so that we can apply forces and torques to the vehicle. Note, this method should
-        # be implemented in classes that inherit the vehicle object
+        # so that we can apply the new references to be tracked by the person
         self._world.add_physics_callback(self._stage_prefix + "/update", self.update)
 
         # Set the flag that signals if the simulation is running or not
@@ -124,15 +138,17 @@ class Person:
 
     def start(self):
         """
-        Method that is called when the simulation starts. This method can be used to initialize any variables. In this case, do nothing
+        Method that is called when the simulation starts. This method can be used to initialize any variables.
         """
-        pass
+        if self._controller:
+            self._controller.start()
 
     def stop(self):
         """
-        Method that is called when the simulation stops. This method can be used to reset any variables. In this case, do nothing
+        Method that is called when the simulation stops. This method can be used to reset any variables.
         """
-        pass
+        if self._controller:
+            self._controller.stop()
 
     def update(self, dt: float):
         """
@@ -143,8 +159,12 @@ class Person:
         """
 
         # Note: this is done to avoid the error of the character_graph being None. The animation graph is only created after the simulation starts
-        if self.character_graph is None:
+        if not self.character_graph or self.character_graph is None:
             self.character_graph = ag.get_character(self.character_skel_root_stage_path)
+
+        # Call the controller update method that should update the reference of the target position
+        if self._controller:
+            self._controller.update(dt)
 
         # Compute the distance between the current position and the goal position
         distance_to_target_position = np.linalg.norm(self._target_position - self._state.position)
@@ -181,7 +201,7 @@ class Person:
         """
         
         # Note: this is done to avoid the error of the character_graph being None. The animation graph is only created after the simulation starts
-        if self.character_graph is None:
+        if not self.character_graph or self.character_graph is None:
             self.character_graph = ag.get_character(self.character_skel_root_stage_path)
 
         # Get the current position of the person
@@ -193,8 +213,21 @@ class Person:
         self._state.position = np.array([pos[0], pos[1], pos[2]])
         self._state.orientation = np.array([rot.x, rot.y, rot.z, rot.w])
 
+        # Signal the controller the updated state
+        if self._controller:
+            self._controller.update_state(self._state)
+
 
     def spawn_agent(self, usd_file, stage_name, init_pos, init_yaw):
+
+        # If there is no XForm primitive in the stage to hold all the people, create one
+        if not self._current_stage.GetPrimAtPath(Person.character_root_prim_path):
+            prims.create_prim(Person.character_root_prim_path, "Xform")
+
+        # If the base biped character is not present in the stage, spawn it
+        if not self._current_stage.GetPrimAtPath(Person.character_root_prim_path + "/Biped_Setup"):
+            prim = prims.create_prim(Person.character_root_prim_path + "/Biped_Setup", "Xform", usd_path=Person.assets_root_path + "/Biped_Setup.usd")
+            prim.GetAttribute("visibility").Set("invisible")
 
         # Spawn the person in the world
         self.prim = prims.create_prim(stage_name, "Xform", usd_path=usd_file)
@@ -214,10 +247,10 @@ class Person:
         PeopleManager.get_people_manager().add_person(self._stage_prefix, self)
 
     def add_animation_graph_to_agent(self):
-        
+
         # Get the animation graph that we are going to add to the person
         animation_graph = self._current_stage.GetPrimAtPath(Person.character_root_prim_path + "/Biped_Setup/CharacterAnimation/AnimationGraph")
-        
+
         # Remove the animation graph attribute if it exists
         omni.kit.commands.execute("RemoveAnimationGraphAPICommand", paths=[Sdf.Path(self.character_skel_root.GetPrimPath())])
         
