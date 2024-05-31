@@ -75,6 +75,8 @@ class PegasusApp:
         # TODO: Add the logic code here
         carb.log_warn(Person.get_character_asset_list())
         Person("person1", "original_male_adult_construction_05", init_pos=[1.0, 0.0, 0.0], init_yaw=0.0)
+        Person("person2", "original_female_adult_business_02", init_pos=[2.0, 0.0, 0.0], init_yaw=0.0)
+
 
         # Reset the simulation environment so that all articulations (aka robots) are initialized
         self.world.reset()

@@ -5,11 +5,9 @@
 | Description: Definition of the Person class which is used as the base for spawning people in the simulation world.
 """
 
-import random
-
 # Low level APIs
 import carb
-from pxr import Gf
+from pxr import Gf, Sdf
 
 # High level Isaac sim APIs
 import omni.client
@@ -55,6 +53,8 @@ class Person:
         # Save the name with which the vehicle will appear in the stage
         # and the character model that will be loaded into the simulator
         self._stage_prefix = get_stage_next_free_path(self._current_stage, Person.character_root_prim_path + '/' + stage_prefix, False)
+
+        # The name of the character in the USD file
         self._character_name = character_name
 
         # If there is no XForm primitive in the stage to hold all the people, create one
@@ -66,11 +66,12 @@ class Person:
 
         # Spawn the agent in the world
         self.spawn_agent(self.char_usd_file, self._stage_prefix, init_pos, init_yaw)
+
+        # Add the animation graph to the agent, such that it can move around
+        self.add_animation_graph_to_agent()
         
 
     def spawn_agent(self, usd_file, stage_name, init_pos, init_yaw):
-
-        print(stage_name)
 
         # Spawn the person in the world
         self.prim = prims.create_prim(stage_name, "Xform", usd_path=usd_file)
@@ -85,6 +86,50 @@ class Person:
         
         # Add the current person to the person manager
         PeopleManager.get_people_manager().add_person(self._stage_prefix, self)
+
+    def add_animation_graph_to_agent(self):
+        
+        # Get the animation graph that we are going to add to the person
+        animation_graph = self._current_stage.GetPrimAtPath(Person.character_root_prim_path + "/Biped_Setup/CharacterAnimation/AnimationGraph")
+
+        # Get the Skeleton root of the character
+        character_skel_root = Person._transverse_prim(self._current_stage, self._stage_prefix)
+        
+        # Remove the animation graph attribute if it exists
+        omni.kit.commands.execute("RemoveAnimationGraphAPICommand", paths=[Sdf.Path(character_skel_root.GetPrimPath())])
+        
+        # Add the animation graph and script to the character
+        omni.kit.commands.execute("ApplyAnimationGraphAPICommand", paths=[Sdf.Path(character_skel_root.GetPrimPath())], animation_graph_path=Sdf.Path(animation_graph.GetPrimPath()))
+        omni.kit.commands.execute("ApplyScriptingAPICommand", paths=[Sdf.Path(character_skel_root.GetPrimPath())])
+
+
+    @staticmethod
+    def _transverse_prim(stage, stage_prefix):
+
+        # Check if the prim is the one we are looking for
+        prim = stage.GetPrimAtPath(stage_prefix)
+
+        # If the prim is the one we are looking for, return it
+        if prim.GetTypeName() == "SkelRoot":
+            return prim
+
+        # Otherwise, get all the children of the prim and keep transversing until we find the SkelRoot
+        children = prim.GetAllChildren()
+
+        # If there are no children, return
+        if not children or len(children) == 0:
+            return None
+        
+        # Recursively look through the children to get the SkelRoot
+        for child in children:
+            print("Looking for child")
+            print(stage_prefix + "/" + child.GetName())
+            prim_child = Person._transverse_prim(stage, stage_prefix + "/" + child.GetName())
+
+            if prim_child is not None:
+                return prim_child
+            
+        return None
 
 
     @staticmethod
@@ -134,3 +179,5 @@ class Person:
                 return item.relative_path
 
         carb.log_error("Unable to file a .usd file in {} character folder".format(character_folder_path))
+
+    
