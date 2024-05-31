@@ -49,6 +49,7 @@ class Pegasus_SimulatorExtension(omni.ext.IExt):
         self.ui_window = None
 
         # Start the extension backend
+        PegasusInterface.gui_mode = True
         self._pegasus_sim = PegasusInterface()
 
         # Check if we already have a stage loaded (when using autoload feature, it might not be ready yet)

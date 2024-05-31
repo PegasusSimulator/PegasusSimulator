@@ -18,7 +18,7 @@ from threading import Lock
 import carb
 import omni.kit.app
 from omni.isaac.core.world import World
-from omni.isaac.core.utils.stage import clear_stage, create_new_stage_async, update_stage_async
+from omni.isaac.core.utils.stage import clear_stage, create_new_stage_async, update_stage_async, create_new_stage
 from omni.isaac.core.utils.viewports import set_camera_view
 import omni.isaac.core.utils.nucleus as nucleus
 
@@ -40,6 +40,9 @@ class PegasusInterface:
     # Lock for safe multi-threading
     _lock: Lock = Lock()
 
+    # Set the pegasus interface for running in GUI mode (does not initialize the stage or world automatically)
+    gui_mode = False
+
     def __init__(self):
         """
         Initialize the PegasusInterface singleton object (only runs once at a time)
@@ -59,8 +62,11 @@ class PegasusInterface:
         # Initialize the world with the default simulation settings
         self._world_settings = DEFAULT_WORLD_SETTINGS
         self._world = None
-        #self.initialize_world()
 
+        # Initialize an empty stage if we are using pegasus in scripting mode
+        if not PegasusInterface.gui_mode:
+            create_new_stage()
+        
         # Initialize the latitude, longitude and altitude of the simulated environment at the (0.0, 0.0, 0.0) coordinate
         # from the extension configuration file
         self._latitude, self._longitude, self._altitude = self._get_global_coordinates_from_config()

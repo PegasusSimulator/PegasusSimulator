@@ -41,7 +41,6 @@ icon = "data/icon.png"
 "omni.ui.scene" = {}
 "omni.kit.window.viewport" = {}
 "omni.anim.navigation.bundle" = {}
-"omni.anim.navigation.people" = {}
 "omni.anim.people" = {}
 "omni.anim.timeline" = {}
 "omni.anim.graph.bundle" = {}

@@ -101,12 +101,11 @@ class PegasusApp:
 
         # Acquire the World, .i.e, the singleton that controls that is a one stop shop for setting up physics,
         # spawning asset primitives, etc.
-        omni.usd.get_context().open_stage("/home/marcelo/pegasus/PegasusSimulator/extensions/pegasus.simulator/pegasus/simulator/assets/Worlds/Empty/Empty.usd", None)
         self.pg._world = World(**self.pg._world_settings)
         self.world = self.pg.world
 
         # Launch one of the worlds provided by NVIDIA
-        #self.pg.load_environment(SIMULATION_ENVIRONMENTS["Curved Gridroom"])
+        self.pg.load_environment(SIMULATION_ENVIRONMENTS["Curved Gridroom"])
 
         # Check the available assets for people
         people_assets_list = Person.get_character_asset_list()
@@ -118,8 +117,8 @@ class PegasusApp:
         p1 = Person("person1", "original_male_adult_construction_05", init_pos=[3.0, 0.0, 0.0], init_yaw=1.0, controller=person_controller)
         
         # Create a person without setting up a controller, and just setting a manual target position for it to track
-        p2 = Person("person2", "original_female_adult_business_02", init_pos=[-2.0, 0.0, 0.0])
-        p2.update_target_position([-5.0, 0.0, 0.0], 0.0)
+        p2 = Person("person2", "original_female_adult_business_02", init_pos=[2.0, 0.0, 0.0])
+        p2.update_target_position([5.0, 0.0, 0.0], 0.0)
 
         # Create the vehicle
         # Try to spawn the selected robot in the world to the specified namespace
@@ -147,6 +146,9 @@ class PegasusApp:
             Rotation.from_euler("XYZ", [0.0, 0.0, 0.0], degrees=True).as_quat(),
             config=config_multirotor,
         )
+
+        # Set the camera of the viewport to a nice position
+        self.pg.set_viewport_camera([5.0, 9.0, 6.5], [0.0, 0.0, 0.0])
 
         # Reset the simulation environment so that all articulations (aka robots) are initialized
         self.world.reset()
