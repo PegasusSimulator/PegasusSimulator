@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>People &mdash; Pegasus Simulator  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Pegasus Interface" href="pegasus_interface.html" />
+    <link rel="prev" title="Multirotor" href="vehicles.multirotor.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #FFD700" >
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../setup/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup/developer.html">Development</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/run_extension_mode.html">Run in Extension Mode (GUI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/create_standalone_application.html">Create a Standalone Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/create_standalone_simulation.html">Your First Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/create_custom_backend.html">Create a Custom Controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/create_simulation_with_people.html">Simulation with Moving People</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Features</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../features/environments.html">Environments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../features/vehicles.html">Vehicles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../features/px4_integration.html">PX4 Integration</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Source API</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="index.html#sensors">Sensors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#graphs">Graphs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#dynamics">Dynamics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#thruster">Thruster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#control-backends">Control Backends</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#vehicle">Vehicle</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#people">People</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">People</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pegasus.simulator.logic.people.person.Person"><code class="docutils literal notranslate"><span class="pre">Person</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pegasus.simulator.logic.people.person_controller.PersonController"><code class="docutils literal notranslate"><span class="pre">PersonController</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pegasus.simulator.logic.people_manager.PeopleManager"><code class="docutils literal notranslate"><span class="pre">PeopleManager</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#pegasus-interace">Pegasus Interace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#default-params">Default Params</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../references/contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/known_issues.html">Known Issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/roadmap.html">Roadmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/bibliography.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #FFD700" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Pegasus Simulator</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API Reference</a></li>
+      <li class="breadcrumb-item active">People</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/source/api/people.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-pegasus.simulator.logic.people.person">
+<span id="people"></span><h1>People<a class="headerlink" href="#module-pegasus.simulator.logic.people.person" title="Permalink to this heading"></a></h1>
+<div class="line-block">
+<div class="line">File: person.py</div>
+<div class="line">Author: Marcelo Jacinto (<a class="reference external" href="mailto:marcelo&#46;jacinto&#37;&#52;&#48;tecnico&#46;ulisboa&#46;pt">marcelo<span>&#46;</span>jacinto<span>&#64;</span>tecnico<span>&#46;</span>ulisboa<span>&#46;</span>pt</a>)</div>
+<div class="line">License: BSD-3-Clause. Copyright (c) 2024, Marcelo Jacinto. All rights reserved.</div>
+<div class="line">Description: Definition of the Person class which is used as the base for spawning people in the simulation world.</div>
+</div>
+<p><strong>Classes:</strong></p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.people.person.Person" title="pegasus.simulator.logic.people.person.Person"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Person</span></code></a></p></td>
+<td><p>Class that implements a person in the simulation world.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.people.person.Person">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pegasus.simulator.logic.people.person.</span></span><span class="sig-name descname"><span class="pre">Person</span></span><a class="headerlink" href="#pegasus.simulator.logic.people.person.Person" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Class that implements a person in the simulation world. The person can be controlled by a controller that inherits from the PersonController class.</p>
+<p><strong>Methods:</strong></p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.people.person.Person.__init__" title="pegasus.simulator.logic.people.person.Person.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(stage_prefix[, character_name, ...])</p></td>
+<td><p>Initializes the person object</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.people.person.Person.add_animation_graph_to_agent" title="pegasus.simulator.logic.people.person.Person.add_animation_graph_to_agent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_animation_graph_to_agent</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.people.person.Person.get_character_asset_list" title="pegasus.simulator.logic.people.person.Person.get_character_asset_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_character_asset_list</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.people.person.Person.get_path_for_character_prim" title="pegasus.simulator.logic.people.person.Person.get_path_for_character_prim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_path_for_character_prim</span></code></a>(agent_name)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.people.person.Person.get_usd_in_folder" title="pegasus.simulator.logic.people.person.Person.get_usd_in_folder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_usd_in_folder</span></code></a>(character_folder_path)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.people.person.Person.sim_start_stop" title="pegasus.simulator.logic.people.person.Person.sim_start_stop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sim_start_stop</span></code></a>(event)</p></td>
+<td><p>Callback that is called every time there is a timeline event such as starting/stoping the simulation.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.people.person.Person.spawn_agent" title="pegasus.simulator.logic.people.person.Person.spawn_agent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spawn_agent</span></code></a>(usd_file, stage_name, init_pos, ...)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.people.person.Person.start" title="pegasus.simulator.logic.people.person.Person.start"><code class="xref py py-obj docutils literal notranslate"><span class="pre">start</span></code></a>()</p></td>
+<td><p>Method that is called when the simulation starts.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.people.person.Person.stop" title="pegasus.simulator.logic.people.person.Person.stop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stop</span></code></a>()</p></td>
+<td><p>Method that is called when the simulation stops.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.people.person.Person.update" title="pegasus.simulator.logic.people.person.Person.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(dt)</p></td>
+<td><p>Method that implements the logic to make the person move around in the simulation world and also play the animation</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.people.person.Person.update_state" title="pegasus.simulator.logic.people.person.Person.update_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_state</span></code></a>(dt)</p></td>
+<td><p>Method that is called at every physics step to retrieve and update the current state of the person, i.e., get the current position, orientation, linear and angular velocities and acceleration of the person.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.people.person.Person.update_target_position" title="pegasus.simulator.logic.people.person.Person.update_target_position"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_target_position</span></code></a>(position[, walk_speed])</p></td>
+<td><p>Method that updates the target position of the person to which it will move towards.</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Attributes:</strong></p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.people.person.Person.assets_root_path" title="pegasus.simulator.logic.people.person.Person.assets_root_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assets_root_path</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.people.person.Person.character_root_prim_path" title="pegasus.simulator.logic.people.person.Person.character_root_prim_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">character_root_prim_path</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.people.person.Person.state" title="pegasus.simulator.logic.people.person.Person.state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">state</span></code></a></p></td>
+<td><p>The state of the person.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.people.person.Person.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stage_prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">character_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0.0,</span> <span class="pre">0.0,</span> <span class="pre">0.0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_yaw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">controller</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.people.person.Person.__init__" title="Permalink to this definition"></a></dt>
+<dd><p>Initializes the person object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>stage_prefix</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The name the person will present in the simulator when spawned on the stage.</p></li>
+<li><p><strong>character_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The name of the person in the USD file. Use the Person.get_character_asset_list() method to get the list of available characters.</p></li>
+<li><p><strong>init_pos</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a>) – The initial position of the vehicle in the inertial frame (in ENU convention). Defaults to [0.0, 0.0, 0.0].</p></li>
+<li><p><strong>init_yaw</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The initial orientation of the person in rad. Defaults to 0.0.</p></li>
+<li><p><strong>controller</strong> (<a class="reference internal" href="#pegasus.simulator.logic.people.person_controller.PersonController" title="pegasus.simulator.logic.people.person_controller.PersonController"><em>PersonController</em></a>) – A controller to add some custom behaviour to the movement of the person. Defaults to None.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.people.person.Person.add_animation_graph_to_agent">
+<span class="sig-name descname"><span class="pre">add_animation_graph_to_agent</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.people.person.Person.add_animation_graph_to_agent" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.people.person.Person.get_character_asset_list">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_character_asset_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.people.person.Person.get_character_asset_list" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.people.person.Person.get_path_for_character_prim">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_path_for_character_prim</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agent_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.people.person.Person.get_path_for_character_prim" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.people.person.Person.get_usd_in_folder">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_usd_in_folder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">character_folder_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.people.person.Person.get_usd_in_folder" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.people.person.Person.sim_start_stop">
+<span class="sig-name descname"><span class="pre">sim_start_stop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.people.person.Person.sim_start_stop" title="Permalink to this definition"></a></dt>
+<dd><p>Callback that is called every time there is a timeline event such as starting/stoping the simulation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>event</strong> – A timeline event generated from Isaac Sim, such as starting or stoping the simulation.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.people.person.Person.spawn_agent">
+<span class="sig-name descname"><span class="pre">spawn_agent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">usd_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stage_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_pos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_yaw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.people.person.Person.spawn_agent" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.people.person.Person.start">
+<span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.people.person.Person.start" title="Permalink to this definition"></a></dt>
+<dd><p>Method that is called when the simulation starts. This method can be used to initialize any variables.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.people.person.Person.stop">
+<span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.people.person.Person.stop" title="Permalink to this definition"></a></dt>
+<dd><p>Method that is called when the simulation stops. This method can be used to reset any variables.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.people.person.Person.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.people.person.Person.update" title="Permalink to this definition"></a></dt>
+<dd><p>Method that implements the logic to make the person move around in the simulation world and also play the animation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The time elapsed between the previous and current function calls (s).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.people.person.Person.update_state">
+<span class="sig-name descname"><span class="pre">update_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.people.person.Person.update_state" title="Permalink to this definition"></a></dt>
+<dd><p>Method that is called at every physics step to retrieve and update the current state of the person, i.e., get
+the current position, orientation, linear and angular velocities and acceleration of the person.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The time elapsed between the previous and current function calls (s).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.people.person.Person.update_target_position">
+<span class="sig-name descname"><span class="pre">update_target_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">walk_speed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.people.person.Person.update_target_position" title="Permalink to this definition"></a></dt>
+<dd><p>Method that updates the target position of the person to which it will move towards.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>position</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a>) – A list with the x, y, z coordinates of the target position.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.people.person.Person.assets_root_path">
+<span class="sig-name descname"><span class="pre">assets_root_path</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'omni.isaac.core.utils.nucleus.get_assets_root_path/Isaac/People/Characters'</span></em><a class="headerlink" href="#pegasus.simulator.logic.people.person.Person.assets_root_path" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.people.person.Person.character_root_prim_path">
+<span class="sig-name descname"><span class="pre">character_root_prim_path</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'/World/Characters'</span></em><a class="headerlink" href="#pegasus.simulator.logic.people.person.Person.character_root_prim_path" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.people.person.Person.state">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">state</span></span><a class="headerlink" href="#pegasus.simulator.logic.people.person.Person.state" title="Permalink to this definition"></a></dt>
+<dd><p>The state of the person.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The current state of the person, i.e., position, orientation, linear and angular velocities…</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="state.html#pegasus.simulator.logic.state.State" title="pegasus.simulator.logic.state.State">State</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-pegasus.simulator.logic.people.person_controller"></span><div class="line-block">
+<div class="line">File: person_controller.py</div>
+<div class="line">Author: Marcelo Jacinto (<a class="reference external" href="mailto:marcelo&#46;jacinto&#37;&#52;&#48;tecnico&#46;ulisboa&#46;pt">marcelo<span>&#46;</span>jacinto<span>&#64;</span>tecnico<span>&#46;</span>ulisboa<span>&#46;</span>pt</a>)</div>
+<div class="line">Description: Base controller class that should be inherited to create a custom controller behaviour for a person in the simulation.</div>
+<div class="line">License: BSD-3-Clause. Copyright (c) 2024, Marcelo Jacinto. All rights reserved.</div>
+</div>
+<p><strong>Classes:</strong></p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.people.person_controller.PersonController" title="pegasus.simulator.logic.people.person_controller.PersonController"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PersonController</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.people.person_controller.PersonController">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pegasus.simulator.logic.people.person_controller.</span></span><span class="sig-name descname"><span class="pre">PersonController</span></span><a class="headerlink" href="#pegasus.simulator.logic.people.person_controller.PersonController" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p><strong>Methods:</strong></p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.people.person_controller.PersonController.__init__" title="pegasus.simulator.logic.people.person_controller.PersonController.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>()</p></td>
+<td><p>Initialize the Backend class</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.people.person_controller.PersonController.initialize" title="pegasus.simulator.logic.people.person_controller.PersonController.initialize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">initialize</span></code></a>(person)</p></td>
+<td><p>A method that can be invoked when the simulation is starting to give access to the person control backend to the entire person object.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.people.person_controller.PersonController.reset" title="pegasus.simulator.logic.people.person_controller.PersonController.reset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset</span></code></a>()</p></td>
+<td><p>Method that when implemented, should handle the reset of the person simulation to its original state</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.people.person_controller.PersonController.start" title="pegasus.simulator.logic.people.person_controller.PersonController.start"><code class="xref py py-obj docutils literal notranslate"><span class="pre">start</span></code></a>()</p></td>
+<td><p>Method that when implemented should handle the begining of the simulation of person</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.people.person_controller.PersonController.stop" title="pegasus.simulator.logic.people.person_controller.PersonController.stop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stop</span></code></a>()</p></td>
+<td><p>Method that when implemented should handle the stopping of the simulation of person</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.people.person_controller.PersonController.update" title="pegasus.simulator.logic.people.person_controller.PersonController.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(dt)</p></td>
+<td><p>Method that when implemented, should be used to update the state of the backend and the information being sent/received from the communication interface.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.people.person_controller.PersonController.update_state" title="pegasus.simulator.logic.people.person_controller.PersonController.update_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_state</span></code></a>(state)</p></td>
+<td><p>Method that when implemented, should handle the receival of the state of the person using this callback</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Attributes:</strong></p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.people.person_controller.PersonController.person" title="pegasus.simulator.logic.people.person_controller.PersonController.person"><code class="xref py py-obj docutils literal notranslate"><span class="pre">person</span></code></a></p></td>
+<td><p>A reference to the person associated with this backend.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.people.person_controller.PersonController.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.people.person_controller.PersonController.__init__" title="Permalink to this definition"></a></dt>
+<dd><p>Initialize the Backend class</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.people.person_controller.PersonController.initialize">
+<span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">person</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.people.person_controller.PersonController.initialize" title="Permalink to this definition"></a></dt>
+<dd><p>A method that can be invoked when the simulation is starting to give access to the person control backend
+to the entire person object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>person</strong> (<em>person</em>) – A reference to the person that this sensor is associated with</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.people.person_controller.PersonController.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.people.person_controller.PersonController.reset" title="Permalink to this definition"></a></dt>
+<dd><p>Method that when implemented, should handle the reset of the person simulation to its original state</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.people.person_controller.PersonController.start">
+<span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.people.person_controller.PersonController.start" title="Permalink to this definition"></a></dt>
+<dd><p>Method that when implemented should handle the begining of the simulation of person</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.people.person_controller.PersonController.stop">
+<span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.people.person_controller.PersonController.stop" title="Permalink to this definition"></a></dt>
+<dd><p>Method that when implemented should handle the stopping of the simulation of person</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.people.person_controller.PersonController.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.people.person_controller.PersonController.update" title="Permalink to this definition"></a></dt>
+<dd><p>Method that when implemented, should be used to update the state of the backend and the information being sent/received
+from the communication interface. This method will be called by the simulation on every physics step</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The time elapsed between the previous and current function calls (s).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.people.person_controller.PersonController.update_state">
+<span class="sig-name descname"><span class="pre">update_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.people.person_controller.PersonController.update_state" title="Permalink to this definition"></a></dt>
+<dd><p>Method that when implemented, should handle the receival of the state of the person using this callback</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>state</strong> (<a class="reference internal" href="state.html#pegasus.simulator.logic.state.State" title="pegasus.simulator.logic.state.State"><em>State</em></a>) – The current state of the person.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.people.person_controller.PersonController.person">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">person</span></span><a class="headerlink" href="#pegasus.simulator.logic.people.person_controller.PersonController.person" title="Permalink to this definition"></a></dt>
+<dd><p>A reference to the person associated with this backend.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A reference to the person associated with this backend.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>person</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-pegasus.simulator.logic.people_manager"></span><div class="line-block">
+<div class="line">File: people_manager.py</div>
+<div class="line">Author: Marcelo Jacinto (<a class="reference external" href="mailto:marcelo&#46;jacinto&#37;&#52;&#48;tecnico&#46;ulisboa&#46;pt">marcelo<span>&#46;</span>jacinto<span>&#64;</span>tecnico<span>&#46;</span>ulisboa<span>&#46;</span>pt</a>)</div>
+<div class="line">License: BSD-3-Clause. Copyright (c) 2024, Marcelo Jacinto. All rights reserved.</div>
+<div class="line">Description: Definition of the PeopleManager class - a singleton used to manage the people that are spawned in the simulation world</div>
+</div>
+<p><strong>Classes:</strong></p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.people_manager.PeopleManager" title="pegasus.simulator.logic.people_manager.PeopleManager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PeopleManager</span></code></a></p></td>
+<td><p>The PeopleManager class is implemented following a singleton pattern.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.people_manager.PeopleManager">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pegasus.simulator.logic.people_manager.</span></span><span class="sig-name descname"><span class="pre">PeopleManager</span></span><a class="headerlink" href="#pegasus.simulator.logic.people_manager.PeopleManager" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>The PeopleManager class is implemented following a singleton pattern. This means that once a person is spawned
+on the world or an instance of the PeopleManager is created, no either will be running at the same time.</p>
+<p>This class keeps track of all the people that are spawned in the simulation world, either trough the extension UI
+or via Python script. Every time a new person object is created, the ‘add_person’ method is invoked. Additionally,
+a person is removed, i.e. ‘remove_person’ gets invoked, every time the ‘__del__’ function of the “Person” object
+gets invoked.</p>
+<p><strong>Methods:</strong></p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.people_manager.PeopleManager.__del__" title="pegasus.simulator.logic.people_manager.PeopleManager.__del__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__del__</span></code></a>()</p></td>
+<td><p>Destructor for the object</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.people_manager.PeopleManager.__init__" title="pegasus.simulator.logic.people_manager.PeopleManager.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>()</p></td>
+<td><p>Constructor for the people manager class.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.people_manager.PeopleManager.__new__" title="pegasus.simulator.logic.people_manager.PeopleManager.__new__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__new__</span></code></a>(cls)</p></td>
+<td><p>Method that allocated memory for a new people_manager.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.people_manager.PeopleManager.add_person" title="pegasus.simulator.logic.people_manager.PeopleManager.add_person"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_person</span></code></a>(stage_prefix, person)</p></td>
+<td><p>Method that adds the people to the person manager.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.people_manager.PeopleManager.get_people_manager" title="pegasus.simulator.logic.people_manager.PeopleManager.get_people_manager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_people_manager</span></code></a>()</p></td>
+<td><p>Method that returns the current people manager.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.people_manager.PeopleManager.get_person" title="pegasus.simulator.logic.people_manager.PeopleManager.get_person"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_person</span></code></a>(stage_prefix)</p></td>
+<td><p>Method that returns the person object given its stage prefix.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.people_manager.PeopleManager.rebuild_nav_mesh" title="pegasus.simulator.logic.people_manager.PeopleManager.rebuild_nav_mesh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rebuild_nav_mesh</span></code></a>([radius, ...])</p></td>
+<td><p>Rebuild the navmesh with the correct settings.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.people_manager.PeopleManager.remove_all_people" title="pegasus.simulator.logic.people_manager.PeopleManager.remove_all_people"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_all_people</span></code></a>()</p></td>
+<td><p>Method that will delete all the people that were spawned from the people manager.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.people_manager.PeopleManager.remove_person" title="pegasus.simulator.logic.people_manager.PeopleManager.remove_person"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_person</span></code></a>(stage_prefix)</p></td>
+<td><p>Method that deletes a person from the person manager.</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Attributes:</strong></p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.people_manager.PeopleManager.people" title="pegasus.simulator.logic.people_manager.PeopleManager.people"><code class="xref py py-obj docutils literal notranslate"><span class="pre">people</span></code></a></p></td>
+<td><p>Returns: (list) List of people that were spawned.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.people_manager.PeopleManager.__del__">
+<span class="sig-name descname"><span class="pre">__del__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.people_manager.PeopleManager.__del__" title="Permalink to this definition"></a></dt>
+<dd><p>Destructor for the object</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.people_manager.PeopleManager.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.people_manager.PeopleManager.__init__" title="Permalink to this definition"></a></dt>
+<dd><p>Constructor for the people manager class.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.people_manager.PeopleManager.__new__">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__new__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.people_manager.PeopleManager.__new__" title="Permalink to this definition"></a></dt>
+<dd><p>Method that allocated memory for a new people_manager. Since the PeopleManager follows a singleton pattern,
+only one instance of PeopleManger object can be in memory at any time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the single instance of the PeopleManager class.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>PeopleManger</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.people_manager.PeopleManager.add_person">
+<span class="sig-name descname"><span class="pre">add_person</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stage_prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">person</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.people_manager.PeopleManager.add_person" title="Permalink to this definition"></a></dt>
+<dd><p>Method that adds the people to the person manager.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>stage_prefix</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – A string with the name that the person is spawned in the simulator</p></li>
+<li><p><strong>person</strong> (<a class="reference internal" href="#pegasus.simulator.logic.people.person.Person" title="pegasus.simulator.logic.people.person.Person"><em>Person</em></a>) – The person object being added to the person manager.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.people_manager.PeopleManager.get_people_manager">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_people_manager</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.people_manager.PeopleManager.get_people_manager" title="Permalink to this definition"></a></dt>
+<dd><p>Method that returns the current people manager.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.people_manager.PeopleManager.get_person">
+<span class="sig-name descname"><span class="pre">get_person</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stage_prefix</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.people_manager.PeopleManager.get_person" title="Permalink to this definition"></a></dt>
+<dd><p>Method that returns the person object given its stage prefix. Returns None if there is no person
+associated with that stage prefix</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>stage_prefix</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – A string with the name that the person is spawned in the simulator</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The person object associated with the stage_prefix</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#pegasus.simulator.logic.people.person.Person" title="pegasus.simulator.logic.people.person.Person">Person</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.people_manager.PeopleManager.rebuild_nav_mesh">
+<span class="sig-name descname"><span class="pre">rebuild_nav_mesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_rebake_on_changes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_rebake_delay_seconds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_rigid_bodies</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">view_nav_mesh</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dynamic_avoidance_enabled</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">navmesh_enabled</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.people_manager.PeopleManager.rebuild_nav_mesh" title="Permalink to this definition"></a></dt>
+<dd><p>Rebuild the navmesh with the correct settings. Used for the people to move around.
+Called only when the sim with people is requested.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.people_manager.PeopleManager.remove_all_people">
+<span class="sig-name descname"><span class="pre">remove_all_people</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.people_manager.PeopleManager.remove_all_people" title="Permalink to this definition"></a></dt>
+<dd><p>Method that will delete all the people that were spawned from the people manager.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.people_manager.PeopleManager.remove_person">
+<span class="sig-name descname"><span class="pre">remove_person</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stage_prefix</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.people_manager.PeopleManager.remove_person" title="Permalink to this definition"></a></dt>
+<dd><p>Method that deletes a person from the person manager.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>stage_prefix</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – A string with the name that the person is spawned in the simulator.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.people_manager.PeopleManager.people">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">people</span></span><a class="headerlink" href="#pegasus.simulator.logic.people_manager.PeopleManager.people" title="Permalink to this definition"></a></dt>
+<dd><p>Returns:
+(list) List of people that were spawned.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="vehicles.multirotor.html" class="btn btn-neutral float-left" title="Multirotor" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pegasus_interface.html" class="btn btn-neutral float-right" title="Pegasus Interface" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Marcelo Jacinto.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

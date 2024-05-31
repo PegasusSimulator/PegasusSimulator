@@ -52,6 +52,7 @@
 <li class="toctree-l1"><a class="reference internal" href="source/tutorials/create_standalone_application.html">Create a Standalone Application</a></li>
 <li class="toctree-l1"><a class="reference internal" href="source/tutorials/create_standalone_simulation.html">Your First Simulation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="source/tutorials/create_custom_backend.html">Create a Custom Controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/tutorials/create_simulation_with_people.html">Simulation with Moving People</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Features</span></p>
 <ul>
@@ -129,6 +130,8 @@
       <ul>
         <li><a href="source/api/pegasus_interface.html#pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.__del__">(pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface method)</a>
 </li>
+        <li><a href="source/api/people.html#pegasus.simulator.logic.people_manager.PeopleManager.__del__">(pegasus.simulator.logic.people_manager.PeopleManager method)</a>
+</li>
         <li><a href="source/api/vehicles.vehicle_manager.html#pegasus.simulator.logic.vehicle_manager.VehicleManager.__del__">(pegasus.simulator.logic.vehicle_manager.VehicleManager method)</a>
 </li>
         <li><a href="source/api/vehicles.vehicle.html#pegasus.simulator.logic.vehicles.vehicle.Vehicle.__del__">(pegasus.simulator.logic.vehicles.vehicle.Vehicle method)</a>
@@ -145,11 +148,17 @@
 </li>
         <li><a href="source/api/dynamics.linear_drag.html#pegasus.simulator.logic.dynamics.linear_drag.LinearDrag.__init__">(pegasus.simulator.logic.dynamics.linear_drag.LinearDrag method)</a>
 </li>
-        <li><a href="source/api/graphs.graph.html#pegasus.simulator.logic.graphs.graph.Graph.__init__">(pegasus.simulator.logic.graphs.graph.Graph method)</a>
+        <li><a href="source/api/graphs_api.html#pegasus.simulator.logic.graphs.graph.Graph.__init__">(pegasus.simulator.logic.graphs.graph.Graph method)</a>
 </li>
-        <li><a href="source/api/graphs.ros2_camera.html#pegasus.simulator.logic.graphs.ros2_camera.ROS2Camera.__init__">(pegasus.simulator.logic.graphs.ros2_camera.ROS2Camera method)</a>
+        <li><a href="source/api/graphs_api.html#pegasus.simulator.logic.graphs.ros2_camera.ROS2Camera.__init__">(pegasus.simulator.logic.graphs.ros2_camera.ROS2Camera method)</a>
 </li>
         <li><a href="source/api/pegasus_interface.html#pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.__init__">(pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface method)</a>
+</li>
+        <li><a href="source/api/people.html#pegasus.simulator.logic.people.person.Person.__init__">(pegasus.simulator.logic.people.person.Person method)</a>
+</li>
+        <li><a href="source/api/people.html#pegasus.simulator.logic.people.person_controller.PersonController.__init__">(pegasus.simulator.logic.people.person_controller.PersonController method)</a>
+</li>
+        <li><a href="source/api/people.html#pegasus.simulator.logic.people_manager.PeopleManager.__init__">(pegasus.simulator.logic.people_manager.PeopleManager method)</a>
 </li>
         <li><a href="source/api/sensors.barometer.html#pegasus.simulator.logic.sensors.barometer.Barometer.__init__">(pegasus.simulator.logic.sensors.barometer.Barometer method)</a>
 </li>
@@ -179,6 +188,8 @@
       <li><a href="source/api/pegasus_interface.html#pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.__new__">__new__() (pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface static method)</a>
 
       <ul>
+        <li><a href="source/api/people.html#pegasus.simulator.logic.people_manager.PeopleManager.__new__">(pegasus.simulator.logic.people_manager.PeopleManager static method)</a>
+</li>
         <li><a href="source/api/vehicles.vehicle_manager.html#pegasus.simulator.logic.vehicle_manager.VehicleManager.__new__">(pegasus.simulator.logic.vehicle_manager.VehicleManager static method)</a>
 </li>
       </ul></li>
@@ -188,15 +199,21 @@
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="source/api/vehicles.vehicle_manager.html#pegasus.simulator.logic.vehicle_manager.VehicleManager.add_vehicle">add_vehicle() (pegasus.simulator.logic.vehicle_manager.VehicleManager method)</a>
+      <li><a href="source/api/people.html#pegasus.simulator.logic.people.person.Person.add_animation_graph_to_agent">add_animation_graph_to_agent() (pegasus.simulator.logic.people.person.Person method)</a>
 </li>
-      <li><a href="source/api/pegasus_interface.html#pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.altitude">altitude (pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface property)</a>
+      <li><a href="source/api/people.html#pegasus.simulator.logic.people_manager.PeopleManager.add_person">add_person() (pegasus.simulator.logic.people_manager.PeopleManager method)</a>
+</li>
+      <li><a href="source/api/vehicles.vehicle_manager.html#pegasus.simulator.logic.vehicle_manager.VehicleManager.add_vehicle">add_vehicle() (pegasus.simulator.logic.vehicle_manager.VehicleManager method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="source/api/pegasus_interface.html#pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.altitude">altitude (pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface property)</a>
+</li>
       <li><a href="source/api/vehicles.vehicle.html#pegasus.simulator.logic.vehicles.vehicle.Vehicle.apply_force">apply_force() (pegasus.simulator.logic.vehicles.vehicle.Vehicle method)</a>
 </li>
       <li><a href="source/api/vehicles.vehicle.html#pegasus.simulator.logic.vehicles.vehicle.Vehicle.apply_torque">apply_torque() (pegasus.simulator.logic.vehicles.vehicle.Vehicle method)</a>
+</li>
+      <li><a href="source/api/people.html#pegasus.simulator.logic.people.person.Person.assets_root_path">assets_root_path (pegasus.simulator.logic.people.person.Person attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -216,12 +233,14 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="source/api/graphs.ros2_camera.html#pegasus.simulator.logic.graphs.ros2_camera.ROS2Camera.camera_labels_topic">camera_labels_topic() (pegasus.simulator.logic.graphs.ros2_camera.ROS2Camera method)</a>
+      <li><a href="source/api/graphs_api.html#pegasus.simulator.logic.graphs.ros2_camera.ROS2Camera.camera_labels_topic">camera_labels_topic() (pegasus.simulator.logic.graphs.ros2_camera.ROS2Camera method)</a>
 </li>
-      <li><a href="source/api/graphs.ros2_camera.html#pegasus.simulator.logic.graphs.ros2_camera.ROS2Camera.camera_topic">camera_topic() (pegasus.simulator.logic.graphs.ros2_camera.ROS2Camera method)</a>
+      <li><a href="source/api/graphs_api.html#pegasus.simulator.logic.graphs.ros2_camera.ROS2Camera.camera_topic">camera_topic() (pegasus.simulator.logic.graphs.ros2_camera.ROS2Camera method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="source/api/people.html#pegasus.simulator.logic.people.person.Person.character_root_prim_path">character_root_prim_path (pegasus.simulator.logic.people.person.Person attribute)</a>
+</li>
       <li><a href="source/api/pegasus_interface.html#pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.clear_scene">clear_scene() (pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface method)</a>
 </li>
       <li><a href="source/api/sensors.sensor.html#pegasus.simulator.logic.sensors.sensor.Sensor.config_from_dict">config_from_dict() (pegasus.simulator.logic.sensors.sensor.Sensor method)</a>
@@ -268,6 +287,8 @@
 </li>
       <li><a href="source/api/state.html#pegasus.simulator.logic.state.State.get_attitude_ned_frd">get_attitude_ned_frd() (pegasus.simulator.logic.state.State method)</a>
 </li>
+      <li><a href="source/api/people.html#pegasus.simulator.logic.people.person.Person.get_character_asset_list">get_character_asset_list() (pegasus.simulator.logic.people.person.Person static method)</a>
+</li>
       <li><a href="source/api/pegasus_interface.html#pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.get_default_environments">get_default_environments() (pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface method)</a>
 </li>
       <li><a href="source/api/state.html#pegasus.simulator.logic.state.State.get_linear_acceleration_ned">get_linear_acceleration_ned() (pegasus.simulator.logic.state.State method)</a>
@@ -276,10 +297,18 @@
 </li>
       <li><a href="source/api/state.html#pegasus.simulator.logic.state.State.get_linear_velocity_ned">get_linear_velocity_ned() (pegasus.simulator.logic.state.State method)</a>
 </li>
-      <li><a href="source/api/state.html#pegasus.simulator.logic.state.State.get_position_ned">get_position_ned() (pegasus.simulator.logic.state.State method)</a>
+      <li><a href="source/api/people.html#pegasus.simulator.logic.people.person.Person.get_path_for_character_prim">get_path_for_character_prim() (pegasus.simulator.logic.people.person.Person static method)</a>
+</li>
+      <li><a href="source/api/people.html#pegasus.simulator.logic.people_manager.PeopleManager.get_people_manager">get_people_manager() (pegasus.simulator.logic.people_manager.PeopleManager static method)</a>
+</li>
+      <li><a href="source/api/people.html#pegasus.simulator.logic.people_manager.PeopleManager.get_person">get_person() (pegasus.simulator.logic.people_manager.PeopleManager method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="source/api/state.html#pegasus.simulator.logic.state.State.get_position_ned">get_position_ned() (pegasus.simulator.logic.state.State method)</a>
+</li>
+      <li><a href="source/api/people.html#pegasus.simulator.logic.people.person.Person.get_usd_in_folder">get_usd_in_folder() (pegasus.simulator.logic.people.person.Person static method)</a>
+</li>
       <li><a href="source/api/pegasus_interface.html#pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.get_vehicle">get_vehicle() (pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface method)</a>
 
       <ul>
@@ -292,15 +321,17 @@
 </li>
       <li><a href="source/api/sensors.gps.html#pegasus.simulator.logic.sensors.gps.GPS">GPS (class in pegasus.simulator.logic.sensors.gps)</a>
 </li>
-      <li><a href="source/api/graphs.graph.html#pegasus.simulator.logic.graphs.graph.Graph">Graph (class in pegasus.simulator.logic.graphs.graph)</a>
+      <li><a href="source/api/graphs_api.html#pegasus.simulator.logic.graphs.graph.Graph">Graph (class in pegasus.simulator.logic.graphs.graph)</a>
 </li>
-      <li><a href="source/api/graphs.graph.html#pegasus.simulator.logic.graphs.graph.Graph.graph_prim_path">graph_prim_path (pegasus.simulator.logic.graphs.graph.Graph attribute)</a>
+      <li><a href="source/api/graphs_api.html#pegasus.simulator.logic.graphs.graph.Graph.graph_prim_path">graph_prim_path (pegasus.simulator.logic.graphs.graph.Graph attribute)</a>
 
       <ul>
-        <li><a href="source/api/graphs.graph.html#id0">(pegasus.simulator.logic.graphs.graph.Graph property)</a>
+        <li><a href="source/api/graphs_api.html#id0">(pegasus.simulator.logic.graphs.graph.Graph property)</a>
 </li>
       </ul></li>
-      <li><a href="source/api/graphs.graph.html#pegasus.simulator.logic.graphs.graph.Graph.graph_type">graph_type (pegasus.simulator.logic.graphs.graph.Graph property)</a>
+      <li><a href="source/api/graphs_api.html#pegasus.simulator.logic.graphs.graph.Graph.graph_type">graph_type (pegasus.simulator.logic.graphs.graph.Graph property)</a>
+</li>
+      <li><a href="source/api/pegasus_interface.html#pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.gui_mode">gui_mode (pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -325,9 +356,11 @@
       <li><a href="source/api/backends.backend.html#pegasus.simulator.logic.backends.backend.Backend.initialize">initialize() (pegasus.simulator.logic.backends.backend.Backend method)</a>
 
       <ul>
-        <li><a href="source/api/graphs.graph.html#pegasus.simulator.logic.graphs.graph.Graph.initialize">(pegasus.simulator.logic.graphs.graph.Graph method)</a>
+        <li><a href="source/api/graphs_api.html#pegasus.simulator.logic.graphs.graph.Graph.initialize">(pegasus.simulator.logic.graphs.graph.Graph method)</a>
 </li>
-        <li><a href="source/api/graphs.ros2_camera.html#pegasus.simulator.logic.graphs.ros2_camera.ROS2Camera.initialize">(pegasus.simulator.logic.graphs.ros2_camera.ROS2Camera method)</a>
+        <li><a href="source/api/graphs_api.html#pegasus.simulator.logic.graphs.ros2_camera.ROS2Camera.initialize">(pegasus.simulator.logic.graphs.ros2_camera.ROS2Camera method)</a>
+</li>
+        <li><a href="source/api/people.html#pegasus.simulator.logic.people.person_controller.PersonController.initialize">(pegasus.simulator.logic.people.person_controller.PersonController method)</a>
 </li>
         <li><a href="source/api/sensors.sensor.html#pegasus.simulator.logic.sensors.sensor.Sensor.initialize">(pegasus.simulator.logic.sensors.sensor.Sensor method)</a>
 </li>
@@ -388,11 +421,17 @@
 </li>
         <li><a href="source/api/dynamics.linear_drag.html#module-pegasus.simulator.logic.dynamics.linear_drag">pegasus.simulator.logic.dynamics.linear_drag</a>
 </li>
-        <li><a href="source/api/graphs.graph.html#module-pegasus.simulator.logic.graphs.graph">pegasus.simulator.logic.graphs.graph</a>
+        <li><a href="source/api/graphs_api.html#module-pegasus.simulator.logic.graphs.graph">pegasus.simulator.logic.graphs.graph</a>
 </li>
-        <li><a href="source/api/graphs.ros2_camera.html#module-pegasus.simulator.logic.graphs.ros2_camera">pegasus.simulator.logic.graphs.ros2_camera</a>
+        <li><a href="source/api/graphs_api.html#module-pegasus.simulator.logic.graphs.ros2_camera">pegasus.simulator.logic.graphs.ros2_camera</a>
 </li>
         <li><a href="source/api/pegasus_interface.html#module-pegasus.simulator.logic.interface.pegasus_interface">pegasus.simulator.logic.interface.pegasus_interface</a>
+</li>
+        <li><a href="source/api/people.html#module-pegasus.simulator.logic.people.person">pegasus.simulator.logic.people.person</a>
+</li>
+        <li><a href="source/api/people.html#module-pegasus.simulator.logic.people.person_controller">pegasus.simulator.logic.people.person_controller</a>
+</li>
+        <li><a href="source/api/people.html#module-pegasus.simulator.logic.people_manager">pegasus.simulator.logic.people_manager</a>
 </li>
         <li><a href="source/api/sensors.barometer.html#module-pegasus.simulator.logic.sensors.barometer">pegasus.simulator.logic.sensors.barometer</a>
 </li>
@@ -475,14 +514,14 @@
     pegasus.simulator.logic.graphs.graph
 
       <ul>
-        <li><a href="source/api/graphs.graph.html#module-pegasus.simulator.logic.graphs.graph">module</a>
+        <li><a href="source/api/graphs_api.html#module-pegasus.simulator.logic.graphs.graph">module</a>
 </li>
       </ul></li>
       <li>
     pegasus.simulator.logic.graphs.ros2_camera
 
       <ul>
-        <li><a href="source/api/graphs.ros2_camera.html#module-pegasus.simulator.logic.graphs.ros2_camera">module</a>
+        <li><a href="source/api/graphs_api.html#module-pegasus.simulator.logic.graphs.ros2_camera">module</a>
 </li>
       </ul></li>
       <li>
@@ -490,6 +529,27 @@
 
       <ul>
         <li><a href="source/api/pegasus_interface.html#module-pegasus.simulator.logic.interface.pegasus_interface">module</a>
+</li>
+      </ul></li>
+      <li>
+    pegasus.simulator.logic.people.person
+
+      <ul>
+        <li><a href="source/api/people.html#module-pegasus.simulator.logic.people.person">module</a>
+</li>
+      </ul></li>
+      <li>
+    pegasus.simulator.logic.people.person_controller
+
+      <ul>
+        <li><a href="source/api/people.html#module-pegasus.simulator.logic.people.person_controller">module</a>
+</li>
+      </ul></li>
+      <li>
+    pegasus.simulator.logic.people_manager
+
+      <ul>
+        <li><a href="source/api/people.html#module-pegasus.simulator.logic.people_manager">module</a>
 </li>
       </ul></li>
       <li>
@@ -573,6 +633,16 @@
       </ul></li>
       <li><a href="source/api/pegasus_interface.html#pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface">PegasusInterface (class in pegasus.simulator.logic.interface.pegasus_interface)</a>
 </li>
+      <li><a href="source/api/people.html#pegasus.simulator.logic.people_manager.PeopleManager.people">people (pegasus.simulator.logic.people_manager.PeopleManager property)</a>
+</li>
+      <li><a href="source/api/people.html#pegasus.simulator.logic.people_manager.PeopleManager">PeopleManager (class in pegasus.simulator.logic.people_manager)</a>
+</li>
+      <li><a href="source/api/people.html#pegasus.simulator.logic.people.person.Person">Person (class in pegasus.simulator.logic.people.person)</a>
+</li>
+      <li><a href="source/api/people.html#pegasus.simulator.logic.people.person_controller.PersonController.person">person (pegasus.simulator.logic.people.person_controller.PersonController property)</a>
+</li>
+      <li><a href="source/api/people.html#pegasus.simulator.logic.people.person_controller.PersonController">PersonController (class in pegasus.simulator.logic.people.person_controller)</a>
+</li>
       <li><a href="source/api/backends.mavlink_backend.html#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.poll_mavlink_messages">poll_mavlink_messages() (pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend method)</a>
 </li>
       <li><a href="source/api/pegasus_interface.html#pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.px4_default_airframe">px4_default_airframe (pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface property)</a>
@@ -595,21 +665,29 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="source/api/backends.mavlink_backend.html#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.re_initialize_interface">re_initialize_interface() (pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend method)</a>
 </li>
+      <li><a href="source/api/people.html#pegasus.simulator.logic.people_manager.PeopleManager.rebuild_nav_mesh">rebuild_nav_mesh() (pegasus.simulator.logic.people_manager.PeopleManager method)</a>
+</li>
+      <li><a href="source/api/people.html#pegasus.simulator.logic.people_manager.PeopleManager.remove_all_people">remove_all_people() (pegasus.simulator.logic.people_manager.PeopleManager method)</a>
+</li>
       <li><a href="source/api/vehicles.vehicle_manager.html#pegasus.simulator.logic.vehicle_manager.VehicleManager.remove_all_vehicles">remove_all_vehicles() (pegasus.simulator.logic.vehicle_manager.VehicleManager method)</a>
+</li>
+      <li><a href="source/api/people.html#pegasus.simulator.logic.people_manager.PeopleManager.remove_person">remove_person() (pegasus.simulator.logic.people_manager.PeopleManager method)</a>
 </li>
       <li><a href="source/api/vehicles.vehicle_manager.html#pegasus.simulator.logic.vehicle_manager.VehicleManager.remove_vehicle">remove_vehicle() (pegasus.simulator.logic.vehicle_manager.VehicleManager method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="source/api/backends.backend.html#pegasus.simulator.logic.backends.backend.Backend.reset">reset() (pegasus.simulator.logic.backends.backend.Backend method)</a>
 
       <ul>
         <li><a href="source/api/backends.mavlink_backend.html#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.reset">(pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend method)</a>
 </li>
+        <li><a href="source/api/people.html#pegasus.simulator.logic.people.person_controller.PersonController.reset">(pegasus.simulator.logic.people.person_controller.PersonController method)</a>
+</li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="source/api/thrusters.quadratic_thrust_curve.html#pegasus.simulator.logic.thrusters.quadratic_thrust_curve.QuadraticThrustCurve.rolling_moment">rolling_moment (pegasus.simulator.logic.thrusters.quadratic_thrust_curve.QuadraticThrustCurve property)</a>
 </li>
-      <li><a href="source/api/graphs.ros2_camera.html#pegasus.simulator.logic.graphs.ros2_camera.ROS2Camera">ROS2Camera (class in pegasus.simulator.logic.graphs.ros2_camera)</a>
+      <li><a href="source/api/graphs_api.html#pegasus.simulator.logic.graphs.ros2_camera.ROS2Camera">ROS2Camera (class in pegasus.simulator.logic.graphs.ros2_camera)</a>
 </li>
       <li><a href="source/api/thrusters.quadratic_thrust_curve.html#pegasus.simulator.logic.thrusters.quadratic_thrust_curve.QuadraticThrustCurve.rot_dir">rot_dir (pegasus.simulator.logic.thrusters.quadratic_thrust_curve.QuadraticThrustCurve property)</a>
 </li>
@@ -651,14 +729,24 @@
 </li>
       <li><a href="source/api/pegasus_interface.html#pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.set_world_settings">set_world_settings() (pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface method)</a>
 </li>
+      <li><a href="source/api/people.html#pegasus.simulator.logic.people.person.Person.sim_start_stop">sim_start_stop() (pegasus.simulator.logic.people.person.Person method)</a>
+
+      <ul>
+        <li><a href="source/api/vehicles.vehicle.html#pegasus.simulator.logic.vehicles.vehicle.Vehicle.sim_start_stop">(pegasus.simulator.logic.vehicles.vehicle.Vehicle method)</a>
+</li>
+      </ul></li>
+      <li><a href="source/api/people.html#pegasus.simulator.logic.people.person.Person.spawn_agent">spawn_agent() (pegasus.simulator.logic.people.person.Person method)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="source/api/vehicles.vehicle.html#pegasus.simulator.logic.vehicles.vehicle.Vehicle.sim_start_stop">sim_start_stop() (pegasus.simulator.logic.vehicles.vehicle.Vehicle method)</a>
-</li>
       <li><a href="source/api/backends.backend.html#pegasus.simulator.logic.backends.backend.Backend.start">start() (pegasus.simulator.logic.backends.backend.Backend method)</a>
 
       <ul>
         <li><a href="source/api/backends.mavlink_backend.html#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.start">(pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend method)</a>
+</li>
+        <li><a href="source/api/people.html#pegasus.simulator.logic.people.person.Person.start">(pegasus.simulator.logic.people.person.Person method)</a>
+</li>
+        <li><a href="source/api/people.html#pegasus.simulator.logic.people.person_controller.PersonController.start">(pegasus.simulator.logic.people.person_controller.PersonController method)</a>
 </li>
         <li><a href="source/api/vehicles.multirotor.html#pegasus.simulator.logic.vehicles.multirotor.Multirotor.start">(pegasus.simulator.logic.vehicles.multirotor.Multirotor method)</a>
 </li>
@@ -667,9 +755,11 @@
       </ul></li>
       <li><a href="source/api/state.html#pegasus.simulator.logic.state.State">State (class in pegasus.simulator.logic.state)</a>
 </li>
-      <li><a href="source/api/sensors.barometer.html#pegasus.simulator.logic.sensors.barometer.Barometer.state">state (pegasus.simulator.logic.sensors.barometer.Barometer property)</a>
+      <li><a href="source/api/people.html#pegasus.simulator.logic.people.person.Person.state">state (pegasus.simulator.logic.people.person.Person property)</a>
 
       <ul>
+        <li><a href="source/api/sensors.barometer.html#pegasus.simulator.logic.sensors.barometer.Barometer.state">(pegasus.simulator.logic.sensors.barometer.Barometer property)</a>
+</li>
         <li><a href="source/api/sensors.gps.html#pegasus.simulator.logic.sensors.gps.GPS.state">(pegasus.simulator.logic.sensors.gps.GPS property)</a>
 </li>
         <li><a href="source/api/sensors.imu.html#pegasus.simulator.logic.sensors.imu.IMU.state">(pegasus.simulator.logic.sensors.imu.IMU property)</a>
@@ -685,6 +775,10 @@
 
       <ul>
         <li><a href="source/api/backends.mavlink_backend.html#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.stop">(pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend method)</a>
+</li>
+        <li><a href="source/api/people.html#pegasus.simulator.logic.people.person.Person.stop">(pegasus.simulator.logic.people.person.Person method)</a>
+</li>
+        <li><a href="source/api/people.html#pegasus.simulator.logic.people.person_controller.PersonController.stop">(pegasus.simulator.logic.people.person_controller.PersonController method)</a>
 </li>
         <li><a href="source/api/vehicles.multirotor.html#pegasus.simulator.logic.vehicles.multirotor.Multirotor.stop">(pegasus.simulator.logic.vehicles.multirotor.Multirotor method)</a>
 </li>
@@ -706,6 +800,10 @@
 </li>
         <li><a href="source/api/dynamics.linear_drag.html#pegasus.simulator.logic.dynamics.linear_drag.LinearDrag.update">(pegasus.simulator.logic.dynamics.linear_drag.LinearDrag method)</a>
 </li>
+        <li><a href="source/api/people.html#pegasus.simulator.logic.people.person.Person.update">(pegasus.simulator.logic.people.person.Person method)</a>
+</li>
+        <li><a href="source/api/people.html#pegasus.simulator.logic.people.person_controller.PersonController.update">(pegasus.simulator.logic.people.person_controller.PersonController method)</a>
+</li>
         <li><a href="source/api/sensors.barometer.html#pegasus.simulator.logic.sensors.barometer.Barometer.update">(pegasus.simulator.logic.sensors.barometer.Barometer method)</a>
 </li>
         <li><a href="source/api/sensors.gps.html#pegasus.simulator.logic.sensors.gps.GPS.update">(pegasus.simulator.logic.sensors.gps.GPS method)</a>
@@ -725,10 +823,10 @@
       </ul></li>
       <li><a href="source/api/sensors.sensor.html#pegasus.simulator.logic.sensors.sensor.Sensor.update_at_rate">update_at_rate() (pegasus.simulator.logic.sensors.sensor.Sensor method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="source/api/backends.mavlink_backend.html#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.update_bar_data">update_bar_data() (pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="source/api/backends.mavlink_backend.html#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.update_gps_data">update_gps_data() (pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend method)</a>
 </li>
       <li><a href="source/api/backends.mavlink_backend.html#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.update_imu_data">update_imu_data() (pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend method)</a>
@@ -754,9 +852,15 @@
       <ul>
         <li><a href="source/api/backends.mavlink_backend.html#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.update_state">(pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend method)</a>
 </li>
+        <li><a href="source/api/people.html#pegasus.simulator.logic.people.person.Person.update_state">(pegasus.simulator.logic.people.person.Person method)</a>
+</li>
+        <li><a href="source/api/people.html#pegasus.simulator.logic.people.person_controller.PersonController.update_state">(pegasus.simulator.logic.people.person_controller.PersonController method)</a>
+</li>
         <li><a href="source/api/vehicles.vehicle.html#pegasus.simulator.logic.vehicles.vehicle.Vehicle.update_state">(pegasus.simulator.logic.vehicles.vehicle.Vehicle method)</a>
 </li>
       </ul></li>
+      <li><a href="source/api/people.html#pegasus.simulator.logic.people.person.Person.update_target_position">update_target_position() (pegasus.simulator.logic.people.person.Person method)</a>
+</li>
       <li><a href="source/api/backends.mavlink_backend.html#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend.update_vision_data">update_vision_data() (pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend method)</a>
 </li>
   </ul></td>

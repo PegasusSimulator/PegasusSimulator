@@ -21,7 +21,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Params" href="params.html" />
-    <link rel="prev" title="Multirotor" href="vehicles.multirotor.html" /> 
+    <link rel="prev" title="People" href="people.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -55,6 +55,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../tutorials/create_standalone_application.html">Create a Standalone Application</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorials/create_standalone_simulation.html">Your First Simulation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorials/create_custom_backend.html">Create a Custom Controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/create_simulation_with_people.html">Simulation with Moving People</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Features</span></p>
 <ul>
@@ -71,6 +72,7 @@
 <li class="toctree-l2"><a class="reference internal" href="index.html#thruster">Thruster</a></li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#control-backends">Control Backends</a></li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#vehicle">Vehicle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#people">People</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="index.html#pegasus-interace">Pegasus Interace</a><ul class="current">
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Pegasus Interface</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface"><code class="docutils literal notranslate"><span class="pre">PegasusInterface</span></code></a></li>
@@ -210,22 +212,25 @@ to</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.altitude" title="pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.altitude"><code class="xref py py-obj docutils literal notranslate"><span class="pre">altitude</span></code></a></p></td>
 <td><p>The altitude of the origin of the simulated world in meters.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.latitude" title="pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.latitude"><code class="xref py py-obj docutils literal notranslate"><span class="pre">latitude</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.gui_mode" title="pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.gui_mode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gui_mode</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.latitude" title="pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.latitude"><code class="xref py py-obj docutils literal notranslate"><span class="pre">latitude</span></code></a></p></td>
 <td><p>The latitude of the origin of the simulated world in degrees.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.longitude" title="pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.longitude"><code class="xref py py-obj docutils literal notranslate"><span class="pre">longitude</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.longitude" title="pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.longitude"><code class="xref py py-obj docutils literal notranslate"><span class="pre">longitude</span></code></a></p></td>
 <td><p>The longitude of the origin of the simulated world in degrees.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.px4_default_airframe" title="pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.px4_default_airframe"><code class="xref py py-obj docutils literal notranslate"><span class="pre">px4_default_airframe</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.px4_default_airframe" title="pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.px4_default_airframe"><code class="xref py py-obj docutils literal notranslate"><span class="pre">px4_default_airframe</span></code></a></p></td>
 <td><p>A string with the PX4 default airframe (if it was setup).</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.px4_path" title="pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.px4_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">px4_path</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.px4_path" title="pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.px4_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">px4_path</span></code></a></p></td>
 <td><p>A string with the installation directory for PX4 (if it was setup).</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.vehicle_manager" title="pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.vehicle_manager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vehicle_manager</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.vehicle_manager" title="pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.vehicle_manager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vehicle_manager</span></code></a></p></td>
 <td><p>The instance of the VehicleManager.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.world" title="pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.world"><code class="xref py py-obj docutils literal notranslate"><span class="pre">world</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.world" title="pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.world"><code class="xref py py-obj docutils literal notranslate"><span class="pre">world</span></code></a></p></td>
 <td><p>The current omni.isaac.core.world World instance</p></td>
 </tr>
 </tbody>
@@ -465,6 +470,11 @@ For now these new setting will never override the default ones.</p>
 </dl>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.gui_mode">
+<span class="sig-name descname"><span class="pre">gui_mode</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.gui_mode" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.latitude">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">latitude</span></span><a class="headerlink" href="#pegasus.simulator.logic.interface.pegasus_interface.PegasusInterface.latitude" title="Permalink to this definition"></a></dt>
@@ -557,7 +567,7 @@ For now these new setting will never override the default ones.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="vehicles.multirotor.html" class="btn btn-neutral float-left" title="Multirotor" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="people.html" class="btn btn-neutral float-left" title="People" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="params.html" class="btn btn-neutral float-right" title="Params" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
