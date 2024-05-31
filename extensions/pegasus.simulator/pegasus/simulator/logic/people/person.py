@@ -11,12 +11,14 @@ from pxr import Gf, Sdf
 
 # High level Isaac sim APIs
 import omni.client
+import omni.anim.graph.core as ag
 from omni.anim.people import PeopleSettings
 from omni.isaac.core.utils import prims
 from omni.usd import get_stage_next_free_path
 from omni.isaac.core.utils.nucleus import get_assets_root_path
 
 # Extension APIs
+from pegasus.simulator.logic.state import State
 from pegasus.simulator.logic.people_manager import PeopleManager
 from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 
@@ -50,6 +52,9 @@ class Person:
         self._world = PegasusInterface().world
         self._current_stage = self._world.stage
 
+        # Variable that will hold the current state of the vehicle
+        self._state = State()
+
         # Save the name with which the vehicle will appear in the stage
         # and the character model that will be loaded into the simulator
         self._stage_prefix = get_stage_next_free_path(self._current_stage, Person.character_root_prim_path + '/' + stage_prefix, False)
@@ -68,8 +73,95 @@ class Person:
         self.spawn_agent(self.char_usd_file, self._stage_prefix, init_pos, init_yaw)
 
         # Add the animation graph to the agent, such that it can move around
+        self.character_graph = None
         self.add_animation_graph_to_agent()
+
+        # Add a callback to the physics engine to update the current state of the system
+        self._world.add_physics_callback(self._stage_prefix + "/state", self.update_state)
+
+        # Add the update method to the physics callback if the world was received
+        # so that we can apply forces and torques to the vehicle. Note, this method should
+        # be implemented in classes that inherit the vehicle object
+        self._world.add_physics_callback(self._stage_prefix + "/update", self.update)
+
+        # Set the flag that signals if the simulation is running or not
+        self._sim_running = False
+
+        # Add a callback to start/stop of the simulation once the play/stop button is hit
+        self._world.add_timeline_callback(self._stage_prefix + "/start_stop_sim", self.sim_start_stop)
+
+    @property
+    def state(self):
+        """The state of the person.
+
+        Returns:
+            State: The current state of the person, i.e., position, orientation, linear and angular velocities...
+        """
+        return self._state
+    
+    def sim_start_stop(self, event):
+        """
+        Callback that is called every time there is a timeline event such as starting/stoping the simulation.
+
+        Args:
+            event: A timeline event generated from Isaac Sim, such as starting or stoping the simulation.
+        """
+
+        # If the start/stop button was pressed, then call the start and stop methods accordingly
+        if self._world.is_playing() and self._sim_running == False:
+            self._sim_running = True
+            self.start()
+
+        if self._world.is_stopped() and self._sim_running == True:
+            self._sim_running = False
+            self.stop()
+
+    def start(self):
+        print("Starting the person" + self._stage_prefix)
+
+        pass
+
+    def stop(self):
+        pass
         
+
+    def update(self, dt: float):
+        """
+        Method that implements the logic to make the person move around in the simulation world and also play the animation
+
+        Args:
+            dt (float): The time elapsed between the previous and current function calls (s).
+        """
+
+        if not self.character_graph or self.character_graph is None:
+            self.character_graph = ag.get_character("/World/Characters/person1/ManRoot/male_adult_construction_05")
+
+        self.character_graph.set_variable("Action", "Walk")
+        self.character_graph.set_variable("PathPoints", [carb.Float3(self._state.position), carb.Float3(8.0, 0.0, 0.0)])
+        self.character_graph.set_variable("Walk", 1.0)
+
+
+    def update_state(self, dt: float):
+        """
+        Method that is called at every physics step to retrieve and update the current state of the person, i.e., get
+        the current position, orientation, linear and angular velocities and acceleration of the person.
+
+        Args:
+            dt (float): The time elapsed between the previous and current function calls (s).
+        """
+        
+        if self.character_graph is None:
+            self.character_graph = ag.get_character("/World/Characters/person1/ManRoot/male_adult_construction_05")
+
+        # Get the current position of the person
+        pos = carb.Float3(0, 0, 0)
+        rot = carb.Float4(0, 0, 0, 0)
+        self.character_graph.get_world_transform(pos, rot)
+
+        # Update the current state of the person
+        self._state.position = [pos[0], pos[1], pos[2]]
+        self._state.orientation = [rot.x, rot.y, rot.z, rot.w]
+
 
     def spawn_agent(self, usd_file, stage_name, init_pos, init_yaw):
 
@@ -93,7 +185,7 @@ class Person:
         animation_graph = self._current_stage.GetPrimAtPath(Person.character_root_prim_path + "/Biped_Setup/CharacterAnimation/AnimationGraph")
 
         # Get the Skeleton root of the character
-        character_skel_root = Person._transverse_prim(self._current_stage, self._stage_prefix)
+        character_skel_root, character_skel_root_stage_path = Person._transverse_prim(self._current_stage, self._stage_prefix)
         
         # Remove the animation graph attribute if it exists
         omni.kit.commands.execute("RemoveAnimationGraphAPICommand", paths=[Sdf.Path(character_skel_root.GetPrimPath())])
@@ -111,25 +203,25 @@ class Person:
 
         # If the prim is the one we are looking for, return it
         if prim.GetTypeName() == "SkelRoot":
-            return prim
+            return prim, stage_prefix
 
         # Otherwise, get all the children of the prim and keep transversing until we find the SkelRoot
         children = prim.GetAllChildren()
 
         # If there are no children, return
         if not children or len(children) == 0:
-            return None
+            return None, None
         
         # Recursively look through the children to get the SkelRoot
         for child in children:
             print("Looking for child")
             print(stage_prefix + "/" + child.GetName())
-            prim_child = Person._transverse_prim(stage, stage_prefix + "/" + child.GetName())
+            prim_child, child_stage_prefix = Person._transverse_prim(stage, stage_prefix + "/" + child.GetName())
 
             if prim_child is not None:
-                return prim_child
+                return prim_child, child_stage_prefix
             
-        return None
+        return None, None
 
 
     @staticmethod

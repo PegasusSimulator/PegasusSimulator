@@ -68,14 +68,14 @@ class PegasusApp:
 
         # Acquire the World, .i.e, the singleton that controls that is a one stop shop for setting up physics,
         # spawning asset primitives, etc.
-        omni.usd.get_context().open_stage("/home/marcelo/pegasus/pegasus/src/TargetTracking/ros_implementation/pegasus_target_tracking/isaac_assets/simple_test.usd", None)
+        omni.usd.get_context().open_stage("/home/marcelo/pegasus/pegasus/src/TargetTracking/ros_implementation/pegasus_target_tracking/isaac_assets/almost_empty.usd", None)
         self.pg._world = World(**self.pg._world_settings)
         self.world = self.pg.world
 
         # TODO: Add the logic code here
         carb.log_warn(Person.get_character_asset_list())
         Person("person1", "original_male_adult_construction_05", init_pos=[1.0, 0.0, 0.0], init_yaw=0.0)
-        Person("person2", "original_female_adult_business_02", init_pos=[2.0, 0.0, 0.0], init_yaw=0.0)
+        #Person("person2", "original_female_adult_business_02", init_pos=[2.0, 0.0, 0.0], init_yaw=0.0)
 
 
         # Reset the simulation environment so that all articulations (aka robots) are initialized
