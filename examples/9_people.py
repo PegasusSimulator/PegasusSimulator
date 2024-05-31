@@ -72,11 +72,17 @@ class PegasusApp:
         self.pg._world = World(**self.pg._world_settings)
         self.world = self.pg.world
 
-        # TODO: Add the logic code here
-        carb.log_warn(Person.get_character_asset_list())
-        Person("person1", "original_male_adult_construction_05", init_pos=[1.0, 0.0, 0.0], init_yaw=0.0)
-        #Person("person2", "original_female_adult_business_02", init_pos=[2.0, 0.0, 0.0], init_yaw=0.0)
+        # Check the available assets for people
+        people_assets_list = Person.get_character_asset_list()
+        for person in people_assets_list:
+            print(person)
 
+        # Spawn the person in the world
+        p1 = Person("person1", "original_male_adult_construction_05", init_pos=[1.0, 0.0, 0.0], init_yaw=0.0)
+        p2 = Person("person2", "original_female_adult_business_02", init_pos=[2.0, 0.0, 0.0], init_yaw=0.0)
+
+        p1.update_target_position([10.0, 0.0, 0.0], 0.1)
+        p2.update_target_position([-10.0, 0.0, 0.0], 0.1)
 
         # Reset the simulation environment so that all articulations (aka robots) are initialized
         self.world.reset()
