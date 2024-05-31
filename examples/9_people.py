@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 """
-| File: 8_camera_vehicle.py
-| License: BSD-3-Clause. Copyright (c) 2023, Marcelo Jacinto and Filip Stec. All rights reserved.
+| File: 9_people.py
+| License: BSD-3-Clause. Copyright (c) 2024, Marcelo Jacinto. All rights reserved.
 | Description: This files serves as an example on how to build an app that makes use of the Pegasus API to run a simulation
-with a single vehicle equipped with a camera, producing rgb and camera info ROS2 topics.
+| where people move around in the world.
 """
 
 # Imports to start Isaac Sim from this script
@@ -42,10 +42,43 @@ EXTENSIONS_PEOPLE = [
 for ext_people in EXTENSIONS_PEOPLE:
     enable_extension(ext_people)
 
+import numpy as np
+
 # Import the Pegasus API for simulating drones
 from pegasus.simulator.params import ROBOTS, SIMULATION_ENVIRONMENTS
 from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 from pegasus.simulator.logic.people.person import Person
+from pegasus.simulator.logic.people.person_controller import PersonController
+from pegasus.simulator.logic.backends.mavlink_backend import MavlinkBackend, MavlinkBackendConfig
+from pegasus.simulator.logic.vehicles.multirotor import Multirotor, MultirotorConfig
+from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
+from pegasus.simulator.logic.graphs import ROS2Camera
+
+# Example controller class that make a person move in a circle around the origin of the world
+# Note: You could create a different controller with a different behaviour. For instance, you could:
+# 1. read the keyboard input to move the person around the world.
+# 2. read the target position from a ros topic,
+# 3. read the target position from a file,
+# 4. etc.
+class CirclePersonControler(PersonController):
+
+    def __init__(self):
+        super().__init__()
+
+        self._radius = 5.0
+        self._angular_velocity = 0.1
+
+        self.gamma = 0.0
+        self.gamma_dot = 0.3
+        
+    def update(self, dt: float):
+
+        # Update the reference position for the person to track
+        self.gamma += self.gamma_dot * dt
+        
+        # Set the target position for the person to track
+        self._person.update_target_position([self._radius * np.cos(self.gamma), self._radius * np.sin(self.gamma), 0.0])
+        
 
 # Auxiliary scipy and numpy modules
 from scipy.spatial.transform import Rotation
@@ -68,21 +101,52 @@ class PegasusApp:
 
         # Acquire the World, .i.e, the singleton that controls that is a one stop shop for setting up physics,
         # spawning asset primitives, etc.
-        omni.usd.get_context().open_stage("/home/marcelo/pegasus/pegasus/src/TargetTracking/ros_implementation/pegasus_target_tracking/isaac_assets/empty.usd", None)
+        omni.usd.get_context().open_stage("/home/marcelo/pegasus/PegasusSimulator/extensions/pegasus.simulator/pegasus/simulator/assets/Worlds/Empty/Empty.usd", None)
         self.pg._world = World(**self.pg._world_settings)
         self.world = self.pg.world
+
+        # Launch one of the worlds provided by NVIDIA
+        #self.pg.load_environment(SIMULATION_ENVIRONMENTS["Curved Gridroom"])
 
         # Check the available assets for people
         people_assets_list = Person.get_character_asset_list()
         for person in people_assets_list:
             print(person)
 
-        # Spawn the person in the world
-        p1 = Person("person1", "original_male_adult_construction_05", init_pos=[1.0, 0.0, 0.0], init_yaw=1.0)
-        p2 = Person("person2", "original_female_adult_business_02", init_pos=[2.0, 0.0, 0.0])
+        # Create the controller to make on person walk around in circles
+        person_controller = CirclePersonControler()
+        p1 = Person("person1", "original_male_adult_construction_05", init_pos=[3.0, 0.0, 0.0], init_yaw=1.0, controller=person_controller)
+        
+        # Create a person without setting up a controller, and just setting a manual target position for it to track
+        p2 = Person("person2", "original_female_adult_business_02", init_pos=[-2.0, 0.0, 0.0])
+        p2.update_target_position([-5.0, 0.0, 0.0], 0.0)
 
-        p1.update_target_position([10.0, 0.0, 0.0], 0.1)
-        p2.update_target_position([-10.0, 0.0, 0.0], 0.1)
+        # Create the vehicle
+        # Try to spawn the selected robot in the world to the specified namespace
+        config_multirotor = MultirotorConfig()
+        # Create the multirotor configuration
+        mavlink_config = MavlinkBackendConfig({
+            "vehicle_id": 0,
+            "px4_autolaunch": True,
+            "px4_dir": "/home/marcelo/PX4-Autopilot",
+            "px4_vehicle_model": 'iris'
+        })
+        config_multirotor.backends = [MavlinkBackend(mavlink_config)]
+
+        # Create camera graph for the existing Camera prim on the Iris model, which can be found 
+        # at the prim path `/World/quadrotor/body/Camera`. The camera prim path is the local path from the vehicle's prim path
+        # to the camera prim, to which this graph will be connected. All ROS2 topics published by this graph will have 
+        # namespace `quadrotor` and frame_id `Camera` followed by the selected camera types (`rgb`, `camera_info`).
+        config_multirotor.graphs = [ROS2Camera("body/Camera", config={"types": ['rgb', 'camera_info']})]
+
+        Multirotor(
+            "/World/quadrotor",
+            ROBOTS['Iris'],
+            0,
+            [0.0, 0.0, 0.07],
+            Rotation.from_euler("XYZ", [0.0, 0.0, 0.0], degrees=True).as_quat(),
+            config=config_multirotor,
+        )
 
         # Reset the simulation environment so that all articulations (aka robots) are initialized
         self.world.reset()
