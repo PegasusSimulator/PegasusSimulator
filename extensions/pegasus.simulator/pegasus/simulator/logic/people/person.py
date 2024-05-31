@@ -5,8 +5,11 @@
 | Description: Definition of the Person class which is used as the base for spawning people in the simulation world.
 """
 
+import random
+
 # Low level APIs
 import carb
+from pxr import Gf
 
 # High level Isaac sim APIs
 import omni.client
@@ -40,9 +43,9 @@ class Person:
     def __init__(
         self, 
         stage_prefix: str,
-        usd_path: str = None,
+        character_name: str = None,
         init_pos=[0.0, 0.0, 0.0],
-        init_orientation=[0.0, 0.0, 0.0, 1.0]
+        init_yaw=0.0
     ):
 
         # Get the current world at which we want to spawn the vehicle
@@ -50,16 +53,39 @@ class Person:
         self._current_stage = self._world.stage
 
         # Save the name with which the vehicle will appear in the stage
-        # and the name of the .usd file that contains its description
-        self._stage_prefix = get_stage_next_free_path(self._current_stage, stage_prefix, False)
-        self._usd_file = usd_path
+        # and the character model that will be loaded into the simulator
+        self._stage_prefix = get_stage_next_free_path(self._current_stage, Person.character_root_prim_path + '/' + stage_prefix, False)
+        self._character_name = character_name
 
         # If there is no XForm primitive in the stage to hold all the people, create one
         if not self._current_stage.GetPrimAtPath(Person.character_root_prim_path):
             prims.create_prim(Person.character_root_prim_path, "Xform")
 
+        # Get the USD file corresponding to the character
+        self.char_usd_file = Person.get_path_for_character_prim(character_name)
+
+        # Spawn the agent in the world
+        self.spawn_agent(self.char_usd_file, self._stage_prefix, init_pos, init_yaw)
+        
+
+    def spawn_agent(self, usd_file, stage_name, init_pos, init_yaw):
+
+        print(stage_name)
+
+        # Spawn the person in the world
+        self.prim = prims.create_prim(stage_name, "Xform", usd_path=usd_file)
+
+        # Set the initial position and orientation of the person
+        self.prim.GetAttribute("xformOp:translate").Set(Gf.Vec3d(float(init_pos[0]),float(init_pos[1]), float(init_pos[2])))
+
+        if type(self.prim.GetAttribute("xformOp:orient").Get()) == Gf.Quatf:
+            self.prim.GetAttribute("xformOp:orient").Set(Gf.Quatf(Gf.Rotation(Gf.Vec3d(0,0,1), float(init_yaw)).GetQuat()))
+        else:
+            self.prim.GetAttribute("xformOp:orient").Set(Gf.Rotation(Gf.Vec3d(0,0,1), float(init_yaw)).GetQuat())
+        
         # Add the current person to the person manager
         PeopleManager.get_people_manager().add_person(self._stage_prefix, self)
+
 
     @staticmethod
     def get_character_asset_list():
@@ -75,3 +101,36 @@ class Person:
             if (folder.flags & omni.client.ItemFlags.CAN_HAVE_CHILDREN) and not folder.relative_path.startswith(".")]
 
         return pruned_folder_list
+    
+    @staticmethod
+    def get_path_for_character_prim(agent_name):
+
+        # Check if a folder with agent_name exists. If exists we load the character, else we load a random character
+        agent_folder = "{}/{}".format(Person.assets_root_path, agent_name)
+        result, properties = omni.client.stat(agent_folder)
+
+        # Attempt to load the character if it exists, otherwise load a random character
+        if result != omni.client.Result.OK:
+            carb.log_error("Character folder does not exist.")
+            return None
+        
+        # Get the usd present in the character folder
+        character_folder = "{}/{}".format(Person.assets_root_path, agent_name)
+        character_usd = Person.get_usd_in_folder(character_folder)
+    
+        # Return the character name (folder name) and the usd path to the character
+        return "{}/{}".format(character_folder, character_usd)
+    
+    @staticmethod
+    def get_usd_in_folder(character_folder_path):
+        result, folder_list = omni.client.list(character_folder_path)
+        
+        if result != omni.client.Result.OK:
+            carb.log_error("Unable to read character folder path at {}".format(character_folder_path))
+            return
+
+        for item in folder_list:
+            if item.relative_path.endswith(".usd"):
+                return item.relative_path
+
+        carb.log_error("Unable to file a .usd file in {} character folder".format(character_folder_path))
