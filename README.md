@@ -3,6 +3,7 @@
 ![IsaacSim 2023.1.1](https://img.shields.io/badge/IsaacSim-2023.1.1-brightgreen.svg)
 ![PX4-Autopilot 1.14.1](https://img.shields.io/badge/PX4--Autopilot-1.14.1-brightgreen.svg)
 ![Ubuntu 22.04](https://img.shields.io/badge/Ubuntu-22.04LTS-brightgreen.svg)
+[![](https://dcbadge.limes.pink/api/server/[INVITE](https://discord.gg/AjCxw2QUmt?style=flat))](https://discord.gg/AjCxw2QUmt)
 
 **Pegasus Simulator** is a framework built on top of [NVIDIA
 Omniverse](https://docs.omniverse.nvidia.com/) and [Isaac
@@ -20,13 +21,13 @@ Check the provided documentation [here](https://pegasussimulator.github.io/Pegas
 
 If you find Pegasus Simulator useful in your academic work, please cite the paper below. It is also available [here](https://arxiv.org/abs/2307.05263).
 ```
-@misc{jacinto2023pegasus,
-      title={Pegasus Simulator: An Isaac Sim Framework for Multiple Aerial Vehicles Simulation}, 
+@INPROCEEDINGS{jacinto2024pegasus,
+      title={Pegasus Simulator: An Isaac Sim Framework for Multiple Aerial Vehicles Simulation},
+      booktitle={2024 International Conference on Unmanned Aircraft Systems (ICUAS)},
       author={Marcelo Jacinto and João Pinto and Jay Patrikar and John Keller and Rita Cunha and Sebastian Scherer and António Pascoal},
-      year={2023},
-      eprint={2307.05263},
-      archivePrefix={arXiv},
-      primaryClass={cs.RO}
+      year={2024},
+      volume={},
+      number={}
 }
 ```
 
