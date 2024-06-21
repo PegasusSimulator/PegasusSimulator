@@ -21,14 +21,16 @@ Check the provided documentation [here](https://pegasussimulator.github.io/Pegas
 
 If you find Pegasus Simulator useful in your academic work, please cite the paper below. It is also available [here](https://arxiv.org/abs/2307.05263).
 ```
-@INPROCEEDINGS{jacinto2024pegasus,
-      title={Pegasus Simulator: An Isaac Sim Framework for Multiple Aerial Vehicles Simulation},
-      booktitle={2024 International Conference on Unmanned Aircraft Systems (ICUAS)},
-      author={Marcelo Jacinto and João Pinto and Jay Patrikar and John Keller and Rita Cunha and Sebastian Scherer and António Pascoal},
-      year={2024},
-      volume={},
-      number={}
-}
+@INPROCEEDINGS{10556959,
+  author={Jacinto, Marcelo and Pinto, João and Patrikar, Jay and Keller, John and Cunha, Rita and Scherer, Sebastian and Pascoal, António},
+  booktitle={2024 International Conference on Unmanned Aircraft Systems (ICUAS)}, 
+  title={Pegasus Simulator: An Isaac Sim Framework for Multiple Aerial Vehicles Simulation}, 
+  year={2024},
+  volume={},
+  number={},
+  pages={917-922},
+  keywords={Simulation;Robot sensing systems;Real-time systems;Sensor systems;Sensors;Task analysis},
+  doi={10.1109/ICUAS60882.2024.10556959}}
 ```
 
 ## Main Developer Team
