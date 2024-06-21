@@ -18,9 +18,31 @@ from geometry_msgs.msg import TransformStamped
 from sensor_msgs.msg import Imu, MagneticField, NavSatFix, NavSatStatus
 from geometry_msgs.msg import PoseStamped, TwistStamped, AccelStamped
 
-# TF imports
-from tf2_ros.static_transform_broadcaster import StaticTransformBroadcaster
-from tf2_ros.transform_broadcaster import TransformBroadcaster
+try:
+    # TF imports
+    from tf2_ros.static_transform_broadcaster import StaticTransformBroadcaster
+    from tf2_ros.transform_broadcaster import TransformBroadcaster
+except ImportError:
+    carb.log_warn(f"Could not import the necessary ROS2 packages. Trying to import from extra_ros_python_lib_path")
+    import yaml, os
+    import pegasus.simulator.params as params
+    try:
+        with open(params.CONFIG_FILE, 'r') as f:
+            data = yaml.safe_load(f)
+        extra_ros_python_lib_path = os.path.expanduser(data.get("extra_ros_python_lib_path", ""))
+    except:
+        carb.log_warn("Could not retrieve extra_ros_python_lib_path from: " + str(params.CONFIG_FILE))
+    if extra_ros_python_lib_path=="" or not os.path.exists(extra_ros_python_lib_path):
+        carb.log_error("Could not import the necessary ROS2 packages. Please provide the path to the ROS2 python packages, \
+ROS2Backend may not work as expected.")
+    else:
+        carb.log_info("Importing the necessary ROS2 packages from: " + extra_ros_python_lib_path)
+        # this is a hack to add custom pathon packages to the sys.path
+        import sys
+        sys.path.append(extra_ros_python_lib_path)
+        import tf2_ros
+        from tf2_ros.static_transform_broadcaster import StaticTransformBroadcaster
+        from tf2_ros.transform_broadcaster import TransformBroadcaster
 
 from pegasus.simulator.logic.backends.backend import Backend
 
