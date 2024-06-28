@@ -38,6 +38,9 @@ class Sensor:
         self._origin_lon = -999
         self._origin_alt = 0.0
 
+        # Path to a prim describing the sensor's frame
+        self.frame_path = ""
+
     def initialize(self, origin_lat, origin_lon, origin_alt):
         """Method that initializes the sensor latitude, longitude and altitude attributes.
         
@@ -124,6 +127,17 @@ class Sensor:
         (dict) A dictionary which contains the data produced by the sensor at any given time.
         """
         return None
+
+    @property
+    def frame_path(self):
+        """
+        (str) Path to the sensor's frame
+        """
+        return self._frame_path
+
+    @frame_path.setter
+    def frame_path(self, value):
+        self._frame_path = value
 
     def update(self, state: State, dt: float):
         """Method that should be implemented by the class that inherits Sensor. This is where the actual implementation
