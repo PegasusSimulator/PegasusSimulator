@@ -82,7 +82,12 @@ class Multirotor(Vehicle):
         # 2. Initialize all the vehicle sensors
         self._sensors = config.sensors
         for sensor in self._sensors:
-            sensor.initialize(PegasusInterface().latitude, PegasusInterface().longitude, PegasusInterface().altitude)
+            if sensor.sensor_type in ["Camera"]:
+                sensor.initialize(self)
+            else:
+                sensor.initialize(
+                    PegasusInterface().latitude, PegasusInterface().longitude, PegasusInterface().altitude
+                )
 
         # Add callbacks to the physics engine to update each sensor at every timestep
         # and let the sensor decide depending on its internal update rate whether to generate new data
