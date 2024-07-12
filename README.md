@@ -50,6 +50,11 @@ This simulation framework is an open-source effort, started by me, Marcelo Jacin
 
 Also check the always up-to-date [Github contributors list](https://github.com/PegasusSimulator/PegasusSimulator/graphs/contributors) with all the open-source contributors.
 
+## Guidance, Control and Navigation Project
+
+In parallel to this project, the Pegasus (GNC) guidance, control, and navigation project serves as the foundation control code for performing real-world experiments for my Ph.D. More information can be found at this link:
+[Pegasus GNC](https://pegasusresearch.github.io/pegasus/)
+
 ## Project Roadmap
 
 An high level project roadmap is available [here](https://pegasussimulator.github.io/PegasusSimulator/source/references/roadmap.html).
