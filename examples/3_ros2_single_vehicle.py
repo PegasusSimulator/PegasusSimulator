@@ -9,7 +9,7 @@ simulation with a single vehicle, controlled using the ROS2 backend system. NOTE
 
 # Imports to start Isaac Sim from this script
 import carb
-from omni.isaac.kit import SimulationApp
+from isaacsim import SimulationApp
 
 # Start Isaac Sim's simulation environment
 # Note: this simulation app must be instantiated right after the SimulationApp import, otherwise the simulator will crash
@@ -31,7 +31,7 @@ enable_extension("omni.isaac.ros2_bridge")
 from pegasus.simulator.params import ROBOTS, SIMULATION_ENVIRONMENTS
 from pegasus.simulator.logic.state import State
 from pegasus.simulator.logic.backends.ros2_backend import ROS2Backend
-from pegasus.simulator.logic.graphs import ROS2Camera
+#from pegasus.simulator.logic.graphs import ROS2Camera
 from pegasus.simulator.logic.vehicles.multirotor import Multirotor, MultirotorConfig
 from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 
@@ -66,7 +66,7 @@ class PegasusApp:
         # Try to spawn the selected robot in the world to the specified namespace
         config_multirotor = MultirotorConfig()
         config_multirotor.backends = [ROS2Backend(vehicle_id=1, config={"namespace": 'drone'})]
-        config_multirotor.graphs = [ROS2Camera("body/Camera", config={"types": ['rgb', 'camera_info', 'depth_pcl', 'depth'], "namespace": 'drone1', "topic": 'camera', "tf_frame_id": 'map', 'resolution': [640, 480]})]
+        #config_multirotor.graphs = [ROS2Camera("body/Camera", config={"types": ['rgb', 'camera_info', 'depth_pcl', 'depth'], "namespace": 'drone1', "topic": 'camera', "tf_frame_id": 'map', 'resolution': [640, 480]})]
 
         Multirotor(
             "/World/quadrotor",

@@ -8,7 +8,7 @@
 
 # Imports to start Isaac Sim from this script
 import carb
-from omni.isaac.kit import SimulationApp
+from isaacsim import SimulationApp
 
 # Start Isaac Sim's simulation environment
 # Note: this simulation app must be instantiated right after the SimulationApp import, otherwise the simulator will crash
@@ -52,7 +52,7 @@ from pegasus.simulator.logic.people.person_controller import PersonController
 from pegasus.simulator.logic.backends.mavlink_backend import MavlinkBackend, MavlinkBackendConfig
 from pegasus.simulator.logic.vehicles.multirotor import Multirotor, MultirotorConfig
 from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
-from pegasus.simulator.logic.graphs import ROS2Camera
+#from pegasus.simulator.logic.graphs import ROS2Camera
 
 # Example controller class that make a person move in a circle around the origin of the world
 # Note: You could create a different controller with a different behaviour. For instance, you could:
@@ -125,8 +125,7 @@ class PegasusApp:
         mavlink_config = MavlinkBackendConfig({
             "vehicle_id": 0,
             "px4_autolaunch": True,
-            "px4_dir": "/home/marcelo/PX4-Autopilot",
-            "px4_vehicle_model": 'iris'
+            "px4_dir": "/home/marcelo/PX4-Autopilot"
         })
         config_multirotor.backends = [MavlinkBackend(mavlink_config)]
 
@@ -134,7 +133,7 @@ class PegasusApp:
         # at the prim path `/World/quadrotor/body/Camera`. The camera prim path is the local path from the vehicle's prim path
         # to the camera prim, to which this graph will be connected. All ROS2 topics published by this graph will have 
         # namespace `quadrotor` and frame_id `Camera` followed by the selected camera types (`rgb`, `camera_info`).
-        config_multirotor.graphs = [ROS2Camera("body/Camera", config={"types": ['rgb', 'camera_info']})]
+        #config_multirotor.graphs = [ROS2Camera("body/Camera", config={"types": ['rgb', 'camera_info']})]
 
         Multirotor(
             "/World/quadrotor",
