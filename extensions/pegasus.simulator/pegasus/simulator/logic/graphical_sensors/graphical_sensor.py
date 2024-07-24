@@ -1,71 +1,44 @@
 """
 | Author: Marcelo Jacinto (marcelo.jacinto@tecnico.ulisboa.pt)
-| License: BSD-3-Clause. Copyright (c) 2023, Marcelo Jacinto. All rights reserved.
+| License: BSD-3-Clause. Copyright (c) 2024, Marcelo Jacinto. All rights reserved.
 | Description: Definition of the Sensor class which is used as the base for all the sensors.
 """
-__all__ = ["Sensor"]
+__all__ = ["GraphicalSensor"]
 
 from pegasus.simulator.logic.state import State
 
-class Sensor:
-    """The base class for implementing a sensor
+class GraphicalSensor:
+
+    """The base class for implementing a graphical sensor (such as a camera)
 
     Attributes:
         update_period (float): The period for each sensor update: update_period = 1 / update_rate (in s).
-        origin_lat (float): The latitude of the origin of the world in degrees (might get used by some sensors).
-        origin_lon (float): The longitude of the origin of the world in degrees (might get used by some sensors).
-        origin_alt (float): The altitude of the origin of the world relative to sea water level (might get used by some sensors)
     """
-    def __init__(self, sensor_type: str, update_rate: float):
-        """Initialize the Sensor class
 
+    def __init__(self, sensor_type: str, update_rate: float)
+        """
         Args:
             sensor_type (str): A name that describes the type of sensor
             update_rate (float): The rate at which the data in the sensor should be refreshed (in Hz)
         """
-
         # Set the sensor type and update rate
         self._sensor_type = sensor_type
         self._update_rate = update_rate
         self._update_period = 1.0 / self._update_rate
 
-        # Auxiliar variables used to control whether to update the sensor or not given the time elapsed
-        self._first_update = True
-        self._total_time = 0.0
-
-        # Set the "configuration of the world" - some sensors might need it
-        self._origin_lat = -999
-        self._origin_lon = -999
-        self._origin_alt = 0.0
-
         self._vehicle = None
 
-    def initialize(self, vehicle, origin_lat, origin_lon, origin_alt):
-        """Method that initializes the sensor latitude, longitude and altitude attributes.
-        
-        Note:
-            Given that some sensors require the knowledge of the latitude, longitude and altitude of the [0, 0, 0] coordinate
-            of the world, then we might as well just save this information for whatever sensor that comes
-        
+    def initialize(self, vehicle):
+        """A method that can be invoked when the simulation is starting to give access to the control backend 
+        to the entire vehicle object. Even though we provide update_sensor and update_state callbacks that are called
+        at every physics step with the latest vehicle state and its sensor data, having access to the full vehicle
+        object may prove usefull under some circumstances. This is nice to give users the possibility of overiding
+        default vehicle behaviour via this control backend structure.
+
         Args:
             vehicle (Vehicle): A reference to the vehicle that this sensor is associated with
-            origin_lat (float): The latitude of the origin of the world in degrees (might get used by some sensors).
-            origin_lon (float): The longitude of the origin of the world in degrees (might get used by some sensors).
-            origin_alt (float): The altitude of the origin of the world relative to sea water level (might get used by some sensors).
         """
         self._vehicle = vehicle
-        self._origin_lat = origin_lat
-        self._origin_lon = origin_lon
-        self._origin_alt = origin_alt
-
-    def set_update_rate(self, update_rate: float):
-        """Method that changes the update rate and period of the sensor
-
-        Args:
-            update_rate (float): The new rate at which the data in the sensor should be refreshed (in Hz)
-        """
-        self._update_rate = update_rate
-        self._update_period = 1.0 / self._update_rate
 
     def update_at_rate(fnc):
         """Decorator function used to check if the time elapsed between the last sensor update call and the current 
@@ -76,8 +49,8 @@ class Sensor:
             fnc (function): The function that we want to enforce a specific update rate.
 
         Examples:
-            >>> class GPS(Sensor):
-            >>>    @Sensor.update_at_rate
+            >>> class Camera(GraphicalSensor):
+            >>>    @GraphicalSensor.update_at_rate
             >>>    def update(self):
             >>>        (do some logic here)
 
@@ -85,8 +58,6 @@ class Sensor:
             [None, Dict]: This decorator function returns None if there was no data to be produced by the sensor at the
             specified timestamp or a dict with the current state of the sensor otherwise.
         """
-        
-        # 
 
         # Define a wrapper function so that the "self" of the object can be passed to the function as well
         def wrapper(self, state: State, dt: float):
@@ -107,6 +78,18 @@ class Sensor:
                 return result
             return None
         return wrapper
+    
+    """
+     Properties
+    """
+    @property
+    def vehicle(self):
+        """A reference to the vehicle associated with this backend.
+
+        Returns:
+            Vehicle: A reference to the vehicle associated with this backend.
+        """
+        return self._vehicle
 
     @property
     def sensor_type(self):

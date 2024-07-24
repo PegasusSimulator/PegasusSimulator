@@ -1,7 +1,7 @@
 """
 | File: multirotor.py
 | Author: Marcelo Jacinto (marcelo.jacinto@tecnico.ulisboa.pt)
-| License: BSD-3-Clause. Copyright (c) 2023, Marcelo Jacinto. All rights reserved.
+| License: BSD-3-Clause. Copyright (c) 2024, Marcelo Jacinto. All rights reserved.
 | Description: Definition of the Multirotor class which is used as the base for all the multirotor vehicles.
 """
 
@@ -19,7 +19,6 @@ from pegasus.simulator.logic.backends.mavlink_backend import MavlinkBackend
 from pegasus.simulator.logic.dynamics import LinearDrag
 from pegasus.simulator.logic.thrusters import QuadraticThrustCurve
 from pegasus.simulator.logic.sensors import Barometer, IMU, Magnetometer, GPS
-from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 
 class MultirotorConfig:
     """
@@ -44,8 +43,8 @@ class MultirotorConfig:
         # The default sensors for a quadrotor
         self.sensors = [Barometer(), IMU(), Magnetometer(), GPS()]
 
-        # The default graphs
-        self.graphs = []
+        # The default graphical sensors for a quadrotor
+        self.graphical_sensors = []
 
         # The backends for actually sending commands to the vehicle. By default use mavlink (with default mavlink configurations)
         # [Can be None as well, if we do not desired to use PX4 with this simulated vehicle]. It can also be a ROS2 backend
@@ -79,79 +78,19 @@ class Multirotor(Vehicle):
         """
 
         # 1. Initiate the Vehicle object itself
-        super().__init__(stage_prefix, usd_file, init_pos, init_orientation)
+        super().__init__(stage_prefix, usd_file, init_pos, init_orientation, config.sensors, config.graphical_sensors, config.backends)
 
-        # 2. Initialize all the vehicle sensors
-        self._sensors = config.sensors
-        for sensor in self._sensors:
-            sensor.initialize(PegasusInterface().latitude, PegasusInterface().longitude, PegasusInterface().altitude)
-
-        # Add callbacks to the physics engine to update each sensor at every timestep
-        # and let the sensor decide depending on its internal update rate whether to generate new data
-        self._world.add_physics_callback(self._stage_prefix + "/Sensors", self.update_sensors)
-
-        # 3. Initialize all the vehicle graphs
-        self._graphs = config.graphs
-        for graph in self._graphs:
-            graph.initialize(self)
-
-        # 4. Setup the dynamics of the system
-        # Get the thrust curve of the vehicle from the configuration
+        # 2. Setup the dynamics of the system - get the thrust curve of the vehicle from the configuration
         self._thrusters = config.thrust_curve
         self._drag = config.drag
 
-        # 5. Save the backend interface (if given in the configuration of the multirotor)
-        # and initialize them
-        self._backends = config.backends
-        for backend in self._backends:
-            backend.initialize(self)
-
-        # Add a callbacks for the
-        self._world.add_physics_callback(self._stage_prefix + "/mav_state", self.update_sim_state)
-
-    def update_sensors(self, dt: float):
-        """Callback that is called at every physics steps and will call the sensor.update method to generate new
-        sensor data. For each data that the sensor generates, the backend.update_sensor method will also be called for
-        every backend. For example, if new data is generated for an IMU and we have a MavlinkBackend, then the update_sensor
-        method will be called for that backend so that this data can latter be sent thorugh mavlink.
-
-        Args:
-            dt (float): The time elapsed between the previous and current function calls (s).
-        """
-
-        # Call the update method for the sensor to update its values internally (if applicable)
-        for sensor in self._sensors:
-            sensor_data = sensor.update(self._state, dt)
-
-            # If some data was updated and we have a mavlink backend or ros backend (or other), then just update it
-            if sensor_data is not None:
-                for backend in self._backends:
-                    backend.update_sensor(sensor.sensor_type, sensor_data)
-
-    def update_sim_state(self, dt: float):
-        """
-        Callback that is used to "send" the current state for each backend being used to control the vehicle. This callback
-        is called on every physics step.
-
-        Args:
-            dt (float): The time elapsed between the previous and current function calls (s).
-        """
-        for backend in self._backends:
-            backend.update_state(self._state)
-
     def start(self):
-        """
-        Intializes the communication with all the backends. This method is invoked automatically when the simulation starts
-        """
-        for backend in self._backends:
-            backend.start()
+        """In this case we do not need to do anything extra when the simulation starts"""
+        pass
 
     def stop(self):
-        """
-        Signal all the backends that the simulation has stoped. This method is invoked automatically when the simulation stops
-        """
-        for backend in self._backends:
-            backend.stop()
+        """In this case we do not need to do anything extra when the simulation stops"""
+        pass
 
     def update(self, dt: float):
         """

@@ -1,7 +1,7 @@
 """
 | File: vehicle.py
 | Author: Marcelo Jacinto (marcelo.jacinto@tecnico.ulisboa.pt)
-| License: BSD-3-Clause. Copyright (c) 2023, Marcelo Jacinto. All rights reserved.
+| License: BSD-3-Clause. Copyright (c) 2024, Marcelo Jacinto. All rights reserved.
 | Description: Definition of the Vehicle class which is used as the base for all the vehicles.
 """
 
@@ -15,7 +15,6 @@ from pxr import Usd, Gf
 
 # High level Isaac sim APIs
 import omni.usd
-from omni.isaac.core.world import World
 from omni.isaac.core.utils.prims import define_prim, get_prim_at_path
 from omni.usd import get_stage_next_free_path
 from omni.isaac.core.robots.robot import Robot
@@ -52,6 +51,9 @@ class Vehicle(Robot):
         usd_path: str = None,
         init_pos=[0.0, 0.0, 0.0],
         init_orientation=[0.0, 0.0, 0.0, 1.0],
+        sensors=[],
+        graphical_sensors=[],
+        backends=[]
     ):
         """
         Class that initializes a vehicle in the isaac sim's curent stage
@@ -102,9 +104,6 @@ class Vehicle(Robot):
         # Variable that will hold the current state of the vehicle
         self._state = State()
 
-        # Motor that is given as reference
-        self._motor_speed = []
-
         # Add a callback to the physics engine to update the current state of the system
         self._world.add_physics_callback(self._stage_prefix + "/state", self.update_state)
 
@@ -118,6 +117,42 @@ class Vehicle(Robot):
 
         # Add a callback to start/stop of the simulation once the play/stop button is hit
         self._world.add_timeline_callback(self._stage_prefix + "/start_stop_sim", self.sim_start_stop)
+
+        # --------------------------------------------------------------------
+        # -------------------- Add sensors to the vehicle --------------------
+        # --------------------------------------------------------------------
+        self._sensors = sensors
+        
+        for sensor in self._sensors:
+            sensor.initialize(self, PegasusInterface().latitude, PegasusInterface().longitude, PegasusInterface().altitude)
+
+        # Add callbacks to the physics engine to update each sensor at every timestep
+        # and let the sensor decide depending on its internal update rate whether to generate new data
+        self._world.add_physics_callback(self._stage_prefix + "/Sensors", self.update_sensors)
+
+        # --------------------------------------------------------------------
+        # -------------------- Add the graphical sensors to the vehicle ------
+        # --------------------------------------------------------------------
+        self._graphical_sensors = graphical_sensors
+
+        for graphical_sensor in self._graphical_sensors:
+            graphical_sensor.initialize(self)
+
+        # Add callbacks to the rendering engine to update each graphical sensor at every timestep of the rendering engine
+        self._world.add_render_callback(self._stage_prefix + "/GraphicalSensors", self.update_graphical_sensors)
+        
+        # --------------------------------------------------------------------
+        # ---- Add (communication/control) backends to the vehicle -----------
+        # --------------------------------------------------------------------
+        self._backends = backends
+
+        # Initialize the backends
+        for backend in self._backends:
+            backend.initialize(self)
+
+        # Add a callbacks for the
+        self._world.add_physics_callback(self._stage_prefix + "/mav_state", self.update_sim_state)
+
 
     def __del__(self):
         """
@@ -165,10 +200,37 @@ class Vehicle(Robot):
         # If the start/stop button was pressed, then call the start and stop methods accordingly
         if self._world.is_playing() and self._sim_running == False:
             self._sim_running = True
+
+            # Initialize the sensors
+            for sensor in self._sensors:
+                sensor.start()
+
+            # Initialize the graphical sensors
+            for graphical_sensor in self._graphical_sensors:
+                graphical_sensor.start()
+
+            # Intializes the communication with all the backends. This method is invoked automatically when the simulation starts
+            for backend in self._backends:
+                backend.start()
+
+            # Invoke the start method of the vehicle (if it exists)
             self.start()
 
         if self._world.is_stopped() and self._sim_running == True:
             self._sim_running = False
+
+            # Stop the sensors
+            for sensor in self._sensors:
+                sensor.stop()
+
+            # Stop the graphical sensors
+            for graphical_sensor in self._graphical_sensors:
+                graphical_sensor.stop
+
+            # Signal all the backends that the simulation has stoped. This method is invoked automatically when the simulation stops
+            for backend in self._backends:
+                backend.stop()
+
             self.stop()
 
     def apply_force(self, force, pos=[0.0, 0.0, 0.0], body_part="/body"):
@@ -285,3 +347,51 @@ class Vehicle(Robot):
             dt (float): The time elapsed between the previous and current function calls (s).
         """
         pass
+
+    def update_sensors(self, dt: float):
+        """Callback that is called at every physics steps and will call the sensor.update method to generate new
+        sensor data. For each data that the sensor generates, the backend.update_sensor method will also be called for
+        every backend. For example, if new data is generated for an IMU and we have a MavlinkBackend, then the update_sensor
+        method will be called for that backend so that this data can latter be sent thorugh mavlink.
+
+        Args:
+            dt (float): The time elapsed between the previous and current function calls (s).
+        """
+
+        # Call the update method for the sensor to update its values internally (if applicable)
+        for sensor in self._sensors:
+            sensor_data = sensor.update(self._state, dt)
+
+            # If some data was updated and we have a mavlink backend or ros backend (or other), then just update it
+            if sensor_data is not None:
+                for backend in self._backends:
+                    backend.update_sensor(sensor.sensor_type, sensor_data)
+
+    def update_graphical_sensors(self, dt: float):
+        """Callback that is called at every rendering steps and will call the graphical_sensor.update method to generate new
+        sensor data. For each data that the sensor generates, the backend.update_graphical_sensor method will also be called for
+        every backend. For example, if new data is generated for a monocular camera and we have a ROS2Backend, then the update_graphical_sensor
+        method will be called for that backend so that this data can latter be sent through a ROS2 topic.
+
+        Args:
+            dt (float): The time elapsed between the previous and current function calls (s).
+        """
+        # Call the update method for the sensor to update its values internally (if applicable)
+        for sensor in self._graphical_sensors:
+            sensor_data = sensor.update(self._state, dt)
+
+            # If some data was updated and we have a ros backend (or other), then just update it
+            if sensor_data is not None:
+                for backend in self._backends:
+                    backend.update_graphical_sensor(sensor.sensor_type, sensor_data)
+
+    def update_sim_state(self, dt: float):
+        """
+        Callback that is used to "send" the current state for each backend being used to control the vehicle. This callback
+        is called on every physics step.
+
+        Args:
+            dt (float): The time elapsed between the previous and current function calls (s).
+        """
+        for backend in self._backends:
+            backend.update_state(self._state)
