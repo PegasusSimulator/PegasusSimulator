@@ -7,6 +7,8 @@
 
 import numpy as np
 
+from omni.isaac.dynamic_control import _dynamic_control
+
 # The vehicle interface
 from pegasus.simulator.logic.vehicles.vehicle import Vehicle
 
@@ -161,8 +163,10 @@ class Multirotor(Vehicle):
             dt (float): The time elapsed between the previous and current function calls (s).
         """
 
+        dc_interface = _dynamic_control.acquire_dynamic_control_interface()
+
         # Get the articulation root of the vehicle
-        articulation = self._world.dc_interface.get_articulation(self._stage_prefix)
+        articulation = dc_interface.get_articulation(self._stage_prefix)
 
         # Get the desired angular velocities for each rotor from the first backend (can be mavlink or other) expressed in rad/s
         if len(self._backends) != 0:
@@ -207,18 +211,20 @@ class Multirotor(Vehicle):
             articulation (_type_): The articulation group the joints of the rotors belong to
         """
 
+        dc_interface = _dynamic_control.acquire_dynamic_control_interface()
+
         # Rotate the joint to yield the visual of a rotor spinning (for animation purposes only)
-        joint = self._world.dc_interface.find_articulation_dof(articulation, "joint" + str(rotor_number))
+        joint = dc_interface.find_articulation_dof(articulation, "joint" + str(rotor_number))
 
         # Spinning when armed but not applying force
         if 0.0 < force < 0.1:
-            self._world.dc_interface.set_dof_velocity(joint, 5 * self._thrusters.rot_dir[rotor_number])
+            dc_interface.set_dof_velocity(joint, 5 * self._thrusters.rot_dir[rotor_number])
         # Spinning when armed and applying force
         elif 0.1 <= force:
-            self._world.dc_interface.set_dof_velocity(joint, 100 * self._thrusters.rot_dir[rotor_number])
+            dc_interface.set_dof_velocity(joint, 100 * self._thrusters.rot_dir[rotor_number])
         # Not spinning
         else:
-            self._world.dc_interface.set_dof_velocity(joint, 0)
+            dc_interface.set_dof_velocity(joint, 0)
 
     def force_and_torques_to_velocities(self, force: float, torque: np.ndarray):
         """
@@ -236,14 +242,16 @@ class Multirotor(Vehicle):
             list: A list of angular velocities [rad/s] to apply in reach rotor to accomplish suchs forces and torques
         """
 
+        dc_interface = _dynamic_control.acquire_dynamic_control_interface()
+
         # Get the body frame of the vehicle
-        rb = self._world.dc_interface.get_rigid_body(self._stage_prefix + "/body")
+        rb = dc_interface.get_rigid_body(self._stage_prefix + "/body")
 
         # Get the rotors of the vehicle
-        rotors = [self._world.dc_interface.get_rigid_body(self._stage_prefix + "/rotor" + str(i)) for i in range(self._thrusters._num_rotors)]
+        rotors = [dc_interface.get_rigid_body(self._stage_prefix + "/rotor" + str(i)) for i in range(self._thrusters._num_rotors)]
 
         # Get the relative position of the rotors with respect to the body frame of the vehicle (ignoring the orientation for now)
-        relative_poses = self._world.dc_interface.get_relative_body_poses(rb, rotors)
+        relative_poses = dc_interface.get_relative_body_poses(rb, rotors)
 
         # Define the alocation matrix
         aloc_matrix = np.zeros((4, self._thrusters._num_rotors))
