@@ -6,11 +6,15 @@
 """
 __all__ = ["MonocularCamera"]
 
-import numpy as np
-from omni.isaac.sensor import Camera
-
 from pegasus.simulator.logic.state import State
 from pegasus.simulator.logic.graphical_sensors import GraphicalSensor
+
+# Camera interface provided by NVidia Isaac Sim
+from omni.isaac.sensor import Camera
+
+# Auxiliary scipy and numpy modules
+import numpy as np
+from scipy.spatial.transform import Rotation
 
 
 class MonocularCamera(GraphicalSensor):
@@ -44,18 +48,17 @@ class MonocularCamera(GraphicalSensor):
         super().initialize(vehicle)
 
         # Create the camera object
-        # self._camera = Camera(
-        #     prim_path="/World/camera",
-        #     position=np.array([0.0, 0.0, 25.0]),
-        #     frequency=20,
-        #     resolution=(256, 256),
-        #     orientation=rot_utils.euler_angles_to_quats(np.array([0, 90, 0]), degrees=True))
+        self._camera = Camera(
+            prim_path="/World/camera",
+            position=np.array([0.0, 0.0, 25.0]),
+            frequency=20,
+            resolution=(256, 256),
+            orientation=Rotation.from_euler("XYZ", [0.0, 90.0, 0.0], degrees=True).as_quat())
 
     def start(self):
 
         # Start the camera
-        # self._camera.initialize()
-        pass
+        self._camera.initialize()
 
     @property
     def state(self):

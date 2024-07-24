@@ -2,7 +2,7 @@
 """
 | File: 3_ros2_single_vehicle.py
 | Author: Marcelo Jacinto (marcelo.jacinto@tecnico.ulisboa.pt)
-| License: BSD-3-Clause. Copyright (c) 2023, Marcelo Jacinto. All rights reserved.
+| License: BSD-3-Clause. Copyright (c) 2024, Marcelo Jacinto. All rights reserved.
 | Description: This files serves as an example on how to build an app that makes use of the Pegasus API to run a 
 simulation with a single vehicle, controlled using the ROS2 backend system. NOTE: this ROS2 interface only works on Ubuntu 22.04LTS and ROS2 Humble
 """
@@ -21,17 +21,11 @@ simulation_app = SimulationApp({"headless": False})
 # -----------------------------------
 import omni.timeline
 from omni.isaac.core.world import World
-from omni.isaac.core.utils.extensions import disable_extension, enable_extension
-
-# Enable/disable ROS bridge extensions to keep only ROS2 Bridge
-disable_extension("omni.isaac.ros_bridge")
-enable_extension("omni.isaac.ros2_bridge")
 
 # Import the Pegasus API for simulating drones
 from pegasus.simulator.params import ROBOTS, SIMULATION_ENVIRONMENTS
-from pegasus.simulator.logic.state import State
 from pegasus.simulator.logic.backends.ros2_backend import ROS2Backend
-#from pegasus.simulator.logic.graphs import ROS2Camera
+from pegasus.simulator.logic.graphical_sensors.monocular_camera import MonocularCamera
 from pegasus.simulator.logic.vehicles.multirotor import Multirotor, MultirotorConfig
 from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 
@@ -66,8 +60,8 @@ class PegasusApp:
         # Try to spawn the selected robot in the world to the specified namespace
         config_multirotor = MultirotorConfig()
         config_multirotor.backends = [ROS2Backend(vehicle_id=1, config={"namespace": 'drone'})]
-        #config_multirotor.graphs = [ROS2Camera("body/Camera", config={"types": ['rgb', 'camera_info', 'depth_pcl', 'depth'], "namespace": 'drone1', "topic": 'camera', "tf_frame_id": 'map', 'resolution': [640, 480]})]
-
+        config_multirotor.graphical_sensors = [MonocularCamera(config={"update_rate": 60.0})]
+        
         Multirotor(
             "/World/quadrotor",
             ROBOTS['Iris'],

@@ -5,6 +5,7 @@
 """
 __all__ = ["GraphicalSensor"]
 
+import time
 from pegasus.simulator.logic.state import State
 
 class GraphicalSensor:
@@ -15,7 +16,7 @@ class GraphicalSensor:
         update_period (float): The period for each sensor update: update_period = 1 / update_rate (in s).
     """
 
-    def __init__(self, sensor_type: str, update_rate: float)
+    def __init__(self, sensor_type: str, update_rate: float):
         """
         Args:
             sensor_type (str): A name that describes the type of sensor
@@ -25,6 +26,10 @@ class GraphicalSensor:
         self._sensor_type = sensor_type
         self._update_rate = update_rate
         self._update_period = 1.0 / self._update_rate
+
+        # Auxiliar variables used to control whether to update the sensor or not given the time elapsed
+        self._first_update = True
+        self._total_time = 0.0
 
         self._vehicle = None
 

@@ -367,18 +367,19 @@ class Vehicle(Robot):
                 for backend in self._backends:
                     backend.update_sensor(sensor.sensor_type, sensor_data)
 
-    def update_graphical_sensors(self, dt: float):
+    def update_graphical_sensors(self, event):
         """Callback that is called at every rendering steps and will call the graphical_sensor.update method to generate new
         sensor data. For each data that the sensor generates, the backend.update_graphical_sensor method will also be called for
         every backend. For example, if new data is generated for a monocular camera and we have a ROS2Backend, then the update_graphical_sensor
         method will be called for that backend so that this data can latter be sent through a ROS2 topic.
 
         Args:
-            dt (float): The time elapsed between the previous and current function calls (s).
+            event (float): The timer event that contains the time elapsed between the previous and current function calls (s).
         """
+
         # Call the update method for the sensor to update its values internally (if applicable)
         for sensor in self._graphical_sensors:
-            sensor_data = sensor.update(self._state, dt)
+            sensor_data = sensor.update(self._state, event.payload['dt'])
 
             # If some data was updated and we have a ros backend (or other), then just update it
             if sensor_data is not None:
