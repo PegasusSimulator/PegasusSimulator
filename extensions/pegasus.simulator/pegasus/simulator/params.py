@@ -7,7 +7,7 @@
 import os
 from pathlib import Path
 
-import omni.isaac.core.utils.nucleus as nucleus
+import omni.isaac.nucleus as nucleus
 
 # Extension configuration
 EXTENSION_NAME = "Pegasus Simulator"

@@ -17,8 +17,13 @@ from sensor_msgs.msg import Imu, MagneticField, NavSatFix, NavSatStatus, Image
 from geometry_msgs.msg import PoseStamped, TwistStamped, AccelStamped
 
 # TF imports
-from tf2_ros.static_transform_broadcaster import StaticTransformBroadcaster
-from tf2_ros.transform_broadcaster import TransformBroadcaster
+
+# Check if these libraries exist in the system
+try:
+    from tf2_ros.static_transform_broadcaster import StaticTransformBroadcaster
+    from tf2_ros.transform_broadcaster import TransformBroadcaster
+except ImportError:
+    print("TF2 ROS not installed. Will not publish TFs with the ROS2 backend")
 
 from pegasus.simulator.logic.backends.backend import Backend
 

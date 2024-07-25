@@ -20,12 +20,13 @@ import omni.usd
 import omni.kit.ui
 import omni.kit.app
 import omni.ui as ui
+import omni.timeline
 
 from omni.kit.viewport.utility import get_active_viewport
 
 # Pegasus Extension Files and API
 from pegasus.simulator.params import MENU_PATH, WINDOW_TITLE
-from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
+#from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 
 # Setting up the UI for the extension's Widget
 from pegasus.simulator.ui.ui_window import WidgetWindow
@@ -48,22 +49,6 @@ class Pegasus_SimulatorExtension(omni.ext.IExt):
         self.ui_delegate = None
         self.ui_window = None
 
-        # Start the extension backend
-        PegasusInterface.gui_mode = True
-        self._pegasus_sim = PegasusInterface()
-
-        # Check if we already have a stage loaded (when using autoload feature, it might not be ready yet)
-        # This is a limitation of the simulator, and we are doing this to make sure that the 
-        # extension does no crash when using the GUI with autoload feature
-        # If autoload was not enabled, and we are enabling the extension from the Extension widget, then 
-        # we will always have a state open, and the auxiliary timer will never run
-        if omni.usd.get_context().get_stage_state() != omni.usd.StageState.CLOSED:
-            self._pegasus_sim.initialize_world()
-        else:
-            # We need to create a timer to check until the window is properly open and the stage created. This is a limitation
-            # of the current Isaac Sim simulator and the way it loads extensions :(
-            self.autoload_helper()
-
         # Add the ability to show the window if the system requires it (QuickLayout feature)
         ui.Workspace.set_show_window_fn(WINDOW_TITLE, partial(self.show_window, None))
 
@@ -75,13 +60,6 @@ class Pegasus_SimulatorExtension(omni.ext.IExt):
         # Show the window (It call the self.show_window)
         ui.Workspace.show_window(WINDOW_TITLE, show=True)
 
-    def autoload_helper(self):
-        
-        # Check if we already have a viewport and a camera of interest
-        if get_active_viewport() != None and type(get_active_viewport().stage) == pxr.Usd.Stage and str(get_active_viewport().stage.GetPrimAtPath("/OmniverseKit_Persp")) != "invalid null prim":
-            self._pegasus_sim.initialize_world()
-        else:
-            Timer(1.0, self.autoload_helper).start()
 
     def show_window(self, menu, show):
         """

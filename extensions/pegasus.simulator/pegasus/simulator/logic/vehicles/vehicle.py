@@ -93,6 +93,8 @@ class Vehicle(Robot):
             articulation_controller=None,
         )
 
+        self._vehicle_dc_interface = None
+
         # Add this object for the world to track, so that if we clear the world, this object is deleted from memory and
         # as a consequence, from the VehicleManager as well
         self._world.scene.add(self)
@@ -219,6 +221,9 @@ class Vehicle(Robot):
         if self._world.is_stopped() and self._sim_running == True:
             self._sim_running = False
 
+            # Reset the DC interface
+            self._vehicle_dc_interface = None
+
             # Stop the sensors
             for sensor in self._sensors:
                 sensor.stop()
@@ -244,13 +249,11 @@ class Vehicle(Robot):
             body_part (str): . Defaults to "/body".
         """
 
-        dc_interface = _dynamic_control.acquire_dynamic_control_interface()
-
         # Get the handle of the rigidbody that we will apply the force to
-        rb = dc_interface.get_rigid_body(self._stage_prefix + body_part)
+        rb = self.get_dc_interface().get_rigid_body(self._stage_prefix + body_part)
 
         # Apply the force to the rigidbody. The force should be expressed in the rigidbody frame
-        dc_interface.apply_body_force(rb, carb._carb.Float3(force), carb._carb.Float3(pos), False)
+        self.get_dc_interface().apply_body_force(rb, carb._carb.Float3(force), carb._carb.Float3(pos), False)
 
     def apply_torque(self, torque, body_part="/body"):
         """
@@ -261,13 +264,11 @@ class Vehicle(Robot):
             body_part (str): . Defaults to "/body".
         """
 
-        dc_interface = _dynamic_control.acquire_dynamic_control_interface()
-
         # Get the handle of the rigidbody that we will apply a torque to
-        rb = dc_interface.get_rigid_body(self._stage_prefix + body_part)
+        rb = self.get_dc_interface().get_rigid_body(self._stage_prefix + body_part)
 
         # Apply the torque to the rigidbody. The torque should be expressed in the rigidbody frame
-        dc_interface.apply_body_torque(rb, carb._carb.Float3(torque), False)
+        self.get_dc_interface().apply_body_torque(rb, carb._carb.Float3(torque), False)
 
     def update_state(self, dt: float):
         """
@@ -278,13 +279,11 @@ class Vehicle(Robot):
             dt (float): The time elapsed between the previous and current function calls (s).
         """
 
-        dc_interface = _dynamic_control.acquire_dynamic_control_interface()
-
         # Get the body frame interface of the vehicle (this will be the frame used to get the position, orientation, etc.)
-        body = dc_interface.get_rigid_body(self._stage_prefix + "/body")
+        body = self.get_dc_interface().get_rigid_body(self._stage_prefix + "/body")
 
         # Get the current position and orientation in the inertial frame
-        pose = dc_interface.get_rigid_body_pose(body)
+        pose = self.get_dc_interface().get_rigid_body_pose(body)
 
         # Get the attitude according to the convention [w, x, y, z]
         prim = self._world.stage.GetPrimAtPath(self._stage_prefix + "/body")
@@ -293,10 +292,10 @@ class Vehicle(Robot):
         rotation_quat_img = rotation_quat.GetImaginary()
 
         # Get the angular velocity of the vehicle expressed in the body frame of reference
-        ang_vel = dc_interface.get_rigid_body_angular_velocity(body)
+        ang_vel = self.get_dc_interface().get_rigid_body_angular_velocity(body)
 
         # The linear velocity [x_dot, y_dot, z_dot] of the vehicle's body frame expressed in the inertial frame of reference
-        linear_vel = dc_interface.get_rigid_body_linear_velocity(body)
+        linear_vel = self.get_dc_interface().get_rigid_body_linear_velocity(body)
 
         # Get the linear acceleration of the body relative to the inertial frame, expressed in the inertial frame
         # Note: we must do this approximation, since the Isaac sim does not output the acceleration of the rigid body directly
@@ -396,3 +395,10 @@ class Vehicle(Robot):
         """
         for backend in self._backends:
             backend.update_state(self._state)
+
+    def get_dc_interface(self):
+
+        if self._vehicle_dc_interface is None:
+            self._vehicle_dc_interface = _dynamic_control.acquire_dynamic_control_interface()
+
+        return self._vehicle_dc_interface

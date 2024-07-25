@@ -59,8 +59,15 @@ class PegasusApp:
         # Create the vehicle
         # Try to spawn the selected robot in the world to the specified namespace
         config_multirotor = MultirotorConfig()
-        config_multirotor.backends = [ROS2Backend(vehicle_id=1, config={"namespace": 'drone'})]
-        config_multirotor.graphical_sensors = [MonocularCamera(config={"update_rate": 60.0})]
+        config_multirotor.backends = [ROS2Backend(vehicle_id=1, config={
+            "namespace": 'drone',
+            "pub_sensors": False,
+            "pub_graphical_sensors": True,
+            "pub_state": True,
+            "sub_control": False}
+            )
+        ]
+        config_multirotor.graphical_sensors = [MonocularCamera("camera", config={"update_rate": 60.0})]
         
         Multirotor(
             "/World/quadrotor",
