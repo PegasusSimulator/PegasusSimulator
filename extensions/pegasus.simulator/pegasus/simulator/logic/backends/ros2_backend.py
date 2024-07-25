@@ -55,12 +55,22 @@ class ROS2Backend(Backend):
             >>>  "mag_topic": "sensors/mag",                    # Magnetometer data
             >>>  "gps_topic": "sensors/gps",                    # GPS data
             >>>  "gps_vel_topic": "sensors/gps_twist",          # GPS velocity data
+            >>>  "pub_graphical_sensors": True,                 # Publish the graphical sensors
+            >>>  "pub_sensors": True,                           # Publish the sensors
+            >>>  "pub_state": True,                             # Publish the state of the vehicle
+            >>>  "sub_control": True,                           # Subscribe to the control topics
         """
 
         # Save the configurations for this backend
         self._id = vehicle_id
         self._num_rotors = num_rotors
         self._namespace = config.get("namespace", "drone" + str(vehicle_id))
+
+        # Save what whould be published/subscribed
+        self._pub_graphical_sensors = config.get("pub_graphical_sensors", True)
+        self._pub_sensors = config.get("pub_sensors", True)
+        self._pub_state = config.get("pub_state", True)
+        self._sub_control = config.get("sub_control", True)
 
         # Start the actual ROS2 setup here
         rclpy.init()
@@ -93,42 +103,45 @@ class ROS2Backend(Backend):
         # ----------------------------------------------------- 
         # Create publishers for the state of the vehicle in ENU
         # -----------------------------------------------------
-        if config.get("pub_pose", True):
-            self.pose_pub = self.node.create_publisher(PoseStamped, self._namespace + str(self._id) + "/" + config.get("pose_topic", "state/pose"), rclpy.qos.qos_profile_sensor_data)
-        
-        if config.get("pub_twist", True):
-            self.twist_pub = self.node.create_publisher(TwistStamped, self._namespace + str(self._id) + "/" + config.get("twist_topic", "state/twist"), rclpy.qos.qos_profile_sensor_data)
+        if self._pub_state:
+            if config.get("pub_pose", True):
+                self.pose_pub = self.node.create_publisher(PoseStamped, self._namespace + str(self._id) + "/" + config.get("pose_topic", "state/pose"), rclpy.qos.qos_profile_sensor_data)
+            
+            if config.get("pub_twist", True):
+                self.twist_pub = self.node.create_publisher(TwistStamped, self._namespace + str(self._id) + "/" + config.get("twist_topic", "state/twist"), rclpy.qos.qos_profile_sensor_data)
 
-        if config.get("pub_twist_inertial", True):
-            self.twist_inertial_pub = self.node.create_publisher(TwistStamped, self._namespace + str(self._id) + "/" + config.get("twist_inertial_topic", "state/twist_inertial"), rclpy.qos.qos_profile_sensor_data)
+            if config.get("pub_twist_inertial", True):
+                self.twist_inertial_pub = self.node.create_publisher(TwistStamped, self._namespace + str(self._id) + "/" + config.get("twist_inertial_topic", "state/twist_inertial"), rclpy.qos.qos_profile_sensor_data)
 
-        if config.get("pub_accel", True):
-            self.accel_pub = self.node.create_publisher(AccelStamped, self._namespace + str(self._id) + "/" + config.get("accel_topic", "state/accel"), rclpy.qos.qos_profile_sensor_data)
+            if config.get("pub_accel", True):
+                self.accel_pub = self.node.create_publisher(AccelStamped, self._namespace + str(self._id) + "/" + config.get("accel_topic", "state/accel"), rclpy.qos.qos_profile_sensor_data)
 
         # -----------------------------------------------------
         # Create publishers for the sensors of the vehicle
         # -----------------------------------------------------
-        if config.get("pub_imu", True):
-            self.imu_pub = self.node.create_publisher(Imu, self._namespace + str(self._id) + "/" + config.get("imu_topic", "sensors/imu"), rclpy.qos.qos_profile_sensor_data)
-        
-        if config.get("pub_mag", True):
-            self.mag_pub = self.node.create_publisher(MagneticField, self._namespace + str(self._id) + "/" + config.get("mag_topic", "sensors/mag"), rclpy.qos.qos_profile_sensor_data)
+        if self._pub_sensors:
+            if config.get("pub_imu", True):
+                self.imu_pub = self.node.create_publisher(Imu, self._namespace + str(self._id) + "/" + config.get("imu_topic", "sensors/imu"), rclpy.qos.qos_profile_sensor_data)
+            
+            if config.get("pub_mag", True):
+                self.mag_pub = self.node.create_publisher(MagneticField, self._namespace + str(self._id) + "/" + config.get("mag_topic", "sensors/mag"), rclpy.qos.qos_profile_sensor_data)
 
-        if config.get("pub_gps", True):
-            self.gps_pub = self.node.create_publisher(NavSatFix, self._namespace + str(self._id) + "/" + config.get("gps_topic", "sensors/gps"), rclpy.qos.qos_profile_sensor_data)
-        
-        if config.get("pub_gps_vel", True):
-            self.gps_vel_pub = self.node.create_publisher(TwistStamped, self._namespace + str(self._id) + "/" + config.get("gps_vel_topic", "sensors/gps_twist"), rclpy.qos.qos_profile_sensor_data)
+            if config.get("pub_gps", True):
+                self.gps_pub = self.node.create_publisher(NavSatFix, self._namespace + str(self._id) + "/" + config.get("gps_topic", "sensors/gps"), rclpy.qos.qos_profile_sensor_data)
+            
+            if config.get("pub_gps_vel", True):
+                self.gps_vel_pub = self.node.create_publisher(TwistStamped, self._namespace + str(self._id) + "/" + config.get("gps_vel_topic", "sensors/gps_twist"), rclpy.qos.qos_profile_sensor_data)
         
 
     def initialize_subscribers(self):
 
-        # Subscribe to vector of floats with the target angular velocities to control the vehicle
-        # This is not ideal, but we need to reach out to NVIDIA so that they can improve the ROS2 support with custom messages
-        # The current setup as it is.... its a pain!!!!
-        self.rotor_subs = []
-        for i in range(self._num_rotors):
-            self.rotor_subs.append(self.node.create_subscription(Float64, self._namespace + str(self._id) + "/control/rotor" + str(i) + "/ref", lambda x: self.rotor_callback(x, i),10))
+        if self._sub_control:
+            # Subscribe to vector of floats with the target angular velocities to control the vehicle
+            # This is not ideal, but we need to reach out to NVIDIA so that they can improve the ROS2 support with custom messages
+            # The current setup as it is.... its a pain!!!!
+            self.rotor_subs = []
+            for i in range(self._num_rotors):
+                self.rotor_subs.append(self.node.create_subscription(Float64, self._namespace + str(self._id) + "/control/rotor" + str(i) + "/ref", lambda x: self.rotor_callback(x, i),10))
 
 
     def send_static_transforms(self):
@@ -171,6 +184,10 @@ class ROS2Backend(Backend):
         """
         Method that when implemented, should handle the receivel of the state of the vehicle using this callback
         """
+
+        # Publish the state of the vehicle only if the flag is set to True
+        if not self._pub_state:
+            return
 
         pose = PoseStamped()
         twist = TwistStamped()
@@ -247,6 +264,10 @@ class ROS2Backend(Backend):
         Method that when implemented, should handle the receival of sensor data
         """
 
+        # Only process sensor data if the flag is set to True
+        if not self._pub_sensors:
+            return
+
         if sensor_type == "IMU":
             self.update_imu_data(data)
         elif sensor_type == "GPS":
@@ -260,6 +281,10 @@ class ROS2Backend(Backend):
         """
         Method that when implemented, should handle the receival of graphical sensor data
         """
+
+        # Only process graphical sensor data if the flag is set to True
+        if not self._pub_graphical_sensors:
+            return
 
         if sensor_type == "MonocularCamera":
             self.update_monocular_camera_data(data)

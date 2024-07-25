@@ -85,8 +85,6 @@ class Sensor:
             [None, Dict]: This decorator function returns None if there was no data to be produced by the sensor at the
             specified timestamp or a dict with the current state of the sensor otherwise.
         """
-        
-        # 
 
         # Define a wrapper function so that the "self" of the object can be passed to the function as well
         def wrapper(self, state: State, dt: float):
