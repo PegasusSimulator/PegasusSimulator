@@ -263,6 +263,8 @@ class ROS2Backend(Backend):
 
         if sensor_type == "MonocularCamera":
             self.update_monocular_camera_data(data)
+        elif sensor_type == "Lidar":
+            self.update_lidar_data(data)
         else:
             pass
 
@@ -347,7 +349,7 @@ class ROS2Backend(Backend):
 
         # Create the writer for the rgb camera
         writer = rep.writers.get("LdrColorSDROS2PublishImage")
-        writer.initialize(nodeNamespace=self._namespace + str(self._id), topicName=str(data["camera_name"] + "/color"), frameId="camera_name", queueSize=1)
+        writer.initialize(nodeNamespace=self._namespace + str(self._id), topicName=data["camera_name"] + "/color", frameId=data["camera_name"], queueSize=1)
         writer.attach([render_prod_path])
 
         # Add the writer to the dictionary
@@ -358,7 +360,7 @@ class ROS2Backend(Backend):
 
             # Create the writer for the depth camera
             writer_depth = rep.writers.get("DistanceToImagePlaneSDROS2PublishImage")
-            writer_depth.initialize(nodeNamespace=self._namespace, topicName=str(data["camera_name"] + "/depth"), frameId="camera_name", queueSize=1)
+            writer_depth.initialize(nodeNamespace=self._namespace + str(self._id), topicName=data["camera_name"] + "/depth", frameId=data["camera_name"], queueSize=1)
             writer_depth.attach([render_prod_path])
 
             # Add the writer to the dictionary
@@ -366,12 +368,36 @@ class ROS2Backend(Backend):
 
         # Create a writer for publishing the camera info
         writer_info = rep.writers.get("ROS2PublishCameraInfo")
-        writer_info.initialize(nodeNamespace=self._namespace, topicName=str(data["camera_name"] + "/camera_info"), frameId="camera_name", queueSize=1)
+        writer_info.initialize(nodeNamespace=self._namespace + str(self._id), topicName=data["camera_name"] + "/camera_info", frameId=data["camera_name"], queueSize=1)
         writer_info.attach([render_prod_path])
 
         # Add the writer to the dictionary
         self.graphical_sensors_writers[data["camera_name"]].append(writer_info)
 
+    def update_lidar_data(self, data):
+
+        # Check if the lidar name exists in the writers dictionary
+        if data["lidar_name"] not in self.graphical_sensors_writers:
+            self.add_lidar_writter(data)
+    
+    def add_lidar_writter(self, data):
+
+        # List all the available writers: print(rep.writers.WriterRegistry._writers)
+        render_prod_path = rep.create.render_product(data["stage_prim_path"], [1, 1], name=data["lidar_name"])
+
+        # Create the writer for the lidar
+        writer = rep.writers.get("RtxLidarROS2PublishPointCloud")
+        writer.initialize(nodeNamespace=self._namespace + str(self._id), topicName=data["lidar_name"] + "/pointcloud", frameId=data["lidar_name"])
+        writer.attach([render_prod_path])
+
+        # Add the writer to the dictionary
+        self.graphical_sensors_writers[data["lidar_name"]] = [writer]
+
+        # Create the writer for publishing a laser scan message along with the point cloud
+        writer = rep.writers.get("RtxLidarROS2PublishLaserScan")
+        writer.initialize(nodeNamespace=self._namespace + str(self._id), topicName=data["lidar_name"] + "/laserscan", frameId=data["lidar_name"])
+        writer.attach([render_prod_path])
+        self.graphical_sensors_writers[data["lidar_name"]].append(writer)
 
     def input_reference(self):
         """

@@ -1,5 +1,5 @@
 """
-| File: imu.py
+| File: monocular_camera.py
 | Author: Marcelo Jacinto (marcelo.jacinto@tecnico.ulisboa.pt)
 | License: BSD-3-Clause. Copyright (c) 2024, Marcelo Jacinto. All rights reserved.
 | Description: Simulates a monocular camera attached to the vehicle
@@ -36,7 +36,14 @@ class MonocularCamera(GraphicalSensor):
         Examples:
             The dictionary default parameters are
 
-            >>> {"focal_length": 0.004,
+            >>> {"depth": True,
+            >>> "position": np.array([0.30, 0.0, 0.0]),
+            >>> "orientation": np.array([0.0, 0.0, 0.0]),
+            >>> "resolution": (1920, 1200),
+            >>> "frequency": 30,
+            >>> "intrinsics": np.array([[958.8, 0.0, 957.8], [0.0, 956.7, 589.5], [0.0, 0.0, 1.0]]),
+            >>> "distortion_coefficients": np.array([0.14, -0.03, -0.0002, -0.00003, 0.009, 0.5, -0.07, 0.017]),
+            >>> "diagonal_fov": 140.0}
         """
 
         # Initialize the Super class "object" attributes
@@ -78,7 +85,7 @@ class MonocularCamera(GraphicalSensor):
             position=np.array(self._position),
             frequency=self._frequency,
             resolution=self._resolution,
-            orientation=Rotation.from_euler("XYZ", self._orientation, degrees=True).as_quat())
+            orientation=Rotation.from_euler("ZYX", self._orientation, degrees=True).as_quat())
 
         
     def start(self):

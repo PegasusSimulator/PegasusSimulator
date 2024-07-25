@@ -24,6 +24,7 @@ from omni.isaac.core.world import World
 # Import the Pegasus API for simulating drones
 from pegasus.simulator.params import ROBOTS, SIMULATION_ENVIRONMENTS
 from pegasus.simulator.logic.graphical_sensors.monocular_camera import MonocularCamera
+from pegasus.simulator.logic.graphical_sensors.lidar import Lidar
 from pegasus.simulator.logic.backends.mavlink_backend import MavlinkBackend, MavlinkBackendConfig
 from pegasus.simulator.logic.backends.ros2_backend import ROS2Backend
 from pegasus.simulator.logic.vehicles.multirotor import Multirotor, MultirotorConfig
@@ -84,7 +85,7 @@ class PegasusApp:
         # at the prim path `/World/quadrotor/body/Camera`. The camera prim path is the local path from the vehicle's prim path
         # to the camera prim, to which this graph will be connected. All ROS2 topics published by this graph will have 
         # namespace `quadrotor` and frame_id `Camera` followed by the selected camera types (`rgb`, `camera_info`).
-        config_multirotor.graphical_sensors = [MonocularCamera("camera", config={"update_rate": 60.0})]
+        config_multirotor.graphical_sensors = [MonocularCamera("camera", config={"update_rate": 60.0}), Lidar("lidar", config={"frequency": 10.0})]
         
         Multirotor(
             "/World/quadrotor",
