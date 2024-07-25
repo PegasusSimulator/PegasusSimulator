@@ -18,7 +18,7 @@ import omni.anim.graph.core as ag
 from omni.anim.people import PeopleSettings
 from omni.isaac.core.utils import prims
 from omni.usd import get_stage_next_free_path
-from omni.isaac.core.utils.nucleus import get_assets_root_path
+from omni.isaac.nucleus import get_assets_root_path
 
 # Extension APIs
 from pegasus.simulator.logic.state import State
@@ -133,6 +133,7 @@ class Person:
         # If the start/stop button was pressed, then call the start and stop methods accordingly
         if self._world.is_playing() and self._sim_running == False:
             self._sim_running = True
+            self.add_animation_graph_to_agent()
             self.start()
 
         if self._world.is_stopped() and self._sim_running == True:
@@ -160,6 +161,7 @@ class Person:
         Args:
             dt (float): The time elapsed between the previous and current function calls (s).
         """
+        return
 
         # Note: this is done to avoid the error of the character_graph being None. The animation graph is only created after the simulation starts
         if not self.character_graph or self.character_graph is None:
@@ -202,6 +204,7 @@ class Person:
         Args:
             dt (float): The time elapsed between the previous and current function calls (s).
         """
+        return
         
         # Note: this is done to avoid the error of the character_graph being None. The animation graph is only created after the simulation starts
         if not self.character_graph or self.character_graph is None:

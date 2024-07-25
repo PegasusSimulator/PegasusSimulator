@@ -52,7 +52,6 @@ from pegasus.simulator.logic.people.person_controller import PersonController
 from pegasus.simulator.logic.backends.mavlink_backend import MavlinkBackend, MavlinkBackendConfig
 from pegasus.simulator.logic.vehicles.multirotor import Multirotor, MultirotorConfig
 from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
-#from pegasus.simulator.logic.graphs import ROS2Camera
 
 # Example controller class that make a person move in a circle around the origin of the world
 # Note: You could create a different controller with a different behaviour. For instance, you could:
@@ -103,7 +102,8 @@ class PegasusApp:
         self.world = self.pg.world
 
         # Launch one of the worlds provided by NVIDIA
-        self.pg.load_environment(SIMULATION_ENVIRONMENTS["Curved Gridroom"])
+        #self.pg.load_environment(SIMULATION_ENVIRONMENTS["Curved Gridroom"])
+        self.pg.load_asset(SIMULATION_ENVIRONMENTS["Curved Gridroom"], "/World/layout")
 
         # Check the available assets for people
         people_assets_list = Person.get_character_asset_list()
@@ -111,8 +111,8 @@ class PegasusApp:
             print(person)
 
         # Create the controller to make on person walk around in circles
-        person_controller = CirclePersonControler()
-        p1 = Person("person1", "original_male_adult_construction_05", init_pos=[3.0, 0.0, 0.0], init_yaw=1.0, controller=person_controller)
+        #person_controller = CirclePersonControler()
+        #p1 = Person("person1", "original_male_adult_construction_05", init_pos=[3.0, 0.0, 0.0], init_yaw=1.0, controller=person_controller)
         
         # Create a person without setting up a controller, and just setting a manual target position for it to track
         p2 = Person("person2", "original_female_adult_business_02", init_pos=[2.0, 0.0, 0.0])
