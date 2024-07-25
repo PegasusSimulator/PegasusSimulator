@@ -20,19 +20,14 @@ simulation_app = SimulationApp({"headless": False})
 # -----------------------------------
 import omni.timeline
 from omni.isaac.core.world import World
-from omni.isaac.core.utils.extensions import disable_extension, enable_extension
-
-# Enable/disable ROS bridge extensions to keep only ROS2 Bridge
-disable_extension("omni.isaac.ros_bridge")
-enable_extension("omni.isaac.ros2_bridge")
 
 # Import the Pegasus API for simulating drones
 from pegasus.simulator.params import ROBOTS, SIMULATION_ENVIRONMENTS
-from pegasus.simulator.logic.state import State
+from pegasus.simulator.logic.graphical_sensors.monocular_camera import MonocularCamera
 from pegasus.simulator.logic.backends.mavlink_backend import MavlinkBackend, MavlinkBackendConfig
+from pegasus.simulator.logic.backends.ros2_backend import ROS2Backend
 from pegasus.simulator.logic.vehicles.multirotor import Multirotor, MultirotorConfig
 from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
-from pegasus.simulator.logic.graphs import ROS2Camera
 
 # Auxiliary scipy and numpy modules
 from scipy.spatial.transform import Rotation
@@ -68,17 +63,16 @@ class PegasusApp:
         mavlink_config = MavlinkBackendConfig({
             "vehicle_id": 0,
             "px4_autolaunch": True,
-            "px4_dir": "/home/marcelo/PX4-Autopilot",
-            "px4_vehicle_model": 'iris'
+            "px4_dir": "/home/marcelo/PX4-Autopilot"
         })
-        config_multirotor.backends = [MavlinkBackend(mavlink_config)]
+        config_multirotor.backends = [MavlinkBackend(mavlink_config), ROS2Backend(vehicle_id=1, config={"namespace": 'drone'})]
 
         # Create camera graph for the existing Camera prim on the Iris model, which can be found 
         # at the prim path `/World/quadrotor/body/Camera`. The camera prim path is the local path from the vehicle's prim path
         # to the camera prim, to which this graph will be connected. All ROS2 topics published by this graph will have 
         # namespace `quadrotor` and frame_id `Camera` followed by the selected camera types (`rgb`, `camera_info`).
-        config_multirotor.graphs = [ROS2Camera("body/Camera", config={"types": ['rgb', 'camera_info']})]
-
+        config_multirotor.graphical_sensors = [MonocularCamera("camera", config={"update_rate": 60.0})]
+        
         Multirotor(
             "/World/quadrotor",
             ROBOTS['Iris'],

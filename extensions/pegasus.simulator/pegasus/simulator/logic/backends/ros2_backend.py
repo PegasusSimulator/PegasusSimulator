@@ -5,24 +5,25 @@
 | License: BSD-3-Clause. Copyright (c) 2024, Marcelo Jacinto. All rights reserved.
 """
 import carb
-from omni.isaac.core.utils.extensions import disable_extension, enable_extension
-
-# Perform some checks, because Isaac Sim some times does not play nice when using ROS/ROS2
-disable_extension("omni.isaac.ros_bridge")
-enable_extension("omni.isaac.ros2_bridge")
+import threading
+import omni.replicator.core as rep
 
 # ROS2 imports
 import rclpy
 from std_msgs.msg import Float64
 from geometry_msgs.msg import TransformStamped
-from sensor_msgs.msg import Imu, MagneticField, NavSatFix, NavSatStatus
+from sensor_msgs.msg import Imu, MagneticField, NavSatFix, NavSatStatus, Image
 from geometry_msgs.msg import PoseStamped, TwistStamped, AccelStamped
+from rclpy.executors import MultiThreadedExecutor
 
 # TF imports
 from tf2_ros.static_transform_broadcaster import StaticTransformBroadcaster
 from tf2_ros.transform_broadcaster import TransformBroadcaster
 
 from pegasus.simulator.logic.backends.backend import Backend
+
+import multiprocessing as mp
+from rclpy.context import Context
 
 class ROS2Backend(Backend):
 
@@ -63,7 +64,12 @@ class ROS2Backend(Backend):
 
         # Start the actual ROS2 setup here
         rclpy.init()
-        self.node = rclpy.create_node("vehicle_" + str(vehicle_id))
+        self.node = rclpy.create_node("simulator_vehicle_" + str(vehicle_id))
+        self.executor = MultiThreadedExecutor(num_threads=2)
+        self.executor.add_node(self.node)
+
+        # Threads for calling the spin method and for publishing graphical data
+        self._executor_thread = threading.Thread(target=self.executor.spin)
 
         # Create publishers for the state of the vehicle in ENU
         if config.get("pub_pose", True):
@@ -90,7 +96,11 @@ class ROS2Backend(Backend):
         
         if config.get("pub_gps_vel", True):
             self.gps_vel_pub = self.node.create_publisher(TwistStamped, self._namespace + str(self._id) + "/" + config.get("gps_vel_topic", "sensors/gps_twist"), rclpy.qos.qos_profile_sensor_data)
-            
+
+        self.queue = mp.Queue()
+        p1 = mp.Process(target=self.publish_image)
+        p1.start()
+        
         # Subscribe to vector of floats with the target angular velocities to control the vehicle
         # This is not ideal, but we need to reach out to NVIDIA so that they can improve the ROS2 support with custom messages
         # The current setup as it is.... its a pain!!!!
@@ -109,6 +119,47 @@ class ROS2Backend(Backend):
 
         # Initialize the dynamic tf broadcaster for the position of the body of the vehicle (base_link) with respect to the inertial frame (map - ENU) expressed in the inertil frame (map - ENU)
         self.tf_broadcaster = TransformBroadcaster(self.node)
+
+    def publish_image(self):
+        
+        # Initialize the ROS2 node
+        node = rclpy.create_node("vehicle")
+        image_pub = node.create_publisher(Image, "/camera/image", 10)
+        imu_pub = node.create_publisher(Imu, "/imu/data", 10)
+
+        executor = MultiThreadedExecutor(num_threads=1)
+        executor.add_node(node)
+
+
+        while True:
+
+        #     # Get the image that will be published
+            image = self.queue.get()
+
+        #     msg = Image()
+        #     msg.header.frame_id = "camera"
+        #     msg.header.stamp = node.get_clock().now().to_msg()
+        #     msg.data = image.tobytes()
+        #     msg.step = 3 * 1920
+        #     msg.height = 1280
+        #     msg.width = 1920
+        #     msg.encoding = "rgb8"
+
+        #     #image_pub.publish(msg)
+
+            msg2 = Imu()
+            msg2.header.frame_id = "imu"
+
+            imu_pub.publish(msg2)
+
+            rclpy.spin_once(node, executor=executor, timeout_sec=0)
+            
+        #     print("Publishing image")
+    
+    def initialize(self, vehicle):
+        
+        # Start the executor
+        self._executor_thread.start()
 
     def send_static_transforms(self):
 
@@ -235,6 +286,16 @@ class ROS2Backend(Backend):
         else:
             pass
 
+    def update_graphical_sensor(self, sensor_type: str, data):
+        """
+        Method that when implemented, should handle the receival of graphical sensor data
+        """
+
+        if sensor_type == "MonocularCamera":
+            self.update_camera_data(data)
+        else:
+            pass
+
     def update_imu_data(self, data):
 
         msg = Imu()
@@ -302,6 +363,33 @@ class ROS2Backend(Backend):
         # Publish the message with the current magnetic data
         self.mag_pub.publish(msg)
 
+    def update_camera_data(self, data):
+
+
+        self.queue.put(data["image"])
+        return
+        
+        # Get the image from the camera
+        image = data["image"]
+        
+        # Create the message with the image
+        msg = Image()
+        msg.header.frame_id = "camera"
+        msg.header.stamp = self.node.get_clock().now().to_msg()
+        #msg.data = image.tobytes()
+        msg.step = 3 * data["width"]
+        msg.height = data["height"]
+        msg.width = data["width"]
+        msg.encoding = "rgb8"
+
+        # Publish the message with the current image
+        # self.image_pub.publish(msg)
+
+        # hydra_texture = rep.create.render_product(sensor.GetPath(), [1, 1], name="Isaac")
+        # writer = rep.writers.get("RtxLidar" + "ROS2PublishImage")
+        # writer.initialize(topicName="point_cloud", frameId="sim_lidar")
+        # writer.attach([hydra_texture])
+
     def input_reference(self):
         """
         Method that is used to return the latest target angular velocities to be applied to the vehicle
@@ -317,10 +405,8 @@ class ROS2Backend(Backend):
         from the communication interface. This method will be called by the simulation on every physics step
         """
 
-        # In this case, do nothing as we are sending messages as soon as new data arrives from the sensors and state
-        # and updating the reference for the thrusters as soon as receiving from ROS2 topics
-        # Just poll for new ROS 2 messages in a non-blocking way
-        rclpy.spin_once(self.node, timeout_sec=0)
+        # Do nothing
+        pass
 
     def start(self):
         """
