@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 """
 | File: 8_camera_vehicle.py
-| License: BSD-3-Clause. Copyright (c) 2023, Marcelo Jacinto and Filip Stec. All rights reserved.
-| Description: This files serves as an example on how to build an app that makes use of the Pegasus API to run a simulation
-with a single vehicle equipped with a camera, producing rgb and camera info ROS2 topics.
+| License: BSD-3-Clause. Copyright (c) 2024, Marcelo Jacinto. All rights reserved.
+| Description: This files serves as an example on how to build an app that makes use of the Pegasus API, 
+| where the data is send/received through mavlink, the vehicle is controled using mavlink and
+| camera data is sent to ROS2 topics at the same time.
 """
 
 # Imports to start Isaac Sim from this script
