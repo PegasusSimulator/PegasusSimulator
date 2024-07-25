@@ -22,9 +22,6 @@ from tf2_ros.transform_broadcaster import TransformBroadcaster
 
 from pegasus.simulator.logic.backends.backend import Backend
 
-import multiprocessing as mp
-from rclpy.context import Context
-
 class ROS2Backend(Backend):
 
     def __init__(self, vehicle_id: int, num_rotors=4, config: dict = {}):
@@ -96,10 +93,6 @@ class ROS2Backend(Backend):
         
         if config.get("pub_gps_vel", True):
             self.gps_vel_pub = self.node.create_publisher(TwistStamped, self._namespace + str(self._id) + "/" + config.get("gps_vel_topic", "sensors/gps_twist"), rclpy.qos.qos_profile_sensor_data)
-
-        self.queue = mp.Queue()
-        p1 = mp.Process(target=self.publish_image)
-        p1.start()
         
         # Subscribe to vector of floats with the target angular velocities to control the vehicle
         # This is not ideal, but we need to reach out to NVIDIA so that they can improve the ROS2 support with custom messages
@@ -119,42 +112,6 @@ class ROS2Backend(Backend):
 
         # Initialize the dynamic tf broadcaster for the position of the body of the vehicle (base_link) with respect to the inertial frame (map - ENU) expressed in the inertil frame (map - ENU)
         self.tf_broadcaster = TransformBroadcaster(self.node)
-
-    def publish_image(self):
-        
-        # Initialize the ROS2 node
-        node = rclpy.create_node("vehicle")
-        image_pub = node.create_publisher(Image, "/camera/image", 10)
-        imu_pub = node.create_publisher(Imu, "/imu/data", 10)
-
-        executor = MultiThreadedExecutor(num_threads=1)
-        executor.add_node(node)
-
-
-        while True:
-
-        #     # Get the image that will be published
-            image = self.queue.get()
-
-        #     msg = Image()
-        #     msg.header.frame_id = "camera"
-        #     msg.header.stamp = node.get_clock().now().to_msg()
-        #     msg.data = image.tobytes()
-        #     msg.step = 3 * 1920
-        #     msg.height = 1280
-        #     msg.width = 1920
-        #     msg.encoding = "rgb8"
-
-        #     #image_pub.publish(msg)
-
-            msg2 = Imu()
-            msg2.header.frame_id = "imu"
-
-            imu_pub.publish(msg2)
-
-            rclpy.spin_once(node, executor=executor, timeout_sec=0)
-            
-        #     print("Publishing image")
     
     def initialize(self, vehicle):
         
@@ -364,10 +321,6 @@ class ROS2Backend(Backend):
         self.mag_pub.publish(msg)
 
     def update_camera_data(self, data):
-
-
-        self.queue.put(data["image"])
-        return
         
         # Get the image from the camera
         image = data["image"]

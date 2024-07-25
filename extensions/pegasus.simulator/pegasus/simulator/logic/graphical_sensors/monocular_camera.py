@@ -28,78 +28,9 @@ import omni.usd
 import omni.replicator.core as rep
 from omni.replicator.core import Writer, AnnotatorRegistry
 
-# ROS2 imports
-import rclpy
-from sensor_msgs.msg import Image, Imu
+from omni.isaac.core.utils.extensions import enable_extension
+enable_extension("omni.isaac.ros2_bridge")
 
-import multiprocessing as mp
-from rclpy.executors import MultiThreadedExecutor
-
-class GraphicalWorkerWriter(Writer):
-    
-    def __init__(self, rgb: bool = True):
-        
-        self.annotators = []
-
-        # RGB
-        if rgb:
-            self.annotators.append(AnnotatorRegistry.get_annotator("rgb"))
-
-        # Process that will actually be publishing the image data
-        #self.queue = mp.Queue()
-        # p1 = mp.Process(target=self.publish_image)
-        # p1.start()
-        # print("Starting worker process")
-
-    # def publish_image(self):
-        
-    #     # Initialize the ROS2 node
-    #     #rclpy.init()
-    #     node = rclpy.create_node("vehicle")
-    #     image_pub = node.create_publisher(Image, "/camera/image", 10)
-    #     imu_pub = node.create_publisher(Imu, "/imu/data", 10)
-
-    #     executor = MultiThreadedExecutor(num_threads=2)
-    #     executor.add_node(node)
-
-
-    #     while True:
-
-    #         # Get the image that will be published
-    #         image = self.queue.get()
-
-    #         msg = Image()
-    #         msg.header.frame_id = "camera"
-    #         msg.header.stamp = node.get_clock().now().to_msg()
-    #         msg.data = image.tobytes()
-    #         msg.step = 3 * 1920
-    #         msg.height = 1280
-    #         msg.width = 1920
-    #         msg.encoding = "rgb8"
-
-    #         #image_pub.publish(msg)
-
-    #         msg2 = Imu()
-    #         msg2.header.frame_id = "imu"
-
-    #         imu_pub.publish(msg2)
-
-    #         rclpy.spin_once(node, executor=executor, timeout_sec=0)
-            
-    #         print("Publishing image")
-
-
-    def write(self, data):
-
-        if "rgb" in data:
-            pass
-            #self.queue.put(data["rgb"])
-            #print("Writing image")
-
-            
-
-# Register this writer in the replicator registry
-rep.WriterRegistry.register(GraphicalWorkerWriter)
 
 class MonocularCamera(GraphicalSensor):
     """
@@ -181,8 +112,13 @@ class MonocularCamera(GraphicalSensor):
         #writer = rep.writers.get("BasicWriter")
         #writer.initialize(output_dir="/home/marcelo/aaa", rgb=True)
         
-        writer = rep.writers.get("GraphicalWorkerWriter")
-        writer.initialize(rgb=True)
+
+        print(dir(rep.writers.WriterRegistry))
+        print(rep.writers.WriterRegistry._writers)
+        #writer = rep.writers.get("GraphicalWorkerWriter")
+        #writer.initialize(rgb=True)
+        writer = rep.writers.get("LdrColorSDROS2PublishImage")
+        writer.initialize(topicName="rgb_augmented", frameId="sim_camera", queueSize=1)
 
         writer.attach([render_prod_path])
 
