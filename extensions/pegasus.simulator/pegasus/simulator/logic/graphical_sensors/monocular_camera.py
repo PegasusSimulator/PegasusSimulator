@@ -10,26 +10,12 @@ from pegasus.simulator.logic.state import State
 from pegasus.simulator.logic.graphical_sensors import GraphicalSensor
 from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 
-# Camera interface provided by NVidia Isaac Sim
-import omni
-import omni.replicator.core as rep
-import omni.syntheticdata._syntheticdata as sd
-
 from omni.isaac.sensor import Camera
 from omni.usd import get_stage_next_free_path
 
 # Auxiliary scipy and numpy modules
 import numpy as np
 from scipy.spatial.transform import Rotation
-
-# Replicator imports
-import omni.kit
-import omni.usd
-import omni.replicator.core as rep
-from omni.replicator.core import Writer, AnnotatorRegistry
-
-from omni.isaac.core.utils.extensions import enable_extension
-enable_extension("omni.isaac.ros2_bridge")
 
 
 class MonocularCamera(GraphicalSensor):
@@ -61,7 +47,8 @@ class MonocularCamera(GraphicalSensor):
         self._stage_prim_path = ""
 
         # Configurations of the camera
-        self._position = config.get("position", np.array([0.0, 0.0, 0.0]))
+        self._depth = config.get("depth", True)
+        self._position = config.get("position", np.array([0.30, 0.0, 0.0]))
         self._orientation = config.get("orientation", np.array([0.0, 0.0, 0.0]))
         self._resolution = config.get("resolution", (1920, 1200))
         self._frequency = config.get("frequency", 30)
@@ -71,6 +58,7 @@ class MonocularCamera(GraphicalSensor):
 
         # Setup an empty camera output dictionary
         self._state = {}
+        self._camera_full_set = False
 
 
     def initialize(self, vehicle):
@@ -91,6 +79,7 @@ class MonocularCamera(GraphicalSensor):
             frequency=self._frequency,
             resolution=self._resolution,
             orientation=Rotation.from_euler("XYZ", self._orientation, degrees=True).as_quat())
+
         
     def start(self):
 
@@ -104,23 +93,15 @@ class MonocularCamera(GraphicalSensor):
         self._camera.set_projection_type("fisheyePolynomial")  # # f-theta model, to approximate the fisheye model
         self._camera.set_rational_polynomial_properties(self._resolution[0], self._resolution[1], cx, cy, self._diagonal_fov, self._distortion_coefficients)
 
-        # Start the ROS 2 writter
-        render_prod_path = rep.create.render_product(self._stage_prim_path, resolution=(self._resolution[0], self._resolution[1]))
+        # Check if depth is enabled, if so, set the depth properties
+        if self._depth:
+            self._camera.add_distance_to_image_plane_to_frame()
 
-        rv = omni.syntheticdata.SyntheticData.convert_sensor_type_to_rendervar(sd.SensorType.Rgb.name)
+        # Signal that the camera is fully set
+        self._camera_full_set = True
 
-        #writer = rep.writers.get("BasicWriter")
-        #writer.initialize(output_dir="/home/marcelo/aaa", rgb=True)
-        
-
-        print(dir(rep.writers.WriterRegistry))
-        print(rep.writers.WriterRegistry._writers)
-        #writer = rep.writers.get("GraphicalWorkerWriter")
-        #writer.initialize(rgb=True)
-        writer = rep.writers.get("LdrColorSDROS2PublishImage")
-        writer.initialize(topicName="rgb_augmented", frameId="sim_camera", queueSize=1)
-
-        writer.attach([render_prod_path])
+    def stop(self):
+        self._camera_full_set = False
 
     @property
     def state(self):
@@ -142,13 +123,22 @@ class MonocularCamera(GraphicalSensor):
             (dict) A dictionary containing the current state of the sensor (the data produced by the sensor)
         """
 
+        # If all the camera properties are not set yet, return None
+        if not self._camera_full_set:
+            return None
+
         # Get the data from the camera
         try:
             self._state = {}
             self._state["camera_name"] = self._camera_name
+            self._state["stage_prim_path"] = self._stage_prim_path
             self._state["image"] = self._camera.get_rgba()[:, :, :3]
             self._state["height"] = self._resolution[1]
             self._state["width"] = self._resolution[0]
+
+            # Check if we want to get the depth image
+            if self._depth:
+                self._state["depth"] = self._camera.get_depth()
 
             if self._camera.get_projection_type() == "pinhole":
                 self._state["intrinsics"] = self._camera.get_intrinsics_matrix()

@@ -56,6 +56,19 @@ class PegasusApp:
         # Launch one of the worlds provided by NVIDIA
         self.pg.load_environment(SIMULATION_ENVIRONMENTS["Curved Gridroom"])
 
+        from omni.isaac.core.objects import DynamicCuboid
+        import numpy as np
+        cube_2 = self.world.scene.add(
+            DynamicCuboid(
+                prim_path="/new_cube_2",
+                name="cube_1",
+                position=np.array([-3.0, 0, 2.0]),
+                scale=np.array([1.0, 1.0, 1.0]),
+                size=1.0,
+                color=np.array([255, 0, 0]),
+            )
+        )
+
         # Create the vehicle
         # Try to spawn the selected robot in the world to the specified namespace
         config_multirotor = MultirotorConfig()
