@@ -343,7 +343,6 @@ class ROS2Backend(Backend):
     def add_monocular_camera_writter(self, data):
 
         # List all the available writers: print(rep.writers.WriterRegistry._writers)
-        print(rep.writers.WriterRegistry._writers)
         render_prod_path = rep.create.render_product(data["stage_prim_path"], resolution=(data["width"], data["height"]))
 
         # Create the writer for the rgb camera
@@ -356,14 +355,22 @@ class ROS2Backend(Backend):
 
         # Check if depth is enabled, if so, set the depth properties
         if "depth" in data:
+
             # Create the writer for the depth camera
-            render_prod_path_depth = rep.create.render_product(data["stage_prim_path"], resolution=(data["width"], data["height"]))
             writer_depth = rep.writers.get("DistanceToImagePlaneSDROS2PublishImage")
             writer_depth.initialize(nodeNamespace=self._namespace, topicName=str(data["camera_name"] + "/depth"), frameId="camera_name", queueSize=1)
-            writer_depth.attach([render_prod_path_depth])
+            writer_depth.attach([render_prod_path])
 
             # Add the writer to the dictionary
             self.graphical_sensors_writers[data["camera_name"]].append(writer_depth)
+
+        # Create a writer for publishing the camera info
+        writer_info = rep.writers.get("ROS2PublishCameraInfo")
+        writer_info.initialize(nodeNamespace=self._namespace, topicName=str(data["camera_name"] + "/camera_info"), frameId="camera_name", queueSize=1)
+        writer_info.attach([render_prod_path])
+
+        # Add the writer to the dictionary
+        self.graphical_sensors_writers[data["camera_name"]].append(writer_info)
 
 
     def input_reference(self):
