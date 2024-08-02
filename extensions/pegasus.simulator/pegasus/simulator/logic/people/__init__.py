@@ -5,3 +5,4 @@
 
 from .person import Person
 from .person_controller import PersonController
+from .line_person_controller import LinePersonController

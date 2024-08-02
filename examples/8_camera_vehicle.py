@@ -90,10 +90,7 @@ class PegasusApp:
                             "pub_state": True,
                             "sub_control": False,})]
 
-        # Create camera graph for the existing Camera prim on the Iris model, which can be found 
-        # at the prim path `/World/quadrotor/body/Camera`. The camera prim path is the local path from the vehicle's prim path
-        # to the camera prim, to which this graph will be connected. All ROS2 topics published by this graph will have 
-        # namespace `quadrotor` and frame_id `Camera` followed by the selected camera types (`rgb`, `camera_info`).
+        # Create a camera and lidar sensors
         config_multirotor.graphical_sensors = [MonocularCamera("camera", config={"update_rate": 60.0})] # Lidar("lidar")
         
         Multirotor(

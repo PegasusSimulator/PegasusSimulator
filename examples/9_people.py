@@ -60,7 +60,9 @@ from pegasus.simulator.params import ROBOTS, SIMULATION_ENVIRONMENTS
 from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 from pegasus.simulator.logic.people.person import Person
 from pegasus.simulator.logic.people.person_controller import PersonController
+from pegasus.simulator.logic.graphical_sensors.monocular_camera import MonocularCamera
 from pegasus.simulator.logic.backends.mavlink_backend import MavlinkBackend, MavlinkBackendConfig
+from pegasus.simulator.logic.backends.ros2_backend import ROS2Backend
 from pegasus.simulator.logic.vehicles.multirotor import Multirotor, MultirotorConfig
 from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 
@@ -70,7 +72,7 @@ from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 # 2. read the target position from a ros topic,
 # 3. read the target position from a file,
 # 4. etc.
-class CirclePersonControler(PersonController):
+class CirclePersonController(PersonController):
 
     def __init__(self):
         super().__init__()
@@ -125,38 +127,44 @@ class PegasusApp:
             print(person)
 
         # Create the controller to make on person walk around in circles
-        person_controller = CirclePersonControler()
+        person_controller = CirclePersonController()
         p1 = Person("person1", "original_male_adult_construction_05", init_pos=[3.0, 0.0, 0.0], init_yaw=1.0, controller=person_controller)
         
         # Create a person without setting up a controller, and just setting a manual target position for it to track
         p2 = Person("person2", "original_female_adult_business_02", init_pos=[2.0, 0.0, 0.0])
-        p2.update_target_position([10.0, 0.0, 0.0], 0.0)
+        p2.update_target_position([10.0, 0.0, 0.0], 1.0)
 
         # Create the vehicle
         # Try to spawn the selected robot in the world to the specified namespace
-        # config_multirotor = MultirotorConfig()
+        config_multirotor = MultirotorConfig()
         # # Create the multirotor configuration
-        # mavlink_config = MavlinkBackendConfig({
-        #     "vehicle_id": 0,
-        #     "px4_autolaunch": True,
-        #     "px4_dir": "/home/marcelo/PX4-Autopilot"
-        # })
-        # config_multirotor.backends = [MavlinkBackend(mavlink_config)]
+        mavlink_config = MavlinkBackendConfig({
+            "vehicle_id": 0,
+            "px4_autolaunch": True,
+            "px4_dir": "/home/marcelo/PX4-Autopilot"
+        })
+        config_multirotor.backends = [
+            MavlinkBackend(mavlink_config), 
+            ROS2Backend(vehicle_id=1, 
+                config={
+                    "namespace": 'drone', 
+                    "pub_sensors": False,
+                    "pub_graphical_sensors": True,
+                    "pub_state": True,
+                    "sub_control": False,})]
 
-        # # Create camera graph for the existing Camera prim on the Iris model, which can be found 
-        # # at the prim path `/World/quadrotor/body/Camera`. The camera prim path is the local path from the vehicle's prim path
-        # # to the camera prim, to which this graph will be connected. All ROS2 topics published by this graph will have 
-        # # namespace `quadrotor` and frame_id `Camera` followed by the selected camera types (`rgb`, `camera_info`).
-        # #config_multirotor.graphs = [ROS2Camera("body/Camera", config={"types": ['rgb', 'camera_info']})]
+        # Create a camera
+        #MonocularCamera("camera", config={"update_rate": 60.0})
+        config_multirotor.graphical_sensors = [MonocularCamera("camera", config={"update_rate": 60.0})]
 
-        # Multirotor(
-        #     "/World/quadrotor",
-        #     ROBOTS['Iris'],
-        #     0,
-        #     [0.0, 0.0, 0.07],
-        #     Rotation.from_euler("XYZ", [0.0, 0.0, 0.0], degrees=True).as_quat(),
-        #     config=config_multirotor,
-        # )
+        Multirotor(
+            "/World/quadrotor",
+            ROBOTS['Iris'],
+            0,
+            [0.0, 0.0, 0.07],
+            Rotation.from_euler("XYZ", [0.0, 0.0, 0.0], degrees=True).as_quat(),
+            config=config_multirotor,
+        )
 
         # Set the camera of the viewport to a nice position
         self.pg.set_viewport_camera([5.0, 9.0, 6.5], [0.0, 0.0, 0.0])
