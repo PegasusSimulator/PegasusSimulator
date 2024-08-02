@@ -28,7 +28,7 @@ The tutorial corresponds to the ``4_python_single_vehicle.py`` example in the ``
 
 .. literalinclude:: ../../../examples/4_python_single_vehicle.py
    :language: python
-   :emphasize-lines: 30-31,68-75
+   :emphasize-lines: 30-33,69-77
    :linenos:
 
 The next code section corresponds to the ``nonlinear_controller.py`` in the ``examples/utils`` directory.
@@ -47,7 +47,7 @@ To start a pre-programed simulation using a different control backend other than
 
 .. literalinclude:: ../../../examples/4_python_single_vehicle.py
    :language: python
-   :lines: 30-31
+   :lines: 30-33
    :linenos:
    :lineno-start: 30
 
@@ -57,7 +57,7 @@ of the script is the same as in the previous tutorial.
 
 .. literalinclude:: ../../../examples/4_python_single_vehicle.py
    :language: python
-   :lines: 68-75
+   :lines: 69-77
    :linenos:
    :lineno-start: 68
 

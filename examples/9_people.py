@@ -127,8 +127,8 @@ class PegasusApp:
             print(person)
 
         # Create the controller to make on person walk around in circles
-        # person_controller = CirclePersonController()
-        # p1 = Person("person1", "original_male_adult_construction_05", init_pos=[3.0, 0.0, 0.0], init_yaw=1.0, controller=person_controller)
+        person_controller = CirclePersonController()
+        p1 = Person("person1", "original_male_adult_construction_05", init_pos=[3.0, 0.0, 0.0], init_yaw=1.0, controller=person_controller)
         
         # Create a person without setting up a controller, and just setting a manual target position for it to track
         p2 = Person("person2", "original_female_adult_business_02", init_pos=[2.0, 0.0, 0.0])

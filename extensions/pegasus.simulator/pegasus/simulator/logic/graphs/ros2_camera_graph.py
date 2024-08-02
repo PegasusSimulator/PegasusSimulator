@@ -2,7 +2,7 @@
 | File: ros2_camera.py
 | License: BSD-3-Clause. Copyright (c) 2023, Micah Nye. All rights reserved.
 """
-__all__ = ["ROS2Camera"]
+__all__ = ["ROS2CameraGraph"]
 
 import carb
 
@@ -23,7 +23,7 @@ class ROS2CameraGraph(Graph):
 
         Args:
             camera_prim_path (str): Path to the camera prim. Global path when it starts with `/`, else local to vehicle prim path
-            config (dict): A Dictionary that contains all the parameters for configuring the ROS2Camera - it can be empty or only have some of the parameters used by the ROS2Camera.
+            config (dict): A Dictionary that contains all the parameters for configuring the ROS2CameraGraph - it can be empty or only have some of the parameters used by the ROS2CameraGraph.
 
         Examples:
             The dictionary default parameters are
