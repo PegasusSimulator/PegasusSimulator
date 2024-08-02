@@ -127,8 +127,8 @@ class PegasusApp:
             print(person)
 
         # Create the controller to make on person walk around in circles
-        person_controller = CirclePersonController()
-        p1 = Person("person1", "original_male_adult_construction_05", init_pos=[3.0, 0.0, 0.0], init_yaw=1.0, controller=person_controller)
+        # person_controller = CirclePersonController()
+        # p1 = Person("person1", "original_male_adult_construction_05", init_pos=[3.0, 0.0, 0.0], init_yaw=1.0, controller=person_controller)
         
         # Create a person without setting up a controller, and just setting a manual target position for it to track
         p2 = Person("person2", "original_female_adult_business_02", init_pos=[2.0, 0.0, 0.0])
@@ -144,17 +144,17 @@ class PegasusApp:
             "px4_dir": "/home/marcelo/PX4-Autopilot"
         })
         config_multirotor.backends = [
-            MavlinkBackend(mavlink_config), 
+            MavlinkBackend(mavlink_config),
             ROS2Backend(vehicle_id=1, 
                 config={
                     "namespace": 'drone', 
                     "pub_sensors": False,
                     "pub_graphical_sensors": True,
                     "pub_state": True,
+                    "pub_tf": False,
                     "sub_control": False,})]
 
         # Create a camera
-        #MonocularCamera("camera", config={"update_rate": 60.0})
         config_multirotor.graphical_sensors = [MonocularCamera("camera", config={"update_rate": 60.0})]
 
         Multirotor(

@@ -6,6 +6,7 @@
 """
 
 # Make sure the ROS2 extension is enabled
+import carb
 from omni.isaac.core.utils.extensions import enable_extension
 enable_extension("omni.isaac.ros2_bridge")
 
@@ -13,17 +14,18 @@ enable_extension("omni.isaac.ros2_bridge")
 import rclpy
 from std_msgs.msg import Float64
 from geometry_msgs.msg import TransformStamped
-from sensor_msgs.msg import Imu, MagneticField, NavSatFix, NavSatStatus, Image
+from sensor_msgs.msg import Imu, MagneticField, NavSatFix, NavSatStatus
 from geometry_msgs.msg import PoseStamped, TwistStamped, AccelStamped
 
 # TF imports
-
 # Check if these libraries exist in the system
 try:
     from tf2_ros.static_transform_broadcaster import StaticTransformBroadcaster
     from tf2_ros.transform_broadcaster import TransformBroadcaster
+    tf2_ros_loaded = True
 except ImportError:
-    print("TF2 ROS not installed. Will not publish TFs with the ROS2 backend")
+    carb.log_warn("TF2 ROS not installed. Will not publish TFs with the ROS2 backend")
+    tf2_ros_loaded = False
 
 from pegasus.simulator.logic.backends.backend import Backend
 
@@ -63,6 +65,7 @@ class ROS2Backend(Backend):
             >>>  "pub_graphical_sensors": True,                 # Publish the graphical sensors
             >>>  "pub_sensors": True,                           # Publish the sensors
             >>>  "pub_state": True,                             # Publish the state of the vehicle
+            >>>  "pub_tf": False,                               # Publish the TF of the vehicle
             >>>  "sub_control": True,                           # Subscribe to the control topics
         """
 
@@ -76,6 +79,9 @@ class ROS2Backend(Backend):
         self._pub_sensors = config.get("pub_sensors", True)
         self._pub_state = config.get("pub_state", True)
         self._sub_control = config.get("sub_control", True)
+
+        # Check if the tf2_ros library is loaded and if the flag is set to True
+        self._pub_tf = config.get("pub_tf", False) and tf2_ros_loaded
 
         # Start the actual ROS2 setup here
         rclpy.init()
@@ -93,14 +99,19 @@ class ROS2Backend(Backend):
         # Setup zero input reference for the thrusters
         self.input_ref = [0.0 for i in range(self._num_rotors)]
 
-        # Initiliaze the static tf broadcaster for the sensors
-        self.tf_static_broadcaster = StaticTransformBroadcaster(self.node)
+        # -----------------------------------------------------
+        # Initialize the static and dynamic tf broadcasters
+        # -----------------------------------------------------
+        if self._pub_tf:
 
-        # Initialize the static tf broadcaster for the base_link transformation
-        self.send_static_transforms()
+            # Initiliaze the static tf broadcaster for the sensors
+            self.tf_static_broadcaster = StaticTransformBroadcaster(self.node)
 
-        # Initialize the dynamic tf broadcaster for the position of the body of the vehicle (base_link) with respect to the inertial frame (map - ENU) expressed in the inertil frame (map - ENU)
-        self.tf_broadcaster = TransformBroadcaster(self.node)
+            # Initialize the static tf broadcaster for the base_link transformation
+            self.send_static_transforms()
+
+            # Initialize the dynamic tf broadcaster for the position of the body of the vehicle (base_link) with respect to the inertial frame (map - ENU) expressed in the inertil frame (map - ENU)
+            self.tf_broadcaster = TransformBroadcaster(self.node)
     
     
     def initialize_publishers(self, config: dict):
@@ -246,18 +257,19 @@ class ROS2Backend(Backend):
         self.accel_pub.publish(accel)
 
         # Update the dynamic tf broadcaster with the current position of the vehicle in the inertial frame
-        t = TransformStamped()
-        t.header.stamp = pose.header.stamp
-        t.header.frame_id = "map"
-        t.child_frame_id = self._namespace + '_' + 'base_link'
-        t.transform.translation.x = state.position[0]
-        t.transform.translation.y = state.position[1]
-        t.transform.translation.z = state.position[2]
-        t.transform.rotation.x = state.attitude[0]
-        t.transform.rotation.y = state.attitude[1]
-        t.transform.rotation.z = state.attitude[2]
-        t.transform.rotation.w = state.attitude[3]
-        self.tf_broadcaster.sendTransform(t)
+        if self._pub_tf:
+            t = TransformStamped()
+            t.header.stamp = pose.header.stamp
+            t.header.frame_id = "map"
+            t.child_frame_id = self._namespace + '_' + 'base_link'
+            t.transform.translation.x = state.position[0]
+            t.transform.translation.y = state.position[1]
+            t.transform.translation.z = state.position[2]
+            t.transform.rotation.x = state.attitude[0]
+            t.transform.rotation.y = state.attitude[1]
+            t.transform.rotation.z = state.attitude[2]
+            t.transform.rotation.w = state.attitude[3]
+            self.tf_broadcaster.sendTransform(t)
         
 
     def rotor_callback(self, ros_msg: Float64, rotor_id):
