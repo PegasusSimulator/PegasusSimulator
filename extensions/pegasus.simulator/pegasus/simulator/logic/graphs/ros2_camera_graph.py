@@ -15,7 +15,7 @@ from pegasus.simulator.logic.graphs import Graph
 from pegasus.simulator.logic.vehicles import Vehicle
 import numpy as np
 
-class ROS2Camera(Graph):
+class ROS2CameraGraph(Graph):
     """The class that implements the ROS2 Camera graph. This class inherits the base class Graph.
     """
     def __init__(self, camera_prim_path: str, config: dict = {}):
@@ -38,7 +38,7 @@ class ROS2Camera(Graph):
         """
 
         # Initialize the Super class "object" attribute
-        super().__init__(graph_type="ROS2Camera")
+        super().__init__(graph_type="ROS2CameraGraph")
 
         # Save camera path, frame id and ros topic name
         self._camera_prim_path = camera_prim_path
