@@ -32,6 +32,11 @@ If you find ``Pegasus Simulator`` useful in your academic work, please cite the 
       keywords={Simulation;Robot sensing systems;Real-time systems;Sensor systems;Sensors;Task analysis},
       doi={10.1109/ICUAS60882.2024.10556959}}
 
+Latest Updates
+==============
+
+* **2024-08-02**: Pegasus Simulator v4.1.0 is released for Isaac 4.1.0. This version is **NOT** compatible with older versions of Isaac Sim.
+
 Guidance, Control and Navigation Project
 ========================================
 

@@ -17,6 +17,10 @@ Sim](https://docs.omniverse.nvidia.com/app_isaacsim/app_isaacsim/overview.html).
 
 Check the provided documentation [here](https://pegasussimulator.github.io/PegasusSimulator/) to discover how to install and use this framework.
 
+## Latest Updates
+
+* **2024-08-02**: Pegasus Simulator v4.1.0 is released for Isaac 4.1.0. This version is **NOT** compatible with older versions of Isaac Sim.
+
 ## Citation
 
 If you find Pegasus Simulator useful in your academic work, please cite the paper below. It is also available [here](https://doi.org/10.1109/ICUAS60882.2024.10556959).
