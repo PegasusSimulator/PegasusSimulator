@@ -125,7 +125,7 @@ concept that helps to launch and control the simulation timeline. In this tutori
 <span class="linenos">  8</span>
 <span class="linenos">  9</span><span class="c1"># Imports to start Isaac Sim from this script</span>
 <span class="linenos"> 10</span><span class="kn">import</span> <span class="nn">carb</span>
-<span class="hll"><span class="linenos"> 11</span><span class="kn">from</span> <span class="nn">omni.isaac.kit</span> <span class="kn">import</span> <span class="n">SimulationApp</span>
+<span class="hll"><span class="linenos"> 11</span><span class="kn">from</span> <span class="nn">isaacsim</span> <span class="kn">import</span> <span class="n">SimulationApp</span>
 </span><span class="hll"><span class="linenos"> 12</span>
 </span><span class="hll"><span class="linenos"> 13</span><span class="c1"># Start Isaac Sim&#39;s simulation environment</span>
 </span><span class="hll"><span class="linenos"> 14</span><span class="c1"># Note: this simulation app must be instantiated right after the SimulationApp import, otherwise the simulator will crash</span>
@@ -237,7 +237,7 @@ concept that helps to launch and control the simulation timeline. In this tutori
 object, and it takes a dictionary of parameters that can be used to configure the application. This
 object will be responsible for opening a <code class="docutils literal notranslate"><span class="pre">bare</span> <span class="pre">bones</span></code> version of the simulator. The <code class="docutils literal notranslate"><span class="pre">headless</span></code> parameter
 selects whether to launch the GUI window or not.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">11</span><span class="kn">from</span> <span class="nn">omni.isaac.kit</span> <span class="kn">import</span> <span class="n">SimulationApp</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">11</span><span class="kn">from</span> <span class="nn">isaacsim</span> <span class="kn">import</span> <span class="n">SimulationApp</span>
 <span class="linenos">12</span>
 <span class="linenos">13</span><span class="c1"># Start Isaac Sim&#39;s simulation environment</span>
 <span class="linenos">14</span><span class="c1"># Note: this simulation app must be instantiated right after the SimulationApp import, otherwise the simulator will crash</span>

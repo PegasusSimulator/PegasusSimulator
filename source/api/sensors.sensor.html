@@ -77,6 +77,7 @@
 <li class="toctree-l3"><a class="reference internal" href="sensors.magnetometer.html">Magnetometer</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#graphical-sensors">Graphical Sensors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#graphs">Graphs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#dynamics">Dynamics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#thruster">Thruster</a></li>
@@ -196,16 +197,25 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.sensors.sensor.Sensor.config_from_dict" title="pegasus.simulator.logic.sensors.sensor.Sensor.config_from_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">config_from_dict</span></code></a>(config_dict)</p></td>
 <td><p>Method that should be implemented by the class that inherits Sensor.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.sensors.sensor.Sensor.initialize" title="pegasus.simulator.logic.sensors.sensor.Sensor.initialize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">initialize</span></code></a>(origin_lat, origin_lon, origin_alt)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.sensors.sensor.Sensor.initialize" title="pegasus.simulator.logic.sensors.sensor.Sensor.initialize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">initialize</span></code></a>(vehicle, origin_lat, origin_lon, ...)</p></td>
 <td><p>Method that initializes the sensor latitude, longitude and altitude attributes.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.sensors.sensor.Sensor.set_update_rate" title="pegasus.simulator.logic.sensors.sensor.Sensor.set_update_rate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_update_rate</span></code></a>(update_rate)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.sensors.sensor.Sensor.reset" title="pegasus.simulator.logic.sensors.sensor.Sensor.reset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset</span></code></a>()</p></td>
+<td><p>Method that when implemented, should handle the reset of the vehicle simulation to its original state</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.sensors.sensor.Sensor.set_update_rate" title="pegasus.simulator.logic.sensors.sensor.Sensor.set_update_rate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_update_rate</span></code></a>(update_rate)</p></td>
 <td><p>Method that changes the update rate and period of the sensor</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.sensors.sensor.Sensor.update" title="pegasus.simulator.logic.sensors.sensor.Sensor.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(state, dt)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.sensors.sensor.Sensor.start" title="pegasus.simulator.logic.sensors.sensor.Sensor.start"><code class="xref py py-obj docutils literal notranslate"><span class="pre">start</span></code></a>()</p></td>
+<td><p>Method that when implemented should handle the begining of the simulation of vehicle</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.sensors.sensor.Sensor.stop" title="pegasus.simulator.logic.sensors.sensor.Sensor.stop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stop</span></code></a>()</p></td>
+<td><p>Method that when implemented should handle the stopping of the simulation of vehicle</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.sensors.sensor.Sensor.update" title="pegasus.simulator.logic.sensors.sensor.Sensor.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(state, dt)</p></td>
 <td><p>Method that should be implemented by the class that inherits Sensor.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.sensors.sensor.Sensor.update_at_rate" title="pegasus.simulator.logic.sensors.sensor.Sensor.update_at_rate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_at_rate</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.sensors.sensor.Sensor.update_at_rate" title="pegasus.simulator.logic.sensors.sensor.Sensor.update_at_rate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_at_rate</span></code></a>()</p></td>
 <td><p>Decorator function used to check if the time elapsed between the last sensor update call and the current sensor update call is higher than the defined update_rate of the sensor.</p></td>
 </tr>
 </tbody>
@@ -252,7 +262,7 @@ sensor based on a dictionary input should be performed.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pegasus.simulator.logic.sensors.sensor.Sensor.initialize">
-<span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">origin_lat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin_lon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin_alt</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.sensors.sensor.Sensor.initialize" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vehicle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin_lat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin_lon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin_alt</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.sensors.sensor.Sensor.initialize" title="Permalink to this definition"></a></dt>
 <dd><p>Method that initializes the sensor latitude, longitude and altitude attributes.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -262,12 +272,19 @@ of the world, then we might as well just save this information for whatever sens
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>vehicle</strong> (<a class="reference internal" href="vehicles.vehicle.html#pegasus.simulator.logic.vehicles.vehicle.Vehicle" title="pegasus.simulator.logic.vehicles.vehicle.Vehicle"><em>Vehicle</em></a>) – A reference to the vehicle that this sensor is associated with</p></li>
 <li><p><strong>origin_lat</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The latitude of the origin of the world in degrees (might get used by some sensors).</p></li>
 <li><p><strong>origin_lon</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The longitude of the origin of the world in degrees (might get used by some sensors).</p></li>
 <li><p><strong>origin_alt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The altitude of the origin of the world relative to sea water level (might get used by some sensors).</p></li>
 </ul>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.sensors.sensor.Sensor.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.sensors.sensor.Sensor.reset" title="Permalink to this definition"></a></dt>
+<dd><p>Method that when implemented, should handle the reset of the vehicle simulation to its original state</p>
 </dd></dl>
 
 <dl class="py method">
@@ -279,6 +296,18 @@ of the world, then we might as well just save this information for whatever sens
 <dd class="field-odd"><p><strong>update_rate</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The new rate at which the data in the sensor should be refreshed (in Hz)</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.sensors.sensor.Sensor.start">
+<span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.sensors.sensor.Sensor.start" title="Permalink to this definition"></a></dt>
+<dd><p>Method that when implemented should handle the begining of the simulation of vehicle</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.sensors.sensor.Sensor.stop">
+<span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.sensors.sensor.Sensor.stop" title="Permalink to this definition"></a></dt>
+<dd><p>Method that when implemented should handle the stopping of the simulation of vehicle</p>
 </dd></dl>
 
 <dl class="py method">

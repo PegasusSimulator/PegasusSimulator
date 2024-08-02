@@ -134,7 +134,7 @@ that our API is simpler and more intuitive to use in most user cases. I also nee
 <span class="linenos">  8</span>
 <span class="linenos">  9</span><span class="c1"># Imports to start Isaac Sim from this script</span>
 <span class="linenos"> 10</span><span class="kn">import</span> <span class="nn">carb</span>
-<span class="linenos"> 11</span><span class="kn">from</span> <span class="nn">omni.isaac.kit</span> <span class="kn">import</span> <span class="n">SimulationApp</span>
+<span class="linenos"> 11</span><span class="kn">from</span> <span class="nn">isaacsim</span> <span class="kn">import</span> <span class="n">SimulationApp</span>
 <span class="linenos"> 12</span>
 <span class="linenos"> 13</span><span class="c1"># Start Isaac Sim&#39;s simulation environment</span>
 <span class="linenos"> 14</span><span class="c1"># Note: this simulation app must be instantiated right after the SimulationApp import, otherwise the simulator will crash</span>
@@ -146,194 +146,231 @@ that our API is simpler and more intuitive to use in most user cases. I also nee
 <span class="linenos"> 20</span><span class="c1"># -----------------------------------</span>
 <span class="linenos"> 21</span><span class="kn">import</span> <span class="nn">omni.timeline</span>
 <span class="linenos"> 22</span><span class="kn">from</span> <span class="nn">omni.isaac.core.world</span> <span class="kn">import</span> <span class="n">World</span>
-<span class="linenos"> 23</span><span class="kn">from</span> <span class="nn">omni.isaac.core.utils.extensions</span> <span class="kn">import</span> <span class="n">disable_extension</span><span class="p">,</span> <span class="n">enable_extension</span>
-<span class="linenos"> 24</span>
-<span class="linenos"> 25</span><span class="c1"># Enable/disable ROS bridge extensions to keep only ROS2 Bridge</span>
-<span class="linenos"> 26</span><span class="n">disable_extension</span><span class="p">(</span><span class="s2">&quot;omni.isaac.ros_bridge&quot;</span><span class="p">)</span>
-<span class="linenos"> 27</span><span class="n">enable_extension</span><span class="p">(</span><span class="s2">&quot;omni.isaac.ros2_bridge&quot;</span><span class="p">)</span>
-<span class="linenos"> 28</span>
-<span class="hll"><span class="linenos"> 29</span><span class="n">EXTENSIONS_PEOPLE</span> <span class="o">=</span> <span class="p">[</span>
-</span><span class="hll"><span class="linenos"> 30</span>    <span class="s1">&#39;omni.anim.people&#39;</span><span class="p">,</span> 
-</span><span class="hll"><span class="linenos"> 31</span>    <span class="s1">&#39;omni.anim.navigation.bundle&#39;</span><span class="p">,</span> 
-</span><span class="hll"><span class="linenos"> 32</span>    <span class="s1">&#39;omni.anim.timeline&#39;</span><span class="p">,</span>
-</span><span class="hll"><span class="linenos"> 33</span>    <span class="s1">&#39;omni.anim.graph.bundle&#39;</span><span class="p">,</span> 
-</span><span class="hll"><span class="linenos"> 34</span>    <span class="s1">&#39;omni.anim.graph.core&#39;</span><span class="p">,</span> 
-</span><span class="hll"><span class="linenos"> 35</span>    <span class="s1">&#39;omni.anim.graph.ui&#39;</span><span class="p">,</span>
-</span><span class="hll"><span class="linenos"> 36</span>    <span class="s1">&#39;omni.anim.retarget.bundle&#39;</span><span class="p">,</span> 
-</span><span class="hll"><span class="linenos"> 37</span>    <span class="s1">&#39;omni.anim.retarget.core&#39;</span><span class="p">,</span>
-</span><span class="hll"><span class="linenos"> 38</span>    <span class="s1">&#39;omni.anim.retarget.ui&#39;</span><span class="p">,</span> 
-</span><span class="hll"><span class="linenos"> 39</span>    <span class="s1">&#39;omni.kit.scripting&#39;</span>
-</span><span class="hll"><span class="linenos"> 40</span><span class="p">]</span>
-</span><span class="hll"><span class="linenos"> 41</span>
-</span><span class="hll"><span class="linenos"> 42</span><span class="k">for</span> <span class="n">ext_people</span> <span class="ow">in</span> <span class="n">EXTENSIONS_PEOPLE</span><span class="p">:</span>
-</span><span class="hll"><span class="linenos"> 43</span>    <span class="n">enable_extension</span><span class="p">(</span><span class="n">ext_people</span><span class="p">)</span>
-</span><span class="linenos"> 44</span>
-<span class="linenos"> 45</span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="linenos"> 46</span>
-<span class="linenos"> 47</span><span class="c1"># Import the Pegasus API for simulating drones</span>
-<span class="linenos"> 48</span><span class="kn">from</span> <span class="nn">pegasus.simulator.params</span> <span class="kn">import</span> <span class="n">ROBOTS</span><span class="p">,</span> <span class="n">SIMULATION_ENVIRONMENTS</span>
-<span class="linenos"> 49</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.interface.pegasus_interface</span> <span class="kn">import</span> <span class="n">PegasusInterface</span>
-<span class="hll"><span class="linenos"> 50</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.people.person</span> <span class="kn">import</span> <span class="n">Person</span>
-</span><span class="hll"><span class="linenos"> 51</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.people.person_controller</span> <span class="kn">import</span> <span class="n">PersonController</span>
-</span><span class="linenos"> 52</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.backends.mavlink_backend</span> <span class="kn">import</span> <span class="n">MavlinkBackend</span><span class="p">,</span> <span class="n">MavlinkBackendConfig</span>
-<span class="linenos"> 53</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.vehicles.multirotor</span> <span class="kn">import</span> <span class="n">Multirotor</span><span class="p">,</span> <span class="n">MultirotorConfig</span>
-<span class="linenos"> 54</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.interface.pegasus_interface</span> <span class="kn">import</span> <span class="n">PegasusInterface</span>
-<span class="linenos"> 55</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.graphs</span> <span class="kn">import</span> <span class="n">ROS2Camera</span>
-<span class="linenos"> 56</span>
-<span class="hll"><span class="linenos"> 57</span><span class="c1"># Example controller class that make a person move in a circle around the origin of the world</span>
-</span><span class="hll"><span class="linenos"> 58</span><span class="c1"># Note: You could create a different controller with a different behaviour. For instance, you could:</span>
-</span><span class="hll"><span class="linenos"> 59</span><span class="c1"># 1. read the keyboard input to move the person around the world.</span>
-</span><span class="hll"><span class="linenos"> 60</span><span class="c1"># 2. read the target position from a ros topic,</span>
-</span><span class="hll"><span class="linenos"> 61</span><span class="c1"># 3. read the target position from a file,</span>
-</span><span class="hll"><span class="linenos"> 62</span><span class="c1"># 4. etc.</span>
-</span><span class="hll"><span class="linenos"> 63</span><span class="k">class</span> <span class="nc">CirclePersonControler</span><span class="p">(</span><span class="n">PersonController</span><span class="p">):</span>
-</span><span class="hll"><span class="linenos"> 64</span>
-</span><span class="hll"><span class="linenos"> 65</span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span class="hll"><span class="linenos"> 66</span>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-</span><span class="hll"><span class="linenos"> 67</span>
-</span><span class="hll"><span class="linenos"> 68</span>        <span class="bp">self</span><span class="o">.</span><span class="n">_radius</span> <span class="o">=</span> <span class="mf">5.0</span>
-</span><span class="hll"><span class="linenos"> 69</span>        <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span> <span class="o">=</span> <span class="mf">0.0</span>
-</span><span class="hll"><span class="linenos"> 70</span>        <span class="bp">self</span><span class="o">.</span><span class="n">gamma_dot</span> <span class="o">=</span> <span class="mf">0.3</span>
-</span><span class="hll"><span class="linenos"> 71</span>        
-</span><span class="hll"><span class="linenos"> 72</span>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
-</span><span class="hll"><span class="linenos"> 73</span>
-</span><span class="hll"><span class="linenos"> 74</span>        <span class="c1"># Update the reference position for the person to track</span>
-</span><span class="hll"><span class="linenos"> 75</span>        <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gamma_dot</span> <span class="o">*</span> <span class="n">dt</span>
-</span><span class="hll"><span class="linenos"> 76</span>        
-</span><span class="hll"><span class="linenos"> 77</span>        <span class="c1"># Set the target position for the person to track</span>
-</span><span class="hll"><span class="linenos"> 78</span>        <span class="bp">self</span><span class="o">.</span><span class="n">_person</span><span class="o">.</span><span class="n">update_target_position</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_radius</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gamma</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_radius</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gamma</span><span class="p">),</span> <span class="mf">0.0</span><span class="p">])</span>
-</span><span class="linenos"> 79</span>        
-<span class="linenos"> 80</span>
-<span class="linenos"> 81</span><span class="c1"># Auxiliary scipy and numpy modules</span>
-<span class="linenos"> 82</span><span class="kn">from</span> <span class="nn">scipy.spatial.transform</span> <span class="kn">import</span> <span class="n">Rotation</span>
-<span class="linenos"> 83</span>
-<span class="linenos"> 84</span><span class="k">class</span> <span class="nc">PegasusApp</span><span class="p">:</span>
-<span class="linenos"> 85</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="linenos"> 86</span><span class="sd">    A Template class that serves as an example on how to build a simple Isaac Sim standalone App.</span>
-<span class="linenos"> 87</span><span class="sd">    &quot;&quot;&quot;</span>
-<span class="linenos"> 88</span>
-<span class="linenos"> 89</span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="linenos"> 90</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="linenos"> 91</span><span class="sd">        Method that initializes the PegasusApp and is used to setup the simulation environment.</span>
-<span class="linenos"> 92</span><span class="sd">        &quot;&quot;&quot;</span>
-<span class="linenos"> 93</span>
-<span class="linenos"> 94</span>        <span class="c1"># Acquire the timeline that will be used to start/stop the simulation</span>
-<span class="linenos"> 95</span>        <span class="bp">self</span><span class="o">.</span><span class="n">timeline</span> <span class="o">=</span> <span class="n">omni</span><span class="o">.</span><span class="n">timeline</span><span class="o">.</span><span class="n">get_timeline_interface</span><span class="p">()</span>
-<span class="linenos"> 96</span>
-<span class="linenos"> 97</span>        <span class="c1"># Start the Pegasus Interface</span>
-<span class="linenos"> 98</span>        <span class="bp">self</span><span class="o">.</span><span class="n">pg</span> <span class="o">=</span> <span class="n">PegasusInterface</span><span class="p">()</span>
-<span class="linenos"> 99</span>
-<span class="linenos">100</span>        <span class="c1"># Acquire the World, .i.e, the singleton that controls that is a one stop shop for setting up physics,</span>
-<span class="linenos">101</span>        <span class="c1"># spawning asset primitives, etc.</span>
-<span class="linenos">102</span>        <span class="bp">self</span><span class="o">.</span><span class="n">pg</span><span class="o">.</span><span class="n">_world</span> <span class="o">=</span> <span class="n">World</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">pg</span><span class="o">.</span><span class="n">_world_settings</span><span class="p">)</span>
-<span class="linenos">103</span>        <span class="bp">self</span><span class="o">.</span><span class="n">world</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pg</span><span class="o">.</span><span class="n">world</span>
-<span class="linenos">104</span>
-<span class="linenos">105</span>        <span class="c1"># Launch one of the worlds provided by NVIDIA</span>
-<span class="linenos">106</span>        <span class="bp">self</span><span class="o">.</span><span class="n">pg</span><span class="o">.</span><span class="n">load_environment</span><span class="p">(</span><span class="n">SIMULATION_ENVIRONMENTS</span><span class="p">[</span><span class="s2">&quot;Curved Gridroom&quot;</span><span class="p">])</span>
-<span class="linenos">107</span>
-<span class="hll"><span class="linenos">108</span>        <span class="c1"># Check the available assets for people</span>
-</span><span class="hll"><span class="linenos">109</span>        <span class="n">people_assets_list</span> <span class="o">=</span> <span class="n">Person</span><span class="o">.</span><span class="n">get_character_asset_list</span><span class="p">()</span>
-</span><span class="hll"><span class="linenos">110</span>        <span class="k">for</span> <span class="n">person</span> <span class="ow">in</span> <span class="n">people_assets_list</span><span class="p">:</span>
-</span><span class="hll"><span class="linenos">111</span>            <span class="nb">print</span><span class="p">(</span><span class="n">person</span><span class="p">)</span>
-</span><span class="linenos">112</span>
-<span class="hll"><span class="linenos">113</span>        <span class="c1"># Create the controller to make on person walk around in circles</span>
-</span><span class="hll"><span class="linenos">114</span>        <span class="n">person_controller</span> <span class="o">=</span> <span class="n">CirclePersonControler</span><span class="p">()</span>
-</span><span class="hll"><span class="linenos">115</span>        <span class="n">p1</span> <span class="o">=</span> <span class="n">Person</span><span class="p">(</span><span class="s2">&quot;person1&quot;</span><span class="p">,</span> <span class="s2">&quot;original_male_adult_construction_05&quot;</span><span class="p">,</span> <span class="n">init_pos</span><span class="o">=</span><span class="p">[</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="n">init_yaw</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">controller</span><span class="o">=</span><span class="n">person_controller</span><span class="p">)</span>
-</span><span class="hll"><span class="linenos">116</span>        
-</span><span class="hll"><span class="linenos">117</span>        <span class="c1"># Create a person without setting up a controller, and just setting a manual target position for it to track</span>
-</span><span class="hll"><span class="linenos">118</span>        <span class="n">p2</span> <span class="o">=</span> <span class="n">Person</span><span class="p">(</span><span class="s2">&quot;person2&quot;</span><span class="p">,</span> <span class="s2">&quot;original_female_adult_business_02&quot;</span><span class="p">,</span> <span class="n">init_pos</span><span class="o">=</span><span class="p">[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span>
-</span><span class="hll"><span class="linenos">119</span>        <span class="n">p2</span><span class="o">.</span><span class="n">update_target_position</span><span class="p">([</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="mf">0.0</span><span class="p">)</span>
-</span><span class="linenos">120</span>
-<span class="linenos">121</span>        <span class="c1"># Create the vehicle</span>
-<span class="linenos">122</span>        <span class="c1"># Try to spawn the selected robot in the world to the specified namespace</span>
-<span class="linenos">123</span>        <span class="n">config_multirotor</span> <span class="o">=</span> <span class="n">MultirotorConfig</span><span class="p">()</span>
-<span class="linenos">124</span>        <span class="c1"># Create the multirotor configuration</span>
-<span class="linenos">125</span>        <span class="n">mavlink_config</span> <span class="o">=</span> <span class="n">MavlinkBackendConfig</span><span class="p">({</span>
-<span class="linenos">126</span>            <span class="s2">&quot;vehicle_id&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-<span class="linenos">127</span>            <span class="s2">&quot;px4_autolaunch&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-<span class="linenos">128</span>            <span class="s2">&quot;px4_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;/home/marcelo/PX4-Autopilot&quot;</span><span class="p">,</span>
-<span class="linenos">129</span>            <span class="s2">&quot;px4_vehicle_model&quot;</span><span class="p">:</span> <span class="s1">&#39;iris&#39;</span>
-<span class="linenos">130</span>        <span class="p">})</span>
-<span class="linenos">131</span>        <span class="n">config_multirotor</span><span class="o">.</span><span class="n">backends</span> <span class="o">=</span> <span class="p">[</span><span class="n">MavlinkBackend</span><span class="p">(</span><span class="n">mavlink_config</span><span class="p">)]</span>
-<span class="linenos">132</span>
-<span class="linenos">133</span>        <span class="c1"># Create camera graph for the existing Camera prim on the Iris model, which can be found </span>
-<span class="linenos">134</span>        <span class="c1"># at the prim path `/World/quadrotor/body/Camera`. The camera prim path is the local path from the vehicle&#39;s prim path</span>
-<span class="linenos">135</span>        <span class="c1"># to the camera prim, to which this graph will be connected. All ROS2 topics published by this graph will have </span>
-<span class="linenos">136</span>        <span class="c1"># namespace `quadrotor` and frame_id `Camera` followed by the selected camera types (`rgb`, `camera_info`).</span>
-<span class="linenos">137</span>        <span class="n">config_multirotor</span><span class="o">.</span><span class="n">graphs</span> <span class="o">=</span> <span class="p">[</span><span class="n">ROS2Camera</span><span class="p">(</span><span class="s2">&quot;body/Camera&quot;</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;types&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;rgb&#39;</span><span class="p">,</span> <span class="s1">&#39;camera_info&#39;</span><span class="p">]})]</span>
-<span class="linenos">138</span>
-<span class="linenos">139</span>        <span class="n">Multirotor</span><span class="p">(</span>
-<span class="linenos">140</span>            <span class="s2">&quot;/World/quadrotor&quot;</span><span class="p">,</span>
-<span class="linenos">141</span>            <span class="n">ROBOTS</span><span class="p">[</span><span class="s1">&#39;Iris&#39;</span><span class="p">],</span>
-<span class="linenos">142</span>            <span class="mi">0</span><span class="p">,</span>
-<span class="linenos">143</span>            <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.07</span><span class="p">],</span>
-<span class="linenos">144</span>            <span class="n">Rotation</span><span class="o">.</span><span class="n">from_euler</span><span class="p">(</span><span class="s2">&quot;XYZ&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="n">degrees</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">as_quat</span><span class="p">(),</span>
-<span class="linenos">145</span>            <span class="n">config</span><span class="o">=</span><span class="n">config_multirotor</span><span class="p">,</span>
-<span class="linenos">146</span>        <span class="p">)</span>
-<span class="linenos">147</span>
-<span class="linenos">148</span>        <span class="c1"># Set the camera of the viewport to a nice position</span>
-<span class="linenos">149</span>        <span class="bp">self</span><span class="o">.</span><span class="n">pg</span><span class="o">.</span><span class="n">set_viewport_camera</span><span class="p">([</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">9.0</span><span class="p">,</span> <span class="mf">6.5</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span>
-<span class="linenos">150</span>
-<span class="linenos">151</span>        <span class="c1"># Reset the simulation environment so that all articulations (aka robots) are initialized</span>
-<span class="linenos">152</span>        <span class="bp">self</span><span class="o">.</span><span class="n">world</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
-<span class="linenos">153</span>
-<span class="linenos">154</span>        <span class="c1"># Auxiliar variable for the timeline callback example</span>
-<span class="linenos">155</span>        <span class="bp">self</span><span class="o">.</span><span class="n">stop_sim</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="hll"><span class="linenos"> 23</span><span class="kn">from</span> <span class="nn">omni.isaac.core.utils.extensions</span> <span class="kn">import</span> <span class="n">disable_extension</span><span class="p">,</span> <span class="n">enable_extension</span>
+</span><span class="hll"><span class="linenos"> 24</span>
+</span><span class="hll"><span class="linenos"> 25</span><span class="n">EXTENSIONS_PEOPLE</span> <span class="o">=</span> <span class="p">[</span>
+</span><span class="hll"><span class="linenos"> 26</span>    <span class="s1">&#39;omni.anim.people&#39;</span><span class="p">,</span> 
+</span><span class="hll"><span class="linenos"> 27</span>    <span class="s1">&#39;omni.anim.navigation.bundle&#39;</span><span class="p">,</span> 
+</span><span class="hll"><span class="linenos"> 28</span>    <span class="s1">&#39;omni.anim.timeline&#39;</span><span class="p">,</span>
+</span><span class="hll"><span class="linenos"> 29</span>    <span class="s1">&#39;omni.anim.graph.bundle&#39;</span><span class="p">,</span> 
+</span><span class="hll"><span class="linenos"> 30</span>    <span class="s1">&#39;omni.anim.graph.core&#39;</span><span class="p">,</span> 
+</span><span class="hll"><span class="linenos"> 31</span>    <span class="s1">&#39;omni.anim.graph.ui&#39;</span><span class="p">,</span>
+</span><span class="hll"><span class="linenos"> 32</span>    <span class="s1">&#39;omni.anim.retarget.bundle&#39;</span><span class="p">,</span> 
+</span><span class="hll"><span class="linenos"> 33</span>    <span class="s1">&#39;omni.anim.retarget.core&#39;</span><span class="p">,</span>
+</span><span class="hll"><span class="linenos"> 34</span>    <span class="s1">&#39;omni.anim.retarget.ui&#39;</span><span class="p">,</span> 
+</span><span class="hll"><span class="linenos"> 35</span>    <span class="s1">&#39;omni.kit.scripting&#39;</span><span class="p">,</span>
+</span><span class="hll"><span class="linenos"> 36</span>    <span class="s1">&#39;omni.graph.io&#39;</span><span class="p">,</span>
+</span><span class="hll"><span class="linenos"> 37</span>    <span class="s1">&#39;omni.anim.curve.core&#39;</span><span class="p">,</span>
+</span><span class="hll"><span class="linenos"> 38</span><span class="p">]</span>
+</span><span class="hll"><span class="linenos"> 39</span>
+</span><span class="hll"><span class="linenos"> 40</span><span class="k">for</span> <span class="n">ext_people</span> <span class="ow">in</span> <span class="n">EXTENSIONS_PEOPLE</span><span class="p">:</span>
+</span><span class="hll"><span class="linenos"> 41</span>    <span class="n">enable_extension</span><span class="p">(</span><span class="n">ext_people</span><span class="p">)</span>
+</span><span class="hll"><span class="linenos"> 42</span>
+</span><span class="hll"><span class="linenos"> 43</span><span class="c1"># Enable/disable ROS bridge extensions to keep only ROS2 Bridge</span>
+</span><span class="hll"><span class="linenos"> 44</span><span class="n">disable_extension</span><span class="p">(</span><span class="s2">&quot;omni.isaac.ros_bridge&quot;</span><span class="p">)</span>
+</span><span class="hll"><span class="linenos"> 45</span><span class="n">enable_extension</span><span class="p">(</span><span class="s2">&quot;omni.isaac.ros2_bridge&quot;</span><span class="p">)</span>
+</span><span class="hll"><span class="linenos"> 46</span>
+</span><span class="hll"><span class="linenos"> 47</span><span class="c1"># Update the simulation app with the new extensions</span>
+</span><span class="hll"><span class="linenos"> 48</span><span class="n">simulation_app</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+</span><span class="linenos"> 49</span>
+<span class="hll"><span class="linenos"> 50</span><span class="c1"># -------------------------------------------------------------------------------------------------</span>
+</span><span class="hll"><span class="linenos"> 51</span><span class="c1"># These lines are needed to restart the USD stage and make sure that the people extension is loaded</span>
+</span><span class="hll"><span class="linenos"> 52</span><span class="c1"># -------------------------------------------------------------------------------------------------</span>
+</span><span class="hll"><span class="linenos"> 53</span><span class="kn">import</span> <span class="nn">omni.usd</span>
+</span><span class="hll"><span class="linenos"> 54</span><span class="n">omni</span><span class="o">.</span><span class="n">usd</span><span class="o">.</span><span class="n">get_context</span><span class="p">()</span><span class="o">.</span><span class="n">new_stage</span><span class="p">()</span>
+</span><span class="linenos"> 55</span>
+<span class="linenos"> 56</span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="linenos"> 57</span>
+<span class="linenos"> 58</span><span class="c1"># Import the Pegasus API for simulating drones</span>
+<span class="linenos"> 59</span><span class="kn">from</span> <span class="nn">pegasus.simulator.params</span> <span class="kn">import</span> <span class="n">ROBOTS</span><span class="p">,</span> <span class="n">SIMULATION_ENVIRONMENTS</span>
+<span class="linenos"> 60</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.interface.pegasus_interface</span> <span class="kn">import</span> <span class="n">PegasusInterface</span>
+<span class="hll"><span class="linenos"> 61</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.people.person</span> <span class="kn">import</span> <span class="n">Person</span>
+</span><span class="hll"><span class="linenos"> 62</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.people.person_controller</span> <span class="kn">import</span> <span class="n">PersonController</span>
+</span><span class="linenos"> 63</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.graphical_sensors.monocular_camera</span> <span class="kn">import</span> <span class="n">MonocularCamera</span>
+<span class="linenos"> 64</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.backends.mavlink_backend</span> <span class="kn">import</span> <span class="n">MavlinkBackend</span><span class="p">,</span> <span class="n">MavlinkBackendConfig</span>
+<span class="linenos"> 65</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.backends.ros2_backend</span> <span class="kn">import</span> <span class="n">ROS2Backend</span>
+<span class="linenos"> 66</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.vehicles.multirotor</span> <span class="kn">import</span> <span class="n">Multirotor</span><span class="p">,</span> <span class="n">MultirotorConfig</span>
+<span class="linenos"> 67</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.interface.pegasus_interface</span> <span class="kn">import</span> <span class="n">PegasusInterface</span>
+<span class="linenos"> 68</span>
+<span class="hll"><span class="linenos"> 69</span><span class="c1"># Example controller class that make a person move in a circle around the origin of the world</span>
+</span><span class="hll"><span class="linenos"> 70</span><span class="c1"># Note: You could create a different controller with a different behaviour. For instance, you could:</span>
+</span><span class="hll"><span class="linenos"> 71</span><span class="c1"># 1. read the keyboard input to move the person around the world.</span>
+</span><span class="hll"><span class="linenos"> 72</span><span class="c1"># 2. read the target position from a ros topic,</span>
+</span><span class="hll"><span class="linenos"> 73</span><span class="c1"># 3. read the target position from a file,</span>
+</span><span class="hll"><span class="linenos"> 74</span><span class="c1"># 4. etc.</span>
+</span><span class="hll"><span class="linenos"> 75</span><span class="k">class</span> <span class="nc">CirclePersonController</span><span class="p">(</span><span class="n">PersonController</span><span class="p">):</span>
+</span><span class="hll"><span class="linenos"> 76</span>
+</span><span class="hll"><span class="linenos"> 77</span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class="hll"><span class="linenos"> 78</span>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+</span><span class="hll"><span class="linenos"> 79</span>
+</span><span class="hll"><span class="linenos"> 80</span>        <span class="bp">self</span><span class="o">.</span><span class="n">_radius</span> <span class="o">=</span> <span class="mf">5.0</span>
+</span><span class="hll"><span class="linenos"> 81</span>        <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span> <span class="o">=</span> <span class="mf">0.0</span>
+</span><span class="hll"><span class="linenos"> 82</span>        <span class="bp">self</span><span class="o">.</span><span class="n">gamma_dot</span> <span class="o">=</span> <span class="mf">0.3</span>
+</span><span class="hll"><span class="linenos"> 83</span>        
+</span><span class="hll"><span class="linenos"> 84</span>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+</span><span class="hll"><span class="linenos"> 85</span>
+</span><span class="hll"><span class="linenos"> 86</span>        <span class="c1"># Update the reference position for the person to track</span>
+</span><span class="hll"><span class="linenos"> 87</span>        <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gamma_dot</span> <span class="o">*</span> <span class="n">dt</span>
+</span><span class="hll"><span class="linenos"> 88</span>        
+</span><span class="hll"><span class="linenos"> 89</span>        <span class="c1"># Set the target position for the person to track</span>
+</span><span class="hll"><span class="linenos"> 90</span>        <span class="bp">self</span><span class="o">.</span><span class="n">_person</span><span class="o">.</span><span class="n">update_target_position</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_radius</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gamma</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_radius</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gamma</span><span class="p">),</span> <span class="mf">0.0</span><span class="p">])</span>
+</span><span class="linenos"> 91</span>        
+<span class="linenos"> 92</span>
+<span class="linenos"> 93</span><span class="c1"># Auxiliary scipy and numpy modules</span>
+<span class="linenos"> 94</span><span class="kn">from</span> <span class="nn">scipy.spatial.transform</span> <span class="kn">import</span> <span class="n">Rotation</span>
+<span class="linenos"> 95</span>
+<span class="linenos"> 96</span><span class="c1"># -------------------------------------------------------------------------------------------------</span>
+<span class="linenos"> 97</span><span class="c1"># Define the PegasusApp class where the simulation will be run</span>
+<span class="linenos"> 98</span><span class="c1"># -------------------------------------------------------------------------------------------------</span>
+<span class="linenos"> 99</span><span class="k">class</span> <span class="nc">PegasusApp</span><span class="p">:</span>
+<span class="linenos">100</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">101</span><span class="sd">    A Template class that serves as an example on how to build a simple Isaac Sim standalone App.</span>
+<span class="linenos">102</span><span class="sd">    &quot;&quot;&quot;</span>
+<span class="linenos">103</span>
+<span class="linenos">104</span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos">105</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">106</span><span class="sd">        Method that initializes the PegasusApp and is used to setup the simulation environment.</span>
+<span class="linenos">107</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">108</span>
+<span class="linenos">109</span>        <span class="c1"># Acquire the timeline that will be used to start/stop the simulation</span>
+<span class="linenos">110</span>        <span class="bp">self</span><span class="o">.</span><span class="n">timeline</span> <span class="o">=</span> <span class="n">omni</span><span class="o">.</span><span class="n">timeline</span><span class="o">.</span><span class="n">get_timeline_interface</span><span class="p">()</span>
+<span class="linenos">111</span>
+<span class="linenos">112</span>        <span class="c1"># Start the Pegasus Interface</span>
+<span class="linenos">113</span>        <span class="bp">self</span><span class="o">.</span><span class="n">pg</span> <span class="o">=</span> <span class="n">PegasusInterface</span><span class="p">()</span>
+<span class="linenos">114</span>
+<span class="linenos">115</span>        <span class="c1"># Acquire the World, .i.e, the singleton that controls that is a one stop shop for setting up physics,</span>
+<span class="linenos">116</span>        <span class="c1"># spawning asset primitives, etc.</span>
+<span class="linenos">117</span>        <span class="bp">self</span><span class="o">.</span><span class="n">pg</span><span class="o">.</span><span class="n">_world</span> <span class="o">=</span> <span class="n">World</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">pg</span><span class="o">.</span><span class="n">_world_settings</span><span class="p">)</span>
+<span class="linenos">118</span>        <span class="bp">self</span><span class="o">.</span><span class="n">world</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pg</span><span class="o">.</span><span class="n">world</span>
+<span class="linenos">119</span>
+<span class="linenos">120</span>        <span class="c1"># Launch one of the worlds provided by NVIDIA</span>
+<span class="linenos">121</span>        <span class="c1">#self.pg.load_environment(SIMULATION_ENVIRONMENTS[&quot;Curved Gridroom&quot;])</span>
+<span class="linenos">122</span>        <span class="bp">self</span><span class="o">.</span><span class="n">pg</span><span class="o">.</span><span class="n">load_asset</span><span class="p">(</span><span class="n">SIMULATION_ENVIRONMENTS</span><span class="p">[</span><span class="s2">&quot;Curved Gridroom&quot;</span><span class="p">],</span> <span class="s2">&quot;/World/layout&quot;</span><span class="p">)</span>
+<span class="linenos">123</span>
+<span class="hll"><span class="linenos">124</span>        <span class="c1"># Check the available assets for people</span>
+</span><span class="hll"><span class="linenos">125</span>        <span class="n">people_assets_list</span> <span class="o">=</span> <span class="n">Person</span><span class="o">.</span><span class="n">get_character_asset_list</span><span class="p">()</span>
+</span><span class="hll"><span class="linenos">126</span>        <span class="k">for</span> <span class="n">person</span> <span class="ow">in</span> <span class="n">people_assets_list</span><span class="p">:</span>
+</span><span class="hll"><span class="linenos">127</span>            <span class="nb">print</span><span class="p">(</span><span class="n">person</span><span class="p">)</span>
+</span><span class="linenos">128</span>
+<span class="hll"><span class="linenos">129</span>        <span class="c1"># Create the controller to make on person walk around in circles</span>
+</span><span class="hll"><span class="linenos">130</span>        <span class="n">person_controller</span> <span class="o">=</span> <span class="n">CirclePersonController</span><span class="p">()</span>
+</span><span class="hll"><span class="linenos">131</span>        <span class="n">p1</span> <span class="o">=</span> <span class="n">Person</span><span class="p">(</span><span class="s2">&quot;person1&quot;</span><span class="p">,</span> <span class="s2">&quot;original_male_adult_construction_05&quot;</span><span class="p">,</span> <span class="n">init_pos</span><span class="o">=</span><span class="p">[</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="n">init_yaw</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">controller</span><span class="o">=</span><span class="n">person_controller</span><span class="p">)</span>
+</span><span class="hll"><span class="linenos">132</span>        
+</span><span class="hll"><span class="linenos">133</span>        <span class="c1"># Create a person without setting up a controller, and just setting a manual target position for it to track</span>
+</span><span class="hll"><span class="linenos">134</span>        <span class="n">p2</span> <span class="o">=</span> <span class="n">Person</span><span class="p">(</span><span class="s2">&quot;person2&quot;</span><span class="p">,</span> <span class="s2">&quot;original_female_adult_business_02&quot;</span><span class="p">,</span> <span class="n">init_pos</span><span class="o">=</span><span class="p">[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span>
+</span><span class="hll"><span class="linenos">135</span>        <span class="n">p2</span><span class="o">.</span><span class="n">update_target_position</span><span class="p">([</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="mf">1.0</span><span class="p">)</span>
+</span><span class="linenos">136</span>
+<span class="linenos">137</span>        <span class="c1"># Create the vehicle</span>
+<span class="linenos">138</span>        <span class="c1"># Try to spawn the selected robot in the world to the specified namespace</span>
+<span class="linenos">139</span>        <span class="n">config_multirotor</span> <span class="o">=</span> <span class="n">MultirotorConfig</span><span class="p">()</span>
+<span class="linenos">140</span>        <span class="c1"># # Create the multirotor configuration</span>
+<span class="linenos">141</span>        <span class="n">mavlink_config</span> <span class="o">=</span> <span class="n">MavlinkBackendConfig</span><span class="p">({</span>
+<span class="linenos">142</span>            <span class="s2">&quot;vehicle_id&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+<span class="linenos">143</span>            <span class="s2">&quot;px4_autolaunch&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+<span class="linenos">144</span>            <span class="s2">&quot;px4_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;/home/marcelo/PX4-Autopilot&quot;</span>
+<span class="linenos">145</span>        <span class="p">})</span>
+<span class="linenos">146</span>        <span class="n">config_multirotor</span><span class="o">.</span><span class="n">backends</span> <span class="o">=</span> <span class="p">[</span>
+<span class="linenos">147</span>            <span class="n">MavlinkBackend</span><span class="p">(</span><span class="n">mavlink_config</span><span class="p">),</span>
+<span class="linenos">148</span>            <span class="n">ROS2Backend</span><span class="p">(</span><span class="n">vehicle_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> 
+<span class="linenos">149</span>                <span class="n">config</span><span class="o">=</span><span class="p">{</span>
+<span class="linenos">150</span>                    <span class="s2">&quot;namespace&quot;</span><span class="p">:</span> <span class="s1">&#39;drone&#39;</span><span class="p">,</span> 
+<span class="linenos">151</span>                    <span class="s2">&quot;pub_sensors&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+<span class="linenos">152</span>                    <span class="s2">&quot;pub_graphical_sensors&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+<span class="linenos">153</span>                    <span class="s2">&quot;pub_state&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+<span class="linenos">154</span>                    <span class="s2">&quot;pub_tf&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+<span class="linenos">155</span>                    <span class="s2">&quot;sub_control&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,})]</span>
 <span class="linenos">156</span>
-<span class="linenos">157</span>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="linenos">158</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="linenos">159</span><span class="sd">        Method that implements the application main loop, where the physics steps are executed.</span>
-<span class="linenos">160</span><span class="sd">        &quot;&quot;&quot;</span>
-<span class="linenos">161</span>
-<span class="linenos">162</span>        <span class="c1"># Start the simulation</span>
-<span class="linenos">163</span>        <span class="bp">self</span><span class="o">.</span><span class="n">timeline</span><span class="o">.</span><span class="n">play</span><span class="p">()</span>
-<span class="linenos">164</span>
-<span class="linenos">165</span>        <span class="c1"># The &quot;infinite&quot; loop</span>
-<span class="linenos">166</span>        <span class="k">while</span> <span class="n">simulation_app</span><span class="o">.</span><span class="n">is_running</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop_sim</span><span class="p">:</span>
-<span class="linenos">167</span>            <span class="c1"># Update the UI of the app and perform the physics step</span>
-<span class="linenos">168</span>            <span class="bp">self</span><span class="o">.</span><span class="n">world</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">render</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="linenos">169</span>
-<span class="linenos">170</span>        <span class="c1"># Cleanup and stop</span>
-<span class="linenos">171</span>        <span class="n">carb</span><span class="o">.</span><span class="n">log_warn</span><span class="p">(</span><span class="s2">&quot;PegasusApp Simulation App is closing.&quot;</span><span class="p">)</span>
-<span class="linenos">172</span>        <span class="bp">self</span><span class="o">.</span><span class="n">timeline</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
-<span class="linenos">173</span>        <span class="n">simulation_app</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="linenos">157</span>        <span class="c1"># Create a camera</span>
+<span class="linenos">158</span>        <span class="n">config_multirotor</span><span class="o">.</span><span class="n">graphical_sensors</span> <span class="o">=</span> <span class="p">[</span><span class="n">MonocularCamera</span><span class="p">(</span><span class="s2">&quot;camera&quot;</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;update_rate&quot;</span><span class="p">:</span> <span class="mf">60.0</span><span class="p">})]</span>
+<span class="linenos">159</span>
+<span class="linenos">160</span>        <span class="n">Multirotor</span><span class="p">(</span>
+<span class="linenos">161</span>            <span class="s2">&quot;/World/quadrotor&quot;</span><span class="p">,</span>
+<span class="linenos">162</span>            <span class="n">ROBOTS</span><span class="p">[</span><span class="s1">&#39;Iris&#39;</span><span class="p">],</span>
+<span class="linenos">163</span>            <span class="mi">0</span><span class="p">,</span>
+<span class="linenos">164</span>            <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.07</span><span class="p">],</span>
+<span class="linenos">165</span>            <span class="n">Rotation</span><span class="o">.</span><span class="n">from_euler</span><span class="p">(</span><span class="s2">&quot;XYZ&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="n">degrees</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">as_quat</span><span class="p">(),</span>
+<span class="linenos">166</span>            <span class="n">config</span><span class="o">=</span><span class="n">config_multirotor</span><span class="p">,</span>
+<span class="linenos">167</span>        <span class="p">)</span>
+<span class="linenos">168</span>
+<span class="linenos">169</span>        <span class="c1"># Set the camera of the viewport to a nice position</span>
+<span class="linenos">170</span>        <span class="bp">self</span><span class="o">.</span><span class="n">pg</span><span class="o">.</span><span class="n">set_viewport_camera</span><span class="p">([</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">9.0</span><span class="p">,</span> <span class="mf">6.5</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span>
+<span class="linenos">171</span>
+<span class="linenos">172</span>        <span class="c1"># Reset the simulation environment so that all articulations (aka robots) are initialized</span>
+<span class="linenos">173</span>        <span class="bp">self</span><span class="o">.</span><span class="n">world</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
 <span class="linenos">174</span>
-<span class="linenos">175</span><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
-<span class="linenos">176</span>
-<span class="linenos">177</span>    <span class="c1"># Instantiate the template app</span>
-<span class="linenos">178</span>    <span class="n">pg_app</span> <span class="o">=</span> <span class="n">PegasusApp</span><span class="p">()</span>
-<span class="linenos">179</span>
-<span class="linenos">180</span>    <span class="c1"># Run the application loop</span>
-<span class="linenos">181</span>    <span class="n">pg_app</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="linenos">175</span>        <span class="c1"># Auxiliar variable for the timeline callback example</span>
+<span class="linenos">176</span>        <span class="bp">self</span><span class="o">.</span><span class="n">stop_sim</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="linenos">177</span>
+<span class="linenos">178</span>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos">179</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">180</span><span class="sd">        Method that implements the application main loop, where the physics steps are executed.</span>
+<span class="linenos">181</span><span class="sd">        &quot;&quot;&quot;</span>
 <span class="linenos">182</span>
-<span class="linenos">183</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-<span class="linenos">184</span>    <span class="n">main</span><span class="p">()</span>
+<span class="linenos">183</span>        <span class="c1"># Start the simulation</span>
+<span class="linenos">184</span>        <span class="bp">self</span><span class="o">.</span><span class="n">timeline</span><span class="o">.</span><span class="n">play</span><span class="p">()</span>
+<span class="linenos">185</span>
+<span class="linenos">186</span>        <span class="c1"># The &quot;infinite&quot; loop</span>
+<span class="linenos">187</span>        <span class="k">while</span> <span class="n">simulation_app</span><span class="o">.</span><span class="n">is_running</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop_sim</span><span class="p">:</span>
+<span class="linenos">188</span>            <span class="c1"># Update the UI of the app and perform the physics step</span>
+<span class="linenos">189</span>            <span class="bp">self</span><span class="o">.</span><span class="n">world</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">render</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="linenos">190</span>
+<span class="linenos">191</span>        <span class="c1"># Cleanup and stop</span>
+<span class="linenos">192</span>        <span class="n">carb</span><span class="o">.</span><span class="n">log_warn</span><span class="p">(</span><span class="s2">&quot;PegasusApp Simulation App is closing.&quot;</span><span class="p">)</span>
+<span class="linenos">193</span>        <span class="bp">self</span><span class="o">.</span><span class="n">timeline</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+<span class="linenos">194</span>        <span class="n">simulation_app</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="linenos">195</span>
+<span class="linenos">196</span><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<span class="linenos">197</span>
+<span class="linenos">198</span>    <span class="c1"># Instantiate the template app</span>
+<span class="linenos">199</span>    <span class="n">pg_app</span> <span class="o">=</span> <span class="n">PegasusApp</span><span class="p">()</span>
+<span class="linenos">200</span>
+<span class="linenos">201</span>    <span class="c1"># Run the application loop</span>
+<span class="linenos">202</span>    <span class="n">pg_app</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="linenos">203</span>
+<span class="linenos">204</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="linenos">205</span>    <span class="n">main</span><span class="p">()</span>
 </pre></div>
 </div>
 </section>
 <section id="explanation">
 <h2>2. Explanation<a class="headerlink" href="#explanation" title="Permalink to this heading"></a></h2>
-<p>To start a pre-programmed simulation with moving people, you need to ensure that the <code class="docutils literal notranslate"><span class="pre">People</span></code> extension provided by NVIDIA is enabled.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">29</span><span class="n">EXTENSIONS_PEOPLE</span> <span class="o">=</span> <span class="p">[</span>
-<span class="linenos">30</span>    <span class="s1">&#39;omni.anim.people&#39;</span><span class="p">,</span> 
-<span class="linenos">31</span>    <span class="s1">&#39;omni.anim.navigation.bundle&#39;</span><span class="p">,</span> 
-<span class="linenos">32</span>    <span class="s1">&#39;omni.anim.timeline&#39;</span><span class="p">,</span>
-<span class="linenos">33</span>    <span class="s1">&#39;omni.anim.graph.bundle&#39;</span><span class="p">,</span> 
-<span class="linenos">34</span>    <span class="s1">&#39;omni.anim.graph.core&#39;</span><span class="p">,</span> 
-<span class="linenos">35</span>    <span class="s1">&#39;omni.anim.graph.ui&#39;</span><span class="p">,</span>
-<span class="linenos">36</span>    <span class="s1">&#39;omni.anim.retarget.bundle&#39;</span><span class="p">,</span> 
-<span class="linenos">37</span>    <span class="s1">&#39;omni.anim.retarget.core&#39;</span><span class="p">,</span>
-<span class="linenos">38</span>    <span class="s1">&#39;omni.anim.retarget.ui&#39;</span><span class="p">,</span> 
-<span class="linenos">39</span>    <span class="s1">&#39;omni.kit.scripting&#39;</span>
-<span class="linenos">40</span><span class="p">]</span>
-<span class="linenos">41</span>
-<span class="linenos">42</span><span class="k">for</span> <span class="n">ext_people</span> <span class="ow">in</span> <span class="n">EXTENSIONS_PEOPLE</span><span class="p">:</span>
-<span class="linenos">43</span>    <span class="n">enable_extension</span><span class="p">(</span><span class="n">ext_people</span><span class="p">)</span>
+<p>To start a pre-programmed simulation with moving people, you need to ensure that the <code class="docutils literal notranslate"><span class="pre">People</span></code> extension provided by NVIDIA is enabled. Note, in Isaac 4.1.0 we also need to create a new stage for the people extension to start properly.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">23</span><span class="kn">from</span> <span class="nn">omni.isaac.core.utils.extensions</span> <span class="kn">import</span> <span class="n">disable_extension</span><span class="p">,</span> <span class="n">enable_extension</span>
+<span class="linenos">24</span>
+<span class="linenos">25</span><span class="n">EXTENSIONS_PEOPLE</span> <span class="o">=</span> <span class="p">[</span>
+<span class="linenos">26</span>    <span class="s1">&#39;omni.anim.people&#39;</span><span class="p">,</span> 
+<span class="linenos">27</span>    <span class="s1">&#39;omni.anim.navigation.bundle&#39;</span><span class="p">,</span> 
+<span class="linenos">28</span>    <span class="s1">&#39;omni.anim.timeline&#39;</span><span class="p">,</span>
+<span class="linenos">29</span>    <span class="s1">&#39;omni.anim.graph.bundle&#39;</span><span class="p">,</span> 
+<span class="linenos">30</span>    <span class="s1">&#39;omni.anim.graph.core&#39;</span><span class="p">,</span> 
+<span class="linenos">31</span>    <span class="s1">&#39;omni.anim.graph.ui&#39;</span><span class="p">,</span>
+<span class="linenos">32</span>    <span class="s1">&#39;omni.anim.retarget.bundle&#39;</span><span class="p">,</span> 
+<span class="linenos">33</span>    <span class="s1">&#39;omni.anim.retarget.core&#39;</span><span class="p">,</span>
+<span class="linenos">34</span>    <span class="s1">&#39;omni.anim.retarget.ui&#39;</span><span class="p">,</span> 
+<span class="linenos">35</span>    <span class="s1">&#39;omni.kit.scripting&#39;</span><span class="p">,</span>
+<span class="linenos">36</span>    <span class="s1">&#39;omni.graph.io&#39;</span><span class="p">,</span>
+<span class="linenos">37</span>    <span class="s1">&#39;omni.anim.curve.core&#39;</span><span class="p">,</span>
+<span class="linenos">38</span><span class="p">]</span>
+<span class="linenos">39</span>
+<span class="linenos">40</span><span class="k">for</span> <span class="n">ext_people</span> <span class="ow">in</span> <span class="n">EXTENSIONS_PEOPLE</span><span class="p">:</span>
+<span class="linenos">41</span>    <span class="n">enable_extension</span><span class="p">(</span><span class="n">ext_people</span><span class="p">)</span>
+<span class="linenos">42</span>
+<span class="linenos">43</span><span class="c1"># Enable/disable ROS bridge extensions to keep only ROS2 Bridge</span>
+<span class="linenos">44</span><span class="n">disable_extension</span><span class="p">(</span><span class="s2">&quot;omni.isaac.ros_bridge&quot;</span><span class="p">)</span>
+<span class="linenos">45</span><span class="n">enable_extension</span><span class="p">(</span><span class="s2">&quot;omni.isaac.ros2_bridge&quot;</span><span class="p">)</span>
+<span class="linenos">46</span>
+<span class="linenos">47</span><span class="c1"># Update the simulation app with the new extensions</span>
+<span class="linenos">48</span><span class="n">simulation_app</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+<span class="linenos">49</span><span class="c1"># -------------------------------------------------------------------------------------------------</span>
+<span class="linenos">50</span><span class="c1"># These lines are needed to restart the USD stage and make sure that the people extension is loaded</span>
+<span class="linenos">51</span><span class="c1"># -------------------------------------------------------------------------------------------------</span>
+<span class="linenos">52</span><span class="kn">import</span> <span class="nn">omni.usd</span>
+<span class="linenos">53</span><span class="n">omni</span><span class="o">.</span><span class="n">usd</span><span class="o">.</span><span class="n">get_context</span><span class="p">()</span><span class="o">.</span><span class="n">new_stage</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>We also need to import the <code class="docutils literal notranslate"><span class="pre">Person</span></code> and the <code class="docutils literal notranslate"><span class="pre">PersonController</span></code> classes. This follows the same strategy adopted for the vehicles and the control backends.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">50</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.people.person</span> <span class="kn">import</span> <span class="n">Person</span>
-<span class="linenos">51</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.people.person_controller</span> <span class="kn">import</span> <span class="n">PersonController</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">61</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.people.person</span> <span class="kn">import</span> <span class="n">Person</span>
+<span class="linenos">62</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.people.person_controller</span> <span class="kn">import</span> <span class="n">PersonController</span>
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">PersonController</span></code> is an interface class that a user defined controller must inherit from. This controller is responsible for defining the behavior of the person in the simulation.
@@ -346,28 +383,28 @@ In this example, our controller makes a person walk in circles, but you can defi
 <li><p>etc…</p></li>
 </ul>
 </div></blockquote>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">57</span><span class="c1"># Example controller class that make a person move in a circle around the origin of the world</span>
-<span class="linenos">58</span><span class="c1"># Note: You could create a different controller with a different behaviour. For instance, you could:</span>
-<span class="linenos">59</span><span class="c1"># 1. read the keyboard input to move the person around the world.</span>
-<span class="linenos">60</span><span class="c1"># 2. read the target position from a ros topic,</span>
-<span class="linenos">61</span><span class="c1"># 3. read the target position from a file,</span>
-<span class="linenos">62</span><span class="c1"># 4. etc.</span>
-<span class="linenos">63</span><span class="k">class</span> <span class="nc">CirclePersonControler</span><span class="p">(</span><span class="n">PersonController</span><span class="p">):</span>
-<span class="linenos">64</span>
-<span class="linenos">65</span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="linenos">66</span>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-<span class="linenos">67</span>
-<span class="linenos">68</span>        <span class="bp">self</span><span class="o">.</span><span class="n">_radius</span> <span class="o">=</span> <span class="mf">5.0</span>
-<span class="linenos">69</span>        <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span> <span class="o">=</span> <span class="mf">0.0</span>
-<span class="linenos">70</span>        <span class="bp">self</span><span class="o">.</span><span class="n">gamma_dot</span> <span class="o">=</span> <span class="mf">0.3</span>
-<span class="linenos">71</span>        
-<span class="linenos">72</span>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
-<span class="linenos">73</span>
-<span class="linenos">74</span>        <span class="c1"># Update the reference position for the person to track</span>
-<span class="linenos">75</span>        <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gamma_dot</span> <span class="o">*</span> <span class="n">dt</span>
-<span class="linenos">76</span>        
-<span class="linenos">77</span>        <span class="c1"># Set the target position for the person to track</span>
-<span class="linenos">78</span>        <span class="bp">self</span><span class="o">.</span><span class="n">_person</span><span class="o">.</span><span class="n">update_target_position</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_radius</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gamma</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_radius</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gamma</span><span class="p">),</span> <span class="mf">0.0</span><span class="p">])</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">69</span><span class="c1"># Example controller class that make a person move in a circle around the origin of the world</span>
+<span class="linenos">70</span><span class="c1"># Note: You could create a different controller with a different behaviour. For instance, you could:</span>
+<span class="linenos">71</span><span class="c1"># 1. read the keyboard input to move the person around the world.</span>
+<span class="linenos">72</span><span class="c1"># 2. read the target position from a ros topic,</span>
+<span class="linenos">73</span><span class="c1"># 3. read the target position from a file,</span>
+<span class="linenos">74</span><span class="c1"># 4. etc.</span>
+<span class="linenos">75</span><span class="k">class</span> <span class="nc">CirclePersonController</span><span class="p">(</span><span class="n">PersonController</span><span class="p">):</span>
+<span class="linenos">76</span>
+<span class="linenos">77</span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos">78</span>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+<span class="linenos">79</span>
+<span class="linenos">80</span>        <span class="bp">self</span><span class="o">.</span><span class="n">_radius</span> <span class="o">=</span> <span class="mf">5.0</span>
+<span class="linenos">81</span>        <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span> <span class="o">=</span> <span class="mf">0.0</span>
+<span class="linenos">82</span>        <span class="bp">self</span><span class="o">.</span><span class="n">gamma_dot</span> <span class="o">=</span> <span class="mf">0.3</span>
+<span class="linenos">83</span>        
+<span class="linenos">84</span>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+<span class="linenos">85</span>
+<span class="linenos">86</span>        <span class="c1"># Update the reference position for the person to track</span>
+<span class="linenos">87</span>        <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gamma_dot</span> <span class="o">*</span> <span class="n">dt</span>
+<span class="linenos">88</span>        
+<span class="linenos">89</span>        <span class="c1"># Set the target position for the person to track</span>
+<span class="linenos">90</span>        <span class="bp">self</span><span class="o">.</span><span class="n">_person</span><span class="o">.</span><span class="n">update_target_position</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_radius</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gamma</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_radius</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gamma</span><span class="p">),</span> <span class="mf">0.0</span><span class="p">])</span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -375,21 +412,21 @@ In this example, our controller makes a person walk in circles, but you can defi
 <p>To check all the functions that you can implement in your controller, check the <code class="docutils literal notranslate"><span class="pre">PersonController</span></code> class in the API reference.</p>
 </div>
 <p>The next step is to create a person in the simulation. But, you let’s imagine you don’t know which 3D models are available. Well, you can call the static method <code class="docutils literal notranslate"><span class="pre">Person.get_character_asset_list()</span></code> function to list all the available models.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">108</span>        <span class="c1"># Check the available assets for people</span>
-<span class="linenos">109</span>        <span class="n">people_assets_list</span> <span class="o">=</span> <span class="n">Person</span><span class="o">.</span><span class="n">get_character_asset_list</span><span class="p">()</span>
-<span class="linenos">110</span>        <span class="k">for</span> <span class="n">person</span> <span class="ow">in</span> <span class="n">people_assets_list</span><span class="p">:</span>
-<span class="linenos">111</span>            <span class="nb">print</span><span class="p">(</span><span class="n">person</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">124</span>        <span class="c1"># Check the available assets for people</span>
+<span class="linenos">125</span>        <span class="n">people_assets_list</span> <span class="o">=</span> <span class="n">Person</span><span class="o">.</span><span class="n">get_character_asset_list</span><span class="p">()</span>
+<span class="linenos">126</span>        <span class="k">for</span> <span class="n">person</span> <span class="ow">in</span> <span class="n">people_assets_list</span><span class="p">:</span>
+<span class="linenos">127</span>            <span class="nb">print</span><span class="p">(</span><span class="n">person</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Now that you know which models you can load, you can create a person in the simulation. You can set the initial position, orientation, and the controller that will define the behavior of the person.
 Note that if you just want to send a person to a given position manually (without using a controller), you can! Just check “Person 2”.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">113</span>        <span class="c1"># Create the controller to make on person walk around in circles</span>
-<span class="linenos">114</span>        <span class="n">person_controller</span> <span class="o">=</span> <span class="n">CirclePersonControler</span><span class="p">()</span>
-<span class="linenos">115</span>        <span class="n">p1</span> <span class="o">=</span> <span class="n">Person</span><span class="p">(</span><span class="s2">&quot;person1&quot;</span><span class="p">,</span> <span class="s2">&quot;original_male_adult_construction_05&quot;</span><span class="p">,</span> <span class="n">init_pos</span><span class="o">=</span><span class="p">[</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="n">init_yaw</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">controller</span><span class="o">=</span><span class="n">person_controller</span><span class="p">)</span>
-<span class="linenos">116</span>        
-<span class="linenos">117</span>        <span class="c1"># Create a person without setting up a controller, and just setting a manual target position for it to track</span>
-<span class="linenos">118</span>        <span class="n">p2</span> <span class="o">=</span> <span class="n">Person</span><span class="p">(</span><span class="s2">&quot;person2&quot;</span><span class="p">,</span> <span class="s2">&quot;original_female_adult_business_02&quot;</span><span class="p">,</span> <span class="n">init_pos</span><span class="o">=</span><span class="p">[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span>
-<span class="linenos">119</span>        <span class="n">p2</span><span class="o">.</span><span class="n">update_target_position</span><span class="p">([</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="mf">0.0</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">129</span>        <span class="c1"># Create the controller to make on person walk around in circles</span>
+<span class="linenos">130</span>        <span class="n">person_controller</span> <span class="o">=</span> <span class="n">CirclePersonController</span><span class="p">()</span>
+<span class="linenos">131</span>        <span class="n">p1</span> <span class="o">=</span> <span class="n">Person</span><span class="p">(</span><span class="s2">&quot;person1&quot;</span><span class="p">,</span> <span class="s2">&quot;original_male_adult_construction_05&quot;</span><span class="p">,</span> <span class="n">init_pos</span><span class="o">=</span><span class="p">[</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="n">init_yaw</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">controller</span><span class="o">=</span><span class="n">person_controller</span><span class="p">)</span>
+<span class="linenos">132</span>        
+<span class="linenos">133</span>        <span class="c1"># Create a person without setting up a controller, and just setting a manual target position for it to track</span>
+<span class="linenos">134</span>        <span class="n">p2</span> <span class="o">=</span> <span class="n">Person</span><span class="p">(</span><span class="s2">&quot;person2&quot;</span><span class="p">,</span> <span class="s2">&quot;original_female_adult_business_02&quot;</span><span class="p">,</span> <span class="n">init_pos</span><span class="o">=</span><span class="p">[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span>
+<span class="linenos">135</span>        <span class="n">p2</span><span class="o">.</span><span class="n">update_target_position</span><span class="p">([</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="mf">1.0</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>

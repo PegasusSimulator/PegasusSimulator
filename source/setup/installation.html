@@ -120,12 +120,12 @@
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this heading"></a></h1>
 <section id="installing-nvidia-isaac-sim">
 <h2>Installing NVIDIA Isaac Sim<a class="headerlink" href="#installing-nvidia-isaac-sim" title="Permalink to this heading"></a></h2>
-<a class="reference external image-reference" href="https://developer.nvidia.com/isaac-sim"><img alt="IsaacSim 2023.1.1" src="https://img.shields.io/badge/IsaacSim-2023.1.1-brightgreen.svg" /></a>
-<a class="reference external image-reference" href="https://github.com/PX4/PX4-Autopilot"><img alt="PX4-Autopilot 1.14.1" src="https://img.shields.io/badge/PX4--Autopilot-1.14.1-brightgreen.svg" /></a>
+<a class="reference external image-reference" href="https://developer.nvidia.com/isaac-sim"><img alt="IsaacSim 4.1.0" src="https://img.shields.io/badge/IsaacSim-4.1.0-brightgreen.svg" /></a>
+<a class="reference external image-reference" href="https://github.com/PX4/PX4-Autopilot"><img alt="PX4-Autopilot 1.14.3" src="https://img.shields.io/badge/PX4--Autopilot-1.14.3-brightgreen.svg" /></a>
 <a class="reference external image-reference" href="https://releases.ubuntu.com/22.04/"><img alt="Ubuntu 22.04" src="https://img.shields.io/badge/Ubuntu-22.04LTS-brightgreen.svg" /></a>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>We have tested Pegasus Simulator with Isaac Sim 2023.1.1 release on Ubuntu 22.04LTS with NVIDIA driver 545.23.08. The PX4-Autopilot used during development was v.14.1. Older versions Ubuntu and PX4-Autopilot were not tested. This extension was not tested on Windows.</p>
+<p>We have tested Pegasus Simulator with Isaac Sim 4.1.0 release on Ubuntu 22.04LTS with NVIDIA driver 550.90.07. The PX4-Autopilot used during development was v.14.3. Older versions Ubuntu and PX4-Autopilot were not tested. This extension was not tested on Windows.</p>
 </div>
 <p>In order to install Isaac Sim on linux, download the <a class="reference external" href="https://install.launcher.omniverse.nvidia.com/installers/omniverse-launcher-linux.AppImage">Omniverse AppImage here</a> or run the following line on the terminal:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>wget<span class="w"> </span>https://install.launcher.omniverse.nvidia.com/installers/omniverse-launcher-linux.AppImage
@@ -153,15 +153,14 @@ by navigating to Isaac Sim’s root folder. Typically, in Linux, this folder can
 where the <code class="docutils literal notranslate"><span class="pre">*</span></code> is the version number.</p>
 <p>Add the following lines to your <code class="docutils literal notranslate"><span class="pre">~/.bashrc</span></code> or <code class="docutils literal notranslate"><span class="pre">~/.zshrc</span></code> file.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Isaac Sim root directory</span>
-<span class="nb">export</span><span class="w"> </span><span class="nv">ISAACSIM_PATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">HOME</span><span class="si">}</span><span class="s2">/.local/share/ov/pkg/isaac_sim-*&quot;</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">ISAACSIM_PATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">HOME</span><span class="si">}</span><span class="s2">/.local/share/ov/pkg/isaac_sim-4.1.0&quot;</span>
 <span class="c1"># Isaac Sim python executable</span>
 <span class="nb">alias</span><span class="w"> </span><span class="nv">ISAACSIM_PYTHON</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">ISAACSIM_PATH</span><span class="si">}</span><span class="s2">/python.sh&quot;</span>
 <span class="c1"># Isaac Sim app</span>
 <span class="nb">alias</span><span class="w"> </span><span class="nv">ISAACSIM</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">ISAACSIM_PATH</span><span class="si">}</span><span class="s2">/isaac-sim.sh&quot;</span>
 </pre></div>
 </div>
-<p>If you only have one version of Isaac Sim installed, you can leave the <code class="docutils literal notranslate"><span class="pre">*</span></code>, otherwise you will have to replace it by the
-version that you desire to use. In the remaining of the documentation, we will refer to the Isaac Sim’s path as <code class="docutils literal notranslate"><span class="pre">ISAACSIM_PATH</span></code> ,
+<p>In the remaining of the documentation, we will refer to the Isaac Sim’s path as <code class="docutils literal notranslate"><span class="pre">ISAACSIM_PATH</span></code> ,
 the provided python interpreter as <code class="docutils literal notranslate"><span class="pre">ISAACSIM_PYTHON</span></code> and the simulator itself as <code class="docutils literal notranslate"><span class="pre">ISAACSIM</span></code> .</p>
 <section id="running-isaac-sim">
 <h3>Running Isaac Sim<a class="headerlink" href="#running-isaac-sim" title="Permalink to this heading"></a></h3>
@@ -287,13 +286,13 @@ git<span class="w"> </span>clone<span class="w"> </span>git@github.com:PX4/PX4-A
 </div>
 </div></blockquote>
 </li>
-<li><p>Checkout to the stable version 1.14.1 and compile the code for software-in-the-loop (SITL) mode:</p>
+<li><p>Checkout to the stable version 1.14.3 and compile the code for software-in-the-loop (SITL) mode:</p>
 <blockquote>
 <div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Go to the PX4 directory</span>
 <span class="nb">cd</span><span class="w"> </span>PX4-Autopilot
 
 <span class="c1"># Checkout to the latest stable release</span>
-git<span class="w"> </span>checkout<span class="w"> </span>v1.14.1
+git<span class="w"> </span>checkout<span class="w"> </span>v1.14.3
 
 <span class="c1"># Initiate all the submodules. Note this will download modules such as SITL-gazebo which we do not need</span>
 <span class="c1"># but this is the safest way to make sure that the PX4-Autopilot and its submodules are all checked out in</span>

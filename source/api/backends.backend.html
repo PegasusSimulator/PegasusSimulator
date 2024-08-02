@@ -67,6 +67,7 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">API Reference</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="index.html#sensors">Sensors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#graphical-sensors">Graphical Sensors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#graphs">Graphs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#dynamics">Dynamics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#thruster">Thruster</a></li>
@@ -172,10 +173,13 @@ The methods ‘start’, ‘stop’ and ‘reset’ are callbacks that get calle
 <tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.backend.Backend.update" title="pegasus.simulator.logic.backends.backend.Backend.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(dt)</p></td>
 <td><p>Method that when implemented, should be used to update the state of the backend and the information being sent/received from the communication interface.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.backend.Backend.update_sensor" title="pegasus.simulator.logic.backends.backend.Backend.update_sensor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_sensor</span></code></a>(sensor_type, data)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.backend.Backend.update_graphical_sensor" title="pegasus.simulator.logic.backends.backend.Backend.update_graphical_sensor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_graphical_sensor</span></code></a>(sensor_type, data)</p></td>
+<td><p>Method that when implemented, should handle the receival of graphical sensor data</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.backend.Backend.update_sensor" title="pegasus.simulator.logic.backends.backend.Backend.update_sensor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_sensor</span></code></a>(sensor_type, data)</p></td>
 <td><p>Method that when implemented, should handle the receival of sensor data</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.backend.Backend.update_state" title="pegasus.simulator.logic.backends.backend.Backend.update_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_state</span></code></a>(state)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.backend.Backend.update_state" title="pegasus.simulator.logic.backends.backend.Backend.update_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_state</span></code></a>(state)</p></td>
 <td><p>Method that when implemented, should handle the receival of the state of the vehicle using this callback</p></td>
 </tr>
 </tbody>
@@ -241,6 +245,20 @@ from the communication interface. This method will be called by the simulation o
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>dt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The time elapsed between the previous and current function calls (s).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.backend.Backend.update_graphical_sensor">
+<span class="sig-name descname"><span class="pre">update_graphical_sensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sensor_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.backend.Backend.update_graphical_sensor" title="Permalink to this definition"></a></dt>
+<dd><p>Method that when implemented, should handle the receival of graphical sensor data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sensor_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – A name that describes the type of sensor (for example MonocularCamera)</p></li>
+<li><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a>) – A dictionary that contains the data produced by the sensor</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>

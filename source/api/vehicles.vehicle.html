@@ -67,6 +67,7 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">API Reference</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="index.html#sensors">Sensors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#graphical-sensors">Graphical Sensors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#graphs">Graphs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#dynamics">Dynamics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#thruster">Thruster</a></li>
@@ -128,7 +129,7 @@
 <div class="line-block">
 <div class="line">File: vehicle.py</div>
 <div class="line">Author: Marcelo Jacinto (<a class="reference external" href="mailto:marcelo&#46;jacinto&#37;&#52;&#48;tecnico&#46;ulisboa&#46;pt">marcelo<span>&#46;</span>jacinto<span>&#64;</span>tecnico<span>&#46;</span>ulisboa<span>&#46;</span>pt</a>)</div>
-<div class="line">License: BSD-3-Clause. Copyright (c) 2023, Marcelo Jacinto. All rights reserved.</div>
+<div class="line">License: BSD-3-Clause. Copyright (c) 2024, Marcelo Jacinto. All rights reserved.</div>
 <div class="line">Description: Definition of the Vehicle class which is used as the base for all the vehicles.</div>
 </div>
 <p><strong>Classes:</strong></p>
@@ -166,17 +167,29 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.vehicles.vehicle.Vehicle.apply_torque" title="pegasus.simulator.logic.vehicles.vehicle.Vehicle.apply_torque"><code class="xref py py-obj docutils literal notranslate"><span class="pre">apply_torque</span></code></a>(torque[, body_part])</p></td>
 <td><p>Method that when invoked applies a given torque vector to /&lt;rigid_body_name&gt;/&quot;body&quot; or to /&lt;rigid_body_name&gt;/&lt;body_part&gt;.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.vehicles.vehicle.Vehicle.sim_start_stop" title="pegasus.simulator.logic.vehicles.vehicle.Vehicle.sim_start_stop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sim_start_stop</span></code></a>(event)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.vehicles.vehicle.Vehicle.get_dc_interface" title="pegasus.simulator.logic.vehicles.vehicle.Vehicle.get_dc_interface"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_dc_interface</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.vehicles.vehicle.Vehicle.sim_start_stop" title="pegasus.simulator.logic.vehicles.vehicle.Vehicle.sim_start_stop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sim_start_stop</span></code></a>(event)</p></td>
 <td><p>Callback that is called every time there is a timeline event such as starting/stoping the simulation.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.vehicles.vehicle.Vehicle.start" title="pegasus.simulator.logic.vehicles.vehicle.Vehicle.start"><code class="xref py py-obj docutils literal notranslate"><span class="pre">start</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.vehicles.vehicle.Vehicle.start" title="pegasus.simulator.logic.vehicles.vehicle.Vehicle.start"><code class="xref py py-obj docutils literal notranslate"><span class="pre">start</span></code></a>()</p></td>
 <td><p>Method that should be implemented by the class that inherits the vehicle object.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.vehicles.vehicle.Vehicle.stop" title="pegasus.simulator.logic.vehicles.vehicle.Vehicle.stop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stop</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.vehicles.vehicle.Vehicle.stop" title="pegasus.simulator.logic.vehicles.vehicle.Vehicle.stop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stop</span></code></a>()</p></td>
 <td><p>Method that should be implemented by the class that inherits the vehicle object.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.vehicles.vehicle.Vehicle.update" title="pegasus.simulator.logic.vehicles.vehicle.Vehicle.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(dt)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.vehicles.vehicle.Vehicle.update" title="pegasus.simulator.logic.vehicles.vehicle.Vehicle.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(dt)</p></td>
 <td><p>Method that computes and applies the forces to the vehicle in simulation based on the motor speed.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.vehicles.vehicle.Vehicle.update_graphical_sensors" title="pegasus.simulator.logic.vehicles.vehicle.Vehicle.update_graphical_sensors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_graphical_sensors</span></code></a>(event)</p></td>
+<td><p>Callback that is called at every rendering steps and will call the graphical_sensor.update method to generate new sensor data.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.vehicles.vehicle.Vehicle.update_sensors" title="pegasus.simulator.logic.vehicles.vehicle.Vehicle.update_sensors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_sensors</span></code></a>(dt)</p></td>
+<td><p>Callback that is called at every physics steps and will call the sensor.update method to generate new sensor data.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.vehicles.vehicle.Vehicle.update_sim_state" title="pegasus.simulator.logic.vehicles.vehicle.Vehicle.update_sim_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_sim_state</span></code></a>(dt)</p></td>
+<td><p>Callback that is used to &quot;send&quot; the current state for each backend being used to control the vehicle.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.vehicles.vehicle.Vehicle.update_state" title="pegasus.simulator.logic.vehicles.vehicle.Vehicle.update_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_state</span></code></a>(dt)</p></td>
 <td><p>Method that is called at every physics step to retrieve and update the current state of the vehicle, i.e., get the current position, orientation, linear and angular velocities and acceleration of the vehicle.</p></td>
@@ -203,7 +216,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pegasus.simulator.logic.vehicles.vehicle.Vehicle.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stage_prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usd_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0.0,</span> <span class="pre">0.0,</span> <span class="pre">0.0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_orientation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0.0,</span> <span class="pre">0.0,</span> <span class="pre">0.0,</span> <span class="pre">1.0]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.vehicles.vehicle.Vehicle.__init__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stage_prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usd_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0.0,</span> <span class="pre">0.0,</span> <span class="pre">0.0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_orientation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0.0,</span> <span class="pre">0.0,</span> <span class="pre">0.0,</span> <span class="pre">1.0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graphical_sensors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graphs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backends</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.vehicles.vehicle.Vehicle.__init__" title="Permalink to this definition"></a></dt>
 <dd><p>Class that initializes a vehicle in the isaac sim’s curent stage</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -248,6 +261,11 @@ given by ‘pos’ (following a FLU) convention.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.vehicles.vehicle.Vehicle.get_dc_interface">
+<span class="sig-name descname"><span class="pre">get_dc_interface</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.vehicles.vehicle.Vehicle.get_dc_interface" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="pegasus.simulator.logic.vehicles.vehicle.Vehicle.sim_start_stop">
 <span class="sig-name descname"><span class="pre">sim_start_stop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.vehicles.vehicle.Vehicle.sim_start_stop" title="Permalink to this definition"></a></dt>
 <dd><p>Callback that is called every time there is a timeline event such as starting/stoping the simulation.</p>
@@ -276,6 +294,46 @@ given by ‘pos’ (following a FLU) convention.</p>
 <dd><p>Method that computes and applies the forces to the vehicle in
 simulation based on the motor speed. This method must be implemented
 by a class that inherits this type and it’s called periodically by the physics engine.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The time elapsed between the previous and current function calls (s).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.vehicles.vehicle.Vehicle.update_graphical_sensors">
+<span class="sig-name descname"><span class="pre">update_graphical_sensors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.vehicles.vehicle.Vehicle.update_graphical_sensors" title="Permalink to this definition"></a></dt>
+<dd><p>Callback that is called at every rendering steps and will call the graphical_sensor.update method to generate new
+sensor data. For each data that the sensor generates, the backend.update_graphical_sensor method will also be called for
+every backend. For example, if new data is generated for a monocular camera and we have a ROS2Backend, then the update_graphical_sensor
+method will be called for that backend so that this data can latter be sent through a ROS2 topic.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>event</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The timer event that contains the time elapsed between the previous and current function calls (s).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.vehicles.vehicle.Vehicle.update_sensors">
+<span class="sig-name descname"><span class="pre">update_sensors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.vehicles.vehicle.Vehicle.update_sensors" title="Permalink to this definition"></a></dt>
+<dd><p>Callback that is called at every physics steps and will call the sensor.update method to generate new
+sensor data. For each data that the sensor generates, the backend.update_sensor method will also be called for
+every backend. For example, if new data is generated for an IMU and we have a MavlinkBackend, then the update_sensor
+method will be called for that backend so that this data can latter be sent thorugh mavlink.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The time elapsed between the previous and current function calls (s).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.vehicles.vehicle.Vehicle.update_sim_state">
+<span class="sig-name descname"><span class="pre">update_sim_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.vehicles.vehicle.Vehicle.update_sim_state" title="Permalink to this definition"></a></dt>
+<dd><p>Callback that is used to “send” the current state for each backend being used to control the vehicle. This callback
+is called on every physics step.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>dt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The time elapsed between the previous and current function calls (s).</p>

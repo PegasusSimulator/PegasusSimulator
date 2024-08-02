@@ -17,21 +17,31 @@ integration as well as custom python control interface. At the moment, only mult
    <a href="https://youtu.be/_11OCFwf_GE" target="_blank"><img src="_static/mini demo.gif" alt="Pegasus Simulator gif" align="center" height="50"/></a>
    </p>
 
-If you find ``Pegasus Simulator`` useful in your academic work, please cite the paper below. It is also available `here <https://arxiv.org/abs/2307.05263>`_.
+If you find ``Pegasus Simulator`` useful in your academic work, please cite the paper below. It is also available `here <https://doi.org/10.1109/ICUAS60882.2024.10556959>`_.
 
 .. code-block:: bibtex
 
    @INPROCEEDINGS{10556959,
-     author={Jacinto, Marcelo and Pinto, João and Patrikar, Jay and Keller, John and Cunha, Rita and Scherer, Sebastian and Pascoal, António},
-     booktitle={2024 International Conference on Unmanned Aircraft Systems (ICUAS)}, 
-     title={Pegasus Simulator: An Isaac Sim Framework for Multiple Aerial Vehicles Simulation}, 
-     year={2024},
-     volume={},
-     number={},
-     pages={917-922},
-     keywords={Simulation;Robot sensing systems;Real-time systems;Sensor systems;Sensors;Task analysis},
-     doi={10.1109/ICUAS60882.2024.10556959}}
+      author={Jacinto, Marcelo and Pinto, João and Patrikar, Jay and Keller, John and Cunha, Rita and Scherer, Sebastian and Pascoal, António},
+      booktitle={2024 International Conference on Unmanned Aircraft Systems (ICUAS)}, 
+      title={Pegasus Simulator: An Isaac Sim Framework for Multiple Aerial Vehicles Simulation}, 
+      year={2024},
+      volume={},
+      number={},
+      pages={917-922},
+      keywords={Simulation;Robot sensing systems;Real-time systems;Sensor systems;Sensors;Task analysis},
+      doi={10.1109/ICUAS60882.2024.10556959}}
 
+Latest Updates
+==============
+
+* **2024-08-02**: Pegasus Simulator v4.1.0 is released for Isaac 4.1.0. This version is **NOT** compatible with older versions of Isaac Sim.
+
+Guidance, Control and Navigation Project
+========================================
+
+In parallel to this project, the Pegasus (GNC) guidance, control, and navigation project serves as the foundation control code for performing real-world experiments for my Ph.D. More information can be found at this link:
+`Pegasus GNC <https://pegasusresearch.github.io/pegasus/>`__.
 
 Developer Team
 ~~~~~~~~~~~~~~

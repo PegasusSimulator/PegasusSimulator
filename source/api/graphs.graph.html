@@ -20,8 +20,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Drag" href="dynamics.drag.html" />
-    <link rel="prev" title="Magnetometer" href="sensors.magnetometer.html" /> 
+    <link rel="next" title="ROS2 Camera Graph" href="graphs.ros2_camera_graph.html" />
+    <link rel="prev" title="Lidar" href="graphical_sensors.lidar.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -67,12 +67,13 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">API Reference</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="index.html#sensors">Sensors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#graphical-sensors">Graphical Sensors</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="index.html#graphs">Graphs</a><ul class="current">
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Graph</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#pegasus.simulator.logic.graphs.graph.Graph"><code class="docutils literal notranslate"><span class="pre">Graph</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#pegasus.simulator.logic.graphs.ros2_camera.ROS2Camera"><code class="docutils literal notranslate"><span class="pre">ROS2Camera</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="graphs.ros2_camera_graph.html">ROS2 Camera Graph</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#dynamics">Dynamics</a></li>
@@ -112,7 +113,7 @@
           <li class="breadcrumb-item"><a href="index.html">API Reference</a></li>
       <li class="breadcrumb-item active">Graph</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../../_sources/source/api/graphs_api.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/source/api/graphs.graph.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -198,120 +199,14 @@
 
 </dd></dl>
 
-<span class="target" id="module-pegasus.simulator.logic.graphs.ros2_camera"></span><div class="line-block">
-<div class="line">File: ros2_camera.py</div>
-<div class="line">License: BSD-3-Clause. Copyright (c) 2023, Micah Nye. All rights reserved.</div>
-</div>
-<p><strong>Classes:</strong></p>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.graphs.ros2_camera.ROS2Camera" title="pegasus.simulator.logic.graphs.ros2_camera.ROS2Camera"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ROS2Camera</span></code></a></p></td>
-<td><p>The class that implements the ROS2 Camera graph.</p></td>
-</tr>
-</tbody>
-</table>
-<dl class="py class">
-<dt class="sig sig-object py" id="pegasus.simulator.logic.graphs.ros2_camera.ROS2Camera">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pegasus.simulator.logic.graphs.ros2_camera.</span></span><span class="sig-name descname"><span class="pre">ROS2Camera</span></span><a class="headerlink" href="#pegasus.simulator.logic.graphs.ros2_camera.ROS2Camera" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#pegasus.simulator.logic.graphs.graph.Graph" title="pegasus.simulator.logic.graphs.graph.Graph"><code class="xref py py-class docutils literal notranslate"><span class="pre">Graph</span></code></a></p>
-<p>The class that implements the ROS2 Camera graph. This class inherits the base class Graph.</p>
-<p><strong>Methods:</strong></p>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.graphs.ros2_camera.ROS2Camera.__init__" title="pegasus.simulator.logic.graphs.ros2_camera.ROS2Camera.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(camera_prim_path[, config])</p></td>
-<td><p>Initialize the ROS2 Camera class</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.graphs.ros2_camera.ROS2Camera.camera_labels_topic" title="pegasus.simulator.logic.graphs.ros2_camera.ROS2Camera.camera_labels_topic"><code class="xref py py-obj docutils literal notranslate"><span class="pre">camera_labels_topic</span></code></a>(camera_type)</p></td>
-<td><p>(str) Path to the camera labels topic.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.graphs.ros2_camera.ROS2Camera.camera_topic" title="pegasus.simulator.logic.graphs.ros2_camera.ROS2Camera.camera_topic"><code class="xref py py-obj docutils literal notranslate"><span class="pre">camera_topic</span></code></a>(camera_type)</p></td>
-<td><p>(str) Path to the camera topic.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.graphs.ros2_camera.ROS2Camera.initialize" title="pegasus.simulator.logic.graphs.ros2_camera.ROS2Camera.initialize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">initialize</span></code></a>(vehicle)</p></td>
-<td><p>Method that initializes the graph of the camera.</p></td>
-</tr>
-</tbody>
-</table>
-<dl class="py method">
-<dt class="sig sig-object py" id="pegasus.simulator.logic.graphs.ros2_camera.ROS2Camera.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">camera_prim_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.graphs.ros2_camera.ROS2Camera.__init__" title="Permalink to this definition"></a></dt>
-<dd><p>Initialize the ROS2 Camera class</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>camera_prim_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Path to the camera prim. Global path when it starts with <cite>/</cite>, else local to vehicle prim path</p></li>
-<li><p><strong>config</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a>) – A Dictionary that contains all the parameters for configuring the ROS2Camera - it can be empty or only have some of the parameters used by the ROS2Camera.</p></li>
-</ul>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<p>The dictionary default parameters are</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">{</span><span class="s2">&quot;graph_evaluator&quot;</span><span class="p">:</span> <span class="s2">&quot;execution&quot;</span><span class="p">,</span>            <span class="c1"># type of the omnigraph to create (execution, push)</span>
-<span class="gp">&gt;&gt;&gt; </span> <span class="s2">&quot;resolution&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">640</span><span class="p">,</span> <span class="mi">480</span><span class="p">],</span>                  <span class="c1"># output video stream resolution in pixels [width, height]</span>
-<span class="gp">&gt;&gt;&gt; </span> <span class="s2">&quot;types&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;rgb&#39;</span><span class="p">,</span> <span class="s1">&#39;camera_info&#39;</span><span class="p">],</span>           <span class="c1"># rgb, depth, depth_pcl, instance_segmentation, semantic_segmentation, bbox_2d_tight, bbox_2d_loose, bbox_3d, camera_info</span>
-<span class="gp">&gt;&gt;&gt; </span> <span class="s2">&quot;publish_labels&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>                    <span class="c1"># publish labels for instance_segmentation, semantic_segmentation, bbox_2d_tight, bbox_2d_loose and bbox_3d camera types</span>
-<span class="gp">&gt;&gt;&gt; </span> <span class="s2">&quot;topic&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span>                                <span class="c1"># base topic name for the camera (default is camera name in Isaac Sim)</span>
-<span class="gp">&gt;&gt;&gt; </span> <span class="s2">&quot;namespace&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span>                            <span class="c1"># namespace for the camera (default is vehicle name in Isaac Sim)</span>
-<span class="gp">&gt;&gt;&gt; </span> <span class="s2">&quot;tf_frame_id&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">}</span>                         <span class="c1"># tf frame id for the camera (default is camera name in Isaac Sim)</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pegasus.simulator.logic.graphs.ros2_camera.ROS2Camera.camera_labels_topic">
-<span class="sig-name descname"><span class="pre">camera_labels_topic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">camera_type</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.graphs.ros2_camera.ROS2Camera.camera_labels_topic" title="Permalink to this definition"></a></dt>
-<dd><p>(str) Path to the camera labels topic.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>camera_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – one of the supported camera output types</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Camera labels topic name (str) if the camera type exists, else empty string</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)">str</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pegasus.simulator.logic.graphs.ros2_camera.ROS2Camera.camera_topic">
-<span class="sig-name descname"><span class="pre">camera_topic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">camera_type</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.graphs.ros2_camera.ROS2Camera.camera_topic" title="Permalink to this definition"></a></dt>
-<dd><p>(str) Path to the camera topic.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>camera_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – one of the supported camera output types</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Camera topic name (str) if the camera type exists, else empty string</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)">str</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pegasus.simulator.logic.graphs.ros2_camera.ROS2Camera.initialize">
-<span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vehicle</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.graphs.ros2_camera.ROS2Camera.initialize" title="Permalink to this definition"></a></dt>
-<dd><p>Method that initializes the graph of the camera.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>vehicle</strong> (<a class="reference internal" href="vehicles.vehicle.html#pegasus.simulator.logic.vehicles.vehicle.Vehicle" title="pegasus.simulator.logic.vehicles.vehicle.Vehicle"><em>Vehicle</em></a>) – The vehicle that this graph is attached to.</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="sensors.magnetometer.html" class="btn btn-neutral float-left" title="Magnetometer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="dynamics.drag.html" class="btn btn-neutral float-right" title="Drag" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="graphical_sensors.lidar.html" class="btn btn-neutral float-left" title="Lidar" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="graphs.ros2_camera_graph.html" class="btn btn-neutral float-right" title="ROS2 Camera Graph" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

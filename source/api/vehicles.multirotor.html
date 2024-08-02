@@ -67,6 +67,7 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">API Reference</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="index.html#sensors">Sensors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#graphical-sensors">Graphical Sensors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#graphs">Graphs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#dynamics">Dynamics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#thruster">Thruster</a></li>
@@ -128,7 +129,7 @@
 <div class="line-block">
 <div class="line">File: multirotor.py</div>
 <div class="line">Author: Marcelo Jacinto (<a class="reference external" href="mailto:marcelo&#46;jacinto&#37;&#52;&#48;tecnico&#46;ulisboa&#46;pt">marcelo<span>&#46;</span>jacinto<span>&#64;</span>tecnico<span>&#46;</span>ulisboa<span>&#46;</span>pt</a>)</div>
-<div class="line">License: BSD-3-Clause. Copyright (c) 2023, Marcelo Jacinto. All rights reserved.</div>
+<div class="line">License: BSD-3-Clause. Copyright (c) 2024, Marcelo Jacinto. All rights reserved.</div>
 <div class="line">Description: Definition of the Multirotor class which is used as the base for all the multirotor vehicles.</div>
 </div>
 <p><strong>Classes:</strong></p>
@@ -160,19 +161,13 @@
 <td><p>Auxiliar method used to set the joint velocity of each rotor (for animation purposes) based on the amount of force being applied on each joint</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.vehicles.multirotor.Multirotor.start" title="pegasus.simulator.logic.vehicles.multirotor.Multirotor.start"><code class="xref py py-obj docutils literal notranslate"><span class="pre">start</span></code></a>()</p></td>
-<td><p>Intializes the communication with all the backends.</p></td>
+<td><p>In this case we do not need to do anything extra when the simulation starts</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.vehicles.multirotor.Multirotor.stop" title="pegasus.simulator.logic.vehicles.multirotor.Multirotor.stop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stop</span></code></a>()</p></td>
-<td><p>Signal all the backends that the simulation has stoped.</p></td>
+<td><p>In this case we do not need to do anything extra when the simulation stops</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.vehicles.multirotor.Multirotor.update" title="pegasus.simulator.logic.vehicles.multirotor.Multirotor.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(dt)</p></td>
 <td><p>Method that computes and applies the forces to the vehicle in simulation based on the motor speed.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.vehicles.multirotor.Multirotor.update_sensors" title="pegasus.simulator.logic.vehicles.multirotor.Multirotor.update_sensors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_sensors</span></code></a>(dt)</p></td>
-<td><p>Callback that is called at every physics steps and will call the sensor.update method to generate new sensor data.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.vehicles.multirotor.Multirotor.update_sim_state" title="pegasus.simulator.logic.vehicles.multirotor.Multirotor.update_sim_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_sim_state</span></code></a>(dt)</p></td>
-<td><p>Callback that is used to &quot;send&quot; the current state for each backend being used to control the vehicle.</p></td>
 </tr>
 </tbody>
 </table>
@@ -188,7 +183,7 @@
 <li><p><strong>vehicle_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – The id to be used for the vehicle. Defaults to 0.</p></li>
 <li><p><strong>init_pos</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a>) – The initial position of the vehicle in the inertial frame (in ENU convention). Defaults to [0.0, 0.0, 0.07].</p></li>
 <li><p><strong>init_orientation</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a>) – The initial orientation of the vehicle in quaternion [qx, qy, qz, qw]. Defaults to [0.0, 0.0, 0.0, 1.0].</p></li>
-<li><p><strong>config</strong> (<em>_type_</em><em>, </em><em>optional</em>) – _description_. Defaults to MultirotorConfig().</p></li>
+<li><p><strong>config</strong> (<a class="reference internal" href="#pegasus.simulator.logic.vehicles.multirotor.MultirotorConfig" title="pegasus.simulator.logic.vehicles.multirotor.MultirotorConfig"><em>MultirotorConfig</em></a><em>, </em><em>optional</em>) – Defaults to MultirotorConfig().</p></li>
 </ul>
 </dd>
 </dl>
@@ -236,13 +231,13 @@ amount of force being applied on each joint</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pegasus.simulator.logic.vehicles.multirotor.Multirotor.start">
 <span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.vehicles.multirotor.Multirotor.start" title="Permalink to this definition"></a></dt>
-<dd><p>Intializes the communication with all the backends. This method is invoked automatically when the simulation starts</p>
+<dd><p>In this case we do not need to do anything extra when the simulation starts</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pegasus.simulator.logic.vehicles.multirotor.Multirotor.stop">
 <span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.vehicles.multirotor.Multirotor.stop" title="Permalink to this definition"></a></dt>
-<dd><p>Signal all the backends that the simulation has stoped. This method is invoked automatically when the simulation stops</p>
+<dd><p>In this case we do not need to do anything extra when the simulation stops</p>
 </dd></dl>
 
 <dl class="py method">
@@ -250,32 +245,6 @@ amount of force being applied on each joint</p>
 <span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.vehicles.multirotor.Multirotor.update" title="Permalink to this definition"></a></dt>
 <dd><p>Method that computes and applies the forces to the vehicle in simulation based on the motor speed.
 This method must be implemented by a class that inherits this type. This callback
-is called on every physics step.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>dt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The time elapsed between the previous and current function calls (s).</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pegasus.simulator.logic.vehicles.multirotor.Multirotor.update_sensors">
-<span class="sig-name descname"><span class="pre">update_sensors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.vehicles.multirotor.Multirotor.update_sensors" title="Permalink to this definition"></a></dt>
-<dd><p>Callback that is called at every physics steps and will call the sensor.update method to generate new
-sensor data. For each data that the sensor generates, the backend.update_sensor method will also be called for
-every backend. For example, if new data is generated for an IMU and we have a MavlinkBackend, then the update_sensor
-method will be called for that backend so that this data can latter be sent thorugh mavlink.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>dt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The time elapsed between the previous and current function calls (s).</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pegasus.simulator.logic.vehicles.multirotor.Multirotor.update_sim_state">
-<span class="sig-name descname"><span class="pre">update_sim_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.vehicles.multirotor.Multirotor.update_sim_state" title="Permalink to this definition"></a></dt>
-<dd><p>Callback that is used to “send” the current state for each backend being used to control the vehicle. This callback
 is called on every physics step.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
