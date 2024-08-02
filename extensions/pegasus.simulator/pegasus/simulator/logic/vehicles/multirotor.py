@@ -46,6 +46,9 @@ class MultirotorConfig:
         # The default graphical sensors for a quadrotor
         self.graphical_sensors = []
 
+        # The default omnigraphs for a quadrotor
+        self.graphs = []
+
         # The backends for actually sending commands to the vehicle. By default use mavlink (with default mavlink configurations)
         # [Can be None as well, if we do not desired to use PX4 with this simulated vehicle]. It can also be a ROS2 backend
         # or your own custom Backend implementation!
@@ -74,11 +77,11 @@ class Multirotor(Vehicle):
             vehicle_id (int): The id to be used for the vehicle. Defaults to 0.
             init_pos (list): The initial position of the vehicle in the inertial frame (in ENU convention). Defaults to [0.0, 0.0, 0.07].
             init_orientation (list): The initial orientation of the vehicle in quaternion [qx, qy, qz, qw]. Defaults to [0.0, 0.0, 0.0, 1.0].
-            config (_type_, optional): _description_. Defaults to MultirotorConfig().
+            config (MultirotorConfig, optional): Defaults to MultirotorConfig().
         """
 
         # 1. Initiate the Vehicle object itself
-        super().__init__(stage_prefix, usd_file, init_pos, init_orientation, config.sensors, config.graphical_sensors, config.backends)
+        super().__init__(stage_prefix, usd_file, init_pos, init_orientation, config.sensors, config.graphical_sensors, config.graphs, config.backends)
 
         # 2. Setup the dynamics of the system - get the thrust curve of the vehicle from the configuration
         self._thrusters = config.thrust_curve
@@ -102,10 +105,8 @@ class Multirotor(Vehicle):
             dt (float): The time elapsed between the previous and current function calls (s).
         """
 
-        dc_interface = _dynamic_control.acquire_dynamic_control_interface()
-
         # Get the articulation root of the vehicle
-        articulation = dc_interface.get_articulation(self._stage_prefix)
+        articulation = self.get_dc_interface().get_articulation(self._stage_prefix)
 
         # Get the desired angular velocities for each rotor from the first backend (can be mavlink or other) expressed in rad/s
         if len(self._backends) != 0:
@@ -150,20 +151,18 @@ class Multirotor(Vehicle):
             articulation (_type_): The articulation group the joints of the rotors belong to
         """
 
-        dc_interface = _dynamic_control.acquire_dynamic_control_interface()
-
         # Rotate the joint to yield the visual of a rotor spinning (for animation purposes only)
-        joint = dc_interface.find_articulation_dof(articulation, "joint" + str(rotor_number))
+        joint = self.get_dc_interface().find_articulation_dof(articulation, "joint" + str(rotor_number))
 
         # Spinning when armed but not applying force
         if 0.0 < force < 0.1:
-            dc_interface.set_dof_velocity(joint, 5 * self._thrusters.rot_dir[rotor_number])
+            self.get_dc_interface().set_dof_velocity(joint, 5 * self._thrusters.rot_dir[rotor_number])
         # Spinning when armed and applying force
         elif 0.1 <= force:
-            dc_interface.set_dof_velocity(joint, 100 * self._thrusters.rot_dir[rotor_number])
+            self.get_dc_interface().set_dof_velocity(joint, 100 * self._thrusters.rot_dir[rotor_number])
         # Not spinning
         else:
-            dc_interface.set_dof_velocity(joint, 0)
+            self.get_dc_interface().set_dof_velocity(joint, 0)
 
     def force_and_torques_to_velocities(self, force: float, torque: np.ndarray):
         """
@@ -181,16 +180,14 @@ class Multirotor(Vehicle):
             list: A list of angular velocities [rad/s] to apply in reach rotor to accomplish suchs forces and torques
         """
 
-        dc_interface = _dynamic_control.acquire_dynamic_control_interface()
-
         # Get the body frame of the vehicle
-        rb = dc_interface.get_rigid_body(self._stage_prefix + "/body")
+        rb = self.get_dc_interface().get_rigid_body(self._stage_prefix + "/body")
 
         # Get the rotors of the vehicle
-        rotors = [dc_interface.get_rigid_body(self._stage_prefix + "/rotor" + str(i)) for i in range(self._thrusters._num_rotors)]
+        rotors = [self.get_dc_interface().get_rigid_body(self._stage_prefix + "/rotor" + str(i)) for i in range(self._thrusters._num_rotors)]
 
         # Get the relative position of the rotors with respect to the body frame of the vehicle (ignoring the orientation for now)
-        relative_poses = dc_interface.get_relative_body_poses(rb, rotors)
+        relative_poses = self.get_dc_interface().get_relative_body_poses(rb, rotors)
 
         # Define the alocation matrix
         aloc_matrix = np.zeros((4, self._thrusters._num_rotors))

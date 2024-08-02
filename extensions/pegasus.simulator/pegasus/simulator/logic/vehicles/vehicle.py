@@ -53,6 +53,7 @@ class Vehicle(Robot):
         init_orientation=[0.0, 0.0, 0.0, 1.0],
         sensors=[],
         graphical_sensors=[],
+        graphs=[],
         backends=[]
     ):
         """
@@ -142,6 +143,15 @@ class Vehicle(Robot):
 
         # Add callbacks to the rendering engine to update each graphical sensor at every timestep of the rendering engine
         self._world.add_render_callback(self._stage_prefix + "/GraphicalSensors", self.update_graphical_sensors)
+
+
+        # --------------------------------------------------------------------
+        # -------------------- Add the graphs to the vehicle -----------------
+        # --------------------------------------------------------------------
+        self._graphs = graphs
+
+        for graph in self._graphs:
+            graph.initialize(self)
         
         # --------------------------------------------------------------------
         # ---- Add (communication/control) backends to the vehicle -----------

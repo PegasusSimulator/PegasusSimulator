@@ -61,9 +61,10 @@ class PegasusApp:
         config_multirotor = MultirotorConfig()
         config_multirotor.backends = [ROS2Backend(vehicle_id=1, config={
             "namespace": 'drone',
-            "pub_sensors": False,
+            "pub_sensors": True,
             "pub_graphical_sensors": True,
             "pub_state": True,
+            "pub_tf": False,
             "sub_control": False}
             )
         ]
