@@ -206,12 +206,7 @@ class Person:
         # Note: this is done to avoid the error of the character_graph being None. The animation graph is only created after the simulation starts
         if not self.character_graph or self.character_graph is None:
             self.character_graph = ag.get_character(self.character_skel_root_stage_path)
-
-            print(self.character_skel_root_stage_path)
-            print(self.character_graph)
-            return
-
-        return
+            
         # Get the current position of the person
         pos = carb.Float3(0, 0, 0)
         rot = carb.Float4(0, 0, 0, 0)

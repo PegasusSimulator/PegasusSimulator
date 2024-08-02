@@ -22,10 +22,6 @@ import omni.timeline
 from omni.isaac.core.world import World
 from omni.isaac.core.utils.extensions import disable_extension, enable_extension
 
-# Enable/disable ROS bridge extensions to keep only ROS2 Bridge
-disable_extension("omni.isaac.ros_bridge")
-enable_extension("omni.isaac.ros2_bridge")
-
 EXTENSIONS_PEOPLE = [
     'omni.anim.people', 
     'omni.anim.navigation.bundle', 
@@ -36,11 +32,26 @@ EXTENSIONS_PEOPLE = [
     'omni.anim.retarget.bundle', 
     'omni.anim.retarget.core',
     'omni.anim.retarget.ui', 
-    'omni.kit.scripting'
+    'omni.kit.scripting',
+    'omni.graph.io',
+    'omni.anim.curve.core',
 ]
 
 for ext_people in EXTENSIONS_PEOPLE:
     enable_extension(ext_people)
+
+# Enable/disable ROS bridge extensions to keep only ROS2 Bridge
+disable_extension("omni.isaac.ros_bridge")
+enable_extension("omni.isaac.ros2_bridge")
+
+# Update the simulation app with the new extensions
+simulation_app.update()
+
+# -------------------------------------------------------------------------------------------------
+# These lines are needed to restart the USD stage and make sure that the people extension is loaded
+# -------------------------------------------------------------------------------------------------
+import omni.usd
+omni.usd.get_context().new_stage()
 
 import numpy as np
 
@@ -80,6 +91,9 @@ class CirclePersonControler(PersonController):
 # Auxiliary scipy and numpy modules
 from scipy.spatial.transform import Rotation
 
+# -------------------------------------------------------------------------------------------------
+# Define the PegasusApp class where the simulation will be run
+# -------------------------------------------------------------------------------------------------
 class PegasusApp:
     """
     A Template class that serves as an example on how to build a simple Isaac Sim standalone App.
@@ -111,12 +125,12 @@ class PegasusApp:
             print(person)
 
         # Create the controller to make on person walk around in circles
-        #person_controller = CirclePersonControler()
-        #p1 = Person("person1", "original_male_adult_construction_05", init_pos=[3.0, 0.0, 0.0], init_yaw=1.0, controller=person_controller)
+        person_controller = CirclePersonControler()
+        p1 = Person("person1", "original_male_adult_construction_05", init_pos=[3.0, 0.0, 0.0], init_yaw=1.0, controller=person_controller)
         
         # Create a person without setting up a controller, and just setting a manual target position for it to track
         p2 = Person("person2", "original_female_adult_business_02", init_pos=[2.0, 0.0, 0.0])
-        p2.update_target_position([5.0, 0.0, 0.0], 0.0)
+        p2.update_target_position([10.0, 0.0, 0.0], 0.0)
 
         # Create the vehicle
         # Try to spawn the selected robot in the world to the specified namespace

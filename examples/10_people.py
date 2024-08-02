@@ -22,31 +22,28 @@ import omni.timeline
 from omni.isaac.core.world import World
 from omni.isaac.core.utils.extensions import disable_extension, enable_extension
 
-# Enable/disable ROS bridge extensions to keep only ROS2 Bridge
-disable_extension("omni.isaac.ros_bridge")
-enable_extension("omni.isaac.ros2_bridge")
-
 EXTENSIONS_PEOPLE = [
-    'omni.anim.people', 
-    'omni.anim.navigation.bundle', 
+    'omni.anim.people',
+    'omni.anim.navigation.bundle',
     'omni.anim.timeline',
-    'omni.anim.graph.bundle', 
-    'omni.anim.graph.core', 
+    'omni.anim.graph.bundle',
+    'omni.anim.graph.core',
     'omni.anim.graph.ui',
-    'omni.anim.retarget.bundle', 
+    'omni.anim.retarget.bundle',
     'omni.anim.retarget.core',
-    'omni.anim.retarget.ui', 
+    'omni.anim.retarget.ui',
     'omni.kit.scripting',
     'omni.graph.io',
     'omni.anim.curve.core',
-    'omni.anim.skelJoint',
-    'omni.anim.graph.schema',
-    'omni.anim.retarget.core',
-    'omni.replicator.agent.core'
 ]
 
 for ext_people in EXTENSIONS_PEOPLE:
     enable_extension(ext_people)
+
+# Enable/disable ROS bridge extensions to keep only ROS2 Bridge
+disable_extension("omni.isaac.ros_bridge")
+enable_extension("omni.isaac.ros2_bridge")
+simulation_app.update()
 
 import numpy as np
 
@@ -64,6 +61,15 @@ from scipy.spatial.transform import Rotation
 
 import omni.anim.graph.core as ag
 
+# -------------------------------------------------------------------------------------------------
+# These lines are needed to restart the USD stage and make sure that the people extension is loaded
+# -------------------------------------------------------------------------------------------------
+import omni.usd
+omni.usd.get_context().new_stage()
+
+# -------------------------------------------------------------------------------------------------
+# Define the PegasusApp class where the simulation will be run
+# -------------------------------------------------------------------------------------------------
 class PegasusApp:
     """
     A Template class that serves as an example on how to build a simple Isaac Sim standalone App.
@@ -78,7 +84,7 @@ class PegasusApp:
         self.timeline = omni.timeline.get_timeline_interface()
 
         # Start the Pegasus Interface
-        #self.pg = PegasusInterface()
+        self.pg = PegasusInterface()
 
         # Acquire the World, .i.e, the singleton that controls that is a one stop shop for setting up physics,
         # spawning asset primitives, etc.
