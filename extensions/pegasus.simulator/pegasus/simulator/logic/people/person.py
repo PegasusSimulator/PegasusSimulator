@@ -18,7 +18,7 @@ import omni.anim.graph.core as ag
 from omni.anim.people import PeopleSettings
 from omni.isaac.core.utils import prims
 from omni.usd import get_stage_next_free_path
-from omni.isaac.core.utils.nucleus import get_assets_root_path
+from omni.isaac.nucleus import get_assets_root_path
 
 # Extension APIs
 from pegasus.simulator.logic.state import State
@@ -206,7 +206,7 @@ class Person:
         # Note: this is done to avoid the error of the character_graph being None. The animation graph is only created after the simulation starts
         if not self.character_graph or self.character_graph is None:
             self.character_graph = ag.get_character(self.character_skel_root_stage_path)
-
+            
         # Get the current position of the person
         pos = carb.Float3(0, 0, 0)
         rot = carb.Float4(0, 0, 0, 0)

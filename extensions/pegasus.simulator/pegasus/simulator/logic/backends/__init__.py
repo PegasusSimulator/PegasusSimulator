@@ -5,4 +5,10 @@
 
 from .backend import Backend
 from .mavlink_backend import MavlinkBackend, MavlinkBackendConfig
-from .ros2_backend import ROS2Backend
+
+# Check if the ROS2 package is installed
+try:
+    from .ros2_backend import ROS2Backend
+except:
+    import carb
+    carb.log_warn("ROS2 package not installed. ROS2Backend will not be available")

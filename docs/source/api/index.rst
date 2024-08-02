@@ -13,13 +13,24 @@ Sensors
    sensors.imu
    sensors.magnetometer
 
+Graphical Sensors
+-----------------
+
+.. toctree::
+   :maxdepth: 2
+
+   graphical_sensors.graphical_sensor
+   graphical_sensors.monocular_camera
+   graphical_sensors.lidar
+
 Graphs
 ------
 
 .. toctree::
    :maxdepth: 2
 
-   graphs_api
+   graphs.graph
+   graphs.ros2_camera_graph
 
 Dynamics
 --------

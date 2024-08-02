@@ -3,6 +3,6 @@
 | License: BSD-3-Clause. Copyright (c) 2024, Marcelo Jacinto. All rights reserved.
 """
 
-from .person import Person
-from .person_controller import PersonController
-from .line_person_controller import LinePersonController
+from .graphical_sensor import GraphicalSensor
+from .monocular_camera import MonocularCamera
+from .lidar import Lidar

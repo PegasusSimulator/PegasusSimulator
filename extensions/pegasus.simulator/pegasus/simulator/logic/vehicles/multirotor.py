@@ -1,11 +1,13 @@
 """
 | File: multirotor.py
 | Author: Marcelo Jacinto (marcelo.jacinto@tecnico.ulisboa.pt)
-| License: BSD-3-Clause. Copyright (c) 2023, Marcelo Jacinto. All rights reserved.
+| License: BSD-3-Clause. Copyright (c) 2024, Marcelo Jacinto. All rights reserved.
 | Description: Definition of the Multirotor class which is used as the base for all the multirotor vehicles.
 """
 
 import numpy as np
+
+from omni.isaac.dynamic_control import _dynamic_control
 
 # The vehicle interface
 from pegasus.simulator.logic.vehicles.vehicle import Vehicle
@@ -17,7 +19,6 @@ from pegasus.simulator.logic.backends.mavlink_backend import MavlinkBackend
 from pegasus.simulator.logic.dynamics import LinearDrag
 from pegasus.simulator.logic.thrusters import QuadraticThrustCurve
 from pegasus.simulator.logic.sensors import Barometer, IMU, Magnetometer, GPS
-from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 
 class MultirotorConfig:
     """
@@ -42,7 +43,10 @@ class MultirotorConfig:
         # The default sensors for a quadrotor
         self.sensors = [Barometer(), IMU(), Magnetometer(), GPS()]
 
-        # The default graphs
+        # The default graphical sensors for a quadrotor
+        self.graphical_sensors = []
+
+        # The default omnigraphs for a quadrotor
         self.graphs = []
 
         # The backends for actually sending commands to the vehicle. By default use mavlink (with default mavlink configurations)
@@ -73,83 +77,23 @@ class Multirotor(Vehicle):
             vehicle_id (int): The id to be used for the vehicle. Defaults to 0.
             init_pos (list): The initial position of the vehicle in the inertial frame (in ENU convention). Defaults to [0.0, 0.0, 0.07].
             init_orientation (list): The initial orientation of the vehicle in quaternion [qx, qy, qz, qw]. Defaults to [0.0, 0.0, 0.0, 1.0].
-            config (_type_, optional): _description_. Defaults to MultirotorConfig().
+            config (MultirotorConfig, optional): Defaults to MultirotorConfig().
         """
 
         # 1. Initiate the Vehicle object itself
-        super().__init__(stage_prefix, usd_file, init_pos, init_orientation)
+        super().__init__(stage_prefix, usd_file, init_pos, init_orientation, config.sensors, config.graphical_sensors, config.graphs, config.backends)
 
-        # 2. Initialize all the vehicle sensors
-        self._sensors = config.sensors
-        for sensor in self._sensors:
-            sensor.initialize(PegasusInterface().latitude, PegasusInterface().longitude, PegasusInterface().altitude)
-
-        # Add callbacks to the physics engine to update each sensor at every timestep
-        # and let the sensor decide depending on its internal update rate whether to generate new data
-        self._world.add_physics_callback(self._stage_prefix + "/Sensors", self.update_sensors)
-
-        # 3. Initialize all the vehicle graphs
-        self._graphs = config.graphs
-        for graph in self._graphs:
-            graph.initialize(self)
-
-        # 4. Setup the dynamics of the system
-        # Get the thrust curve of the vehicle from the configuration
+        # 2. Setup the dynamics of the system - get the thrust curve of the vehicle from the configuration
         self._thrusters = config.thrust_curve
         self._drag = config.drag
 
-        # 5. Save the backend interface (if given in the configuration of the multirotor)
-        # and initialize them
-        self._backends = config.backends
-        for backend in self._backends:
-            backend.initialize(self)
-
-        # Add a callbacks for the
-        self._world.add_physics_callback(self._stage_prefix + "/mav_state", self.update_sim_state)
-
-    def update_sensors(self, dt: float):
-        """Callback that is called at every physics steps and will call the sensor.update method to generate new
-        sensor data. For each data that the sensor generates, the backend.update_sensor method will also be called for
-        every backend. For example, if new data is generated for an IMU and we have a MavlinkBackend, then the update_sensor
-        method will be called for that backend so that this data can latter be sent thorugh mavlink.
-
-        Args:
-            dt (float): The time elapsed between the previous and current function calls (s).
-        """
-
-        # Call the update method for the sensor to update its values internally (if applicable)
-        for sensor in self._sensors:
-            sensor_data = sensor.update(self._state, dt)
-
-            # If some data was updated and we have a mavlink backend or ros backend (or other), then just update it
-            if sensor_data is not None:
-                for backend in self._backends:
-                    backend.update_sensor(sensor.sensor_type, sensor_data)
-
-    def update_sim_state(self, dt: float):
-        """
-        Callback that is used to "send" the current state for each backend being used to control the vehicle. This callback
-        is called on every physics step.
-
-        Args:
-            dt (float): The time elapsed between the previous and current function calls (s).
-        """
-        for backend in self._backends:
-            backend.update_state(self._state)
-
     def start(self):
-        """
-        Intializes the communication with all the backends. This method is invoked automatically when the simulation starts
-        """
-        for backend in self._backends:
-            backend.start()
+        """In this case we do not need to do anything extra when the simulation starts"""
+        pass
 
     def stop(self):
-        """
-        Signal all the backends that the simulation has stoped. This method is invoked automatically when the simulation stops
-        """
-        for backend in self._backends:
-            backend.stop()
+        """In this case we do not need to do anything extra when the simulation stops"""
+        pass
 
     def update(self, dt: float):
         """
@@ -162,7 +106,7 @@ class Multirotor(Vehicle):
         """
 
         # Get the articulation root of the vehicle
-        articulation = self._world.dc_interface.get_articulation(self._stage_prefix)
+        articulation = self.get_dc_interface().get_articulation(self._stage_prefix)
 
         # Get the desired angular velocities for each rotor from the first backend (can be mavlink or other) expressed in rad/s
         if len(self._backends) != 0:
@@ -208,17 +152,17 @@ class Multirotor(Vehicle):
         """
 
         # Rotate the joint to yield the visual of a rotor spinning (for animation purposes only)
-        joint = self._world.dc_interface.find_articulation_dof(articulation, "joint" + str(rotor_number))
+        joint = self.get_dc_interface().find_articulation_dof(articulation, "joint" + str(rotor_number))
 
         # Spinning when armed but not applying force
         if 0.0 < force < 0.1:
-            self._world.dc_interface.set_dof_velocity(joint, 5 * self._thrusters.rot_dir[rotor_number])
+            self.get_dc_interface().set_dof_velocity(joint, 5 * self._thrusters.rot_dir[rotor_number])
         # Spinning when armed and applying force
         elif 0.1 <= force:
-            self._world.dc_interface.set_dof_velocity(joint, 100 * self._thrusters.rot_dir[rotor_number])
+            self.get_dc_interface().set_dof_velocity(joint, 100 * self._thrusters.rot_dir[rotor_number])
         # Not spinning
         else:
-            self._world.dc_interface.set_dof_velocity(joint, 0)
+            self.get_dc_interface().set_dof_velocity(joint, 0)
 
     def force_and_torques_to_velocities(self, force: float, torque: np.ndarray):
         """
@@ -237,13 +181,13 @@ class Multirotor(Vehicle):
         """
 
         # Get the body frame of the vehicle
-        rb = self._world.dc_interface.get_rigid_body(self._stage_prefix + "/body")
+        rb = self.get_dc_interface().get_rigid_body(self._stage_prefix + "/body")
 
         # Get the rotors of the vehicle
-        rotors = [self._world.dc_interface.get_rigid_body(self._stage_prefix + "/rotor" + str(i)) for i in range(self._thrusters._num_rotors)]
+        rotors = [self.get_dc_interface().get_rigid_body(self._stage_prefix + "/rotor" + str(i)) for i in range(self._thrusters._num_rotors)]
 
         # Get the relative position of the rotors with respect to the body frame of the vehicle (ignoring the orientation for now)
-        relative_poses = self._world.dc_interface.get_relative_body_poses(rb, rotors)
+        relative_poses = self.get_dc_interface().get_relative_body_poses(rb, rotors)
 
         # Define the alocation matrix
         aloc_matrix = np.zeros((4, self._thrusters._num_rotors))

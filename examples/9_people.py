@@ -8,7 +8,7 @@
 
 # Imports to start Isaac Sim from this script
 import carb
-from omni.isaac.kit import SimulationApp
+from isaacsim import SimulationApp
 
 # Start Isaac Sim's simulation environment
 # Note: this simulation app must be instantiated right after the SimulationApp import, otherwise the simulator will crash
@@ -22,10 +22,6 @@ import omni.timeline
 from omni.isaac.core.world import World
 from omni.isaac.core.utils.extensions import disable_extension, enable_extension
 
-# Enable/disable ROS bridge extensions to keep only ROS2 Bridge
-disable_extension("omni.isaac.ros_bridge")
-enable_extension("omni.isaac.ros2_bridge")
-
 EXTENSIONS_PEOPLE = [
     'omni.anim.people', 
     'omni.anim.navigation.bundle', 
@@ -36,11 +32,26 @@ EXTENSIONS_PEOPLE = [
     'omni.anim.retarget.bundle', 
     'omni.anim.retarget.core',
     'omni.anim.retarget.ui', 
-    'omni.kit.scripting'
+    'omni.kit.scripting',
+    'omni.graph.io',
+    'omni.anim.curve.core',
 ]
 
 for ext_people in EXTENSIONS_PEOPLE:
     enable_extension(ext_people)
+
+# Enable/disable ROS bridge extensions to keep only ROS2 Bridge
+disable_extension("omni.isaac.ros_bridge")
+enable_extension("omni.isaac.ros2_bridge")
+
+# Update the simulation app with the new extensions
+simulation_app.update()
+
+# -------------------------------------------------------------------------------------------------
+# These lines are needed to restart the USD stage and make sure that the people extension is loaded
+# -------------------------------------------------------------------------------------------------
+import omni.usd
+omni.usd.get_context().new_stage()
 
 import numpy as np
 
@@ -49,10 +60,11 @@ from pegasus.simulator.params import ROBOTS, SIMULATION_ENVIRONMENTS
 from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 from pegasus.simulator.logic.people.person import Person
 from pegasus.simulator.logic.people.person_controller import PersonController
+from pegasus.simulator.logic.graphical_sensors.monocular_camera import MonocularCamera
 from pegasus.simulator.logic.backends.mavlink_backend import MavlinkBackend, MavlinkBackendConfig
+from pegasus.simulator.logic.backends.ros2_backend import ROS2Backend
 from pegasus.simulator.logic.vehicles.multirotor import Multirotor, MultirotorConfig
 from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
-from pegasus.simulator.logic.graphs import ROS2Camera
 
 # Example controller class that make a person move in a circle around the origin of the world
 # Note: You could create a different controller with a different behaviour. For instance, you could:
@@ -60,7 +72,7 @@ from pegasus.simulator.logic.graphs import ROS2Camera
 # 2. read the target position from a ros topic,
 # 3. read the target position from a file,
 # 4. etc.
-class CirclePersonControler(PersonController):
+class CirclePersonController(PersonController):
 
     def __init__(self):
         super().__init__()
@@ -81,6 +93,9 @@ class CirclePersonControler(PersonController):
 # Auxiliary scipy and numpy modules
 from scipy.spatial.transform import Rotation
 
+# -------------------------------------------------------------------------------------------------
+# Define the PegasusApp class where the simulation will be run
+# -------------------------------------------------------------------------------------------------
 class PegasusApp:
     """
     A Template class that serves as an example on how to build a simple Isaac Sim standalone App.
@@ -103,7 +118,8 @@ class PegasusApp:
         self.world = self.pg.world
 
         # Launch one of the worlds provided by NVIDIA
-        self.pg.load_environment(SIMULATION_ENVIRONMENTS["Curved Gridroom"])
+        #self.pg.load_environment(SIMULATION_ENVIRONMENTS["Curved Gridroom"])
+        self.pg.load_asset(SIMULATION_ENVIRONMENTS["Curved Gridroom"], "/World/layout")
 
         # Check the available assets for people
         people_assets_list = Person.get_character_asset_list()
@@ -111,30 +127,35 @@ class PegasusApp:
             print(person)
 
         # Create the controller to make on person walk around in circles
-        person_controller = CirclePersonControler()
+        person_controller = CirclePersonController()
         p1 = Person("person1", "original_male_adult_construction_05", init_pos=[3.0, 0.0, 0.0], init_yaw=1.0, controller=person_controller)
         
         # Create a person without setting up a controller, and just setting a manual target position for it to track
         p2 = Person("person2", "original_female_adult_business_02", init_pos=[2.0, 0.0, 0.0])
-        p2.update_target_position([5.0, 0.0, 0.0], 0.0)
+        p2.update_target_position([10.0, 0.0, 0.0], 1.0)
 
         # Create the vehicle
         # Try to spawn the selected robot in the world to the specified namespace
         config_multirotor = MultirotorConfig()
-        # Create the multirotor configuration
+        # # Create the multirotor configuration
         mavlink_config = MavlinkBackendConfig({
             "vehicle_id": 0,
             "px4_autolaunch": True,
-            "px4_dir": "/home/marcelo/PX4-Autopilot",
-            "px4_vehicle_model": 'iris'
+            "px4_dir": "/home/marcelo/PX4-Autopilot"
         })
-        config_multirotor.backends = [MavlinkBackend(mavlink_config)]
+        config_multirotor.backends = [
+            MavlinkBackend(mavlink_config),
+            ROS2Backend(vehicle_id=1, 
+                config={
+                    "namespace": 'drone', 
+                    "pub_sensors": False,
+                    "pub_graphical_sensors": True,
+                    "pub_state": True,
+                    "pub_tf": False,
+                    "sub_control": False,})]
 
-        # Create camera graph for the existing Camera prim on the Iris model, which can be found 
-        # at the prim path `/World/quadrotor/body/Camera`. The camera prim path is the local path from the vehicle's prim path
-        # to the camera prim, to which this graph will be connected. All ROS2 topics published by this graph will have 
-        # namespace `quadrotor` and frame_id `Camera` followed by the selected camera types (`rgb`, `camera_info`).
-        config_multirotor.graphs = [ROS2Camera("body/Camera", config={"types": ['rgb', 'camera_info']})]
+        # Create a camera
+        config_multirotor.graphical_sensors = [MonocularCamera("camera", config={"update_rate": 60.0})]
 
         Multirotor(
             "/World/quadrotor",

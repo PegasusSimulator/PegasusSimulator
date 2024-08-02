@@ -20,7 +20,7 @@ import omni.kit.app
 from omni.isaac.core.world import World
 from omni.isaac.core.utils.stage import clear_stage, create_new_stage_async, update_stage_async, create_new_stage
 from omni.isaac.core.utils.viewports import set_camera_view
-import omni.isaac.core.utils.nucleus as nucleus
+import omni.isaac.nucleus as nucleus
 
 # Pegasus Simulator internal API
 from pegasus.simulator.params import DEFAULT_WORLD_SETTINGS, SIMULATION_ENVIRONMENTS, CONFIG_FILE
@@ -39,9 +39,6 @@ class PegasusInterface:
 
     # Lock for safe multi-threading
     _lock: Lock = Lock()
-
-    # Set the pegasus interface for running in GUI mode (does not initialize the stage or world automatically)
-    gui_mode = False
 
     def __init__(self):
         """
@@ -62,10 +59,6 @@ class PegasusInterface:
         # Initialize the world with the default simulation settings
         self._world_settings = DEFAULT_WORLD_SETTINGS
         self._world = None
-
-        # Initialize an empty stage if we are using pegasus in scripting mode
-        if not PegasusInterface.gui_mode:
-            create_new_stage()
         
         # Initialize the latitude, longitude and altitude of the simulated environment at the (0.0, 0.0, 0.0) coordinate
         # from the extension configuration file
@@ -213,13 +206,13 @@ class PegasusInterface:
         """
 
         # If the physics simulation was running, stop it first
-        if self.world is not None:
-            self.world.stop()
+        if self._world is not None:
+            self._world.stop()
 
         # Clear the world
-        if self.world is not None:
-            self.world.clear_all_callbacks()
-            self.world.clear()
+        if self._world is not None:
+            self._world.clear_all_callbacks()
+            self._world.clear()
 
         # Clear the stage
         clear_stage()
@@ -229,6 +222,9 @@ class PegasusInterface:
 
         # Call python's garbage collection
         gc.collect()
+
+        # Re-initialize the world
+        self._world = World(**self._world_settings)
 
         # Re-initialize the physics context
         asyncio.ensure_future(self._world.initialize_simulation_context_async())
@@ -243,6 +239,8 @@ class PegasusInterface:
             It should be set to True only if the method is invoked from an App (GUI mode).
         """
 
+        carb.log_warn("Loading a new environment into the simulator. Please wait...")
+
         # Reset and pause the world simulation (only if force_clear is true)
         # This is done to maximize the support between running in GUI as extension vs App
         if force_clear == True:
@@ -253,8 +251,8 @@ class PegasusInterface:
             await self._world.initialize_simulation_context_async()
             self._world = World.instance()
 
-            await self.world.reset_async()
-            await self.world.stop_async()
+            await self._world.reset_async()
+            await self._world.stop_async()
 
         # Load the USD asset that will be used for the environment
         try:

@@ -1,7 +1,7 @@
 # Pegasus Simulator
 
-![IsaacSim 2023.1.1](https://img.shields.io/badge/IsaacSim-2023.1.1-brightgreen.svg)
-![PX4-Autopilot 1.14.1](https://img.shields.io/badge/PX4--Autopilot-1.14.1-brightgreen.svg)
+![IsaacSim 4.1.0](https://img.shields.io/badge/IsaacSim-4.1.0-brightgreen.svg)
+![PX4-Autopilot 1.14.3](https://img.shields.io/badge/PX4--Autopilot-1.14.3-brightgreen.svg)
 ![Ubuntu 22.04](https://img.shields.io/badge/Ubuntu-22.04LTS-brightgreen.svg)
 [![](https://dcbadge.limes.pink/api/server/[INVITE](https://discord.gg/AjCxw2QUmt?style=flat))](https://discord.gg/AjCxw2QUmt)
 
@@ -17,9 +17,13 @@ Sim](https://docs.omniverse.nvidia.com/app_isaacsim/app_isaacsim/overview.html).
 
 Check the provided documentation [here](https://pegasussimulator.github.io/PegasusSimulator/) to discover how to install and use this framework.
 
+## Latest Updates
+
+* **2024-08-02**: Pegasus Simulator v4.1.0 is released for Isaac 4.1.0. This version is **NOT** compatible with older versions of Isaac Sim.
+
 ## Citation
 
-If you find Pegasus Simulator useful in your academic work, please cite the paper below. It is also available [here](https://arxiv.org/abs/2307.05263).
+If you find Pegasus Simulator useful in your academic work, please cite the paper below. It is also available [here](https://doi.org/10.1109/ICUAS60882.2024.10556959).
 ```
 @INPROCEEDINGS{10556959,
   author={Jacinto, Marcelo and Pinto, João and Patrikar, Jay and Keller, John and Cunha, Rita and Scherer, Sebastian and Pascoal, António},

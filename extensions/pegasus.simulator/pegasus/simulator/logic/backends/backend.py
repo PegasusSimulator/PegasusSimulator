@@ -54,6 +54,15 @@ class Backend:
         """
         pass
 
+    def update_graphical_sensor(self, sensor_type: str, data):
+        """Method that when implemented, should handle the receival of graphical sensor data
+
+        Args:
+            sensor_type (str): A name that describes the type of sensor (for example MonocularCamera)
+            data (dict): A dictionary that contains the data produced by the sensor
+        """
+        pass
+
     def update_state(self, state):
         """Method that when implemented, should handle the receival of the state of the vehicle using this callback
 

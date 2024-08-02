@@ -26,27 +26,27 @@ The tutorial corresponds to the ``9_people.py`` example in the ``examples`` dire
 
 .. literalinclude:: ../../../examples/9_people.py
    :language: python
-   :emphasize-lines: 29-43,50-51,57-78, 108-111, 113-119
+   :emphasize-lines: 23-48,50-54,61-62, 69-90, 124-127, 129-135
    :linenos:
 
 2. Explanation
 --------------
 
-To start a pre-programmed simulation with moving people, you need to ensure that the ``People`` extension provided by NVIDIA is enabled.
+To start a pre-programmed simulation with moving people, you need to ensure that the ``People`` extension provided by NVIDIA is enabled. Note, in Isaac 4.1.0 we also need to create a new stage for the people extension to start properly.
 
 .. literalinclude:: ../../../examples/9_people.py
    :language: python
-   :lines: 29-43
+   :lines: 23-48, 50-54
    :linenos:
-   :lineno-start: 29
+   :lineno-start: 23
 
 We also need to import the ``Person`` and the ``PersonController`` classes. This follows the same strategy adopted for the vehicles and the control backends.
 
 .. literalinclude:: ../../../examples/9_people.py
    :language: python
-   :lines: 50-51
+   :lines: 61-62
    :linenos:
-   :lineno-start: 50
+   :lineno-start: 61
 
 The ``PersonController`` is an interface class that a user defined controller must inherit from. This controller is responsible for defining the behavior of the person in the simulation.
 In this example, our controller makes a person walk in circles, but you can define any behavior you want. For instance, you could:
@@ -58,9 +58,9 @@ In this example, our controller makes a person walk in circles, but you can defi
 
 .. literalinclude:: ../../../examples/9_people.py
    :language: python
-   :lines: 57-78
+   :lines: 69-90
    :linenos:
-   :lineno-start: 57
+   :lineno-start: 69
 
 .. note::
 
@@ -70,18 +70,18 @@ The next step is to create a person in the simulation. But, you let's imagine yo
 
 .. literalinclude:: ../../../examples/9_people.py
    :language: python
-   :lines: 108-111
+   :lines: 124-127
    :linenos:
-   :lineno-start: 108
+   :lineno-start: 124
 
 Now that you know which models you can load, you can create a person in the simulation. You can set the initial position, orientation, and the controller that will define the behavior of the person.
 Note that if you just want to send a person to a given position manually (without using a controller), you can! Just check "Person 2".
 
 .. literalinclude:: ../../../examples/9_people.py
    :language: python
-   :lines: 113-119
+   :lines: 129-135
    :linenos:
-   :lineno-start: 113
+   :lineno-start: 129
 
 3. Execution
 ------------

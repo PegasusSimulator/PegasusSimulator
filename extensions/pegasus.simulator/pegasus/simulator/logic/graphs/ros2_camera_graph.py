@@ -2,7 +2,7 @@
 | File: ros2_camera.py
 | License: BSD-3-Clause. Copyright (c) 2023, Micah Nye. All rights reserved.
 """
-__all__ = ["ROS2Camera"]
+__all__ = ["ROS2CameraGraph"]
 
 import carb
 
@@ -15,7 +15,7 @@ from pegasus.simulator.logic.graphs import Graph
 from pegasus.simulator.logic.vehicles import Vehicle
 import numpy as np
 
-class ROS2Camera(Graph):
+class ROS2CameraGraph(Graph):
     """The class that implements the ROS2 Camera graph. This class inherits the base class Graph.
     """
     def __init__(self, camera_prim_path: str, config: dict = {}):
@@ -23,7 +23,7 @@ class ROS2Camera(Graph):
 
         Args:
             camera_prim_path (str): Path to the camera prim. Global path when it starts with `/`, else local to vehicle prim path
-            config (dict): A Dictionary that contains all the parameters for configuring the ROS2Camera - it can be empty or only have some of the parameters used by the ROS2Camera.
+            config (dict): A Dictionary that contains all the parameters for configuring the ROS2CameraGraph - it can be empty or only have some of the parameters used by the ROS2CameraGraph.
 
         Examples:
             The dictionary default parameters are
@@ -38,7 +38,7 @@ class ROS2Camera(Graph):
         """
 
         # Initialize the Super class "object" attribute
-        super().__init__(graph_type="ROS2Camera")
+        super().__init__(graph_type="ROS2CameraGraph")
 
         # Save camera path, frame id and ros topic name
         self._camera_prim_path = camera_prim_path
