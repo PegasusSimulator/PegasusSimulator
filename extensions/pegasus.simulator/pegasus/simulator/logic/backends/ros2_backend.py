@@ -30,7 +30,10 @@ except ImportError:
 from pegasus.simulator.logic.backends.backend import Backend
 
 # Import the replicatore core module used for writing graphical data to ROS 2
+import omni
+import omni.graph.core as og
 import omni.replicator.core as rep
+from omni.isaac.ros2_bridge import read_camera_info
 
 
 class ROS2Backend(Backend):
@@ -387,11 +390,11 @@ class ROS2Backend(Backend):
     def add_monocular_camera_writter(self, data):
 
         # List all the available writers: print(rep.writers.WriterRegistry._writers)
-        render_prod_path = rep.create.render_product(data["stage_prim_path"], resolution=(data["width"], data["height"]))
+        render_prod_path = data["camera"]._render_product_path
 
         # Create the writer for the rgb camera
         writer = rep.writers.get("LdrColorSDROS2PublishImage")
-        writer.initialize(nodeNamespace=self._namespace + str(self._id), topicName=data["camera_name"] + "/color", frameId=data["camera_name"], queueSize=1)
+        writer.initialize(nodeNamespace=self._namespace + str(self._id), topicName=data["camera_name"] + "/color/image_raw", frameId=data["camera_name"], queueSize=1)
         writer.attach([render_prod_path])
 
         # Add the writer to the dictionary
@@ -410,11 +413,31 @@ class ROS2Backend(Backend):
 
         # Create a writer for publishing the camera info
         writer_info = rep.writers.get("ROS2PublishCameraInfo")
-        writer_info.initialize(nodeNamespace=self._namespace + str(self._id), topicName=data["camera_name"] + "/camera_info", frameId=data["camera_name"], queueSize=1)
+        camera_info = read_camera_info(render_product_path=render_prod_path)
+        writer_info.initialize(
+            nodeNamespace=self._namespace + str(self._id), 
+            topicName=data["camera_name"] + "/color/camera_info", 
+            frameId=data["camera_name"], 
+            queueSize=1,
+            width=camera_info["width"],
+            height=camera_info["height"],
+            projectionType=camera_info["projectionType"],
+            k=camera_info["k"].reshape([1, 9]),
+            r=camera_info["r"].reshape([1, 9]),
+            p=camera_info["p"].reshape([1, 12]),
+            physicalDistortionModel=camera_info["physicalDistortionModel"],
+            physicalDistortionCoefficients=camera_info["physicalDistortionCoefficients"]
+        )
+
         writer_info.attach([render_prod_path])
 
         # Add the writer to the dictionary
         self.graphical_sensors_writers[data["camera_name"]].append(writer_info)
+
+        gate_path = omni.syntheticdata.SyntheticData._get_node_path("PostProcessDispatch" + "IsaacSimulationGate", render_prod_path)
+
+        # Set step input of the Isaac Simulation Gate nodes upstream of ROS publishers to control their execution rate
+        og.Controller.attribute(gate_path + ".inputs:step").set(int(60/data["frequency"]))
 
     def update_lidar_data(self, data):
 
