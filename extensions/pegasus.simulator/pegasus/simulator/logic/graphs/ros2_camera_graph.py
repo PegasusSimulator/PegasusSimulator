@@ -10,9 +10,11 @@ from omni.isaac.core.utils import stage
 import omni.graph.core as og
 from omni.isaac.core.utils.prims import is_prim_path_valid
 from omni.isaac.core.utils.prims import set_targets
+from omni.isaac.sensor import Camera
 
 from pegasus.simulator.logic.graphs import Graph
 from pegasus.simulator.logic.vehicles import Vehicle
+from scipy.spatial.transform import Rotation
 import numpy as np
 
 class ROS2CameraGraph(Graph):
@@ -76,6 +78,18 @@ class ROS2CameraGraph(Graph):
         if self._camera_prim_path[0] != '/':
             self._camera_prim_path = f"{vehicle.prim_path}/{self._camera_prim_path}"
 
+        # Create the camera object attached to the vehicle
+        self.camera = Camera(
+            prim_path=self._camera_prim_path,
+            position=np.array([0.30, 0.0, 0.0]),
+            frequency=30.0,
+            resolution=self._resolution,
+            orientation=Rotation.from_euler("ZYX", [0.0, 0.0, 0.0], degrees=True).as_quat()
+        )
+
+        # Initialize the camera sensor
+        self.camera.initialize()
+
         # Create camera prism
         if not is_prim_path_valid(self._camera_prim_path):
             carb.log_error(f"Cannot create ROS2 Camera graph, the camera prim path \"{self._camera_prim_path}\" is not valid")
@@ -136,7 +150,7 @@ class ROS2CameraGraph(Graph):
             camera_helper_name = f"camera_helper_{camera_type}"
 
             graph_config[keys.CREATE_NODES] += [
-                (camera_helper_name, "omni.isaac.ros2_bridge.ROS2CameraHelper")
+                (camera_helper_name, "omni.isaac.ros2_bridge.OgnROS2CameraInfoHelper")
             ]
             graph_config[keys.CONNECT] += [
                 ("set_camera.outputs:execOut", f"{camera_helper_name}.inputs:execIn"),

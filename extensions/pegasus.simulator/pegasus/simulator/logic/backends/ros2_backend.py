@@ -87,7 +87,12 @@ class ROS2Backend(Backend):
         self._pub_tf = config.get("pub_tf", False) and tf2_ros_loaded
 
         # Start the actual ROS2 setup here
-        rclpy.init()
+        try:
+            rclpy.init()
+        except:
+            # If rclpy is already initialized, just ignore the exception
+            pass
+
         self.node = rclpy.create_node("simulator_vehicle_" + str(vehicle_id))
 
         # Initialize the publishers and subscribers

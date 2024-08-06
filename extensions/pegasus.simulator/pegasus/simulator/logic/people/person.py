@@ -53,7 +53,8 @@ class Person:
         character_name: str = None,
         init_pos=[0.0, 0.0, 0.0],
         init_yaw=0.0,
-        controller: PersonController=None
+        controller: PersonController=None,
+        backend=None
     ):
         """Initializes the person object
 
@@ -99,6 +100,11 @@ class Person:
         self._controller = controller
         if self._controller:
             self._controller.initialize(self)
+
+        # Set the backend for publishing the state of the person
+        self._backend = backend
+        if self._backend:
+            self._backend.initialize(self)
 
         # Add a callback to the physics engine to update the current state of the person
         self._world.add_physics_callback(self._stage_prefix + "/state", self.update_state)
@@ -181,6 +187,10 @@ class Person:
             # If we are close to the target position, stop moving
             self.character_graph.set_variable("Walk", 0.0)
             self.character_graph.set_variable("Action", "Idle")
+
+        # If we have a backend, update the state of the person
+        if self._backend:
+            self._backend.update(self._state, dt)
 
 
     def update_target_position(self, position, walk_speed=1.0):
