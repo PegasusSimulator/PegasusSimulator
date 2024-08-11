@@ -43,6 +43,9 @@ class ArdupilotLaunchTool:
         # Set the environement variables that let Ardupilot know which vehicle model to use internally
         self.environment = os.environ
 
+    def _sitl_already_exists(self):
+        return os.path.exists(f'{self.ardupilot_dir}/build/sitl/bin/arducopter')
+   
     def launch_ardupilot(self):
         """
         Method that will launch a ardupilot instance with the specified configuration
@@ -54,7 +57,7 @@ class ArdupilotLaunchTool:
                 "ArduCopter",
                 "-f",
                 "quad",
-                f"{'--no-rebuild' if os.path.exists(f'{self.ardupilot_dir}/build/sitl/bin/arducopter') else ''}",
+                f"{'--no-rebuild' if  self._sitl_already_exists() else ''}",
             ],
             cwd=self.root_fs.name,
             shell=False,
@@ -88,7 +91,7 @@ class ArdupilotLaunchTool:
 def main():
 
     # TODO
-    ardupilot_dir = f"{os.environ['HOME']}/dev/PegasusSimulator/ardupilot"
+    ardupilot_dir = f"{os.environ['HOME']}/ardupilot"
 
     ardupilot_tool = ArdupilotLaunchTool(ardupilot_dir=ardupilot_dir)
     ardupilot_tool.launch_ardupilot()
