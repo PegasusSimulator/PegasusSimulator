@@ -45,25 +45,38 @@ class ArdupilotLaunchTool:
 
     def _sitl_already_exists(self):
         return os.path.exists(f'{self.ardupilot_dir}/build/sitl/bin/arducopter')
+    
+    def _get_vehicle_frame(self):
+        return "gazebo-iris"
    
+    def _sitl_worker(self):
+        command: str = " ".join([
+            self.ardupilot_dir + "/Tools/autotest/sim_vehicle.py",
+                "-v",
+                "ArduCopter",
+                "-f",
+                f"{self._get_vehicle_frame()}",
+                f"{'--no-rebuild' if self._sitl_already_exists() else ''}",
+                f"--console --map",
+        ])      
+        
+        # Run in a seperate bash window
+        ardupilot_process = subprocess.Popen(
+            ["gnome-terminal", "--", "bash", "-c", command],
+            cwd=self.root_fs.name,
+            shell=False,
+            env=self.environment,
+        )
+
+        return ardupilot_process
+    
+
     def launch_ardupilot(self):
         """
         Method that will launch a ardupilot instance with the specified configuration
         """
-        self.ardupilot_process = subprocess.Popen(
-            [
-                self.ardupilot_dir + "/Tools/autotest/sim_vehicle.py",
-                "-v",
-                "ArduCopter",
-                "-f",
-                "quad",
-                f"{'--no-rebuild' if  self._sitl_already_exists() else ''}",
-            ],
-            cwd=self.root_fs.name,
-            shell=False,
-            env=self.environment,
-            # stdout=subprocess.PIPE, stderr=subprocess.PIPE
-        )
+        self.ardupilot_process = self._sitl_worker()
+
 
     def kill_ardupilot(self):
         """
