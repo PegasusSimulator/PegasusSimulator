@@ -49,7 +49,7 @@ class ArdupilotLaunchTool:
     def _get_vehicle_frame(self):
         return "gazebo-iris"
    
-    def _sitl_worker(self):
+    def _ardupilot_sitl_worker(self):
         command: str = " ".join([
             self.ardupilot_dir + "/Tools/autotest/sim_vehicle.py",
                 "-v",
@@ -75,7 +75,7 @@ class ArdupilotLaunchTool:
         """
         Method that will launch a ardupilot instance with the specified configuration
         """
-        self.ardupilot_process = self._sitl_worker()
+        self.ardupilot_process = self._ardupilot_sitl_worker()
 
 
     def kill_ardupilot(self):

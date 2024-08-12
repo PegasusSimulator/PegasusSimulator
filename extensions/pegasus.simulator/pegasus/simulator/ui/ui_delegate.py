@@ -15,7 +15,7 @@ import carb
 import omni.ui as ui
 
 # Extension Configurations
-from pegasus.simulator.params import ROBOTS, SIMULATION_ENVIRONMENTS
+from pegasus.simulator.params import ROBOTS, SIMULATION_ENVIRONMENTS, BACKENDS
 from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 
 # Vehicle Manager to spawn Vehicles
@@ -76,6 +76,18 @@ class UIDelegate:
         self._px4_airframe_field: ui.AbstractValueModel = None
         self._px4_airframe: str = self._pegasus_sim.px4_default_airframe
 
+        # Attribute that will save the model for the ardupilot-autostart checkbox
+        self._ardupilot_autostart_checkbox: ui.AbstractValueModel = None
+        self._autostart_ardupilot: bool = True
+
+        # Atributes to store the path for the ArduPilot directory
+        self._ardupilot_directory_field: ui.AbstractValueModel = None
+        self._ardupilot_dir: str = PegasusInterface().ardupilot_path
+
+        # Atributes to store the ArduPilot airframe
+        self._ardupilot_airframe_field: ui.AbstractValueModel = None
+        self._ardupilot_airframe: str = self._pegasus_sim.ardupilot_default_airframe
+
     def set_window_bind(self, window):
         self._window = window
 
@@ -109,6 +121,15 @@ class UIDelegate:
 
     def set_px4_airframe_field(self, airframe_field_model: ui.AbstractValueModel):
         self._px4_airframe_field = airframe_field_model
+    
+    def set_ardupilot_autostart_checkbox(self, checkbox_model: ui.AbstractValueModel):
+        self._ardupilot_autostart_checkbox = checkbox_model
+
+    def set_ardupilot_directory_field(self, directory_field_model: ui.AbstractValueModel):
+        self._ardupilot_directory_field = directory_field_model
+
+    def set_ardupilot_airframe_field(self, airframe_field_model: ui.AbstractValueModel):
+        self._ardupilot_airframe_field = airframe_field_model
 
     """
     ---------------------------------------------------------------------
@@ -206,6 +227,15 @@ class UIDelegate:
                 # Read the PX4 airframe from the field
                 px4_airframe = self._px4_airframe_field.get_value_as_string()
 
+                # Read if we should auto-start ardupilot from the checkbox
+                ardupilot_autostart = self._ardupilot_autostart_checkbox.get_value_as_bool()
+
+                # Read the ArduPilot path from the field
+                ardupilot_path = os.path.expanduser(self._ardupilot_directory_field.get_value_as_string())
+
+                # Read the ArduPilot airframe from the field
+                ardupilot_airframe = self._ardupilot_airframe_field.get_value_as_string()
+
                 # Create the multirotor configuration
                 mavlink_config = MavlinkBackendConfig({
                     "vehicle_id": self._vehicle_id,
@@ -271,3 +301,22 @@ class UIDelegate:
         """
         carb.log_warn("Reseting the path to the default one")
         self._px4_directory_field.set_value(self._pegasus_sim.px4_path)
+
+    def on_set_new_default_ardupilot_path(self):
+        """
+        Method that will try to update the new ArduPilot autopilot path with whatever is passed on the string field
+        """
+        carb.log_warn("A new default ArduPilot Path will be set for the extension.")
+
+        # Read the current path from the field
+        path = self._ardupilot_directory_field.get_value_as_string()
+
+        # Set the path using the pegasus interface
+        self._pegasus_sim.set_ardupilot_path(path)
+
+    def on_reset_ardupilot_path(self):
+        """
+        Method that will reset the string field to the default ArduPilot path
+        """
+        carb.log_warn("Reseting the path to the default one")
+        self._ardupilot_directory_field.set_value(self._pegasus_sim.ardupilot_path)

@@ -16,7 +16,7 @@ import omni.ui as ui
 from omni.ui import color as cl
 
 from pegasus.simulator.ui.ui_delegate import UIDelegate
-from pegasus.simulator.params import ROBOTS, SIMULATION_ENVIRONMENTS, THUMBNAIL, WORLD_THUMBNAIL, WINDOW_TITLE
+from pegasus.simulator.params import ROBOTS, SIMULATION_ENVIRONMENTS, THUMBNAIL, WORLD_THUMBNAIL, WINDOW_TITLE, BACKENDS_THUMBMAILS
 
 
 class WidgetWindow(ui.Window):
@@ -31,11 +31,11 @@ class WidgetWindow(ui.Window):
 
     BUTTON_SELECTED_STYLE = {
         "Button": {
-            "background_color": 0xFF5555AA,
-            "border_color": 0xFF5555AA,
+            "background_color": cl("#3780ae"),
+            "border_color": cl("#29587c"),
             "border_width": 2,
             "border_radius": 5,
-            "padding": 5,
+            "padding": 2,
         }
     }
 
@@ -99,6 +99,9 @@ class WidgetWindow(ui.Window):
 
                     # Create a frame for selecting which vehicle to load in the simulation environment
                     self._robot_selection_frame()
+                    ui.Spacer(height=5)
+
+                    self._backend_selection_frame()
                     ui.Spacer(height=5)
 
                     # Create a frame for selecting the camera position, and what it should point torwards to
@@ -196,24 +199,6 @@ class WidgetWindow(ui.Window):
         Method that implements a frame that allows the user to choose which robot that is about to be spawned
         """
 
-        # Auxiliary function to handle the "switch behaviour" of the buttons that are used to choose between a px4 or ROS2 backend
-        def handle_px4_ros_switch(self, px4_button, ros2_button, button):
-
-            # Handle the UI of both buttons switching of and on (To make it prettier)
-            if button == "px4":
-                px4_button.enabled = False
-                ros2_button.enabled = True
-                px4_button.set_style(WidgetWindow.BUTTON_SELECTED_STYLE)
-                ros2_button.set_style(WidgetWindow.BUTTON_BASE_STYLE)
-            else:
-                px4_button.enabled = True
-                ros2_button.enabled = False
-                ros2_button.set_style(WidgetWindow.BUTTON_SELECTED_STYLE)
-                px4_button.set_style(WidgetWindow.BUTTON_BASE_STYLE)
-
-            # Handle the logic of switching between the two operating modes
-            self._delegate.set_streaming_backend(button)
-
         # --------------------------
         # Function UI starts here
         # --------------------------
@@ -221,59 +206,176 @@ class WidgetWindow(ui.Window):
         # Frame for selecting the vehicle to load
         with ui.CollapsableFrame(title="Vehicle Selection"):
             with ui.VStack(height=0, spacing=10, name="frame_v_stack"):
-                ui.Spacer(height=WidgetWindow.GENERAL_SPACING)
-                # Iterate over all existing robots in the extension
-                with ui.HStack():
-                    ui.Label("Vehicle Model", name="label", width=WidgetWindow.LABEL_PADDING)
-
-                    # Combo box with the available vehicles to select from
-                    dropdown_menu = ui.ComboBox(0, height=10, name="robots")
-                    for robot in ROBOTS:
-                        dropdown_menu.model.append_child_item(None, ui.SimpleStringModel(robot))
-                    self._delegate.set_vehicle_dropdown(dropdown_menu.model)
-
-                with ui.HStack():
-                    ui.Label("Vehicle ID", name="label", width=WidgetWindow.LABEL_PADDING)
-                    vehicle_id_field = ui.IntField()
-                    self._delegate.set_vehicle_id_field(vehicle_id_field.model)
-
-                # Add a frame transform to select the position of where to place the selected robot in the world
-                self._transform_frame()
-
-                ui.Label("Streaming Backend")
-                
                 with ui.HStack():
                     # Add a thumbnail image to have a preview of the world that is about to be loaded
                     with ui.ZStack(width=WidgetWindow.LABEL_PADDING, height=WidgetWindow.BUTTON_HEIGHT * 2):
                         ui.Rectangle()
                         ui.Image(
-                            THUMBNAIL, fill_policy=ui.FillPolicy.PRESERVE_ASPECT_FIT, alignment=ui.Alignment.LEFT_CENTER
+                            THUMBNAIL,
+                            fill_policy=ui.FillPolicy.PRESERVE_ASPECT_FIT,
+                            alignment=ui.Alignment.CENTER,
+                        )
+                    ui.Spacer(width=10)
+                    
+                    with ui.VStack():
+                        with ui.HStack():
+                            # Iterate over all existing robots in the extension
+                            ui.Label("Vehicle Model", name="label", width=WidgetWindow.LABEL_PADDING, alignment=ui.Alignment.TOP)
+
+                            # Combo box with the available vehicles to select from
+                            dropdown_menu = ui.ComboBox(0, name="robots")
+                            for robot in ROBOTS:
+                                dropdown_menu.model.append_child_item(None, ui.SimpleStringModel(robot))
+                            self._delegate.set_vehicle_dropdown(dropdown_menu.model)
+
+                        with ui.HStack():
+                            ui.Label("Vehicle ID", name="label", width=WidgetWindow.LABEL_PADDING, alignment=ui.Alignment.TOP)
+                            vehicle_id_field = ui.IntField()
+                            self._delegate.set_vehicle_id_field(vehicle_id_field.model)
+
+                with ui.HStack():
+                    # Add a frame transform to select the position of where to place the selected robot in the world
+                    self._transform_frame()
+                
+                # Button to load the drone
+                ui.Button(
+                    "Load Vehicle",
+                    height=WidgetWindow.BUTTON_HEIGHT,
+                    clicked_fn=self._delegate.on_load_vehicle,
+                    style=WidgetWindow.BUTTON_BASE_STYLE,
+                )
+
+    def _backend_selection_frame(self):
+        """
+        A helper function to create a frame for selecting the streaming backend.
+        It creates a collapsible frame with a title, and inside it, a vertical stack of UI elements.
+        The UI elements include a thumbnail of the backend logo, three buttons to choose between PX4, ArduPilot, and ROS 2,
+        and two collapsible frames for configuring PX4 and ArduPilot settings.
+        """
+        
+        # Auxiliary function to handle the "switch behaviour" of the buttons that are used to choose between backends
+        def handle_backend_switch(
+            self,
+            px4_button,
+            ardupilot_button,
+            ros2_button,
+            button,
+            logo_image,
+            px4_menu=None,
+            ardupilot_menu=None
+        ):
+            # Handle the UI of both buttons switching of and on (To make it prettier)
+            if button == "px4":
+                px4_button.enabled = False
+                ardupilot_button.enabled = True
+                ros2_button.enabled = True
+                
+                px4_button.set_style(WidgetWindow.BUTTON_SELECTED_STYLE)
+                ardupilot_button.set_style(WidgetWindow.BUTTON_BASE_STYLE)
+                ros2_button.set_style(WidgetWindow.BUTTON_BASE_STYLE)
+
+                px4_menu.enabled = True
+                px4_menu.visible = True
+                ardupilot_menu.enabled = False
+                ardupilot_menu.visible = False
+                
+
+            elif button == "ardupilot":
+                px4_button.enabled = True
+                ardupilot_button.enabled = False
+                ros2_button.enabled = True
+
+                px4_button.set_style(WidgetWindow.BUTTON_BASE_STYLE)
+                ardupilot_button.set_style(WidgetWindow.BUTTON_SELECTED_STYLE)
+                ros2_button.set_style(WidgetWindow.BUTTON_BASE_STYLE)
+
+                px4_menu.enabled = False
+                px4_menu.visible = False
+                ardupilot_menu.enabled = True
+                ardupilot_menu.visible = True
+
+            else:
+                # ROS2
+                px4_button.enabled = True
+                ardupilot_button.enabled = True
+                ros2_button.enabled = False
+
+                px4_button.set_style(WidgetWindow.BUTTON_BASE_STYLE)
+                ardupilot_button.set_style(WidgetWindow.BUTTON_BASE_STYLE)
+                ros2_button.set_style(WidgetWindow.BUTTON_SELECTED_STYLE)
+
+                # TODO: Add ros2 menu
+                px4_menu.enabled = False
+                px4_menu.visible = False
+                ardupilot_menu.enabled = False
+                ardupilot_menu.visible = False
+            
+            logo_image.source_url = BACKENDS_THUMBMAILS[button]
+
+            # Handle the logic of switching between the two operating modes
+            self._delegate.set_streaming_backend(button)
+
+        with ui.CollapsableFrame(title="Streaming Backend"):
+            ui.Spacer(height=0)
+            with ui.VStack(height=0, spacing=10, name="frame_v_stack"):
+                ui.Spacer(height=WidgetWindow.GENERAL_SPACING)
+                
+                # Thumbnail of backend logo
+                with ui.HStack():
+                    with ui.ZStack(width=WidgetWindow.LABEL_PADDING):
+                        ui.Rectangle(
+                            alignment=ui.Alignment.CENTER,
+                            width=200,
+                            height=WidgetWindow.BUTTON_HEIGHT * 3, # Match height of 3 backend buttons
+                        )
+                        logo_image = ui.Image(
+                            BACKENDS_THUMBMAILS["px4"],
+                            fill_policy=ui.FillPolicy.PRESERVE_ASPECT_FIT,
+                            alignment=ui.Alignment.CENTER,
                         )
 
-                    ui.Spacer(width=WidgetWindow.GENERAL_SPACING)
                     with ui.VStack():
                         # Buttons that behave like switches to choose which network interface to use to simulate the control of the vehicle
                         px4_button = ui.Button(
                             "PX4",
-                            height=WidgetWindow.BUTTON_HEIGHT * 2,
+                            height=WidgetWindow.BUTTON_HEIGHT,
                             style=WidgetWindow.BUTTON_SELECTED_STYLE,
-                            enabled=False,
+                            enabled=True,
+                            visible=True
+                        )
+                        ardupilot_button = ui.Button(
+                            "ArduPilot",
+                            height=WidgetWindow.BUTTON_HEIGHT,
+                            style=WidgetWindow.BUTTON_BASE_STYLE,
+                            enabled=True,
+                            visible=True
                         )
                         ros2_button = ui.Button(
                             "ROS 2",
                             height=WidgetWindow.BUTTON_HEIGHT,
                             style=WidgetWindow.BUTTON_BASE_STYLE,
                             enabled=True,
-                            visible=False
+                            visible=True
                         )
+              
+                px4_menu = ui.CollapsableFrame("PX4 Configurations", collapsed=False)
+                ardupilot_menu = ui.CollapsableFrame("Ardupilot Configurations", collapsed=False)
 
-                        # Set the auxiliary function to handle the switch between both backends
-                        px4_button.set_clicked_fn(lambda: handle_px4_ros_switch(self, px4_button, ros2_button, "px4"))
-                        ros2_button.set_clicked_fn(lambda: handle_px4_ros_switch(self, px4_button, ros2_button, "ros"))
-
+                 # Set the auxiliary function to handle the switch between both backends
+                px4_button.set_clicked_fn(lambda: handle_backend_switch(
+                    self, px4_button, ardupilot_button, ros2_button, "px4", logo_image, px4_menu, ardupilot_menu)
+                )
+                ardupilot_button.set_clicked_fn(lambda: handle_backend_switch(
+                    self, px4_button, ardupilot_button, ros2_button, "ardupilot", logo_image, px4_menu, ardupilot_menu)
+                )
+                ros2_button.set_clicked_fn(lambda: handle_backend_switch(
+                    self, px4_button, ardupilot_button, ros2_button, "ros2", logo_image, px4_menu, ardupilot_menu)
+                )
+        
                 # UI to configure the PX4 settings
-                with ui.CollapsableFrame("PX4 Configurations", collapsed=False):
+                with px4_menu:
                     with ui.VStack(height=0, spacing=10, name="frame_v_stack"):
+                        ui.Spacer(height=WidgetWindow.GENERAL_SPACING)
                         with ui.HStack():
                             ui.Label("Auto-launch PX4", name="label", width=WidgetWindow.LABEL_PADDING - 20)
                             px4_checkbox = ui.CheckBox()
@@ -295,13 +397,32 @@ class WidgetWindow(ui.Window):
                             px4_airframe_field.model.set_value(self._delegate._px4_airframe)
                             self._delegate.set_px4_airframe_field(px4_airframe_field.model)
 
-                # Button to load the drone
-                ui.Button(
-                    "Load Vehicle",
-                    height=WidgetWindow.BUTTON_HEIGHT,
-                    clicked_fn=self._delegate.on_load_vehicle,
-                    style=WidgetWindow.BUTTON_BASE_STYLE,
-                )
+                # UI to configure the Ardupilot settings
+                with ardupilot_menu:
+                    with ui.VStack(height=0, spacing=10, name="frame_v_stack"):
+                        ui.Spacer(height=WidgetWindow.GENERAL_SPACING)
+                        with ui.HStack():
+                            ui.Label("Auto-launch Ardupilot", name="label", width=WidgetWindow.LABEL_PADDING + 10)
+                            ardupilot_checkbox = ui.CheckBox()
+                            ardupilot_checkbox.model.set_value(self._delegate._autostart_ardupilot)
+                            self._delegate.set_ardupilot_autostart_checkbox(ardupilot_checkbox.model)
+
+                        with ui.HStack():
+                            ui.Label("ArduPilot Path", name="label", width=WidgetWindow.LABEL_PADDING - 20)
+                            ardupilot_path_field = ui.StringField(name="ardupilot_path", width=300)
+                            ardupilot_path_field.model.set_value(self._delegate._ardupilot_dir)
+                            self._delegate.set_ardupilot_directory_field(ardupilot_path_field.model)
+
+                            ui.Button("Reset", enabled=True, clicked_fn=self._delegate.on_reset_ardupilot_path)
+                            ui.Button("Make Default", enabled=True, clicked_fn=self._delegate.on_set_new_default_ardupilot_path)
+
+                        with ui.HStack():
+                            ui.Label("ArduPilot airframe", name="label", width=WidgetWindow.LABEL_PADDING)
+                            ardupilot_airframe_field = ui.StringField(name="ardupilot_model")
+                            ardupilot_airframe_field.model.set_value(self._delegate._ardupilot_airframe)
+                            self._delegate.set_ardupilot_airframe_field(ardupilot_airframe_field.model)
+                
+                ardupilot_menu.visible = False # Only px4 menu is visible at initialization
 
     def _viewport_camera_frame(self):
         """

@@ -66,6 +66,12 @@ for asset in NVIDIA_SIMULATION_ENVIRONMENTS:
 for asset in OMNIVERSE_ENVIRONMENTS:
     SIMULATION_ENVIRONMENTS[asset] = OMNIVERSE_ENVIRONMENTS[asset]
 
+BACKENDS = {
+    "PX4": "PX4MavlinkBackend",
+    "ArduPilot": "ArduPilotBackend",
+    "ROS2": "ROS2Backend"
+}
+
 # Define the default settings for the simulation environment
 DEFAULT_WORLD_SETTINGS = {"physics_dt": 1.0 / 250.0, "stage_units_in_meters": 1.0, "rendering_dt": 1.0 / 60.0, "device": "cpu"}
 
@@ -74,3 +80,10 @@ THUMBNAIL = ROBOTS_ASSETS + "/Iris/iris_thumbnail.png"
 
 # Define where the thumbail of the world is located
 WORLD_THUMBNAIL = ASSET_PATH + "/Worlds/Empty_thumbnail.png"
+
+BACKENDS_THUMBMAILS_PATH = ASSET_PATH + "/Backends"
+BACKENDS_THUMBMAILS = {
+    "px4": BACKENDS_THUMBMAILS_PATH + "/px4_logo.png",
+    "ardupilot": BACKENDS_THUMBMAILS_PATH + "/ardupilot_logo.png",
+    "ros2": BACKENDS_THUMBMAILS_PATH + "/ros2_logo.png"
+}
