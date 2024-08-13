@@ -7,11 +7,11 @@
 
 __all__ = ["PegasusInterface"]
 
-# Importing Lock in ordef to have a multithread safe Pegasus singleton that manages the entire Pegasus extension
 import gc
 import yaml
 import asyncio
 import os
+# Importing Lock in order to have a multithread safe Pegasus singleton that manages the entire Pegasus extension
 from threading import Lock
 
 # NVidia API imports

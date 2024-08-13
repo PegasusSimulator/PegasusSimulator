@@ -360,7 +360,7 @@ class Vehicle(Robot):
     def update_sensors(self, dt: float):
         """Callback that is called at every physics steps and will call the sensor.update method to generate new
         sensor data. For each data that the sensor generates, the backend.update_sensor method will also be called for
-        every backend. For example, if new data is generated for an IMU and we have a MavlinkBackend, then the update_sensor
+        every backend. For example, if new data is generated for an IMU and we have a PX4MavlinkBackend, then the update_sensor
         method will be called for that backend so that this data can latter be sent thorugh mavlink.
 
         Args:

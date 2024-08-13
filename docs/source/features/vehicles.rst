@@ -41,7 +41,7 @@ To create a Multirotor object from scratch, consider the following example code:
     # for logging purposes) but only the first backend in the list will be used 
     # to send commands to the vehicles. The others will just be used to receive the
     # current state of the vehicle and the data produced by the sensors
-    multirotor_config.backends = [MavlinkBackend()]
+    multirotor_config.backends = [PX4MavlinkBackend()]
 
     # Create and spawn the multirotor object in the scene
     Multirotor(

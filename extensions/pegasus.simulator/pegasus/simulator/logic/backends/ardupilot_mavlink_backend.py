@@ -1,10 +1,10 @@
 """
-| File: mavlink_backend.py
+| File: px4_mavlink_backend.py
 | Author: Marcelo Jacinto (marcelo.jacinto@tecnico.ulisboa.pt)
 | Description: File that implements the Mavlink Backend for communication/control with/of the vehicle simulation
 | License: BSD-3-Clause. Copyright (c) 2023, Marcelo Jacinto. All rights reserved.
 """
-__all__ = ["MavlinkBackend", "MavlinkBackendConfig"]
+__all__ = ["PX4MavlinkBackend", "PX4MavlinkBackendConfig"]
 
 import carb
 import time
@@ -106,7 +106,7 @@ class SensorMsg:
         self.sim_velocity_inertial = [0.0, 0.0, 0.0]  # North-east-down [m/s]
 
 
-class ThrusterControl:
+class ThrusterControl:  
     """
     An auxiliary data class that saves the thrusters command data received via mavlink and 
     scales them into individual angular velocities expressed in rad/s to apply to each rotor
@@ -180,14 +180,14 @@ class ThrusterControl:
         self._input_reference = [0.0 for i in range(self.num_rotors)]
 
 
-class MavlinkBackendConfig:
+class PX4MavlinkBackendConfig:
     """
     An auxiliary data class used to store all the configurations for the mavlink communications.
     """
 
     def __init__(self, config={}):
         """
-        Initialize the MavlinkBackendConfig class
+        Initialize the PX4MavlinkBackendConfig class
 
         Args:
             config (dict): A Dictionary that contains all the parameters for configuring the Mavlink interface - it can be empty or only have some of the parameters used by this backend.
@@ -234,16 +234,16 @@ class MavlinkBackendConfig:
         self.update_rate: float = config.get("update_rate", 250.0)  # [Hz]
 
 
-class MavlinkBackend(Backend):
+class PX4MavlinkBackend(Backend):
     """ The Mavlink Backend used to receive the vehicle's state and sensor data in order to send to PX4 through mavlink. It also
     receives via mavlink the thruster commands to apply to each vehicle rotor.
     """
 
-    def __init__(self, config=MavlinkBackendConfig()):
-        """Initialize the MavlinkBackend
+    def __init__(self, config=PX4MavlinkBackendConfig()):
+        """Initialize the PX4MavlinkBackend
 
         Args:
-            config (MavlinkBackendConfig): The configuration class for the MavlinkBackend. Defaults to MavlinkBackendConfig().
+            config (PX4MavlinkBackendConfig): The configuration class for the PX4MavlinkBackend. Defaults to PX4MavlinkBackendConfig().
         """
 
         # Initialize the Backend object
@@ -476,7 +476,7 @@ class MavlinkBackend(Backend):
         return self._rotor_data.input_reference
 
     def __del__(self):
-        """Gets called when the MavlinkBackend object gets destroyed. When this happens, we make sure
+        """Gets called when the PX4MavlinkBackend object gets destroyed. When this happens, we make sure
         to close any mavlink connection open for this vehicle.
         """
 

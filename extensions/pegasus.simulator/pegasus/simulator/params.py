@@ -67,7 +67,7 @@ for asset in OMNIVERSE_ENVIRONMENTS:
     SIMULATION_ENVIRONMENTS[asset] = OMNIVERSE_ENVIRONMENTS[asset]
 
 BACKENDS = {
-    "PX4": "PX4MavlinkBackend",
+    "PX4": "PX4PX4MavlinkBackend",
     "ArduPilot": "ArduPilotBackend",
     "ROS2": "ROS2Backend"
 }

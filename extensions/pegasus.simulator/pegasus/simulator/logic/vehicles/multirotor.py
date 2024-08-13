@@ -13,7 +13,7 @@ from omni.isaac.dynamic_control import _dynamic_control
 from pegasus.simulator.logic.vehicles.vehicle import Vehicle
 
 # Mavlink interface
-from pegasus.simulator.logic.backends.mavlink_backend import MavlinkBackend
+from pegasus.simulator.logic.backends.px4_mavlink_backend import PX4MavlinkBackend, PX4MavlinkBackendConfig
 
 # Sensors and dynamics setup
 from pegasus.simulator.logic.dynamics import LinearDrag
@@ -52,7 +52,7 @@ class MultirotorConfig:
         # The backends for actually sending commands to the vehicle. By default use mavlink (with default mavlink configurations)
         # [Can be None as well, if we do not desired to use PX4 with this simulated vehicle]. It can also be a ROS2 backend
         # or your own custom Backend implementation!
-        self.backends = [MavlinkBackend()]
+        self.backends = [PX4MavlinkBackend(config=PX4MavlinkBackendConfig())]
 
 
 class Multirotor(Vehicle):

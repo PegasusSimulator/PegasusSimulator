@@ -19,7 +19,7 @@ from pegasus.simulator.params import ROBOTS, SIMULATION_ENVIRONMENTS, BACKENDS
 from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 
 # Vehicle Manager to spawn Vehicles
-from pegasus.simulator.logic.backends import MavlinkBackend, MavlinkBackendConfig #, ROS2Backend
+from pegasus.simulator.logic.backends import PX4MavlinkBackend, PX4MavlinkBackendConfig #, ROS2Backend
 from pegasus.simulator.logic.vehicles.multirotor import Multirotor, MultirotorConfig
 from pegasus.simulator.logic.vehicle_manager import VehicleManager
 
@@ -237,14 +237,14 @@ class UIDelegate:
                 ardupilot_airframe = self._ardupilot_airframe_field.get_value_as_string()
 
                 # Create the multirotor configuration
-                mavlink_config = MavlinkBackendConfig({
+                mavlink_config = PX4MavlinkBackendConfig({
                     "vehicle_id": self._vehicle_id,
                     "px4_autolaunch": px4_autostart,
                     "px4_dir": px4_path,
                     "px4_vehicle_model": px4_airframe
                 })
                 config_multirotor = MultirotorConfig()
-                config_multirotor.backends = [MavlinkBackend(mavlink_config)]
+                config_multirotor.backends = [PX4MavlinkBackend(mavlink_config)]
 
                 #ros2 = ROS2Backend(self._vehicle_id)
 

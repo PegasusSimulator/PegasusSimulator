@@ -13,3 +13,9 @@ Tools/environment_install/install-prereqs-ubuntu.sh -y
 cd ArduCopter
 Tools/autotest/sim_vehicle.py -v ArduCopter -f quad --console --map
 Tools/autotest/sim_vehicle.py -v ArduCopter -f quad --no-rebuild
+
+# PX4 SITL
+
+# QGroundControl
+https://pegasussimulator.github.io/PegasusSimulator/source/tutorials/run_extension_mode.html
+https://docs.qgroundcontrol.com/master/en/qgc-user-guide/getting_started/download_and_install.html

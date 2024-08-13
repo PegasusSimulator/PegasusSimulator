@@ -1,5 +1,5 @@
 ardupilot_default_airframe: gazebo-iris
-ardupilot_dir: ~/ardupilot
+ardupilot_dir: /home/sim/ardupilot
 global_coordinates:
   altitude: 90.0
   latitude: 38.736832
