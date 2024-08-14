@@ -7,6 +7,7 @@
 
 # System tools used to launch the px4 process in the brackground
 import os
+import signal
 import tempfile
 import subprocess
 
@@ -59,10 +60,11 @@ class PX4LaunchTool:
         ]
         command_str: str = " ".join(command)
         self.px4_process = subprocess.Popen(
-            ["gnome-terminal", "--", "bash", "-c", command_str],
+            ["gnome-terminal", '--disable-factory', '--', 'bash', '-c', command_str],
             cwd=self.root_fs.name,
             shell=False,
             env=self.environment,
+            preexec_fn=os.setpgrp
         )
 
     def kill_px4(self):
@@ -70,7 +72,9 @@ class PX4LaunchTool:
         Method that will kill a px4 instance with the specified configuration
         """
         if self.px4_process is not None:
+            os.killpg(self.px4_process.pid, signal.SIGINT)
             self.px4_process.kill()
+            self.px4_process.wait()
             self.px4_process = None
 
     def __del__(self):
