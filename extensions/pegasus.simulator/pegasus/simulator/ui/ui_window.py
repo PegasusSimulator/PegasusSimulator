@@ -16,7 +16,7 @@ import omni.ui as ui
 from omni.ui import color as cl
 
 from pegasus.simulator.ui.ui_delegate import UIDelegate
-from pegasus.simulator.params import ROBOTS, SIMULATION_ENVIRONMENTS, THUMBNAIL, WORLD_THUMBNAIL, WINDOW_TITLE, BACKENDS_THUMBMAILS
+from pegasus.simulator.params import ROBOTS, SIMULATION_ENVIRONMENTS, THUMBNAIL, BACKENDS, WORLD_THUMBNAIL, WINDOW_TITLE, BACKENDS_THUMBMAILS
 
 
 class WidgetWindow(ui.Window):
@@ -266,7 +266,7 @@ class WidgetWindow(ui.Window):
             ardupilot_menu=None
         ):
             # Handle the UI of both buttons switching of and on (To make it prettier)
-            if button == "px4":
+            if button == BACKENDS['px4']:
                 px4_button.enabled = False
                 ardupilot_button.enabled = True
                 ros2_button.enabled = True
@@ -281,7 +281,7 @@ class WidgetWindow(ui.Window):
                 ardupilot_menu.visible = False
                 
 
-            elif button == "ardupilot":
+            elif button == BACKENDS['ardupilot']:
                 px4_button.enabled = True
                 ardupilot_button.enabled = False
                 ros2_button.enabled = True
@@ -362,15 +362,15 @@ class WidgetWindow(ui.Window):
                 px4_menu = ui.CollapsableFrame("PX4 Configurations", collapsed=False)
                 ardupilot_menu = ui.CollapsableFrame("Ardupilot Configurations", collapsed=False)
 
-                 # Set the auxiliary function to handle the switch between both backends
+                # Set the auxiliary function to handle the switch between both backends
                 px4_button.set_clicked_fn(lambda: handle_backend_switch(
-                    self, px4_button, ardupilot_button, ros2_button, "px4", logo_image, px4_menu, ardupilot_menu)
+                    self, px4_button, ardupilot_button, ros2_button, BACKENDS["px4"], logo_image, px4_menu, ardupilot_menu)
                 )
                 ardupilot_button.set_clicked_fn(lambda: handle_backend_switch(
-                    self, px4_button, ardupilot_button, ros2_button, "ardupilot", logo_image, px4_menu, ardupilot_menu)
+                    self, px4_button, ardupilot_button, ros2_button, BACKENDS["ardupilot"], logo_image, px4_menu, ardupilot_menu)
                 )
                 ros2_button.set_clicked_fn(lambda: handle_backend_switch(
-                    self, px4_button, ardupilot_button, ros2_button, "ros2", logo_image, px4_menu, ardupilot_menu)
+                    self, px4_button, ardupilot_button, ros2_button, BACKENDS["ros2"], logo_image, px4_menu, ardupilot_menu)
                 )
         
                 # UI to configure the PX4 settings

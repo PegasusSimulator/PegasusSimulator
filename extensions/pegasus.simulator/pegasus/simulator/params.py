@@ -67,9 +67,9 @@ for asset in OMNIVERSE_ENVIRONMENTS:
     SIMULATION_ENVIRONMENTS[asset] = OMNIVERSE_ENVIRONMENTS[asset]
 
 BACKENDS = {
-    "PX4": "PX4PX4MavlinkBackend",
-    "ArduPilot": "ArduPilotBackend",
-    "ROS2": "ROS2Backend"
+    "px4": "px4",
+    "ardupilot": "ardupilot",
+    "ros2": "ros2"
 }
 
 # Define the default settings for the simulation environment

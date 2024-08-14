@@ -19,7 +19,8 @@ from pegasus.simulator.params import ROBOTS, SIMULATION_ENVIRONMENTS, BACKENDS
 from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 
 # Vehicle Manager to spawn Vehicles
-from pegasus.simulator.logic.backends import PX4MavlinkBackend, PX4MavlinkBackendConfig #, ROS2Backend
+from pegasus.simulator.logic.backends import Backend, BackendConfig, \
+    PX4MavlinkBackend, PX4MavlinkBackendConfig #, ROS2Backend
 from pegasus.simulator.logic.vehicles.multirotor import Multirotor, MultirotorConfig
 from pegasus.simulator.logic.vehicle_manager import VehicleManager
 
@@ -58,7 +59,7 @@ class UIDelegate:
 
         # Selected option for broadcasting the simulated vehicle (PX4+ROS2 or just ROS2)
         # By default we assume PX4
-        self._streaming_backend: str = "px4"
+        self._streaming_backend: str = BACKENDS['px4']
 
         # Selected value for the the id of the vehicle
         self._vehicle_id_field: ui.AbstractValueModel = None
@@ -109,8 +110,7 @@ class UIDelegate:
     def set_vehicle_id_field(self, vehicle_id_field: ui.AbstractValueModel):
         self._vehicle_id_field = vehicle_id_field
 
-    def set_streaming_backend(self, backend: str = "px4"):
-        carb.log_info("Chosen option: " + backend)
+    def set_streaming_backend(self, backend: str = BACKENDS['px4']):
         self._streaming_backend = backend
 
     def set_px4_autostart_checkbox(self, checkbox_model:ui.AbstractValueModel):
@@ -217,37 +217,57 @@ class UIDelegate:
 
                 # Get the desired position and orientation of the vehicle from the UI transform
                 pos, euler_angles = self._window.get_selected_vehicle_attitude()
+                
+                backend_config: BackendConfig = None
+                backend: Backend = None
 
-                # Read if we should auto-start px4 from the checkbox
-                px4_autostart = self._px4_autostart_checkbox.get_value_as_bool()
+                if self._streaming_backend == BACKENDS["px4"]:
+                    # Read if we should auto-start px4 from the checkbox
+                    px4_autostart = self._px4_autostart_checkbox.get_value_as_bool()
 
-                # Read the PX4 path from the field
-                px4_path = os.path.expanduser(self._px4_directory_field.get_value_as_string())
+                    # Read the PX4 path from the field
+                    px4_path = os.path.expanduser(self._px4_directory_field.get_value_as_string())
 
-                # Read the PX4 airframe from the field
-                px4_airframe = self._px4_airframe_field.get_value_as_string()
+                    # Read the PX4 airframe from the field
+                    px4_airframe = self._px4_airframe_field.get_value_as_string()
 
-                # Read if we should auto-start ardupilot from the checkbox
-                ardupilot_autostart = self._ardupilot_autostart_checkbox.get_value_as_bool()
+                    backend_config = PX4MavlinkBackendConfig({
+                        "vehicle_id": self._vehicle_id,
+                        "px4_autolaunch": px4_autostart,
+                        "px4_dir": px4_path,
+                        "px4_vehicle_model": px4_airframe
+                    })
+                    backend = PX4MavlinkBackend(config=backend_config)
+                    carb.log_warn("PX4 backend selected.")
+                
+                elif self._streaming_backend == BACKENDS["ardupilot"]:
+                    # # Read if we should auto-start ardupilot from the checkbox
+                    # ardupilot_autostart = self._ardupilot_autostart_checkbox.get_value_as_bool()
 
-                # Read the ArduPilot path from the field
-                ardupilot_path = os.path.expanduser(self._ardupilot_directory_field.get_value_as_string())
+                    # # Read the ArduPilot path from the field
+                    # ardupilot_path = os.path.expanduser(self._ardupilot_directory_field.get_value_as_string())
 
-                # Read the ArduPilot airframe from the field
-                ardupilot_airframe = self._ardupilot_airframe_field.get_value_as_string()
+                    # # Read the ArduPilot airframe from the field
+                    # ardupilot_airframe = self._ardupilot_airframe_field.get_value_as_string()
 
+                    # backend_config = ArduPilot({
+                    #     "vehicle_id": self._vehicle_id,
+                    #     "px4_autolaunch": px4_autostart,
+                    #     "px4_dir": px4_path,
+                    #     "px4_vehicle_model": px4_airframe
+                    # })
+                    # backend = PX4MavlinkBackend(config=backend_config)
+                    carb.log_warn("Ardupilot backend selected.")
+                
+                else:
+                    # ROS2:
+                    # backend = ROS2Backend(self._vehicle_id)
+                    carb.log_warn("ROS2 backend selected.")
+                   
                 # Create the multirotor configuration
-                mavlink_config = PX4MavlinkBackendConfig({
-                    "vehicle_id": self._vehicle_id,
-                    "px4_autolaunch": px4_autostart,
-                    "px4_dir": px4_path,
-                    "px4_vehicle_model": px4_airframe
-                })
                 config_multirotor = MultirotorConfig()
-                config_multirotor.backends = [PX4MavlinkBackend(mavlink_config)]
-
-                #ros2 = ROS2Backend(self._vehicle_id)
-
+                config_multirotor.backends = [backend]
+                
                 # Try to spawn the selected robot in the world to the specified namespace
                 Multirotor(
                     "/World/quadrotor",
