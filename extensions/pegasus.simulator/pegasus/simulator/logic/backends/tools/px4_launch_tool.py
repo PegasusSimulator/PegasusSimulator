@@ -43,7 +43,7 @@ class PX4LaunchTool:
         # Set the environement variables that let PX4 know which vehicle model to use internally
         self.environment = os.environ
         self.environment["PX4_SIM_MODEL"] = px4_model
-
+    
     def launch_px4(self):
         """
         Method that will launch a px4 instance with the specified configuration
@@ -57,8 +57,9 @@ class PX4LaunchTool:
                 str(self.vehicle_id),
                 "-d",
         ]
+        command_str: str = " ".join(command)
         self.px4_process = subprocess.Popen(
-            command,
+            ["gnome-terminal", "--", "bash", "-c", command_str],
             cwd=self.root_fs.name,
             shell=False,
             env=self.environment,
