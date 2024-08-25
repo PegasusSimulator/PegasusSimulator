@@ -20,7 +20,8 @@ from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 
 # Vehicle Manager to spawn Vehicles
 from pegasus.simulator.logic.backends import Backend, BackendConfig, \
-    PX4MavlinkBackend, PX4MavlinkBackendConfig #, ROS2Backend
+    PX4MavlinkBackend, PX4MavlinkBackendConfig, \
+    ArduPilotMavlinkBackend, ArduPilotMavlinkBackendConfig #, ROS2Backend
 from pegasus.simulator.logic.vehicles.multirotor import Multirotor, MultirotorConfig
 from pegasus.simulator.logic.vehicle_manager import VehicleManager
 
@@ -242,21 +243,21 @@ class UIDelegate:
                 
                 elif self._streaming_backend == BACKENDS["ardupilot"]:
                     # # Read if we should auto-start ardupilot from the checkbox
-                    # ardupilot_autostart = self._ardupilot_autostart_checkbox.get_value_as_bool()
+                    ardupilot_autostart = self._ardupilot_autostart_checkbox.get_value_as_bool()
 
-                    # # Read the ArduPilot path from the field
-                    # ardupilot_path = os.path.expanduser(self._ardupilot_directory_field.get_value_as_string())
+                    # Read the ArduPilot path from the field
+                    ardupilot_path = os.path.expanduser(self._ardupilot_directory_field.get_value_as_string())
 
-                    # # Read the ArduPilot airframe from the field
-                    # ardupilot_airframe = self._ardupilot_airframe_field.get_value_as_string()
+                    # Read the ArduPilot airframe from the field
+                    ardupilot_airframe = self._ardupilot_airframe_field.get_value_as_string()
 
-                    # backend_config = ArduPilot({
-                    #     "vehicle_id": self._vehicle_id,
-                    #     "px4_autolaunch": px4_autostart,
-                    #     "px4_dir": px4_path,
-                    #     "px4_vehicle_model": px4_airframe
-                    # })
-                    # backend = PX4MavlinkBackend(config=backend_config)
+                    backend_config = ArduPilotMavlinkBackendConfig({
+                        "vehicle_id": self._vehicle_id,
+                        "ardupilot_autolaunch": ardupilot_autostart,
+                        "ardupilot_dir": ardupilot_path,
+                        "ardupilot_vehicle_model": ardupilot_airframe
+                    })
+                    backend = ArduPilotMavlinkBackend(config=backend_config)
                     carb.log_warn("Ardupilot backend selected.")
                 
                 else:

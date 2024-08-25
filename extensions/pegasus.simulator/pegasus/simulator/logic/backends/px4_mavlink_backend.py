@@ -164,14 +164,17 @@ class ThrusterControl:
         if len(controls) < self.num_rotors:
             carb.log_warn("Did not receive enough inputs for all the rotors")
             return
+        
+        print(f"Servos_original[{controls[0]}, {controls[1]}, {controls[2]}, {controls[3]}]")
 
         # Update the desired reference for every rotor (and saturate according to the min and max values)
         for i in range(self.num_rotors):
-
+            
             # Compute the actual velocity reference to apply to each rotor
-            self._input_reference[i] = (controls[i] + self.input_offset[i]) * self.input_scaling[
-                i
-            ] + self.zero_position_armed[i]
+            self._input_reference[i] = (controls[i] + self.input_offset[i]) * self.input_scaling[i] + self.zero_position_armed[i]
+            # self._input_reference[i] = 700
+        print(f"Servos[{self._input_reference[0]}, {self._input_reference[1]}, {self._input_reference[2]}, {self._input_reference[3]}]")
+
 
     def zero_input_reference(self):
         """

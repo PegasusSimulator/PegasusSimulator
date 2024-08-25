@@ -50,17 +50,20 @@ class PX4LaunchTool:
         Method that will launch a px4 instance with the specified configuration
         """
         command = [
-                self.px4_dir + "/build/px4_sitl_default/bin/px4",
-                self.px4_dir + "/ROMFS/px4fmu_common/",
-                "-s",
-                self.rc_script,
-                "-i",
-                str(self.vehicle_id),
-                "-d",
+            self.px4_dir + "/build/px4_sitl_default/bin/px4",
+            self.px4_dir + "/ROMFS/px4fmu_common/",
+            "-s",
+            self.rc_script,
+            "-i",
+            str(self.vehicle_id),
+            "-d",
         ]
         command_str: str = " ".join(command)
+        
+        # Run in a seperate bash window
         self.px4_process = subprocess.Popen(
-            ["gnome-terminal", '--disable-factory', '--', 'bash', '-c', command_str],
+            # ["gnome-terminal", '--disable-factory', '--', 'bash', '-c', command_str],
+            ["gnome-terminal", '--', 'bash', '-c', command_str],
             cwd=self.root_fs.name,
             shell=False,
             env=self.environment,

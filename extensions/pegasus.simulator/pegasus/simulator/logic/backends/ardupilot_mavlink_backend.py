@@ -1,20 +1,23 @@
 """
-| File: px4_mavlink_backend.py
+| File: ardupilot_mavlink_backend.py
 | Author: Marcelo Jacinto (marcelo.jacinto@tecnico.ulisboa.pt)
 | Description: File that implements the Mavlink Backend for communication/control with/of the vehicle simulation
 | License: BSD-3-Clause. Copyright (c) 2023, Marcelo Jacinto. All rights reserved.
 """
-__all__ = ["PX4MavlinkBackend", "PX4MavlinkBackendConfig"]
+__all__ = ["ArduPilotMavlinkBackend", "ArduPilotMavlinkBackendConfig"]
 
 import carb
 import time
+import math
 import numpy as np
 from pymavlink import mavutil
+import pymavlink.dialects.v20.all as dialect
 
 from pegasus.simulator.logic.state import State
 from pegasus.simulator.logic.backends.backend import Backend
 from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
-from pegasus.simulator.logic.backends.tools.px4_launch_tool import PX4LaunchTool
+from pegasus.simulator.logic.backends.tools.ardupilot_launch_tool import ArduPilotLaunchTool
+from pegasus.simulator.logic.backends.tools.ArduPilotPlugin import ArduPilotPlugin
 
 
 class SensorSource:
@@ -130,7 +133,7 @@ class ThrusterControl:
 
         self.num_rotors: int = num_rotors
 
-        # Values to scale and offset the rotor control inputs received from PX4
+        # Values to scale and offset the rotor control inputs received from ArduPilot
         assert len(input_offset) == self.num_rotors
         self.input_offset = input_offset
 
@@ -143,6 +146,55 @@ class ThrusterControl:
         # The actual speed references to apply to the vehicle rotor joints
         self._input_reference = [0.0 for i in range(self.num_rotors)]
 
+    @staticmethod
+    def rpm_to_rad_per_sec(rpm):
+        """
+        Convert RPM (Revolutions Per Minute) to radians per second (rad/s).
+
+        Parameters:
+        rpm (float): The speed in RPM.
+
+        Returns:
+        float: The speed in radians per second (rad/s).
+        """
+        rad_per_sec = (rpm * 2 * math.pi) / 60
+        return rad_per_sec
+    
+
+    @staticmethod
+    def rad_per_sec_to_rpm(rad_per_sec):
+        """
+        Converts angular velocity from radians per second to revolutions per minute (RPM).
+
+        :param rad_per_sec: Angular velocity in radians per second (rad/s)
+        :return: Angular velocity in revolutions per minute (RPM)
+        """
+        rpm = rad_per_sec * (60 / (2 * math.pi))
+        return rpm
+
+    @staticmethod
+    def pwm_to_rpm(pwm):
+        """
+        Converts a PWM value to RPM using a linear approximation.
+
+        :param pwm: The PWM value in microseconds
+        :param pwm_min: The minimum PWM value (e.g., 1000 µs)
+        :param pwm_max: The maximum PWM value (e.g., 2000 µs)
+        :param rpm_max: The maximum RPM corresponding to pwm_max
+        :return: The estimated RPM
+        """
+        # TODO: config
+        pwm_min, pwm_max = (1000, 1500) # microseconds
+        rpm_max = ThrusterControl.rad_per_sec_to_rpm(1100) # RPM
+
+        if pwm < pwm_min:
+            return 0  # Below minimum PWM, consider it as 0 RPM
+        elif pwm > pwm_max:
+            return rpm_max  # Above maximum PWM, consider it as max RPM
+        else:
+            rpm = ((pwm - pwm_min) / (pwm_max - pwm_min)) * rpm_max
+            return rpm
+    
     @property
     def input_reference(self):
         """A list of floats with the angular velocities in rad/s
@@ -152,7 +204,7 @@ class ThrusterControl:
         """
         return self._input_reference
 
-    def update_input_reference(self, controls):
+    def update_input_reference(self, servos):
         """Takes a list with the thrust controls received via mavlink and scales them in order to generated
         the equivalent angular velocities in rad/s
 
@@ -161,17 +213,38 @@ class ThrusterControl:
         """
 
         # Check if the number of controls received is correct
-        if len(controls) < self.num_rotors:
+        if len(servos) < self.num_rotors:
             carb.log_warn("Did not receive enough inputs for all the rotors")
             return
 
+        print(f"Servos_original[{servos[0]}, {servos[1]}, {servos[2]}, {servos[3]}]")
+            
         # Update the desired reference for every rotor (and saturate according to the min and max values)
         for i in range(self.num_rotors):
+                
+            # Compute the actual veloci
+            # ty reference to apply to each rotor
+            # self._input_reference[i] = (rpm_to_rad_per_sec(servos[i]) + self.input_offset[i]) * self.input_scaling[i] + self.zero_position_armed[i]
+            # self._input_reference[i] = rpm_to_rad_per_sec(servos[i])
+            # ccw_sign = -1 if (i == 0 or i == 1) else 1
+            
+            print(f"servos[{i}] = {servos[i]}")
 
-            # Compute the actual velocity reference to apply to each rotor
-            self._input_reference[i] = (controls[i] + self.input_offset[i]) * self.input_scaling[
-                i
-            ] + self.zero_position_armed[i]
+            servo_rpm = ThrusterControl.pwm_to_rpm(servos[i])
+            print(f"servo_rpm[{i}] = {servo_rpm}")
+
+            self._input_reference[i] = ThrusterControl.rpm_to_rad_per_sec(servo_rpm) # TODO offest
+
+            # TODO upper limit
+            # self._input_reference[i] = 800 if self._input_reference[i] > 800 else self._input_reference[i]
+            print(f"self._input_reference[{i}] = {self._input_reference[i]})")
+
+            # print(f"self._input_reference[i] = (rpm_to_rad_per_sec(servos[i] + self.input_offset[i]) * self.input_scaling[i] + self.zero_position_armed[i]")
+            # print("servos[i] = rpm_to_rad_per_sec(servos[i])")
+            # print(f"{servos[i]}:{i} = {rpm_to_rad_per_sec(servos[i])}")
+            # print(f"{self._input_reference[i]} = ({rpm_to_rad_per_sec(servos[i])} + {self.input_offset[i]}) * {self.input_scaling[i]} + {self.zero_position_armed[i]}")
+
+        # print(f"Servos[{self._input_reference[0]}, {self._input_reference[1]}, {self._input_reference[2]}, {self._input_reference[3]}]")
 
     def zero_input_reference(self):
         """
@@ -180,14 +253,14 @@ class ThrusterControl:
         self._input_reference = [0.0 for i in range(self.num_rotors)]
 
 
-class PX4MavlinkBackendConfig:
+class ArduPilotMavlinkBackendConfig:
     """
     An auxiliary data class used to store all the configurations for the mavlink communications.
     """
 
     def __init__(self, config={}):
         """
-        Initialize the PX4MavlinkBackendConfig class
+        Initialize the ArduPilotMavlinkBackendConfig class
 
         Args:
             config (dict): A Dictionary that contains all the parameters for configuring the Mavlink interface - it can be empty or only have some of the parameters used by this backend.
@@ -196,12 +269,12 @@ class PX4MavlinkBackendConfig:
             The dictionary default parameters are
 
             >>> {"vehicle_id": 0,           
-            >>>  "connection_type": "tcpin",           
+            >>>  "connection_type": "udpin",           
             >>>  "connection_ip": "localhost",
-            >>>  "connection_baseport": 4560,
-            >>>  "px4_autolaunch": True,
-            >>>  "px4_dir": "PegasusInterface().px4_path",
-            >>>  "px4_vehicle_model": "gazebo-classic_iris",
+            >>>  "connection_baseport": 5760,
+            >>>  "ardupilot_autolaunch": True,
+            >>>  "ardupilot_dir": "PegasusInterface().ardupilot_path",
+            >>>  "ardupilot_vehicle_model": "gazebo-iris",
             >>>  "enable_lockstep": True,
             >>>  "num_rotors": 4,
             >>>  "input_offset": [0.0, 0.0, 0.0, 0.0],
@@ -213,59 +286,57 @@ class PX4MavlinkBackendConfig:
 
         # Configurations for the mavlink communication protocol (note: the vehicle id is sumed to the connection_baseport)
         self.vehicle_id = config.get("vehicle_id", 0)
-        self.connection_type = config.get("connection_type", "tcpin")
-        self.connection_ip = config.get("connection_ip", "localhost")
-        self.connection_baseport = config.get("connection_baseport", 4560)
+        self.connection_type = config.get("connection_type", "udpin") # TODO working
+        # self.connection_type = config.get("connection_type", "tcp")
+        self.connection_ip = config.get("connection_ip", "127.0.0.1") # TODO working
+        self.connection_baseport = config.get("connection_baseport", 14550) # TODO working
+        # self.connection_baseport = config.get("connection_baseport", 14551)
+        # self.connection_baseport = config.get("connection_baseport", 5760)
 
-        # Configure whether to launch px4 in the background automatically or not for every vehicle launched
-        self.px4_autolaunch: bool = config.get("px4_autolaunch", True)
-        self.px4_dir: str = config.get("px4_dir", PegasusInterface().px4_path)
-        self.px4_vehicle_model: str = config.get("px4_vehicle_model", "gazebo-classic_iris")
+        # Configure whether to launch ArduPilot in the background automatically or not for every vehicle launched
+        self.ardupilot_autolaunch: bool = config.get("ardupilot_autolaunch", True)
+        self.ardupilot_dir: str = config.get("ardupilot_dir", PegasusInterface().ardupilot_path)
+        self.ardupilot_vehicle_model: str = config.get("ardupilot_vehicle_model", "gazebo-iris")
 
         # Configurations to interpret the rotors control messages coming from mavlink
-        self.enable_lockstep: bool = config.get("enable_lockstep", True)
+        self.enable_lockstep: bool = config.get("enable_lockstep", False)
         self.num_rotors: int = config.get("num_rotors", 4)
-        self.input_offset = config.get("input_offset", [0.0, 0.0, 0.0, 0.0])
-        self.input_scaling = config.get("input_scaling", [1000.0, 1000.0, 1000.0, 1000.0])
-        self.zero_position_armed = config.get("zero_position_armed", [100.0, 100.0, 100.0, 100.0])
+        self.input_offset = config.get("input_offset", [-1000.0, -1000.0, -1000.0, -1000.0]) # TODO
+        self.input_scaling = config.get("input_scaling", [1.0, 1.0, 1.0, 1.0])
+        self.zero_position_armed = config.get("zero_position_armed", [0.0, 0.0, 0.0, 0.0])
 
         # The update rate at which we will be sending data to mavlink (TODO - remove this from here in the future
         # and infer directly from the function calls)
         self.update_rate: float = config.get("update_rate", 250.0)  # [Hz]
 
 
-class PX4MavlinkBackend(Backend):
-    """ The Mavlink Backend used to receive the vehicle's state and sensor data in order to send to PX4 through mavlink. It also
+class ArduPilotMavlinkBackend(Backend):
+    """ The Mavlink Backend used to receive the vehicle's state and sensor data in order to send to ArduPilot through mavlink. It also
     receives via mavlink the thruster commands to apply to each vehicle rotor.
     """
 
-    def __init__(self, config=PX4MavlinkBackendConfig()):
-        """Initialize the PX4MavlinkBackend
+    def __init__(self, config: ArduPilotMavlinkBackendConfig = ArduPilotMavlinkBackendConfig()):
+        """Initialize the ArduPilotMavlinkBackend
 
         Args:
-            config (PX4MavlinkBackendConfig): The configuration class for the PX4MavlinkBackend. Defaults to PX4MavlinkBackendConfig().
+            config (ArduPilotMavlinkBackendConfig): The configuration class for the ArduPilotMavlinkBackend. Defaults to ArduPilotMavlinkBackendConfig().
         """
 
         # Initialize the Backend object
-        super().__init__()
+        super().__init__(config)
 
         # Setup the desired mavlink connection port
         # The connection will only be created once the simulation starts
         self._vehicle_id = config.vehicle_id
         self._connection = None
-        self._connection_port = (
-            config.connection_type
-            + ":"
-            + config.connection_ip
-            + ":"
-            + str(config.connection_baseport + config.vehicle_id)
-        )
+        self._connection_port = f"{config.connection_type}:{config.connection_ip}:{config.connection_baseport}"
+        # TODO: config.vehicle_id)
 
-        # Check if we need to autolaunch px4 in the background or not
-        self.px4_autolaunch: bool = config.px4_autolaunch
-        self.px4_vehicle_model: str = config.px4_vehicle_model  # only needed if px4_autolaunch == True
-        self.px4_tool: PX4LaunchTool = None
-        self.px4_dir: str = config.px4_dir
+        # Check if we need to autolaunch ArduPilot in the background or not
+        self.ardupilot_autolaunch: bool = config.ardupilot_autolaunch
+        self.ardupilot_vehicle_model: str = config.ardupilot_vehicle_model  # only needed if ardupilot_autolaunch == True
+        self.ardupilot_tool: ArduPilotLaunchTool = None
+        self.ardupilot_dir: str = config.ardupilot_dir
 
         # Set the update rate used for sending the messages (TODO - remove this hardcoded value from here)
         self._update_rate: float = config.update_rate
@@ -302,8 +373,10 @@ class PX4MavlinkBackend(Backend):
 
         self._last_heartbeat_sent_time = 0
 
-        # Auxiliar variables for setting the u_time when sending sensor data to px4
+        # Auxiliar variables for setting the u_time when sending sensor data to ArduPilot
         self._current_utime: int = 0
+
+        self.packet_num = 0
 
     def update_sensor(self, sensor_type: str, data):
         """Method that is used as callback for the vehicle for every iteration that a sensor produces new data. 
@@ -329,6 +402,7 @@ class PX4MavlinkBackend(Backend):
             pass
 
     def update_imu_data(self, data):
+        # HIL_SENSOR (107)
         """Gets called by the 'update_sensor' method to update the current IMU data
 
         Args:
@@ -350,6 +424,7 @@ class PX4MavlinkBackend(Backend):
         self._sensor_data.received_first_imu = True
 
     def update_gps_data(self, data):
+        # HIL_GPS (113)
         """Gets called by the 'update_sensor' method to update the current GPS data
 
         Args:
@@ -379,6 +454,7 @@ class PX4MavlinkBackend(Backend):
         self._sensor_data.sim_alt = int(data["altitude_gt"] * 1000)
 
     def update_bar_data(self, data):
+        # # HIL_SENSOR (107)
         """Gets called by the 'update_sensor' method to update the current Barometer data
 
         Args:
@@ -394,6 +470,7 @@ class PX4MavlinkBackend(Backend):
         self._sensor_data.new_bar_data = True
 
     def update_mag_data(self, data):
+        # HIL_SENSOR (107)
         """Gets called by the 'update_sensor' method to update the current Vision data
 
         Args:
@@ -476,7 +553,7 @@ class PX4MavlinkBackend(Backend):
         return self._rotor_data.input_reference
 
     def __del__(self):
-        """Gets called when the PX4MavlinkBackend object gets destroyed. When this happens, we make sure
+        """Gets called when the ArduPilotMavlinkBackend object gets destroyed. When this happens, we make sure
         to close any mavlink connection open for this vehicle.
         """
 
@@ -489,7 +566,7 @@ class PX4MavlinkBackend(Backend):
 
     def start(self):
         """Method that handles the begining of the simulation of vehicle. It will try to open the mavlink connection 
-        interface and also attemp to launch px4 in a background process if that option as specified in the config class
+        interface and also attemp to launch ArduPilot in a background process if that option as specified in the config class
         """
 
         # If we are already running the mavlink interface, then ignore the function call
@@ -503,15 +580,15 @@ class PX4MavlinkBackend(Backend):
         # Set the flag to signal that the mavlink transmission has started
         self._is_running = True
 
-        # Launch the PX4 in the background if needed
-        if self.px4_autolaunch and self.px4_tool is None:
-            carb.log_info("Attempting to launch PX4 in background process")
-            self.px4_tool = PX4LaunchTool(self.px4_dir, self._vehicle_id, self.px4_vehicle_model)
-            self.px4_tool.launch_px4()
+        # Launch the ArduPilot in the background if needed
+        if self.ardupilot_autolaunch and self.ardupilot_tool is None:
+            carb.log_info("Attempting to launch ArduPilot in background process")
+            self.ardupilot_tool = ArduPilotLaunchTool(self.ardupilot_dir, self._vehicle_id, self.ardupilot_vehicle_model)
+            self.ardupilot_tool.launch_ardupilot()
 
     def stop(self):
         """Method that when called will handle the stopping of the simulation of vehicle. It will make sure that any open
-        mavlink connection will be closed and also that the PX4 background process gets killed (if it was auto-initialized)
+        mavlink connection will be closed and also that the ArduPilot background process gets killed (if it was auto-initialized)
         """
 
         # If the simulation was already stoped, then ignore the function call
@@ -525,11 +602,11 @@ class PX4MavlinkBackend(Backend):
         self._connection.close()
         self._connection = None
 
-        # Close the PX4 if it was running
-        if self.px4_autolaunch and self.px4_autolaunch is not None:
-            carb.log_info("Attempting to kill PX4 background process")
-            self.px4_tool.kill_px4()
-            self.px4_tool = None
+        # Close the ArduPilot if it was running
+        if self.ardupilot_autolaunch and self.ardupilot_autolaunch is not None:
+            carb.log_info("Attempting to kill ArduPilot background process")
+            self.ardupilot_tool.kill_ardupilot()
+            self.ardupilot_tool = None
 
     def reset(self):
         """For now does nothing. Here for compatibility purposes only
@@ -563,6 +640,9 @@ class PX4MavlinkBackend(Backend):
         if an hearbeat is received via mavlink. When this first heartbeat is received poll for mavlink messages
         """
 
+        # import pdb;pdb.set_trace()
+        # self.send_heartbeat()
+
         carb.log_warn("Waiting for first hearbeat")
         result = self._connection.wait_heartbeat(blocking=False)
 
@@ -572,7 +652,7 @@ class PX4MavlinkBackend(Backend):
 
     def update(self, dt):
         """
-        Method that is called at every physics step to send data to px4 and receive the control inputs via mavlink
+        Method that is called at every physics step to send data to ArduPilot and receive the control inputs via mavlink
 
         Args:
             dt (float): The time elapsed between the previous and current function calls (s).
@@ -590,15 +670,20 @@ class PX4MavlinkBackend(Backend):
                 # DO not continue and get mavlink thrusters commands until we have simulated IMU data available
                 return
 
+        # Wait until the vehicle is armed
+        self.check_is_armed()
+        
         # Check if we have received any mavlink messages
         self.poll_mavlink_messages()
 
+        # import pdb;pdb.set_trace()
         # Send hearbeats at 1Hz
         if (time.time() - self._last_heartbeat_sent_time) > 1.0 or self._received_first_hearbeat == False:
+            # import pdb;pdb.set_trace()
             self.send_heartbeat()
             self._last_heartbeat_sent_time = time.time()
 
-        # Update the current u_time for px4
+        # Update the current u_time for ArduPilot
         self._current_utime += int(dt * 1000000)
 
         # Send sensor messages
@@ -606,6 +691,42 @@ class PX4MavlinkBackend(Backend):
 
         # Send the GPS messages
         self.send_gps_msgs(self._current_utime)
+
+
+    def arming_check_disable(self):
+        import pdb;pdb.set_trace()
+        self._connection.param_set_send(
+            "ARMING_CHECK",
+            0, # 0 is disable, 1 is enable  
+            mavutil.mavlink.MAV_PARAM_TYPE_INT32
+        )
+        
+        message = self._connection.recv_match(type='PARAM_VALUE', blocking=True, timeout=3)
+
+        if message is not None:
+            message = message.to_dict()
+            if message["param_id"] == "ARMING_CHECK" and message["param_value"] == 0:
+                import pdb;pdb.set_trace()
+                carb.log_info("Arming Check is disabled.")
+                return True
+        
+        import pdb;pdb.set_trace()
+        carb.log_info("Arming Check is enabled.")
+        return False
+        
+    def check_is_armed(self):
+        # Use this loop to emulate a do-while loop (make sure this runs at least once)
+        msg = self._connection.recv_match(blocking=False)
+
+        # If a message was received
+        if msg is not None:
+            if not self._armed:
+                if msg.get_type() == 'HEARTBEAT' and msg.type != mavutil.mavlink.MAV_TYPE_GCS:
+                    self._armed = self._connection.motors_armed()
+                    if self._armed:
+                        carb.log_warn(">>>>>>>> Drone is armed.")
+                    else:
+                        carb.log_warn(">>>>>>>> Drone is disarmed.")
 
     def poll_mavlink_messages(self):
         """
@@ -617,33 +738,47 @@ class PX4MavlinkBackend(Backend):
             return
 
         # Check if we need to lock and wait for actuator control data
-        needs_to_wait_for_actuator: bool = self._received_first_actuator and self._enable_lockstep
+        # TODO REMOVE: needs_to_wait_for_actuator: bool = self._received_first_actuator and self._enable_lockstep
 
         # Start by assuming that we have not received data for the actuators for the current step
         self._received_actuator = False
+        
 
         # Use this loop to emulate a do-while loop (make sure this runs at least once)
-        while True:
+        if self._armed:
+            msg = self._connection.recv_match(blocking=False)
 
-            # Try to get a message
-            msg = self._connection.recv_match(blocking=needs_to_wait_for_actuator)
-
-            # If a message was received
+            # Check if it is of the type that contains actuator controls
+            # carb.log_warn(">>>>>>>> Waiting for messages...")
             if msg is not None:
-
-                # Check if it is of the type that contains actuator controls
-                if msg.id == mavutil.mavlink.MAVLINK_MSG_ID_HIL_ACTUATOR_CONTROLS:
-
+                if msg.id == mavutil.mavlink.MAVLINK_MSG_ID_SERVO_OUTPUT_RAW:
                     self._received_first_actuator = True
                     self._received_actuator = True
+                    
+                    # Handle the control of the actuation commands received by ArduPilot
 
-                    # Handle the control of the actuation commands received by PX4
-                    self.handle_control(msg.time_usec, msg.controls, msg.mode, msg.flags)
+                    # if self.packet_num % 2 == 0:
+                    # servos = [msg.servo1_raw, msg.servo2_raw, msg.servo3_raw, msg.servo4_raw]
+                    
+                    # TODO!!!! Normal (1,2,3,4)
+                    # servos = [msg.servo1_raw, msg.servo2_raw, msg.servo3_raw, msg.servo4_raw]
+                    
+                    # Try flipped (3,4,1,2)
+                    # servos = [msg.servo3_raw, msg.servo4_raw, msg.servo1_raw, msg.servo2_raw]
 
-            # Check if we do not need to wait for an actuator message or we just received actuator input
-            # If so, break out of the infinite loop
-            if not needs_to_wait_for_actuator or self._received_actuator:
-                break
+                    # Try same (1,1,1,1)
+                    servos = [msg.servo1_raw, msg.servo1_raw, msg.servo1_raw, msg.servo1_raw]
+
+                    self.handle_control(servos=servos, is_armed=True)
+
+                    # self.packet_num += 1
+
+                    # Check if we do not need to wait for an actuator message or we just received actuator input
+                    # If so, break out of the infinite loop
+                    # if not needs_to_wait_for_actuator or self._received_actuator:
+                    #     break
+        else:
+            self.handle_control(servos=[], is_armed=False)
 
     def send_heartbeat(self, mav_type=mavutil.mavlink.MAV_TYPE_GENERIC):
         """
@@ -729,7 +864,7 @@ class PX4MavlinkBackend(Backend):
 
         # Latitude, longitude and altitude (all in integers)
         try:
-            self._connection.mav.hil_gps_send(
+            response = self._connection.mav.hil_gps_send(
                 time_usec,
                 self._sensor_data.fix_type,
                 self._sensor_data.latitude_deg,
@@ -763,7 +898,7 @@ class PX4MavlinkBackend(Backend):
         self._sensor_data.new_vision_data = False
 
         try:
-            self._connection.mav.global_vision_position_estimate_send(
+            response = self._connection.mav.global_vision_position_estimate_send(
                 time_usec,
                 self._sensor_data.vision_x,
                 self._sensor_data.vision_y,
@@ -793,7 +928,7 @@ class PX4MavlinkBackend(Backend):
         self._sensor_data.new_sim_state = False
 
         try:
-            self._connection.mav.hil_state_quaternion_send(
+            response = self._connection.mav.hil_state_quaternion_send(
                 time_usec,
                 self._sensor_data.sim_attitude,
                 self._sensor_data.sim_angular_vel[0],
@@ -814,7 +949,7 @@ class PX4MavlinkBackend(Backend):
         except:
             carb.log_warn("Could not send groundtruth through mavlink")
 
-    def handle_control(self, time_usec, controls, mode, flags):
+    def handle_control(self, servos, is_armed):
         """
         Method that when received a control message, compute the forces simulated force that should be applied
         on each rotor of the vehicle
@@ -826,14 +961,24 @@ class PX4MavlinkBackend(Backend):
         """
 
         # Check if the vehicle is armed - Note: here we have to add a +1 since the code for armed is 128, but
-        # pymavlink is return 129 (the end of the buffer)
-        if mode == mavutil.mavlink.MAV_MODE_FLAG_SAFETY_ARMED + 1:
-
+        # pymavlink is return 129 (the end of the buffer) 
+        # if mode == mavutil.mavlink.MAV_MODE_FLAG_SAFETY_ARMED + 1:
+        if is_armed:
             carb.log_info("Parsing control input")
 
             # Set the rotor target speeds
-            self._rotor_data.update_input_reference(controls)
+            self._rotor_data.update_input_reference(servos)
 
-        # If the vehicle is not armed, do not rotate the propellers
+            # If the vehicle is not armed, do not rotate the propellers
         else:
+            # print("Control message has NOT been recieved")
             self._rotor_data.zero_input_reference()
+
+    def update_graphical_sensor(self, sensor_type: str, data):
+        """Method that when implemented, should handle the receival of graphical sensor data
+
+        Args:
+            sensor_type (str): A name that describes the type of sensor (for example MonocularCamera)
+            data (dict): A dictionary that contains the data produced by the sensor
+        """
+        pass

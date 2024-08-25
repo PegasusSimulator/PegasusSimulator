@@ -7,19 +7,20 @@
 
 # System tools used to launch the ardupilot process in the brackground
 import os
-import time
+import signal
 import tempfile
 import subprocess
+import psutil
 
 
-class ArdupilotLaunchTool:
+class ArduPilotLaunchTool:
     """
     A class that manages the start/stop of a ardupilot process. It requires only the path to the Ardupilot installation (assuming that
     Ardupilot was already built with 'make ardupilot_sitl_default none'), the vehicle id and the vehicle model. 
     """
 
     def __init__(self, ardupilot_dir, vehicle_id: int = 0, ardupilot_model: str = "gazebo-iris"):
-        """Construct the ArdupilotLaunchTool object
+        """Construct the ArduPilotLaunchTool object
 
         Args:
             ardupilot_dir (str): A string with the path to the Ardupilot-Autopilot directory
@@ -37,6 +38,10 @@ class ArdupilotLaunchTool:
         # terminal
         self.ardupilot_dir = ardupilot_dir
 
+        # Ardupilot frame
+        # self.ardupilot_model = ardupilot_model
+        self.ardupilot_model = "X" # TODO: gazebo-iris sitl doesn't work, but quad does, understand why.
+
         # Create a temporary filesystem for ardupilot to write data to/from (and modify the origin rcS files)
         self.root_fs = tempfile.TemporaryDirectory()
 
@@ -47,43 +52,45 @@ class ArdupilotLaunchTool:
         return os.path.exists(f'{self.ardupilot_dir}/build/sitl/bin/arducopter')
     
     def _get_vehicle_frame(self):
-        return "gazebo-iris"
-   
-    def _ardupilot_sitl_worker(self):
-        command: str = " ".join([
-            self.ardupilot_dir + "/Tools/autotest/sim_vehicle.py",
-                "-v",
-                "ArduCopter",
-                "-f",
-                f"{self._get_vehicle_frame()}",
-                f"{'--no-rebuild' if self._sitl_already_exists() else ''}",
-                f"--console --map",
-        ])      
-        
-        # Run in a seperate bash window
-        ardupilot_process = subprocess.Popen(
-            ["gnome-terminal", "--", "bash", "-c", command],
-            cwd=self.root_fs.name,
-            shell=False,
-            env=self.environment,
-        )
-
-        return ardupilot_process
+        return self.ardupilot_model
     
-
     def launch_ardupilot(self):
         """
         Method that will launch a ardupilot instance with the specified configuration
         """
-        self.ardupilot_process = self._ardupilot_sitl_worker()
-
+        # sim_vehicle.py -v ArduCopter -f gazebo-iris --console --map -A "--sim-port-in=9003 --sim-port-out=9002"
+        command = [
+            self.ardupilot_dir + "/Tools/autotest/sim_vehicle.py",
+            "-v",
+            "ArduCopter",
+            "-f",
+            f"{self._get_vehicle_frame()}",
+            f"{'--no-rebuild' if self._sitl_already_exists() else ''}",
+            f"--console",
+            f"--map",
+            # # f"-l 0,0,0,0"
+        ]
+        command: str = " ".join(command)
+        
+        # Run in a seperate bash window
+        self.ardupilot_process = subprocess.Popen(
+            # ["gnome-terminal", '--disable-factory', '--', 'bash', '-c', command],
+            ["gnome-terminal", '--', 'bash', '-c', command],
+            cwd=self.root_fs.name,
+            shell=False,
+            env=self.environment,
+            preexec_fn=os.setsid
+        )
 
     def kill_ardupilot(self):
         """
         Method that will kill a ardupilot instance with the specified configuration
         """
         if self.ardupilot_process is not None:
+            # kill_process_and_children(self.ardupilot_process.pid)
+            os.killpg(self.ardupilot_process.pid, signal.SIGINT)
             self.ardupilot_process.kill()
+            self.ardupilot_process.wait()
             self.ardupilot_process = None
 
     def __del__(self):
@@ -103,13 +110,15 @@ class ArdupilotLaunchTool:
 # ---- Code used for debugging the ardupilot tool ----
 def main():
 
-    # TODO
-    ardupilot_dir = f"{os.environ['HOME']}/ardupilot"
-
-    ardupilot_tool = ArdupilotLaunchTool(ardupilot_dir=ardupilot_dir)
+    ardupilot_tool = ArduPilotLaunchTool(os.environ["HOME"] + "/ardupilot")
+    print("Launching ArduPilot")
     ardupilot_tool.launch_ardupilot()
     
-    time.sleep(60)
+    import time
+    
+    # print("Killing ArduPilot in 5")
+    time.sleep(3000)
+    # ardupilot_tool.kill_ardupilot()
 
 
 if __name__ == "__main__":
