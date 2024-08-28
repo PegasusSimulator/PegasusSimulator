@@ -39,8 +39,8 @@ class ArduPilotLaunchTool:
         self.ardupilot_dir = ardupilot_dir
 
         # Ardupilot frame
-        # self.ardupilot_model = ardupilot_model
-        self.ardupilot_model = "X" # TODO: gazebo-iris sitl doesn't work, but quad does, understand why.
+        self.ardupilot_model = ardupilot_model
+        # self.ardupilot_model = "X" # TODO: gazebo-iris sitl doesn't work, but quad does, understand why.
 
         # Create a temporary filesystem for ardupilot to write data to/from (and modify the origin rcS files)
         self.root_fs = tempfile.TemporaryDirectory()

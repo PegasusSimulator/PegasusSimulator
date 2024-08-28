@@ -107,7 +107,9 @@ class SensorMsg:
         self.sim_ind_airspeed = 0.0  # Indicated air speed
         self.sim_true_airspeed = 0.0  # Indicated air speed
         self.sim_velocity_inertial = [0.0, 0.0, 0.0]  # North-east-down [m/s]
-
+        
+        self.sim_position = [0.0, 0.0, 0.0]  # [N, E, D]
+        
 
 class ThrusterControl:  
     """
@@ -120,6 +122,8 @@ class ThrusterControl:
         num_rotors: int = 4,
         input_offset=[0, 0, 0, 0],
         input_scaling=[0, 0, 0, 0],
+        input_min=1000,
+        input_max=2000,
         zero_position_armed=[100, 100, 100, 100],
     ):
         """Initialize the ThrusterControl object
@@ -140,61 +144,16 @@ class ThrusterControl:
         assert len(input_scaling) == self.num_rotors
         self.input_scaling = input_scaling
 
+        self.input_min = input_min
+        self.input_max = input_max
+
         assert len(zero_position_armed) == self.num_rotors
         self.zero_position_armed = zero_position_armed
 
         # The actual speed references to apply to the vehicle rotor joints
         self._input_reference = [0.0 for i in range(self.num_rotors)]
 
-    @staticmethod
-    def rpm_to_rad_per_sec(rpm):
-        """
-        Convert RPM (Revolutions Per Minute) to radians per second (rad/s).
 
-        Parameters:
-        rpm (float): The speed in RPM.
-
-        Returns:
-        float: The speed in radians per second (rad/s).
-        """
-        rad_per_sec = (rpm * 2 * math.pi) / 60
-        return rad_per_sec
-    
-
-    @staticmethod
-    def rad_per_sec_to_rpm(rad_per_sec):
-        """
-        Converts angular velocity from radians per second to revolutions per minute (RPM).
-
-        :param rad_per_sec: Angular velocity in radians per second (rad/s)
-        :return: Angular velocity in revolutions per minute (RPM)
-        """
-        rpm = rad_per_sec * (60 / (2 * math.pi))
-        return rpm
-
-    @staticmethod
-    def pwm_to_rpm(pwm):
-        """
-        Converts a PWM value to RPM using a linear approximation.
-
-        :param pwm: The PWM value in microseconds
-        :param pwm_min: The minimum PWM value (e.g., 1000 µs)
-        :param pwm_max: The maximum PWM value (e.g., 2000 µs)
-        :param rpm_max: The maximum RPM corresponding to pwm_max
-        :return: The estimated RPM
-        """
-        # TODO: config
-        pwm_min, pwm_max = (1000, 1500) # microseconds
-        rpm_max = ThrusterControl.rad_per_sec_to_rpm(1100) # RPM
-
-        if pwm < pwm_min:
-            return 0  # Below minimum PWM, consider it as 0 RPM
-        elif pwm > pwm_max:
-            return rpm_max  # Above maximum PWM, consider it as max RPM
-        else:
-            rpm = ((pwm - pwm_min) / (pwm_max - pwm_min)) * rpm_max
-            return rpm
-    
     @property
     def input_reference(self):
         """A list of floats with the angular velocities in rad/s
@@ -204,7 +163,8 @@ class ThrusterControl:
         """
         return self._input_reference
 
-    def update_input_reference(self, servos):
+
+    def update_input_reference(self, pwms):
         """Takes a list with the thrust controls received via mavlink and scales them in order to generated
         the equivalent angular velocities in rad/s
 
@@ -213,6 +173,8 @@ class ThrusterControl:
         """
 
         # Check if the number of controls received is correct
+        servos = pwms[:self.num_rotors]
+
         if len(servos) < self.num_rotors:
             carb.log_warn("Did not receive enough inputs for all the rotors")
             return
@@ -221,30 +183,23 @@ class ThrusterControl:
             
         # Update the desired reference for every rotor (and saturate according to the min and max values)
         for i in range(self.num_rotors):
-                
-            # Compute the actual veloci
-            # ty reference to apply to each rotor
-            # self._input_reference[i] = (rpm_to_rad_per_sec(servos[i]) + self.input_offset[i]) * self.input_scaling[i] + self.zero_position_armed[i]
-            # self._input_reference[i] = rpm_to_rad_per_sec(servos[i])
-            # ccw_sign = -1 if (i == 0 or i == 1) else 1
+            # Bound incoming command between 0 and 1
+            pwm = servos[i]
+            # pwm_min = self.input_min # TODO
+            # pwm_max = self.input_max
+            pwm_min = 1000
+            pwm_max = 2000
+            multiplier = self.input_scaling[i]
+            offset = self.input_offset[i]
             
-            print(f"servos[{i}] = {servos[i]}")
+            raw_cmd = (pwm - pwm_min) / (pwm_max - pwm_min)
+            raw_cmd = np.clip(raw_cmd, 0.0, 1.0)
 
-            servo_rpm = ThrusterControl.pwm_to_rpm(servos[i])
-            print(f"servo_rpm[{i}] = {servo_rpm}")
+            # Apply multiplier and offset
+            self._input_reference[i] = ((raw_cmd + offset) * multiplier) + self.zero_position_armed[i]
 
-            self._input_reference[i] = ThrusterControl.rpm_to_rad_per_sec(servo_rpm) # TODO offest
 
-            # TODO upper limit
-            # self._input_reference[i] = 800 if self._input_reference[i] > 800 else self._input_reference[i]
-            print(f"self._input_reference[{i}] = {self._input_reference[i]})")
-
-            # print(f"self._input_reference[i] = (rpm_to_rad_per_sec(servos[i] + self.input_offset[i]) * self.input_scaling[i] + self.zero_position_armed[i]")
-            # print("servos[i] = rpm_to_rad_per_sec(servos[i])")
-            # print(f"{servos[i]}:{i} = {rpm_to_rad_per_sec(servos[i])}")
-            # print(f"{self._input_reference[i]} = ({rpm_to_rad_per_sec(servos[i])} + {self.input_offset[i]}) * {self.input_scaling[i]} + {self.zero_position_armed[i]}")
-
-        # print(f"Servos[{self._input_reference[0]}, {self._input_reference[1]}, {self._input_reference[2]}, {self._input_reference[3]}]")
+        print(f"Servos[{self._input_reference[0]}, {self._input_reference[1]}, {self._input_reference[2]}, {self._input_reference[3]}]")
 
     def zero_input_reference(self):
         """
@@ -301,15 +256,25 @@ class ArduPilotMavlinkBackendConfig:
         # Configurations to interpret the rotors control messages coming from mavlink
         self.enable_lockstep: bool = config.get("enable_lockstep", False)
         self.num_rotors: int = config.get("num_rotors", 4)
-        self.input_offset = config.get("input_offset", [-1000.0, -1000.0, -1000.0, -1000.0]) # TODO
-        self.input_scaling = config.get("input_scaling", [1.0, 1.0, 1.0, 1.0])
-        self.zero_position_armed = config.get("zero_position_armed", [0.0, 0.0, 0.0, 0.0])
+        self.input_offset = config.get("input_offset", [0.0, 0.0, 0.0, 0.0])
+        self.input_scaling = config.get("input_scaling", [1000, 1000, 1000, 1000])
+        self.input_min = config.get("input_min", 1000)
+        self.input_max = config.get("input_max", 2000)
+        self.zero_position_armed = config.get("zero_position_armed", [100, 100, 100, 100])
 
         # The update rate at which we will be sending data to mavlink (TODO - remove this from here in the future
         # and infer directly from the function calls)
         self.update_rate: float = config.get("update_rate", 250.0)  # [Hz]
 
+def micros():
+    return int(time.time() * 1_000_000)  # Get current time in microseconds
 
+def timestamp():
+    return micros() / 1_000_000.0  # Convert microseconds to seconds
+
+def microseconds_to_seconds(microseconds):
+    return microseconds / 1_000_000.0
+        
 class ArduPilotMavlinkBackend(Backend):
     """ The Mavlink Backend used to receive the vehicle's state and sensor data in order to send to ArduPilot through mavlink. It also
     receives via mavlink the thruster commands to apply to each vehicle rotor.
@@ -374,9 +339,13 @@ class ArduPilotMavlinkBackend(Backend):
         self._last_heartbeat_sent_time = 0
 
         # Auxiliar variables for setting the u_time when sending sensor data to ArduPilot
+        self.sim_time = timestamp()
         self._current_utime: int = 0
 
-        self.packet_num = 0
+        self.test_time = 0
+
+        self.ap = ArduPilotPlugin()
+        self.ap.drain_unread_packets()
 
     def update_sensor(self, sensor_type: str, data):
         """Method that is used as callback for the vehicle for every iteration that a sensor produces new data. 
@@ -512,7 +481,17 @@ class ArduPilotMavlinkBackend(Backend):
         """
 
         # Get the quaternion in the convention [x, y, z, w]
-        attitude = state.get_attitude_ned_frd()
+        # attitude = state.get_attitude_ned_frd()
+        # Get Attitude
+        attitude = state.attitude # TODO
+
+        # position = state.get_position_ned()
+        # Get the position # TODO
+        position = state.position
+    
+        self._sensor_data.sim_position[0] = position[0]
+        self._sensor_data.sim_position[1] = position[1]
+        self._sensor_data.sim_position[2] = position[2]
 
         # Rotate the quaternion to the mavlink standard
         self._sensor_data.sim_attitude[0] = attitude[3]
@@ -521,13 +500,15 @@ class ArduPilotMavlinkBackend(Backend):
         self._sensor_data.sim_attitude[3] = attitude[2]
 
         # Get the angular velocity
-        ang_vel = state.get_angular_velocity_frd()
+        # ang_vel = state.get_angular_velocity_frd()
+        ang_vel = state.angular_velocity
         self._sensor_data.sim_angular_vel[0] = ang_vel[0]
         self._sensor_data.sim_angular_vel[1] = ang_vel[1]
         self._sensor_data.sim_angular_vel[2] = ang_vel[2]
 
         # Get the acceleration
-        acc_vel = state.get_linear_acceleration_ned()
+        # acc_vel = state.get_linear_acceleration_ned()
+        acc_vel = state.linear_acceleration
         self._sensor_data.sim_acceleration[0] = int(acc_vel[0] * 1000)
         self._sensor_data.sim_acceleration[1] = int(acc_vel[1] * 1000)
         self._sensor_data.sim_acceleration[2] = int(acc_vel[2] * 1000)
@@ -535,13 +516,15 @@ class ArduPilotMavlinkBackend(Backend):
         # Get the latitude, longitude and altitude directly from the GPS
 
         # Get the linear velocity of the vehicle in the inertial frame
-        lin_vel = state.get_linear_velocity_ned()
+        # lin_vel = state.get_linear_velocity_ned()
+        lin_vel = state.linear_velocity
         self._sensor_data.sim_velocity_inertial[0] = int(lin_vel[0] * 100)
         self._sensor_data.sim_velocity_inertial[1] = int(lin_vel[1] * 100)
         self._sensor_data.sim_velocity_inertial[2] = int(lin_vel[2] * 100)
 
         # Compute the air_speed - assumed indicated airspeed due to flow aligned with pitot (body x)
-        body_vel = state.get_linear_body_velocity_ned_frd()
+        # body_vel = state.get_linear_body_velocity_ned_frd()
+        body_vel = state.linear_body_velocity
         self._sensor_data.sim_ind_airspeed = int(body_vel[0] * 100)
         self._sensor_data.sim_true_airspeed = int(np.linalg.norm(lin_vel) * 100)  # TODO - add wind here
 
@@ -659,62 +642,79 @@ class ArduPilotMavlinkBackend(Backend):
         """
 
         # Check for the first hearbeat on the first few iterations
-        if not self._received_first_hearbeat:
-            self.wait_for_first_hearbeat()
-            return
+        # if not self._received_first_hearbeat:
+        #     self.wait_for_first_hearbeat()
+        #     return
 
-        # Check if we have already received IMU data. If not, start the lockstep and wait for more data
-        if self._sensor_data.received_first_imu:
-            while not self._sensor_data.new_imu_data and self._is_running:
-                # Just go for the next update and then try to check if we have new simulated sensor data
-                # DO not continue and get mavlink thrusters commands until we have simulated IMU data available
-                return
+        # # Check if we have already received IMU data. If not, start the lockstep and wait for more data
+        # if self._sensor_data.received_first_imu:
+        #     while not self._sensor_data.new_imu_data and self._is_running:
+        #         # Just go for the next update and then try to check if we have new simulated sensor data
+        #         # DO not continue and get mavlink thrusters commands until we have simulated IMU data available
+        #         return
 
-        # Wait until the vehicle is armed
-        self.check_is_armed()
+        # self._current_utime = timestamp() - self.sim_time
+        # us = 1000  # 1000 microseconds
+        self._current_utime += dt
+
+
+        # self._current_utime += dt
+        # self._current_utime += 0.1
+
+        carb.log_info("Pre Update")
+        # self.ap.pre_update(sim_time=s
+        # elf._current_utime)
+        _, servos =self.ap.pre_update(
+            sim_time=self._current_utime
+        )
         
-        # Check if we have received any mavlink messages
-        self.poll_mavlink_messages()
+        
+        # time.sleep(0.01)
+        # time.sleep(dt) # 0.1
+        
+        carb.log_info("Checking is Armed")
+        self.update_is_armed()
+        carb.log_info("Update Motor Commands")  
+        self.update_motor_commands(servos)
+    
+        carb.log_info("Post Update")
+        self.ap.post_update(
+            sim_time=self._current_utime,
+            sensor_data=self._sensor_data
+        )
+        
+        # us = 1000  # 1000 microseconds
+        # time.sleep(microseconds_to_seconds(us))
 
-        # import pdb;pdb.set_trace()
-        # Send hearbeats at 1Hz
-        if (time.time() - self._last_heartbeat_sent_time) > 1.0 or self._received_first_hearbeat == False:
-            # import pdb;pdb.set_trace()
-            self.send_heartbeat()
-            self._last_heartbeat_sent_time = time.time()
+        # self.ap.post_update(sim_time=self._current_utime, sensor_data=self.ap.SensorData())
+        # self.ap.post_update(sensor_data=self.ap.SensorData(), sim_time=self.test_time)
+
+        # # Check if we have received any mavlink messages
+        # self.poll_mavlink_messages()
+
+        # # import pdb;pdb.set_trace()
+        # # Send hearbeats at 1Hz
+        # if (time.time() - self._last_heartbeat_sent_time) > 1.0 or self._received_first_hearbeat == False:
+        #     # import pdb;pdb.set_trace()
+        #     self.send_heartbeat()
+        #     self._last_heartbeat_sent_time = time.time()
 
         # Update the current u_time for ArduPilot
-        self._current_utime += int(dt * 1000000)
+        # self._current_utime += int(dt * 1000000)
+        # self._current_utime += 0.01 
+        # self.test_time += 0.01
+        # import pdb;pdb.set_trace()
+        # self._current_utime += dt * 10
 
+        """
         # Send sensor messages
         self.send_sensor_msgs(self._current_utime)
 
         # Send the GPS messages
         self.send_gps_msgs(self._current_utime)
+        """
 
-
-    def arming_check_disable(self):
-        import pdb;pdb.set_trace()
-        self._connection.param_set_send(
-            "ARMING_CHECK",
-            0, # 0 is disable, 1 is enable  
-            mavutil.mavlink.MAV_PARAM_TYPE_INT32
-        )
-        
-        message = self._connection.recv_match(type='PARAM_VALUE', blocking=True, timeout=3)
-
-        if message is not None:
-            message = message.to_dict()
-            if message["param_id"] == "ARMING_CHECK" and message["param_value"] == 0:
-                import pdb;pdb.set_trace()
-                carb.log_info("Arming Check is disabled.")
-                return True
-        
-        import pdb;pdb.set_trace()
-        carb.log_info("Arming Check is enabled.")
-        return False
-        
-    def check_is_armed(self):
+    def update_is_armed(self):
         # Use this loop to emulate a do-while loop (make sure this runs at least once)
         msg = self._connection.recv_match(blocking=False)
 
@@ -722,63 +722,34 @@ class ArduPilotMavlinkBackend(Backend):
         if msg is not None:
             if not self._armed:
                 if msg.get_type() == 'HEARTBEAT' and msg.type != mavutil.mavlink.MAV_TYPE_GCS:
-                    self._armed = self._connection.motors_armed()
-                    if self._armed:
+                    is_armed = self._connection.motors_armed()
+                    if is_armed:
+                        self._armed = True
                         carb.log_warn(">>>>>>>> Drone is armed.")
                     else:
-                        carb.log_warn(">>>>>>>> Drone is disarmed.")
+                        # DEBUG
+                        if self._armed == True:
+                            print("Disarmed!!!!!!!!!!!!")    
+                        self._armed = False
 
-    def poll_mavlink_messages(self):
+
+    def update_motor_commands(self, servos):
         """
-        Method that is used to check if new mavlink messages were received
-        """
-
-        # If we have not received the first hearbeat yet, do not poll for mavlink messages
-        if self._received_first_hearbeat == False:
-            return
-
-        # Check if we need to lock and wait for actuator control data
-        # TODO REMOVE: needs_to_wait_for_actuator: bool = self._received_first_actuator and self._enable_lockstep
-
-        # Start by assuming that we have not received data for the actuators for the current step
-        self._received_actuator = False
-        
-
-        # Use this loop to emulate a do-while loop (make sure this runs at least once)
         if self._armed:
             msg = self._connection.recv_match(blocking=False)
-
-            # Check if it is of the type that contains actuator controls
-            # carb.log_warn(">>>>>>>> Waiting for messages...")
             if msg is not None:
                 if msg.id == mavutil.mavlink.MAVLINK_MSG_ID_SERVO_OUTPUT_RAW:
-                    self._received_first_actuator = True
-                    self._received_actuator = True
+                    servos = [msg.servo1_raw, msg.servo2_raw, msg.servo3_raw, msg.servo4_raw]
                     
-                    # Handle the control of the actuation commands received by ArduPilot
-
-                    # if self.packet_num % 2 == 0:
-                    # servos = [msg.servo1_raw, msg.servo2_raw, msg.servo3_raw, msg.servo4_raw]
-                    
-                    # TODO!!!! Normal (1,2,3,4)
-                    # servos = [msg.servo1_raw, msg.servo2_raw, msg.servo3_raw, msg.servo4_raw]
-                    
-                    # Try flipped (3,4,1,2)
-                    # servos = [msg.servo3_raw, msg.servo4_raw, msg.servo1_raw, msg.servo2_raw]
-
-                    # Try same (1,1,1,1)
-                    servos = [msg.servo1_raw, msg.servo1_raw, msg.servo1_raw, msg.servo1_raw]
-
-                    self.handle_control(servos=servos, is_armed=True)
-
-                    # self.packet_num += 1
-
-                    # Check if we do not need to wait for an actuator message or we just received actuator input
-                    # If so, break out of the infinite loop
-                    # if not needs_to_wait_for_actuator or self._received_actuator:
-                    #     break
+                    self._rotor_data.update_input_reference(servos)
         else:
-            self.handle_control(servos=[], is_armed=False)
+            self._rotor_data.zero_input_reference()
+        """
+
+        if self._armed and servos != ():
+            self._rotor_data.update_input_reference(servos)
+        else:
+            self._rotor_data.zero_input_reference()
 
     def send_heartbeat(self, mav_type=mavutil.mavlink.MAV_TYPE_GENERIC):
         """
@@ -936,7 +907,7 @@ class ArduPilotMavlinkBackend(Backend):
                 self._sensor_data.sim_angular_vel[2],
                 self._sensor_data.sim_lat,
                 self._sensor_data.sim_lon,
-                self._sensor_data.sim_alt,
+                self._sensor_data.sim_alt,  
                 self._sensor_data.sim_velocity_inertial[0],
                 self._sensor_data.sim_velocity_inertial[1],
                 self._sensor_data.sim_velocity_inertial[2],
@@ -964,8 +935,6 @@ class ArduPilotMavlinkBackend(Backend):
         # pymavlink is return 129 (the end of the buffer) 
         # if mode == mavutil.mavlink.MAV_MODE_FLAG_SAFETY_ARMED + 1:
         if is_armed:
-            carb.log_info("Parsing control input")
-
             # Set the rotor target speeds
             self._rotor_data.update_input_reference(servos)
 

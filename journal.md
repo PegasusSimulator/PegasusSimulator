@@ -5,8 +5,9 @@ https://ardupilot.org/dev/docs/using-sitl-for-ardupilot-testing.html#using-sitl-
 
 # Ardupilot SITL
 ```
-git clone --recurse-submodules https://github.com/Ardupilot/ardupilot ~
-cd ardupilot
+git clone https://github.com/Ardupilot/ardupilot ~
+cd ~/ardupilot
+git submodule update --init
 Tools/environment_install/install-prereqs-ubuntu.sh -y
 . ~/.profile
 ./waf clean
@@ -65,6 +66,8 @@ https://github.com/JerichoGroup/ardupilot_gazebo/tree/gazebo11-ubuntu22
 ```
     Connection to SITL is made via a UDP link. The physics backend should listen for incoming messages on port 9002. The sim should then reply to the IP and port the messages were received from. This is handled by libAP_JSON. This removes the need to configure the target IP and port for SITL in the physics backend. ArduPilot SITL will send an output message every 10 seconds allowing the physics backend to auto-detect.
 ```
+Copter-4.5.5
+https://github.com/ArduPilot/ardupilot/tree/0dbe9ed27fb28bfeee4063b5cf2634b851e6a690/libraries/SITL/examples/JSON
 
 # airsim-sitl helper 
 https://ardupilot.org/dev/docs/sitl-with-airsim.html

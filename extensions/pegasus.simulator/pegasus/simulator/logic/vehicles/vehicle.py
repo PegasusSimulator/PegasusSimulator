@@ -111,8 +111,7 @@ class Vehicle(Robot):
         self._world.add_physics_callback(self._stage_prefix + "/state", self.update_state)
 
         # Add the update method to the physics callback if the world was received
-        # so that we can apply forces and torques to the vehicle. Note, this method should
-        # be implemented in classes that inherit the vehicle object
+        # so that we can apply forces and torques to the vehicle. Note, this method should        # be implemented in classes that inherit the vehicle object
         self._world.add_physics_callback(self._stage_prefix + "/update", self.update)
 
         # Set the flag that signals if the simulation is running or not

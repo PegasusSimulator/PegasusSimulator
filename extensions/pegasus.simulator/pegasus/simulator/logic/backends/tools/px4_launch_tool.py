@@ -7,7 +7,6 @@
 
 # System tools used to launch the px4 process in the brackground
 import os
-import signal
 import tempfile
 import subprocess
 
@@ -44,30 +43,24 @@ class PX4LaunchTool:
         # Set the environement variables that let PX4 know which vehicle model to use internally
         self.environment = os.environ
         self.environment["PX4_SIM_MODEL"] = px4_model
-    
+
     def launch_px4(self):
         """
         Method that will launch a px4 instance with the specified configuration
         """
-        command = [
-            self.px4_dir + "/build/px4_sitl_default/bin/px4",
-            self.px4_dir + "/ROMFS/px4fmu_common/",
-            "-s",
-            self.rc_script,
-            "-i",
-            str(self.vehicle_id),
-            "-d",
-        ]
-        command_str: str = " ".join(command)
-        
-        # Run in a seperate bash window
         self.px4_process = subprocess.Popen(
-            # ["gnome-terminal", '--disable-factory', '--', 'bash', '-c', command_str],
-            ["gnome-terminal", '--', 'bash', '-c', command_str],
+            [
+                self.px4_dir + "/build/px4_sitl_default/bin/px4",
+                self.px4_dir + "/ROMFS/px4fmu_common/",
+                "-s",
+                self.rc_script,
+                "-i",
+                str(self.vehicle_id),
+                "-d",
+            ],
             cwd=self.root_fs.name,
             shell=False,
             env=self.environment,
-            preexec_fn=os.setpgrp
         )
 
     def kill_px4(self):
@@ -75,9 +68,7 @@ class PX4LaunchTool:
         Method that will kill a px4 instance with the specified configuration
         """
         if self.px4_process is not None:
-            os.killpg(self.px4_process.pid, signal.SIGINT)
             self.px4_process.kill()
-            self.px4_process.wait()
             self.px4_process = None
 
     def __del__(self):
