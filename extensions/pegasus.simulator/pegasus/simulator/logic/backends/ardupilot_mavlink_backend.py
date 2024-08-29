@@ -264,7 +264,7 @@ class ArduPilotMavlinkBackendConfig:
 
         # The update rate at which we will be sending data to mavlink (TODO - remove this from here in the future
         # and infer directly from the function calls)
-        self.update_rate: float = config.get("update_rate", 250.0)  # [Hz]
+        self.update_rate: float = config.get("update_rate", 400)  # [Hz]
 
 def micros():
     return int(time.time() * 1_000_000)  # Get current time in microseconds
@@ -480,50 +480,42 @@ class ArduPilotMavlinkBackend(Backend):
             state (State): The current state of the vehicle.
         """
 
-        # Get the quaternion in the convention [x, y, z, w]
-        # attitude = state.get_attitude_ned_frd()
-        # Get Attitude
-        attitude = state.attitude # TODO
-
-        # position = state.get_position_ned()
-        # Get the position # TODO
-        position = state.position
-    
+        # Get the position
+        position = state.get_position_ned()
         self._sensor_data.sim_position[0] = position[0]
         self._sensor_data.sim_position[1] = position[1]
         self._sensor_data.sim_position[2] = position[2]
 
         # Rotate the quaternion to the mavlink standard
-        self._sensor_data.sim_attitude[0] = attitude[3]
-        self._sensor_data.sim_attitude[1] = attitude[0]
-        self._sensor_data.sim_attitude[2] = attitude[1]
-        self._sensor_data.sim_attitude[3] = attitude[2]
+        # Get the quaternion in the convention [x, y, z, w]
+        attitude = state.get_attitude_ned_frd()
+        self._sensor_data.sim_attitude[0] = attitude[3] # W
+        self._sensor_data.sim_attitude[1] = attitude[0] # X
+        self._sensor_data.sim_attitude[2] = attitude[1] # Y
+        self._sensor_data.sim_attitude[3] = attitude[2] # Z
 
         # Get the angular velocity
-        # ang_vel = state.get_angular_velocity_frd()
-        ang_vel = state.angular_velocity
+        ang_vel = state.get_angular_velocity_frd()
         self._sensor_data.sim_angular_vel[0] = ang_vel[0]
         self._sensor_data.sim_angular_vel[1] = ang_vel[1]
         self._sensor_data.sim_angular_vel[2] = ang_vel[2]
 
         # Get the acceleration
-        # acc_vel = state.get_linear_acceleration_ned()
-        acc_vel = state.linear_acceleration
-        self._sensor_data.sim_acceleration[0] = int(acc_vel[0] * 1000)
-        self._sensor_data.sim_acceleration[1] = int(acc_vel[1] * 1000)
-        self._sensor_data.sim_acceleration[2] = int(acc_vel[2] * 1000)
+        acc_vel = state.get_linear_acceleration_ned()
+        self._sensor_data.sim_acceleration[0] = acc_vel[0]
+        self._sensor_data.sim_acceleration[1] = acc_vel[1]
+        self._sensor_data.sim_acceleration[2] = acc_vel[2]
 
         # Get the latitude, longitude and altitude directly from the GPS
 
         # Get the linear velocity of the vehicle in the inertial frame
-        # lin_vel = state.get_linear_velocity_ned()
-        lin_vel = state.linear_velocity
-        self._sensor_data.sim_velocity_inertial[0] = int(lin_vel[0] * 100)
-        self._sensor_data.sim_velocity_inertial[1] = int(lin_vel[1] * 100)
-        self._sensor_data.sim_velocity_inertial[2] = int(lin_vel[2] * 100)
+        lin_vel = state.get_linear_velocity_ned()
+        self._sensor_data.sim_velocity_inertial[0] = lin_vel[0]
+        self._sensor_data.sim_velocity_inertial[1] = lin_vel[1]
+        self._sensor_data.sim_velocity_inertial[2] = lin_vel[2]
 
         # Compute the air_speed - assumed indicated airspeed due to flow aligned with pitot (body x)
-        # body_vel = state.get_linear_body_velocity_ned_frd()
+        body_vel = state.get_linear_body_velocity_ned_frd()
         body_vel = state.linear_body_velocity
         self._sensor_data.sim_ind_airspeed = int(body_vel[0] * 100)
         self._sensor_data.sim_true_airspeed = int(np.linalg.norm(lin_vel) * 100)  # TODO - add wind here

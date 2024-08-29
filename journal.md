@@ -1,3 +1,13 @@
+# Pegasus
+./link_app.sh --path $ISAACSIM_PATH
+./app/isaac-sim.sh --ext-folder extensions --enable pegasus.simulator
+export ISAACSIM_PATH="${HOME}/.local/share/ov/pkg/isaac-sim-4.0.0"
+source ${ISAACSIM_PATH}/setup_python_env.sh
+alias ISAACSIM_PYTHON="${ISAACSIM_PATH}/python.sh"
+alias ISAACSIM="${ISAACSIM_PATH}/isaac-sim.sh"
+
+
+
 # Resources:
 https://ardupilot.org/dev/docs/building-setup-linux.html#building-setup-linux
 https://ardupilot.org/dev/docs/setting-up-sitl-on-linux.html#setting-up-sitl-on-linux
