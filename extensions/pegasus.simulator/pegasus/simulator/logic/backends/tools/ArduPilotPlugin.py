@@ -53,8 +53,6 @@ class ArduPilotPlugin:
         self.motor_control_sock.setblocking(True)
         self.motor_control_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         
-        # self.sensor_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        
         try:
             self.motor_control_sock.bind((self.fdm_address, self.fdm_port_in))
             print(f"Flight dynamics model @ {self.fdm_address}:{self.fdm_port_in}")
@@ -89,12 +87,9 @@ class ArduPilotPlugin:
                sensor_data.sim_attitude[2], # Y
                sensor_data.sim_attitude[3], # Z
             ],
-            #   "quaternion": [
-            #    1,0,0,0
-            # ],
             "velocity": [
               sensor_data.sim_velocity_inertial[0], # X
-              sensor_data.sim_velocity_inertial[1], # Y # - sensor_data.sim_velocity_inertial[1], # Y # - sensor_data.sim_velocity_inertial[1], # Y
+              sensor_data.sim_velocity_inertial[1], # Y
               sensor_data.sim_velocity_inertial[2]  # Z
             ]
         }
@@ -109,16 +104,11 @@ class ArduPilotPlugin:
         
 
     def send_state(self):
-        # json_str = self.create_state_json()
-        # print("Send_State...")
-        # print(self.json_str)
-
         if self.motor_control_sock:
             bytes_sent = self.motor_control_sock.sendto(
                 self.json_str,
                 (self.fcu_address, self.fcu_port_out)
             )
-            # print(f"Sent {bytes_sent} bytes to {self.fcu_address}:{self.fcu_port_out}")
 
     def unpack_servo_packet(self, data):
         # Ensure the data length is valid
@@ -166,7 +156,6 @@ class ArduPilotPlugin:
                     self.fcu_address = client_addr
                     self.fcu_port_out = client_out
 
-                # print(f"Drained data: {data.decode('utf-8')}")
             except BlockingIOError:
                 # No more data to read, exit the loop
                 break
@@ -206,9 +195,7 @@ class ArduPilotPlugin:
 
             if pkt_magic is None:
                 return False, ()
-
-            # print(f"Received packet: magic={pkt_magic}, frame_rate={pkt_frame_rate}, frame_count={pkt_frame_count}, pwm={pkt_pwm}")
-
+            
         except socket.timeout:
             if self.arduPilotOnline:
                 self.connectionTimeoutCount += 1
@@ -221,7 +208,6 @@ class ArduPilotPlugin:
                         print("Socket timeout")
                         self.arduPilotOnline = False
                         print(f"Broken ArduPilot connection, resetting motor control.")
-                        # self.reset_pids()  # Ensure this method exists and is implemented
             return False, ()
 
         # Handle ArduPilot online status
@@ -251,59 +237,13 @@ class ArduPilotPlugin:
 
         return True, pkt_pwm
     
-    
-    # def update_motor_commands(self, pwm):
-    #     max_servo_channels = 16
-
-    #     # Compute command based on requested motor speed
-    #     for i, control in enumerate(self.controls):
-    #         # Enforce limit on the number of control elements
-    #         if i < self.MAX_MOTORS:
-    #             if control['channel'] < max_servo_channels:
-    #                 # Convert PWM to raw command: [servo_min, servo_max] => [0, 1]
-    #                 # Default is: [1000, 2000] => [0, 1]
-    #                 pwm_value = pwm[control['channel']]
-    #                 pwm_min = control['servo_min']
-    #                 pwm_max = control['servo_max']
-    #                 multiplier = control['multiplier']
-    #                 offset = control['offset']
-
-    #                 # Bound incoming command between 0 and 1
-    #                 raw_cmd = (pwm_value - pwm_min) / (pwm_max - pwm_min)
-    #                 raw_cmd = max(0.0, min(raw_cmd, 1.0))
-    #                 control['cmd'] = multiplier * (raw_cmd + offset)
-
-    #                 # Debugging information (uncomment if needed)
-    #                 # print(f"apply input chan[{control['channel']}] to control chan[{i}] "
-    #                 #       f"with joint name [{control['jointName']}] pwm [{pwm_value}] "
-    #                 #       f"raw cmd [{raw_cmd}] adjusted cmd [{control['cmd']}].")
-    #             else:
-    #                 print(f"[{self.modelName}] control[{i}] channel [{control['channel']}] "
-    #                     f"is greater than the number of servo channels [{max_servo_channels}], control not applied.")
-    #         else:
-    #             print(f"[{self.modelName}] too many motors, skipping [{i} > {self.MAX_MOTORS}].")
-
-    @property
-    def sim_time(self):
-        return time.time()
-    
-    def get_sim_duration(self):
-        return time.time() - self.sim_time
-    
-    
     def pre_update(self, sim_time):
-
         # Update the control surfaces
         recieved, pwms = self.receive_servo_packet()
         if recieved:
-            # self.last_servo_packet_recv_time = self.get_sim_duration()
             self.last_servo_packet_recv_time = sim_time
 
         return recieved, pwms
-    
-        # if self.dataPtr.arduPilotOnline:
-        #     dt = (_info['simTime'] - self.dataPtr.lastControllerUpdateTime).total_seconds()
-        #     self.apply_motor_forces(dt, _ecm)
 
     def post_update(self, sensor_data, sim_time):
         if sim_time > self.last_controller_update_time and self.arduPilotOnline:
@@ -311,7 +251,7 @@ class ArduPilotPlugin:
             self.create_state_json(sim_time=self.last_controller_update_time, sensor_data=sensor_data)
             self.send_state()
 
-  # Mock Sensor Data
+    # Mock Sensor Data
     @dataclass
     class SensorData:
         sim_position = [
@@ -337,15 +277,13 @@ class ArduPilotPlugin:
         yacc: float = 1.976595291657851e-9
         zacc: float = -9.80000000000001
 
+
 if __name__ == '__main__':
     ap = ArduPilotPlugin()
     ap.drain_unread_packets()
 
-  
-    
     while True:
         ap.pre_update()
-        time.sleep(0.01)
         ap.post_update(sensor_data=ap.SensorData())
         time.sleep(0.01)
 

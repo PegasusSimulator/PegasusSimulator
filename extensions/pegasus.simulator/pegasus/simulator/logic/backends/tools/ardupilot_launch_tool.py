@@ -40,8 +40,10 @@ class ArduPilotLaunchTool:
 
         # Ardupilot frame
         self.ardupilot_model = ardupilot_model
-        # self.ardupilot_model = "X" # TODO: gazebo-iris sitl doesn't work, but quad does, understand why.
 
+        # Ardupilot FDM communication type:
+        self.model = "JSON"
+        
         # Create a temporary filesystem for ardupilot to write data to/from (and modify the origin rcS files)
         self.root_fs = tempfile.TemporaryDirectory()
 
@@ -58,13 +60,12 @@ class ArduPilotLaunchTool:
         """
         Method that will launch a ardupilot instance with the specified configuration
         """
-        # sim_vehicle.py -v ArduCopter -f gazebo-iris --console --map -A "--sim-port-in=9003 --sim-port-out=9002"
+        # sim_vehicle.py -v ArduCopter -f gazebo-iris --mode JSON --console --map
         command = [
             self.ardupilot_dir + "/Tools/autotest/sim_vehicle.py",
-            "-v",
-            "ArduCopter",
-            "-f",
-            f"{self._get_vehicle_frame()}",
+            "-v", "ArduCopter",
+            "-f", f"{self._get_vehicle_frame()}",
+            "--model", f"{self.model}",
             f"{'--no-rebuild' if self._sitl_already_exists() else ''}",
             f"--console",
             f"--map",
@@ -87,11 +88,37 @@ class ArduPilotLaunchTool:
         Method that will kill a ardupilot instance with the specified configuration
         """
         if self.ardupilot_process is not None:
-            # kill_process_and_children(self.ardupilot_process.pid)
             os.killpg(self.ardupilot_process.pid, signal.SIGINT)
             self.ardupilot_process.kill()
             self.ardupilot_process.wait()
             self.ardupilot_process = None
+
+        # Define the keywords to search for in process names
+        keywords = ['arducopter', 'mavproxy']
+
+        # Get the list of all running processes using the ps command
+        ps_output = subprocess.run(['ps', '-aux'], capture_output=True, text=True)
+
+        # Filter processes that match any of the keywords (case insensitive)
+        matching_processes = [
+            line for line in ps_output.stdout.splitlines()
+            if any(keyword in line.lower() for keyword in keywords)
+        ]
+
+        # Extract process IDs (PID) from the filtered lines
+        pids = [line.split()[1] for line in matching_processes]
+
+        # Kill each matching process by its PID
+        for pid in pids:
+            try:
+                os.kill(int(pid), 9)
+                print(f"Killed process {pid}")
+            except ProcessLookupError:
+                print(f"Process {pid} not found.")
+            except PermissionError:
+                print(f"Permission denied to kill process {pid}.")
+            except Exception as e:
+                print(f"Failed to kill process {pid}: {e}")
 
     def __del__(self):
         """
