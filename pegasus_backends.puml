@@ -1,0 +1,168 @@
+@startuml pegasus_backends
+
+skinparam linetype ortho
+skinparam nodesep 70
+skinparam ranksep 70
+
+skinparam class {
+    BackgroundColor<<Backend>> #E6F3FF
+    BackgroundColor<<Config>> #E6FFE6
+    BorderColor DarkSlateGray
+    ArrowColor DarkSlateGray
+    FontName Arial
+    FontSize 12
+}
+
+skinparam classFontStyle bold
+
+abstract class Backend <<Backend>> {
+    - _vehicle: Vehicle
+    - config: BackendConfig
+    + vehicle: Vehicle
+    + __init__(config: BackendConfig)
+    + initialize(vehicle: Vehicle)
+    + {abstract} update_sensor(sensor_type: str, data: dict)
+    + {abstract} update_graphical_sensor(sensor_type: str, data: dict)
+    + {abstract} update_state(state: State)
+    + {abstract} input_reference(): list
+    + {abstract} update(dt: float)
+    + {abstract} start()
+    + {abstract} stop()
+    + {abstract} reset()
+}
+
+abstract class BackendConfig <<Config>> {
+    + name: str
+    + type: str
+    + params: dict
+}
+
+class PX4MavlinkBackend <<Backend>> {
+    - _connection: mavutil.mavlink_connection
+    - _sensor_data: SensorData
+    - _rotor_data: ThrusterControl
+    - _is_running: bool
+    - _vehicle_id: int
+    - _current_utime: int
+    - px4_tool: PX4LaunchTool
+    + update_sensor(sensor_type: str, data: dict)
+    + update_imu_data(data: dict)
+    + update_gps_data(data: dict)
+    + update_bar_data(data: dict)
+    + update_mag_data(data: dict)
+    + input_reference(): list
+    + start()
+    + stop()
+    + reset()
+    - re_initialize_interface()
+    - __del__()
+}
+
+class PX4MavlinkBackendConfig <<Config>> {
+    + vehicle_id: int
+    + connection_type: str
+    + connection_ip: str
+    + connection_baseport: int
+    + px4_autolaunch: bool
+    + px4_dir: str
+    + px4_vehicle_model: str
+    + enable_lockstep: bool
+    + num_rotors: int
+    + input_offset: list
+    + input_scaling: list
+    + zero_position_armed: list
+    + update_rate: float
+}
+
+class ArduPilotMavlinkBackend <<Backend>> #E6F3FF;line:Navy;line.bold {
+    - _connection: mavutil.mavlink_connection
+    - _sensor_data: SensorData
+    - _rotor_data: ThrusterControl
+    - _is_running: bool
+    - _vehicle_id: int
+    - ardupilot_tool: ArduPilotLaunchTool
+    + update_sensor(sensor_type: str, data: dict)
+    + update_imu_data(data: dict)
+    + update_gps_data(data: dict)
+    + update_bar_data(data: dict)
+    + update_mag_data(data: dict)
+    + input_reference(): list
+    + start()
+    + stop()
+    + reset()
+    - __del__()
+}
+
+class ArduPilotMavlinkBackendConfig <<Config>> #E6FFE6;line:Navy;line.bold {
+    + vehicle_id: int
+    + connection_type: str
+    + connection_ip: str
+    + connection_baseport: int
+    + ardupilot_autolaunch: bool
+    + ardupilot_dir: str
+    + ardupilot_vehicle_model: str
+    + enable_lockstep: bool
+    + num_rotors: int
+    + input_offset: list
+    + input_scaling: list
+    + input_min: int
+    + input_max: int
+    + zero_position_armed: list
+    + update_rate: float
+}
+
+class ROS2Backend <<Backend>> {
+    - node: rclpy.node.Node
+    - publishers: dict
+    - subscribers: dict
+    - _pub_state: bool
+    - _pub_sensors: bool
+    - _pub_graphical_sensors: bool
+    - _sub_control: bool
+    - _num_rotors: int
+    - _namespace: str
+    - input_ref: list
+    + update_sensor(sensor_type: str, data: dict)
+    + update_graphical_sensor(sensor_type: str, data: dict)
+    + update_state(state: State)
+    + input_reference(): list
+    + update(dt: float)
+    + start()
+    + stop()
+    + reset()
+    - initialize_publishers(config: dict)
+    - initialize_subscribers()
+    - send_static_transforms()
+    - rotor_callback(ros_msg: Float64, rotor_id)
+    - update_imu_data(data: dict)
+    - update_gps_data(data: dict)
+    - update_mag_data(data: dict)
+    - update_monocular_camera_data(data: dict)
+    - update_lidar_data(data: dict)
+    - add_monocular_camera_writter(data: dict)
+    - add_lidar_writter(data: dict)
+}
+
+class ROS2BackendConfig <<Config>> {
+    + pub_state: bool
+    + pub_sensors: bool
+    + pub_graphical_sensors: bool
+    + sub_control: bool
+    + num_rotors: int
+    + namespace: str
+}
+
+Backend <|-- PX4MavlinkBackend
+Backend <|-- ArduPilotMavlinkBackend
+Backend <|-- ROS2Backend
+
+BackendConfig <|-- PX4MavlinkBackendConfig
+BackendConfig <|-- ArduPilotMavlinkBackendConfig
+BackendConfig <|-right- ROS2BackendConfig
+
+Backend *-- BackendConfig
+PX4MavlinkBackend *-- PX4MavlinkBackendConfig
+ArduPilotMavlinkBackend *-- ArduPilotMavlinkBackendConfig
+ROS2Backend *-- ROS2BackendConfig
+
+@enduml
