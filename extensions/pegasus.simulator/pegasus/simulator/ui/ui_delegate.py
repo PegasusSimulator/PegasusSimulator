@@ -15,11 +15,13 @@ import carb
 import omni.ui as ui
 
 # Extension Configurations
-from pegasus.simulator.params import ROBOTS, SIMULATION_ENVIRONMENTS
+from pegasus.simulator.params import ROBOTS, SIMULATION_ENVIRONMENTS, BACKENDS, WORLD_SETTINGS
 from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 
 # Vehicle Manager to spawn Vehicles
-from pegasus.simulator.logic.backends import MavlinkBackend, MavlinkBackendConfig #, ROS2Backend
+from pegasus.simulator.logic.backends import Backend, BackendConfig, \
+    PX4MavlinkBackend, PX4MavlinkBackendConfig, \
+    ArduPilotMavlinkBackend, ArduPilotMavlinkBackendConfig #, ROS2Backend
 from pegasus.simulator.logic.vehicles.multirotor import Multirotor, MultirotorConfig
 from pegasus.simulator.logic.vehicle_manager import VehicleManager
 
@@ -58,7 +60,7 @@ class UIDelegate:
 
         # Selected option for broadcasting the simulated vehicle (PX4+ROS2 or just ROS2)
         # By default we assume PX4
-        self._streaming_backend: str = "px4"
+        self._streaming_backend: str = BACKENDS['px4']
 
         # Selected value for the the id of the vehicle
         self._vehicle_id_field: ui.AbstractValueModel = None
@@ -75,6 +77,18 @@ class UIDelegate:
         # Atributes to store the PX4 airframe
         self._px4_airframe_field: ui.AbstractValueModel = None
         self._px4_airframe: str = self._pegasus_sim.px4_default_airframe
+
+        # Attribute that will save the model for the ardupilot-autostart checkbox
+        self._ardupilot_autostart_checkbox: ui.AbstractValueModel = None
+        self._autostart_ardupilot: bool = True
+
+        # Atributes to store the path for the ArduPilot directory
+        self._ardupilot_directory_field: ui.AbstractValueModel = None
+        self._ardupilot_dir: str = PegasusInterface().ardupilot_path
+
+        # Atributes to store the ArduPilot airframe
+        self._ardupilot_airframe_field: ui.AbstractValueModel = None
+        self._ardupilot_airframe: str = self._pegasus_sim.ardupilot_default_airframe
 
     def set_window_bind(self, window):
         self._window = window
@@ -97,8 +111,7 @@ class UIDelegate:
     def set_vehicle_id_field(self, vehicle_id_field: ui.AbstractValueModel):
         self._vehicle_id_field = vehicle_id_field
 
-    def set_streaming_backend(self, backend: str = "px4"):
-        carb.log_info("Chosen option: " + backend)
+    def set_streaming_backend(self, backend: str = BACKENDS['px4']):
         self._streaming_backend = backend
 
     def set_px4_autostart_checkbox(self, checkbox_model:ui.AbstractValueModel):
@@ -109,6 +122,15 @@ class UIDelegate:
 
     def set_px4_airframe_field(self, airframe_field_model: ui.AbstractValueModel):
         self._px4_airframe_field = airframe_field_model
+    
+    def set_ardupilot_autostart_checkbox(self, checkbox_model: ui.AbstractValueModel):
+        self._ardupilot_autostart_checkbox = checkbox_model
+
+    def set_ardupilot_directory_field(self, directory_field_model: ui.AbstractValueModel):
+        self._ardupilot_directory_field = directory_field_model
+
+    def set_ardupilot_airframe_field(self, airframe_field_model: ui.AbstractValueModel):
+        self._ardupilot_airframe_field = airframe_field_model
 
     """
     ---------------------------------------------------------------------
@@ -129,8 +151,9 @@ class UIDelegate:
 
             # Get the name of the selected world
             selected_world = self._scene_names[environemnt_index]
-
+            
             # Try to spawn the selected world
+            self._pegasus_sim.set_world_settings(**WORLD_SETTINGS[self._streaming_backend])
             asyncio.ensure_future(self._pegasus_sim.load_environment_async(SIMULATION_ENVIRONMENTS[selected_world], force_clear=True))
 
     def on_set_new_global_coordinates(self):
@@ -175,7 +198,6 @@ class UIDelegate:
         """
 
         async def async_load_vehicle():
-
             # Check if we already have a physics environment activated. If not, then activate it
             # and only after spawn the vehicle. This is to avoid trying to spawn a vehicle without a physics
             # environment setup. This way we can even spawn a vehicle in an empty world and it won't care
@@ -196,28 +218,57 @@ class UIDelegate:
 
                 # Get the desired position and orientation of the vehicle from the UI transform
                 pos, euler_angles = self._window.get_selected_vehicle_attitude()
+                
+                backend_config: BackendConfig = None
+                backend: Backend = None
 
-                # Read if we should auto-start px4 from the checkbox
-                px4_autostart = self._px4_autostart_checkbox.get_value_as_bool()
+                if self._streaming_backend == BACKENDS["px4"]:
+                    # Read if we should auto-start px4 from the checkbox
+                    px4_autostart = self._px4_autostart_checkbox.get_value_as_bool()
 
-                # Read the PX4 path from the field
-                px4_path = os.path.expanduser(self._px4_directory_field.get_value_as_string())
+                    # Read the PX4 path from the field
+                    px4_path = os.path.expanduser(self._px4_directory_field.get_value_as_string())
 
-                # Read the PX4 airframe from the field
-                px4_airframe = self._px4_airframe_field.get_value_as_string()
+                    # Read the PX4 airframe from the field
+                    px4_airframe = self._px4_airframe_field.get_value_as_string()
 
+                    backend_config = PX4MavlinkBackendConfig({
+                        "vehicle_id": self._vehicle_id,
+                        "px4_autolaunch": px4_autostart,
+                        "px4_dir": px4_path,
+                        "px4_vehicle_model": px4_airframe
+                    })
+                    backend = PX4MavlinkBackend(config=backend_config)
+                    carb.log_warn("PX4 backend selected.")
+                
+                elif self._streaming_backend == BACKENDS["ardupilot"]:
+                    # # Read if we should auto-start ardupilot from the checkbox
+                    ardupilot_autostart = self._ardupilot_autostart_checkbox.get_value_as_bool()
+
+                    # Read the ArduPilot path from the field
+                    ardupilot_path = os.path.expanduser(self._ardupilot_directory_field.get_value_as_string())
+
+                    # Read the ArduPilot airframe from the field
+                    ardupilot_airframe = self._ardupilot_airframe_field.get_value_as_string()
+
+                    backend_config = ArduPilotMavlinkBackendConfig({
+                        "vehicle_id": self._vehicle_id,
+                        "ardupilot_autolaunch": ardupilot_autostart,
+                        "ardupilot_dir": ardupilot_path,
+                        "ardupilot_vehicle_model": ardupilot_airframe
+                    })
+                    backend = ArduPilotMavlinkBackend(config=backend_config)
+                    carb.log_warn("Ardupilot backend selected.")
+                
+                else:
+                    # ROS2:
+                    # backend = ROS2Backend(self._vehicle_id)
+                    carb.log_warn("ROS2 backend selected.")
+                   
                 # Create the multirotor configuration
-                mavlink_config = MavlinkBackendConfig({
-                    "vehicle_id": self._vehicle_id,
-                    "px4_autolaunch": px4_autostart,
-                    "px4_dir": px4_path,
-                    "px4_vehicle_model": px4_airframe
-                })
                 config_multirotor = MultirotorConfig()
-                config_multirotor.backends = [MavlinkBackend(mavlink_config)]
-
-                #ros2 = ROS2Backend(self._vehicle_id)
-
+                config_multirotor.backends = [backend]
+                
                 # Try to spawn the selected robot in the world to the specified namespace
                 Multirotor(
                     "/World/quadrotor",
@@ -271,3 +322,22 @@ class UIDelegate:
         """
         carb.log_warn("Reseting the path to the default one")
         self._px4_directory_field.set_value(self._pegasus_sim.px4_path)
+
+    def on_set_new_default_ardupilot_path(self):
+        """
+        Method that will try to update the new ArduPilot autopilot path with whatever is passed on the string field
+        """
+        carb.log_warn("A new default ArduPilot Path will be set for the extension.")
+
+        # Read the current path from the field
+        path = self._ardupilot_directory_field.get_value_as_string()
+
+        # Set the path using the pegasus interface
+        self._pegasus_sim.set_ardupilot_path(path)
+
+    def on_reset_ardupilot_path(self):
+        """
+        Method that will reset the string field to the default ArduPilot path
+        """
+        carb.log_warn("Reseting the path to the default one")
+        self._ardupilot_directory_field.set_value(self._pegasus_sim.ardupilot_path)

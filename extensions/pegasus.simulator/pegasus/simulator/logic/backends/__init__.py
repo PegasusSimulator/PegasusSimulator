@@ -3,8 +3,9 @@
 | License: BSD-3-Clause. Copyright (c) 2023, Marcelo Jacinto. All rights reserved.
 """
 
-from .backend import Backend
-from .mavlink_backend import MavlinkBackend, MavlinkBackendConfig
+from .backend import Backend, BackendConfig
+from .px4_mavlink_backend import PX4MavlinkBackend, PX4MavlinkBackendConfig
+from .ardupilot_mavlink_backend import ArduPilotMavlinkBackend, ArduPilotMavlinkBackendConfig
 
 # Check if the ROS2 package is installed
 try:

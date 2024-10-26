@@ -56,7 +56,7 @@ Control Backends
    :maxdepth: 2
 
    backends.backend
-   backends.mavlink_backend
+   backends.px4_mavlink_backend
    backends.ros2_backend
 
 Vehicle

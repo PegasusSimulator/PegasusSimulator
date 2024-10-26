@@ -83,6 +83,7 @@ This simulation framework is an open-source effort, started by me, Marcelo Jacin
    source/features/environments
    source/features/vehicles
    source/features/px4_integration
+   source/features/ardupilot
 
 .. toctree::
    :maxdepth: 2
