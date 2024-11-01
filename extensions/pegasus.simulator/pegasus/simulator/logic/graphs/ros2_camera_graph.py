@@ -150,7 +150,7 @@ class ROS2CameraGraph(Graph):
             camera_helper_name = f"camera_helper_{camera_type}"
 
             graph_config[keys.CREATE_NODES] += [
-                (camera_helper_name, "omni.isaac.ros2_bridge.ROS2CameraInfoHelper")
+                (camera_helper_name, "omni.isaac.ros2_bridge.ROS2CameraHelper")
             ]
             graph_config[keys.CONNECT] += [
                 ("set_camera.outputs:execOut", f"{camera_helper_name}.inputs:execIn"),
@@ -160,7 +160,7 @@ class ROS2CameraGraph(Graph):
                 (f"{camera_helper_name}.inputs:nodeNamespace", self._namespace),
                 (f"{camera_helper_name}.inputs:frameId", self._tf_frame_id),
                 (f"{camera_helper_name}.inputs:topicName", f"{self._base_topic}/{camera_type}"),
-                #(f"{camera_helper_name}.inputs:type", camera_type)
+                (f"{camera_helper_name}.inputs:type", camera_type)
             ]
 
             # Publish labels for specific camera types
