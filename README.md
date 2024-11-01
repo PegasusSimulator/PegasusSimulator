@@ -44,7 +44,7 @@ This simulation framework is an open-source effort, started by me, Marcelo Jacin
 	* [Marcelo Jacinto](https://github.com/MarceloJacinto), under the supervision of <u>Prof. Rita Cunha</u> and <u>Prof. Antonio Pascoal</u> (IST/ISR-Lisbon)
 * Architecture
   * [Marcelo Jacinto](https://github.com/MarceloJacinto)
-	* [João Pinto](https://github.com/jschpinto)
+  * [João Pinto](https://github.com/jschpinto)
 * Multirotor Dynamic Simulation and Control
   * [Marcelo Jacinto](https://github.com/MarceloJacinto)
 * Example Applications
