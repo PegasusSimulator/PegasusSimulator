@@ -268,7 +268,14 @@ class UIDelegate:
                 
                 elif self._streaming_backend == BACKENDS["ros2"]:    
                     if ROS2_available:
-                        backend = ROS2Backend(self._vehicle_id)
+                        backend = ROS2Backend(vehicle_id=self._vehicle_id, config={
+                            "namespace": 'drone',
+                            "pub_sensors": True,
+                            "pub_graphical_sensors": True,
+                            "pub_state": True,
+                            "pub_tf": False,
+                            "sub_control": True}
+                            )
                         carb.log_warn("ROS2 backend selected.")
                     else:
                         carb.log_warn("ROS2 not available. Please run Isaac Sim with ROS 2 extension correctly enabled.")
