@@ -16,9 +16,9 @@ ArduPilot (Experimental)
 The Ardupilot integration is an experimental feature that bridges the gap between the ArduPilot project and IsaacSim, allowing the ArduPilot community to leverage IsaacSim's physics simulation and photorealistic rendering capabilities! **This feature is tailored at researchers that use Ardupilot instead of PX4.**
 
 .. note:: 
-   This feature is highly experimental and was developed by the open-source contributor `TomerTip <https://github.com/TomerTip>`_ in `PegasusArduPilot <https://github.com/TomerTip/PegasusArduPilot>`_, and merged into the main project.
+   This feature is highly experimental and was developed by the open-source contributor `Tomer Tiplitsky <https://github.com/TomerTip>`_ in `PegasusArduPilot <https://github.com/TomerTip/PegasusArduPilot>`_, and merged into the main project.
 
-To get PegasusSimulator and ArduPilot SITL talking, the open-source contributor `TomerTip <https://github.com/TomerTip>`_ created a Python implementation of the custom protocol used between ArduPilot SITL and the simulator - called `PyArduPilotPlugin <https://github.com/TomerTip/PyArduPilotPlugin>`_.
+To get PegasusSimulator and ArduPilot SITL talking, the open-source contributor `Tomer Tiplitsky <https://github.com/TomerTip>`_ created a Python implementation of the custom protocol used between ArduPilot SITL and the simulator - called `PyArduPilotPlugin <https://github.com/TomerTip/PyArduPilotPlugin>`_.
 This project allows developers to create a custom simulator and integrate it with ArduPilot SITL control using Python!
 
 
@@ -109,29 +109,29 @@ Running a Simulation with Ardupilot (GUI Mode)
       :alt: Backend Selection
       :align: center
 
-3. On the new terminal that was opened
+3. On the new terminal that was opened, run the following commands to perform a takeoff:
 
    .. code:: bash
 
-         mode guided
-         arm throttle
-         takeoff 3
+      mode guided
+      arm throttle
+      takeoff 3
 
 Drone spawn:
 
-.. figure:: /_static/ardupilot/ardupilot_spawn.gif
+.. image:: /_static/ardupilot/ardupilot_spawn.gif
    :alt: ArduPilot drone spawn
    :align: center
 
 Drone takeoff:
 
-.. figure:: /_static/ardupilot/drone_takeoff.gif
+.. image:: /_static/ardupilot/drone_takeoff.gif
    :alt: ArduPilot drone takeoff
    :align: center
 
 Camera demo:
 
-.. figure:: /_static/ardupilot/ardupilot_camera.gif
+.. image:: /_static/ardupilot/ardupilot_camera.gif
    :alt: ArduPilot Camera Demo
    :align: center
 
@@ -139,7 +139,7 @@ Camera demo:
 Ardupilot Integration Architecture
 ----------------------------------
 
-Since the code of PegasusSimulator is currently tightly coupled with `PX4`, I had to change the backend class hierarchy to become more generic and extendable. 
+The Ardupilot integration is composed of two main components: the Ardupilot Mavlink Backend and the Ardupilot Mavlink Plugin. See the diagram below for a high-level overview of the architecture:
 
 .. image:: /_static/ardupilot/pegasus_backends.png
    :alt: Pegasus Backends
