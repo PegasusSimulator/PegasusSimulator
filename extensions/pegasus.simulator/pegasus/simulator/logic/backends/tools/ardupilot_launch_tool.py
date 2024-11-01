@@ -62,7 +62,7 @@ class ArduPilotLaunchTool:
         """
         # sim_vehicle.py -v ArduCopter -f gazebo-iris --mode JSON --console --map
         command = [
-            self.ardupilot_dir + "/Tools/autotest/sim_vehicle.py",
+            "python3 " + self.ardupilot_dir + "/Tools/autotest/sim_vehicle.py",
             "-v", "ArduCopter",
             "-f", f"{self._get_vehicle_frame()}",
             "--model", f"{self.model}",
