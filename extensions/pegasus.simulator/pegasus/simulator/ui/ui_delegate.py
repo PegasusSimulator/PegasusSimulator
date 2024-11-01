@@ -19,11 +19,17 @@ from pegasus.simulator.params import ROBOTS, SIMULATION_ENVIRONMENTS, BACKENDS, 
 from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 
 # Vehicle Manager to spawn Vehicles
-from pegasus.simulator.logic.backends import Backend, BackendConfig, \
-    PX4MavlinkBackend, PX4MavlinkBackendConfig, \
-    ArduPilotMavlinkBackend, ArduPilotMavlinkBackendConfig #, ROS2Backend
+from pegasus.simulator.logic.backends import Backend, BackendConfig, PX4MavlinkBackend, PX4MavlinkBackendConfig, ArduPilotMavlinkBackend, ArduPilotMavlinkBackendConfig
 from pegasus.simulator.logic.vehicles.multirotor import Multirotor, MultirotorConfig
 from pegasus.simulator.logic.vehicle_manager import VehicleManager
+from pegasus.simulator.logic.graphical_sensors.monocular_camera import MonocularCamera
+
+try:
+    from pegasus.simulator.logic.backends import ROS2Backend
+    ROS2_available = True
+except ImportError:
+    ROS2_available = False
+    carb.log_warn("ROS2 backend not available. Please install the ROS2 extension to use this feature.")
 
 
 class UIDelegate:
@@ -260,14 +266,21 @@ class UIDelegate:
                     backend = ArduPilotMavlinkBackend(config=backend_config)
                     carb.log_warn("Ardupilot backend selected.")
                 
+                elif self._streaming_backend == BACKENDS["ros2"]:    
+                    if ROS2_available:
+                        backend = ROS2Backend(self._vehicle_id)
+                        carb.log_warn("ROS2 backend selected.")
+                    else:
+                        carb.log_warn("ROS2 not available. Please run Isaac Sim with ROS 2 extension correctly enabled.")
+                        return
                 else:
-                    # ROS2:
-                    # backend = ROS2Backend(self._vehicle_id)
-                    carb.log_warn("ROS2 backend selected.")
+                    carb.log_warn("Invalid backend selected. Not spawning the vehicle.")
+                    return
                    
                 # Create the multirotor configuration
                 config_multirotor = MultirotorConfig()
                 config_multirotor.backends = [backend]
+                config_multirotor.graphical_sensors = [MonocularCamera("camera", config={"update_rate": 60.0})]
                 
                 # Try to spawn the selected robot in the world to the specified namespace
                 Multirotor(

@@ -86,6 +86,12 @@ WORLD_SETTINGS = {
         "rendering_dt": 1.0 / 100.0,
         "device": "cpu"
     },
+    'ros2': {
+        "physics_dt": 1.0 / 250.0,
+        "stage_units_in_meters": 1.0,
+        "rendering_dt": 1.0 / 60.0,
+        "device": "cpu"
+    }
 }
 DEFAULT_WORLD_SETTINGS = WORLD_SETTINGS['px4']
 
