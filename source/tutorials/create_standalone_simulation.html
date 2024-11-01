@@ -68,6 +68,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../features/environments.html">Environments</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../features/vehicles.html">Vehicles</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../features/px4_integration.html">PX4 Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../features/ardupilot.html">ArduPilot (Experimental)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Source API</span></p>
 <ul>
@@ -149,7 +150,7 @@ already, follow the Preparation section in the <a class="reference internal" hre
 <span class="hll"><span class="linenos"> 24</span><span class="c1"># Import the Pegasus API for simulating drones</span>
 </span><span class="hll"><span class="linenos"> 25</span><span class="kn">from</span> <span class="nn">pegasus.simulator.params</span> <span class="kn">import</span> <span class="n">ROBOTS</span><span class="p">,</span> <span class="n">SIMULATION_ENVIRONMENTS</span>
 </span><span class="hll"><span class="linenos"> 26</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.state</span> <span class="kn">import</span> <span class="n">State</span>
-</span><span class="hll"><span class="linenos"> 27</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.backends.mavlink_backend</span> <span class="kn">import</span> <span class="n">MavlinkBackend</span><span class="p">,</span> <span class="n">MavlinkBackendConfig</span>
+</span><span class="hll"><span class="linenos"> 27</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.backends.px4_mavlink_backend</span> <span class="kn">import</span> <span class="n">PX4MavlinkBackend</span><span class="p">,</span> <span class="n">PX4MavlinkBackendConfig</span>
 </span><span class="hll"><span class="linenos"> 28</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.vehicles.multirotor</span> <span class="kn">import</span> <span class="n">Multirotor</span><span class="p">,</span> <span class="n">MultirotorConfig</span>
 </span><span class="hll"><span class="linenos"> 29</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.interface.pegasus_interface</span> <span class="kn">import</span> <span class="n">PegasusInterface</span>
 </span><span class="linenos"> 30</span><span class="c1"># Auxiliary scipy and numpy modules</span>
@@ -184,13 +185,13 @@ already, follow the Preparation section in the <a class="reference internal" hre
 </span><span class="hll"><span class="linenos"> 59</span>        <span class="c1"># Try to spawn the selected robot in the world to the specified namespace</span>
 </span><span class="hll"><span class="linenos"> 60</span>        <span class="n">config_multirotor</span> <span class="o">=</span> <span class="n">MultirotorConfig</span><span class="p">()</span>
 </span><span class="hll"><span class="linenos"> 61</span>        <span class="c1"># Create the multirotor configuration</span>
-</span><span class="hll"><span class="linenos"> 62</span>        <span class="n">mavlink_config</span> <span class="o">=</span> <span class="n">MavlinkBackendConfig</span><span class="p">({</span>
+</span><span class="hll"><span class="linenos"> 62</span>        <span class="n">mavlink_config</span> <span class="o">=</span> <span class="n">PX4MavlinkBackendConfig</span><span class="p">({</span>
 </span><span class="hll"><span class="linenos"> 63</span>            <span class="s2">&quot;vehicle_id&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
 </span><span class="hll"><span class="linenos"> 64</span>            <span class="s2">&quot;px4_autolaunch&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
 </span><span class="hll"><span class="linenos"> 65</span>            <span class="s2">&quot;px4_dir&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pg</span><span class="o">.</span><span class="n">px4_path</span><span class="p">,</span>
 </span><span class="hll"><span class="linenos"> 66</span>            <span class="s2">&quot;px4_vehicle_model&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pg</span><span class="o">.</span><span class="n">px4_default_airframe</span> <span class="c1"># CHANGE this line to &#39;iris&#39; if using PX4 version bellow v1.14</span>
 </span><span class="hll"><span class="linenos"> 67</span>        <span class="p">})</span>
-</span><span class="hll"><span class="linenos"> 68</span>        <span class="n">config_multirotor</span><span class="o">.</span><span class="n">backends</span> <span class="o">=</span> <span class="p">[</span><span class="n">MavlinkBackend</span><span class="p">(</span><span class="n">mavlink_config</span><span class="p">)]</span>
+</span><span class="hll"><span class="linenos"> 68</span>        <span class="n">config_multirotor</span><span class="o">.</span><span class="n">backends</span> <span class="o">=</span> <span class="p">[</span><span class="n">PX4MavlinkBackend</span><span class="p">(</span><span class="n">mavlink_config</span><span class="p">)]</span>
 </span><span class="hll"><span class="linenos"> 69</span>
 </span><span class="hll"><span class="linenos"> 70</span>        <span class="n">Multirotor</span><span class="p">(</span>
 </span><span class="hll"><span class="linenos"> 71</span>            <span class="s2">&quot;/World/quadrotor&quot;</span><span class="p">,</span>
@@ -247,7 +248,7 @@ methods currently provided, please refer to the <a class="reference internal" hr
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">24</span><span class="c1"># Import the Pegasus API for simulating drones</span>
 <span class="linenos">25</span><span class="kn">from</span> <span class="nn">pegasus.simulator.params</span> <span class="kn">import</span> <span class="n">ROBOTS</span><span class="p">,</span> <span class="n">SIMULATION_ENVIRONMENTS</span>
 <span class="linenos">26</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.state</span> <span class="kn">import</span> <span class="n">State</span>
-<span class="linenos">27</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.backends.mavlink_backend</span> <span class="kn">import</span> <span class="n">MavlinkBackend</span><span class="p">,</span> <span class="n">MavlinkBackendConfig</span>
+<span class="linenos">27</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.backends.px4_mavlink_backend</span> <span class="kn">import</span> <span class="n">PX4MavlinkBackend</span><span class="p">,</span> <span class="n">PX4MavlinkBackendConfig</span>
 <span class="linenos">28</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.vehicles.multirotor</span> <span class="kn">import</span> <span class="n">Multirotor</span><span class="p">,</span> <span class="n">MultirotorConfig</span>
 <span class="linenos">29</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.interface.pegasus_interface</span> <span class="kn">import</span> <span class="n">PegasusInterface</span>
 </pre></div>
@@ -283,13 +284,13 @@ we create a <code class="docutils literal notranslate"><span class="pre">MAVLink
 <span class="linenos">59</span>        <span class="c1"># Try to spawn the selected robot in the world to the specified namespace</span>
 <span class="linenos">60</span>        <span class="n">config_multirotor</span> <span class="o">=</span> <span class="n">MultirotorConfig</span><span class="p">()</span>
 <span class="linenos">61</span>        <span class="c1"># Create the multirotor configuration</span>
-<span class="linenos">62</span>        <span class="n">mavlink_config</span> <span class="o">=</span> <span class="n">MavlinkBackendConfig</span><span class="p">({</span>
+<span class="linenos">62</span>        <span class="n">mavlink_config</span> <span class="o">=</span> <span class="n">PX4MavlinkBackendConfig</span><span class="p">({</span>
 <span class="linenos">63</span>            <span class="s2">&quot;vehicle_id&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
 <span class="linenos">64</span>            <span class="s2">&quot;px4_autolaunch&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
 <span class="linenos">65</span>            <span class="s2">&quot;px4_dir&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pg</span><span class="o">.</span><span class="n">px4_path</span><span class="p">,</span>
 <span class="linenos">66</span>            <span class="s2">&quot;px4_vehicle_model&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pg</span><span class="o">.</span><span class="n">px4_default_airframe</span> <span class="c1"># CHANGE this line to &#39;iris&#39; if using PX4 version bellow v1.14</span>
 <span class="linenos">67</span>        <span class="p">})</span>
-<span class="linenos">68</span>        <span class="n">config_multirotor</span><span class="o">.</span><span class="n">backends</span> <span class="o">=</span> <span class="p">[</span><span class="n">MavlinkBackend</span><span class="p">(</span><span class="n">mavlink_config</span><span class="p">)]</span>
+<span class="linenos">68</span>        <span class="n">config_multirotor</span><span class="o">.</span><span class="n">backends</span> <span class="o">=</span> <span class="p">[</span><span class="n">PX4MavlinkBackend</span><span class="p">(</span><span class="n">mavlink_config</span><span class="p">)]</span>
 </pre></div>
 </div>
 <p>To create the actual <code class="docutils literal notranslate"><span class="pre">Multirotor</span></code> object, we must specify the <code class="docutils literal notranslate"><span class="pre">stage_path</span></code>, i.e. the name that the vehicle will have inside

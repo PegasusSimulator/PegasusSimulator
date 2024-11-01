@@ -4,9 +4,9 @@ Installation
 Installing NVIDIA Isaac Sim
 ---------------------------
 
-.. image:: https://img.shields.io/badge/IsaacSim-4.1.0-brightgreen.svg
+.. image:: https://img.shields.io/badge/IsaacSim-4.2.0-brightgreen.svg
    :target: https://developer.nvidia.com/isaac-sim
-   :alt: IsaacSim 4.1.0
+   :alt: IsaacSim 4.2.0
 
 .. image:: https://img.shields.io/badge/PX4--Autopilot-1.14.3-brightgreen.svg
    :target: https://github.com/PX4/PX4-Autopilot
@@ -17,7 +17,7 @@ Installing NVIDIA Isaac Sim
    :alt: Ubuntu 22.04
 
 .. note::
-	We have tested Pegasus Simulator with Isaac Sim 4.1.0 release on Ubuntu 22.04LTS with NVIDIA driver 550.90.07. The PX4-Autopilot used during development was v.14.3. Older versions Ubuntu and PX4-Autopilot were not tested. This extension was not tested on Windows. 
+	We have tested Pegasus Simulator with Isaac Sim 4.2.0 release on Ubuntu 22.04LTS with NVIDIA driver 550.90.07. The PX4-Autopilot used during development was v.14.3. Older versions Ubuntu and PX4-Autopilot were not tested. This extension was not tested on Windows. 
 
 In order to install Isaac Sim on linux, download the `Omniverse AppImage here <https://install.launcher.omniverse.nvidia.com/installers/omniverse-launcher-linux.AppImage>`__ or run the following line on the terminal:
 
@@ -55,7 +55,7 @@ Add the following lines to your ``~/.bashrc`` or ``~/.zshrc`` file.
 .. code:: bash
 
    # Isaac Sim root directory
-   export ISAACSIM_PATH="${HOME}/.local/share/ov/pkg/isaac_sim-4.1.0"
+   export ISAACSIM_PATH="${HOME}/.local/share/ov/pkg/isaac_sim-4.2.0"
    # Isaac Sim python executable
    alias ISAACSIM_PYTHON="${ISAACSIM_PATH}/python.sh"
    # Isaac Sim app
@@ -173,6 +173,9 @@ extension as a ``pip`` python module for the built-in ``ISAACSIM_PYTHON`` to rec
 
 We use the ``--editable`` flag so that the content of the extension is linked instead of copied. After this step, you 
 should be able to run the python standalone examples inside the ``examples`` folder.
+
+.. note::
+    If you want to use Ardupilot with PegasusSimulator, please refer to the `ArduPilot documentation <features/ardupilot.rst>`__ to use this experimental feature. If you don't know what Ardupilot is, you can safely ignore this.
 
 Installing PX4-Autopilot
 ------------------------

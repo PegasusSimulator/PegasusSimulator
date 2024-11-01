@@ -20,7 +20,7 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Mavlink Backend" href="backends.mavlink_backend.html" />
+    <link rel="next" title="PX4 Mavlink Backend" href="backends.px4_mavlink_backend.html" />
     <link rel="prev" title="Quadratic Thrust Curve" href="thrusters.quadratic_thrust_curve.html" /> 
 </head>
 
@@ -62,6 +62,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../features/environments.html">Environments</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../features/vehicles.html">Vehicles</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../features/px4_integration.html">PX4 Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../features/ardupilot.html">ArduPilot (Experimental)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Source API</span></p>
 <ul class="current">
@@ -74,9 +75,11 @@
 <li class="toctree-l2 current"><a class="reference internal" href="index.html#control-backends">Control Backends</a><ul class="current">
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Backend</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#pegasus.simulator.logic.backends.backend.Backend"><code class="docutils literal notranslate"><span class="pre">Backend</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pegasus.simulator.logic.backends.backend.BackendConfig"><code class="docutils literal notranslate"><span class="pre">BackendConfig</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="backends.mavlink_backend.html">Mavlink Backend</a></li>
+<li class="toctree-l3"><a class="reference internal" href="backends.px4_mavlink_backend.html">PX4 Mavlink Backend</a></li>
+<li class="toctree-l3"><a class="reference internal" href="backends.ardupilot_mavlink_backend.html">Ardupilot Mavlink Backend</a></li>
 <li class="toctree-l3"><a class="reference internal" href="backends.ros2_backend.html">ROS2 Backend</a></li>
 </ul>
 </li>
@@ -136,12 +139,15 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.backend.Backend" title="pegasus.simulator.logic.backends.backend.Backend"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Backend</span></code></a></p></td>
 <td><p>This class defines the templates for the communication and control backend.</p></td>
 </tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.backend.BackendConfig" title="pegasus.simulator.logic.backends.backend.BackendConfig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BackendConfig</span></code></a></p></td>
+<td><p>This class represents the configuration for the communication and control backend.</p></td>
+</tr>
 </tbody>
 </table>
 <dl class="py class">
 <dt class="sig sig-object py" id="pegasus.simulator.logic.backends.backend.Backend">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pegasus.simulator.logic.backends.backend.</span></span><span class="sig-name descname"><span class="pre">Backend</span></span><a class="headerlink" href="#pegasus.simulator.logic.backends.backend.Backend" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
 <p>This class defines the templates for the communication and control backend. Every vehicle can have at least one backend
 at the same time. Every timestep, the methods ‘update_state’ and ‘update_sensor’ are called to update the data produced
 by the simulation, i.e. for every time step the backend will receive teh current state of the vehicle and its sensors.
@@ -152,7 +158,7 @@ The methods ‘start’, ‘stop’ and ‘reset’ are callbacks that get calle
 <p><strong>Methods:</strong></p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.backend.Backend.__init__" title="pegasus.simulator.logic.backends.backend.Backend.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.backend.Backend.__init__" title="pegasus.simulator.logic.backends.backend.Backend.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(config)</p></td>
 <td><p>Initialize the Backend class</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.backend.Backend.initialize" title="pegasus.simulator.logic.backends.backend.Backend.initialize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">initialize</span></code></a>(vehicle)</p></td>
@@ -194,8 +200,10 @@ The methods ‘start’, ‘stop’ and ‘reset’ are callbacks that get calle
 </table>
 <dl class="py method">
 <dt class="sig sig-object py" id="pegasus.simulator.logic.backends.backend.Backend.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.backend.Backend.__init__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.backend.Backend.__init__" title="Permalink to this definition"></a></dt>
 <dd><p>Initialize the Backend class</p>
+<dl class="field-list simple">
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -215,49 +223,49 @@ default vehicle behaviour via this control backend structure.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pegasus.simulator.logic.backends.backend.Backend.input_reference">
-<span class="sig-name descname"><span class="pre">input_reference</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.backend.Backend.input_reference" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">input_reference</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.backend.Backend.input_reference" title="Permalink to this definition"></a></dt>
 <dd><p>Method that when implemented, should return a list of desired angular velocities to apply to the vehicle rotors</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pegasus.simulator.logic.backends.backend.Backend.reset">
-<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.backend.Backend.reset" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.backend.Backend.reset" title="Permalink to this definition"></a></dt>
 <dd><p>Method that when implemented, should handle the reset of the vehicle simulation to its original state</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pegasus.simulator.logic.backends.backend.Backend.start">
-<span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.backend.Backend.start" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.backend.Backend.start" title="Permalink to this definition"></a></dt>
 <dd><p>Method that when implemented should handle the begining of the simulation of vehicle</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pegasus.simulator.logic.backends.backend.Backend.stop">
-<span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.backend.Backend.stop" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.backend.Backend.stop" title="Permalink to this definition"></a></dt>
 <dd><p>Method that when implemented should handle the stopping of the simulation of vehicle</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pegasus.simulator.logic.backends.backend.Backend.update">
-<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.backend.Backend.update" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.backend.Backend.update" title="Permalink to this definition"></a></dt>
 <dd><p>Method that when implemented, should be used to update the state of the backend and the information being sent/received
 from the communication interface. This method will be called by the simulation on every physics step</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>dt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The time elapsed between the previous and current function calls (s).</p>
+<dd class="field-odd"><p><strong>dt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – The time elapsed between the previous and current function calls (s).</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pegasus.simulator.logic.backends.backend.Backend.update_graphical_sensor">
-<span class="sig-name descname"><span class="pre">update_graphical_sensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sensor_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.backend.Backend.update_graphical_sensor" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">update_graphical_sensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sensor_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.backend.Backend.update_graphical_sensor" title="Permalink to this definition"></a></dt>
 <dd><p>Method that when implemented, should handle the receival of graphical sensor data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>sensor_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – A name that describes the type of sensor (for example MonocularCamera)</p></li>
-<li><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a>) – A dictionary that contains the data produced by the sensor</p></li>
+<li><p><strong>sensor_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – A name that describes the type of sensor (for example MonocularCamera)</p></li>
+<li><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a>) – A dictionary that contains the data produced by the sensor</p></li>
 </ul>
 </dd>
 </dl>
@@ -265,13 +273,13 @@ from the communication interface. This method will be called by the simulation o
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pegasus.simulator.logic.backends.backend.Backend.update_sensor">
-<span class="sig-name descname"><span class="pre">update_sensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sensor_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.backend.Backend.update_sensor" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">update_sensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sensor_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.backend.Backend.update_sensor" title="Permalink to this definition"></a></dt>
 <dd><p>Method that when implemented, should handle the receival of sensor data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>sensor_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – A name that describes the type of sensor</p></li>
-<li><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a>) – A dictionary that contains the data produced by the sensor</p></li>
+<li><p><strong>sensor_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – A name that describes the type of sensor</p></li>
+<li><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a>) – A dictionary that contains the data produced by the sensor</p></li>
 </ul>
 </dd>
 </dl>
@@ -279,7 +287,7 @@ from the communication interface. This method will be called by the simulation o
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pegasus.simulator.logic.backends.backend.Backend.update_state">
-<span class="sig-name descname"><span class="pre">update_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.backend.Backend.update_state" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">update_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.backend.Backend.update_state" title="Permalink to this definition"></a></dt>
 <dd><p>Method that when implemented, should handle the receival of the state of the vehicle using this callback</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -304,6 +312,15 @@ from the communication interface. This method will be called by the simulation o
 
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.backend.BackendConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pegasus.simulator.logic.backends.backend.</span></span><span class="sig-name descname"><span class="pre">BackendConfig</span></span><a class="headerlink" href="#pegasus.simulator.logic.backends.backend.BackendConfig" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
+<p>This class represents the configuration for the communication and control backend.
+Every backend has a configuration, which is used to customize its behavior.
+The configuration is used to instantiate the backend at the simulation start.</p>
+</dd></dl>
+
 </section>
 
 
@@ -311,7 +328,7 @@ from the communication interface. This method will be called by the simulation o
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="thrusters.quadratic_thrust_curve.html" class="btn btn-neutral float-left" title="Quadratic Thrust Curve" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="backends.mavlink_backend.html" class="btn btn-neutral float-right" title="Mavlink Backend" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="backends.px4_mavlink_backend.html" class="btn btn-neutral float-right" title="PX4 Mavlink Backend" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

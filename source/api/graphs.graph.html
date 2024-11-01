@@ -62,6 +62,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../features/environments.html">Environments</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../features/vehicles.html">Vehicles</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../features/px4_integration.html">PX4 Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../features/ardupilot.html">ArduPilot (Experimental)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Source API</span></p>
 <ul class="current">
@@ -69,10 +70,7 @@
 <li class="toctree-l2"><a class="reference internal" href="index.html#sensors">Sensors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#graphical-sensors">Graphical Sensors</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="index.html#graphs">Graphs</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Graph</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#pegasus.simulator.logic.graphs.graph.Graph"><code class="docutils literal notranslate"><span class="pre">Graph</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Graph</a></li>
 <li class="toctree-l3"><a class="reference internal" href="graphs.ros2_camera_graph.html">ROS2 Camera Graph</a></li>
 </ul>
 </li>
@@ -121,36 +119,36 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-pegasus.simulator.logic.graphs.graph">
-<span id="graph"></span><h1>Graph<a class="headerlink" href="#module-pegasus.simulator.logic.graphs.graph" title="Permalink to this heading"></a></h1>
+  <section id="graph">
+<h1>Graph<a class="headerlink" href="#graph" title="Permalink to this heading"></a></h1>
 <div class="line-block">
 <div class="line">License: BSD-3-Clause. Copyright (c) 2023, Marcelo Jacinto and Filip Stec. All rights reserved.</div>
 </div>
 <p><strong>Classes:</strong></p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.graphs.graph.Graph" title="pegasus.simulator.logic.graphs.graph.Graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Graph</span></code></a></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Graph</span></code></p></td>
 <td><p>The base class for implementing OmniGraphs</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py class">
-<dt class="sig sig-object py" id="pegasus.simulator.logic.graphs.graph.Graph">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pegasus.simulator.logic.graphs.graph.</span></span><span class="sig-name descname"><span class="pre">Graph</span></span><a class="headerlink" href="#pegasus.simulator.logic.graphs.graph.Graph" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pegasus.simulator.logic.graphs.graph.</span></span><span class="sig-name descname"><span class="pre">Graph</span></span></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>The base class for implementing OmniGraphs</p>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="pegasus.simulator.logic.graphs.graph.Graph.graph_prim_path">
-<span class="sig-name descname"><span class="pre">graph_prim_path</span></span><a class="headerlink" href="#pegasus.simulator.logic.graphs.graph.Graph.graph_prim_path" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">graph_prim_path</span></span></dt>
 <dd></dd></dl>
 
 <p><strong>Methods:</strong></p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.graphs.graph.Graph.__init__" title="pegasus.simulator.logic.graphs.graph.Graph.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(graph_type)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code>(graph_type)</p></td>
 <td><p>Initialize Graph class</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.graphs.graph.Graph.initialize" title="pegasus.simulator.logic.graphs.graph.Graph.initialize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">initialize</span></code></a>(graph_prim_path)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">initialize</span></code>(graph_prim_path)</p></td>
 <td><p>Method that should be implemented and called by the class that inherits the graph object.</p></td>
 </tr>
 </tbody>
@@ -158,42 +156,42 @@
 <p><strong>Attributes:</strong></p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#id0" title="pegasus.simulator.logic.graphs.graph.Graph.graph_prim_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">graph_prim_path</span></code></a></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">graph_prim_path</span></code></p></td>
 <td><p>(str) Path to the graph.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.graphs.graph.Graph.graph_type" title="pegasus.simulator.logic.graphs.graph.Graph.graph_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">graph_type</span></code></a></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">graph_type</span></code></p></td>
 <td><p>(str) A name that describes the type of graph.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py method">
-<dt class="sig sig-object py" id="pegasus.simulator.logic.graphs.graph.Graph.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph_type</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.graphs.graph.Graph.__init__" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph_type</span></span></em><span class="sig-paren">)</span></dt>
 <dd><p>Initialize Graph class</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>graph_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – A name that describes the type of graph</p>
+<dd class="field-odd"><p><strong>graph_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – A name that describes the type of graph</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="pegasus.simulator.logic.graphs.graph.Graph.initialize">
-<span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph_prim_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.graphs.graph.Graph.initialize" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph_prim_path</span></span></em><span class="sig-paren">)</span></dt>
 <dd><p>Method that should be implemented and called by the class that inherits the graph object.</p>
 <dl class="field-list simple">
 </dl>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id0">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">graph_prim_path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#id0" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">graph_prim_path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em></dt>
 <dd><p>(str) Path to the graph.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="pegasus.simulator.logic.graphs.graph.Graph.graph_type">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">graph_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#pegasus.simulator.logic.graphs.graph.Graph.graph_type" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">graph_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em></dt>
 <dd><p>(str) A name that describes the type of graph.</p>
 </dd></dl>
 

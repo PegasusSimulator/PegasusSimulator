@@ -68,6 +68,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../features/environments.html">Environments</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../features/vehicles.html">Vehicles</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../features/px4_integration.html">PX4 Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../features/ardupilot.html">ArduPilot (Experimental)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Source API</span></p>
 <ul>
@@ -683,6 +684,18 @@ with <cite>Mavlink</cite>, <cite>PX4</cite> or <cite>ROS</cite> like in other si
 <span class="linenos">430</span><span class="sd">            np.ndarray: A float with the desired yaw_rate in rad/s</span>
 <span class="linenos">431</span><span class="sd">        &quot;&quot;&quot;</span>
 <span class="linenos">432</span>        <span class="k">return</span> <span class="mf">0.0</span>
+<span class="linenos">433</span>    
+<span class="linenos">434</span>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos">435</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">436</span><span class="sd">        Method that when implemented, should handle the reset of the vehicle simulation to its original state</span>
+<span class="linenos">437</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">438</span>        <span class="k">pass</span>
+<span class="linenos">439</span>
+<span class="linenos">440</span>    <span class="k">def</span> <span class="nf">update_graphical_sensor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sensor_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<span class="linenos">441</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">442</span><span class="sd">        For this demo we do not care about graphical sensors such as camera, therefore we can ignore this callback</span>
+<span class="linenos">443</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">444</span>        <span class="k">pass</span>
 </pre></div>
 </div>
 </section>
@@ -777,7 +790,7 @@ use that to feedback into our control law.</p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>You can take a look on how the <code class="docutils literal notranslate"><span class="pre">MavlinkBackend</span></code> is implemented to check on how to parse sensor data produced by IMU, GPS, etc.
+<p>You can take a look on how the <code class="docutils literal notranslate"><span class="pre">PX4MavlinkBackend</span></code> is implemented to check on how to parse sensor data produced by IMU, GPS, etc.
 A simple strategy is to use an if-statement to check for which sensor we are receive the data from and parse it accordingly, for example:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">sensor_type</span> <span class="o">==</span> <span class="s2">&quot;imu&quot;</span><span class="p">:</span>
    <span class="c1"># do something</span>

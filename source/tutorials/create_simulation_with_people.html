@@ -68,6 +68,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../features/environments.html">Environments</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../features/vehicles.html">Vehicles</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../features/px4_integration.html">PX4 Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../features/ardupilot.html">ArduPilot (Experimental)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Source API</span></p>
 <ul>
@@ -187,7 +188,7 @@ that our API is simpler and more intuitive to use in most user cases. I also nee
 <span class="hll"><span class="linenos"> 61</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.people.person</span> <span class="kn">import</span> <span class="n">Person</span>
 </span><span class="hll"><span class="linenos"> 62</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.people.person_controller</span> <span class="kn">import</span> <span class="n">PersonController</span>
 </span><span class="linenos"> 63</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.graphical_sensors.monocular_camera</span> <span class="kn">import</span> <span class="n">MonocularCamera</span>
-<span class="linenos"> 64</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.backends.mavlink_backend</span> <span class="kn">import</span> <span class="n">MavlinkBackend</span><span class="p">,</span> <span class="n">MavlinkBackendConfig</span>
+<span class="linenos"> 64</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.backends.px4_mavlink_backend</span> <span class="kn">import</span> <span class="n">PX4MavlinkBackend</span><span class="p">,</span> <span class="n">PX4MavlinkBackendConfig</span>
 <span class="linenos"> 65</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.backends.ros2_backend</span> <span class="kn">import</span> <span class="n">ROS2Backend</span>
 <span class="linenos"> 66</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.vehicles.multirotor</span> <span class="kn">import</span> <span class="n">Multirotor</span><span class="p">,</span> <span class="n">MultirotorConfig</span>
 <span class="linenos"> 67</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.interface.pegasus_interface</span> <span class="kn">import</span> <span class="n">PegasusInterface</span>
@@ -264,13 +265,13 @@ that our API is simpler and more intuitive to use in most user cases. I also nee
 <span class="linenos">138</span>        <span class="c1"># Try to spawn the selected robot in the world to the specified namespace</span>
 <span class="linenos">139</span>        <span class="n">config_multirotor</span> <span class="o">=</span> <span class="n">MultirotorConfig</span><span class="p">()</span>
 <span class="linenos">140</span>        <span class="c1"># # Create the multirotor configuration</span>
-<span class="linenos">141</span>        <span class="n">mavlink_config</span> <span class="o">=</span> <span class="n">MavlinkBackendConfig</span><span class="p">({</span>
+<span class="linenos">141</span>        <span class="n">mavlink_config</span> <span class="o">=</span> <span class="n">PX4MavlinkBackendConfig</span><span class="p">({</span>
 <span class="linenos">142</span>            <span class="s2">&quot;vehicle_id&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
 <span class="linenos">143</span>            <span class="s2">&quot;px4_autolaunch&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
 <span class="linenos">144</span>            <span class="s2">&quot;px4_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;/home/marcelo/PX4-Autopilot&quot;</span>
 <span class="linenos">145</span>        <span class="p">})</span>
 <span class="linenos">146</span>        <span class="n">config_multirotor</span><span class="o">.</span><span class="n">backends</span> <span class="o">=</span> <span class="p">[</span>
-<span class="linenos">147</span>            <span class="n">MavlinkBackend</span><span class="p">(</span><span class="n">mavlink_config</span><span class="p">),</span>
+<span class="linenos">147</span>            <span class="n">PX4MavlinkBackend</span><span class="p">(</span><span class="n">mavlink_config</span><span class="p">),</span>
 <span class="linenos">148</span>            <span class="n">ROS2Backend</span><span class="p">(</span><span class="n">vehicle_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> 
 <span class="linenos">149</span>                <span class="n">config</span><span class="o">=</span><span class="p">{</span>
 <span class="linenos">150</span>                    <span class="s2">&quot;namespace&quot;</span><span class="p">:</span> <span class="s1">&#39;drone&#39;</span><span class="p">,</span> 

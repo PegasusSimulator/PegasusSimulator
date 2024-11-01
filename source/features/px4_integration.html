@@ -20,7 +20,7 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="API Reference" href="../api/index.html" />
+    <link rel="next" title="ArduPilot (Experimental)" href="ardupilot.html" />
     <link rel="prev" title="Vehicles" href="vehicles.html" /> 
 </head>
 
@@ -62,6 +62,7 @@
 <li class="toctree-l1"><a class="reference internal" href="environments.html">Environments</a></li>
 <li class="toctree-l1"><a class="reference internal" href="vehicles.html">Vehicles</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">PX4 Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ardupilot.html">ArduPilot (Experimental)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Source API</span></p>
 <ul>
@@ -104,14 +105,14 @@
   <section id="px4-integration">
 <h1>PX4 Integration<a class="headerlink" href="#px4-integration" title="Permalink to this heading"></a></h1>
 <p>The <code class="docutils literal notranslate"><span class="pre">PX4-Autopilot</span></code> support is provided by making use of the <code class="docutils literal notranslate"><span class="pre">Control</span> <span class="pre">Backends</span> <span class="pre">API</span></code> , and implementing a custom
-<code class="docutils literal notranslate"><span class="pre">MavlinkBackend</span></code> which contains a built-in tool to launch and kill PX4 in SITL mode automatically.</p>
-<p>To instantiate a <code class="docutils literal notranslate"><span class="pre">MavlinkBackend</span></code> via Python scripting, consider the following example:</p>
+<code class="docutils literal notranslate"><span class="pre">PX4MavlinkBackend</span></code> which contains a built-in tool to launch and kill PX4 in SITL mode automatically.</p>
+<p>To instantiate a <code class="docutils literal notranslate"><span class="pre">PX4MavlinkBackend</span></code> via Python scripting, consider the following example:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import the Mavlink backend module</span>
-<span class="kn">from</span> <span class="nn">pegasus.simulator.logic.backends.mavlink_backend</span> <span class="kn">import</span> <span class="n">MavlinkBackend</span><span class="p">,</span> <span class="n">MavlinkBackendConfig</span>
+<span class="kn">from</span> <span class="nn">pegasus.simulator.logic.backends.px4_mavlink_backend</span> <span class="kn">import</span> <span class="n">PX4MavlinkBackend</span><span class="p">,</span> <span class="n">PX4MavlinkBackendConfig</span>
 
 <span class="c1"># Create the multirotor configuration</span>
 <span class="c1"># In this example we are showing the default parameters that are used if you do not specify them</span>
-<span class="n">mavlink_config</span> <span class="o">=</span> <span class="n">MavlinkBackendConfig</span><span class="p">({</span><span class="s2">&quot;vehicle_id&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+<span class="n">mavlink_config</span> <span class="o">=</span> <span class="n">PX4MavlinkBackendConfig</span><span class="p">({</span><span class="s2">&quot;vehicle_id&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
     <span class="s2">&quot;connection_type&quot;</span><span class="p">:</span> <span class="s2">&quot;tcpin&quot;</span><span class="p">,</span>
     <span class="s2">&quot;connection_ip&quot;</span><span class="p">:</span> <span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
     <span class="c1"># The actual port that gets used = &quot;connection_baseport&quot; + &quot;vehicle_id&quot;</span>
@@ -129,7 +130,7 @@
     <span class="s2">&quot;px4_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;PegasusInterface().px4_path&quot;</span><span class="p">,</span>
     <span class="s2">&quot;px4_vehicle_model&quot;</span><span class="p">:</span> <span class="s2">&quot;iris&quot;</span><span class="p">,</span>
     <span class="p">})</span>
-<span class="n">config_multirotor</span><span class="o">.</span><span class="n">backends</span> <span class="o">=</span> <span class="p">[</span><span class="n">MavlinkBackend</span><span class="p">(</span><span class="n">mavlink_config</span><span class="p">)]</span>
+<span class="n">config_multirotor</span><span class="o">.</span><span class="n">backends</span> <span class="o">=</span> <span class="p">[</span><span class="n">PX4MavlinkBackend</span><span class="p">(</span><span class="n">mavlink_config</span><span class="p">)]</span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -169,7 +170,7 @@ path for the <code class="docutils literal notranslate"><span class="pre">PX4-Au
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="vehicles.html" class="btn btn-neutral float-left" title="Vehicles" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../api/index.html" class="btn btn-neutral float-right" title="API Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="ardupilot.html" class="btn btn-neutral float-right" title="ArduPilot (Experimental)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

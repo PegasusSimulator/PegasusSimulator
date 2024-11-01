@@ -21,7 +21,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="State" href="state.html" />
-    <link rel="prev" title="Mavlink Backend" href="backends.mavlink_backend.html" /> 
+    <link rel="prev" title="Ardupilot Mavlink Backend" href="backends.ardupilot_mavlink_backend.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -62,6 +62,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../features/environments.html">Environments</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../features/vehicles.html">Vehicles</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../features/px4_integration.html">PX4 Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../features/ardupilot.html">ArduPilot (Experimental)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Source API</span></p>
 <ul class="current">
@@ -73,11 +74,9 @@
 <li class="toctree-l2"><a class="reference internal" href="index.html#thruster">Thruster</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="index.html#control-backends">Control Backends</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="backends.backend.html">Backend</a></li>
-<li class="toctree-l3"><a class="reference internal" href="backends.mavlink_backend.html">Mavlink Backend</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">ROS2 Backend</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#pegasus.simulator.logic.backends.ros2_backend.ROS2Backend"><code class="docutils literal notranslate"><span class="pre">ROS2Backend</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="backends.px4_mavlink_backend.html">PX4 Mavlink Backend</a></li>
+<li class="toctree-l3"><a class="reference internal" href="backends.ardupilot_mavlink_backend.html">Ardupilot Mavlink Backend</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">ROS2 Backend</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#vehicle">Vehicle</a></li>
@@ -122,259 +121,15 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-pegasus.simulator.logic.backends.ros2_backend">
-<span id="ros2-backend"></span><h1>ROS2 Backend<a class="headerlink" href="#module-pegasus.simulator.logic.backends.ros2_backend" title="Permalink to this heading"></a></h1>
-<div class="line-block">
-<div class="line">File: ros2_backend.py</div>
-<div class="line">Author: Marcelo Jacinto (<a class="reference external" href="mailto:marcelo&#46;jacinto&#37;&#52;&#48;tecnico&#46;ulisboa&#46;pt">marcelo<span>&#46;</span>jacinto<span>&#64;</span>tecnico<span>&#46;</span>ulisboa<span>&#46;</span>pt</a>)</div>
-<div class="line">Description: File that implements the ROS2 Backend for communication/control with/of the vehicle simulation through ROS2 topics</div>
-<div class="line">License: BSD-3-Clause. Copyright (c) 2024, Marcelo Jacinto. All rights reserved.</div>
-</div>
-<p><strong>Classes:</strong></p>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.ros2_backend.ROS2Backend" title="pegasus.simulator.logic.backends.ros2_backend.ROS2Backend"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ROS2Backend</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-</tbody>
-</table>
-<dl class="py class">
-<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.ros2_backend.ROS2Backend">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pegasus.simulator.logic.backends.ros2_backend.</span></span><span class="sig-name descname"><span class="pre">ROS2Backend</span></span><a class="headerlink" href="#pegasus.simulator.logic.backends.ros2_backend.ROS2Backend" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="backends.backend.html#pegasus.simulator.logic.backends.backend.Backend" title="pegasus.simulator.logic.backends.backend.Backend"><code class="xref py py-class docutils literal notranslate"><span class="pre">Backend</span></code></a></p>
-<p><strong>Methods:</strong></p>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.__init__" title="pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(vehicle_id[, num_rotors, config])</p></td>
-<td><p>Initialize the ROS2 Camera class</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.add_lidar_writter" title="pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.add_lidar_writter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_lidar_writter</span></code></a>(data)</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.add_monocular_camera_writter" title="pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.add_monocular_camera_writter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_monocular_camera_writter</span></code></a>(data)</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.initialize_publishers" title="pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.initialize_publishers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">initialize_publishers</span></code></a>(config)</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.initialize_subscribers" title="pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.initialize_subscribers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">initialize_subscribers</span></code></a>()</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.input_reference" title="pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.input_reference"><code class="xref py py-obj docutils literal notranslate"><span class="pre">input_reference</span></code></a>()</p></td>
-<td><p>Method that is used to return the latest target angular velocities to be applied to the vehicle</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.reset" title="pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.reset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset</span></code></a>()</p></td>
-<td><p>Method that when implemented, should handle the reset of the vehicle simulation to its original state</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.rotor_callback" title="pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.rotor_callback"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotor_callback</span></code></a>(ros_msg, rotor_id)</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.send_static_transforms" title="pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.send_static_transforms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">send_static_transforms</span></code></a>()</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.start" title="pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.start"><code class="xref py py-obj docutils literal notranslate"><span class="pre">start</span></code></a>()</p></td>
-<td><p>Method that when implemented should handle the begining of the simulation of vehicle</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.stop" title="pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.stop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stop</span></code></a>()</p></td>
-<td><p>Method that when implemented should handle the stopping of the simulation of vehicle</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.update" title="pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(dt)</p></td>
-<td><p>Method that when implemented, should be used to update the state of the backend and the information being sent/received from the communication interface.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.update_gps_data" title="pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.update_gps_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_gps_data</span></code></a>(data)</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.update_graphical_sensor" title="pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.update_graphical_sensor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_graphical_sensor</span></code></a>(sensor_type, data)</p></td>
-<td><p>Method that when implemented, should handle the receival of graphical sensor data</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.update_imu_data" title="pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.update_imu_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_imu_data</span></code></a>(data)</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.update_lidar_data" title="pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.update_lidar_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_lidar_data</span></code></a>(data)</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.update_mag_data" title="pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.update_mag_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_mag_data</span></code></a>(data)</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.update_monocular_camera_data" title="pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.update_monocular_camera_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_monocular_camera_data</span></code></a>(data)</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.update_sensor" title="pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.update_sensor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_sensor</span></code></a>(sensor_type, data)</p></td>
-<td><p>Method that when implemented, should handle the receival of sensor data</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.update_state" title="pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.update_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_state</span></code></a>(state)</p></td>
-<td><p>Method that when implemented, should handle the receivel of the state of the vehicle using this callback</p></td>
-</tr>
-</tbody>
-</table>
-<dl class="py method">
-<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vehicle_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_rotors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.__init__" title="Permalink to this definition"></a></dt>
-<dd><p>Initialize the ROS2 Camera class</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>camera_prim_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Path to the camera prim. Global path when it starts with <cite>/</cite>, else local to vehicle prim path</p></li>
-<li><p><strong>config</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a>) – A Dictionary that contains all the parameters for configuring the ROS2Camera - it can be empty or only have some of the parameters used by the ROS2Camera.</p></li>
-</ul>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<p>The dictionary default parameters are</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">{</span><span class="s2">&quot;namespace&quot;</span><span class="p">:</span> <span class="s2">&quot;drone&quot;</span>                           <span class="c1"># Namespace to append to the topics</span>
-<span class="gp">&gt;&gt;&gt; </span> <span class="s2">&quot;pub_pose&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>                              <span class="c1"># Publish the pose of the vehicle</span>
-<span class="gp">&gt;&gt;&gt; </span> <span class="s2">&quot;pub_twist&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>                             <span class="c1"># Publish the twist of the vehicle</span>
-<span class="gp">&gt;&gt;&gt; </span> <span class="s2">&quot;pub_twist_inertial&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>                    <span class="c1"># Publish the twist of the vehicle in the inertial frame</span>
-<span class="gp">&gt;&gt;&gt; </span> <span class="s2">&quot;pub_accel&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>                             <span class="c1"># Publish the acceleration of the vehicle</span>
-<span class="gp">&gt;&gt;&gt; </span> <span class="s2">&quot;pub_imu&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>                               <span class="c1"># Publish the IMU data</span>
-<span class="gp">&gt;&gt;&gt; </span> <span class="s2">&quot;pub_mag&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>                               <span class="c1"># Publish the magnetometer data</span>
-<span class="gp">&gt;&gt;&gt; </span> <span class="s2">&quot;pub_gps&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>                               <span class="c1"># Publish the GPS data</span>
-<span class="gp">&gt;&gt;&gt; </span> <span class="s2">&quot;pub_gps_vel&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>                           <span class="c1"># Publish the GPS velocity data</span>
-<span class="gp">&gt;&gt;&gt; </span> <span class="s2">&quot;pose_topic&quot;</span><span class="p">:</span> <span class="s2">&quot;state/pose&quot;</span><span class="p">,</span>                    <span class="c1"># Position and attitude of the vehicle in ENU</span>
-<span class="gp">&gt;&gt;&gt; </span> <span class="s2">&quot;twist_topic&quot;</span><span class="p">:</span> <span class="s2">&quot;state/twist&quot;</span><span class="p">,</span>                  <span class="c1"># Linear and angular velocities in the body frame of the vehicle</span>
-<span class="gp">&gt;&gt;&gt; </span> <span class="s2">&quot;twist_inertial_topic&quot;</span><span class="p">:</span> <span class="s2">&quot;state/twist_inertial&quot;</span> <span class="c1"># Linear velocity of the vehicle in the inertial frame</span>
-<span class="gp">&gt;&gt;&gt; </span> <span class="s2">&quot;accel_topic&quot;</span><span class="p">:</span> <span class="s2">&quot;state/accel&quot;</span><span class="p">,</span>                  <span class="c1"># Linear acceleration of the vehicle in the inertial frame</span>
-<span class="gp">&gt;&gt;&gt; </span> <span class="s2">&quot;imu_topic&quot;</span><span class="p">:</span> <span class="s2">&quot;sensors/imu&quot;</span><span class="p">,</span>                    <span class="c1"># IMU data</span>
-<span class="gp">&gt;&gt;&gt; </span> <span class="s2">&quot;mag_topic&quot;</span><span class="p">:</span> <span class="s2">&quot;sensors/mag&quot;</span><span class="p">,</span>                    <span class="c1"># Magnetometer data</span>
-<span class="gp">&gt;&gt;&gt; </span> <span class="s2">&quot;gps_topic&quot;</span><span class="p">:</span> <span class="s2">&quot;sensors/gps&quot;</span><span class="p">,</span>                    <span class="c1"># GPS data</span>
-<span class="gp">&gt;&gt;&gt; </span> <span class="s2">&quot;gps_vel_topic&quot;</span><span class="p">:</span> <span class="s2">&quot;sensors/gps_twist&quot;</span><span class="p">,</span>          <span class="c1"># GPS velocity data</span>
-<span class="gp">&gt;&gt;&gt; </span> <span class="s2">&quot;pub_graphical_sensors&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>                 <span class="c1"># Publish the graphical sensors</span>
-<span class="gp">&gt;&gt;&gt; </span> <span class="s2">&quot;pub_sensors&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>                           <span class="c1"># Publish the sensors</span>
-<span class="gp">&gt;&gt;&gt; </span> <span class="s2">&quot;pub_state&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>                             <span class="c1"># Publish the state of the vehicle</span>
-<span class="gp">&gt;&gt;&gt; </span> <span class="s2">&quot;pub_tf&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>                               <span class="c1"># Publish the TF of the vehicle</span>
-<span class="gp">&gt;&gt;&gt; </span> <span class="s2">&quot;sub_control&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>                           <span class="c1"># Subscribe to the control topics</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.add_lidar_writter">
-<span class="sig-name descname"><span class="pre">add_lidar_writter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.add_lidar_writter" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.add_monocular_camera_writter">
-<span class="sig-name descname"><span class="pre">add_monocular_camera_writter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.add_monocular_camera_writter" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.initialize_publishers">
-<span class="sig-name descname"><span class="pre">initialize_publishers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.initialize_publishers" title="Permalink to this definition"></a></dt>
-<dd><dl class="field-list simple">
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.initialize_subscribers">
-<span class="sig-name descname"><span class="pre">initialize_subscribers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.initialize_subscribers" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.input_reference">
-<span class="sig-name descname"><span class="pre">input_reference</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.input_reference" title="Permalink to this definition"></a></dt>
-<dd><p>Method that is used to return the latest target angular velocities to be applied to the vehicle</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A list with the target angular velocities for each individual rotor of the vehicle</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.reset">
-<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.reset" title="Permalink to this definition"></a></dt>
-<dd><p>Method that when implemented, should handle the reset of the vehicle simulation to its original state</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.rotor_callback">
-<span class="sig-name descname"><span class="pre">rotor_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ros_msg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rotor_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.rotor_callback" title="Permalink to this definition"></a></dt>
-<dd><dl class="field-list simple">
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.send_static_transforms">
-<span class="sig-name descname"><span class="pre">send_static_transforms</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.send_static_transforms" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.start">
-<span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.start" title="Permalink to this definition"></a></dt>
-<dd><p>Method that when implemented should handle the begining of the simulation of vehicle</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.stop">
-<span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.stop" title="Permalink to this definition"></a></dt>
-<dd><p>Method that when implemented should handle the stopping of the simulation of vehicle</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.update">
-<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.update" title="Permalink to this definition"></a></dt>
-<dd><p>Method that when implemented, should be used to update the state of the backend and the information being sent/received
-from the communication interface. This method will be called by the simulation on every physics step</p>
-<dl class="field-list simple">
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.update_gps_data">
-<span class="sig-name descname"><span class="pre">update_gps_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.update_gps_data" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.update_graphical_sensor">
-<span class="sig-name descname"><span class="pre">update_graphical_sensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sensor_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.update_graphical_sensor" title="Permalink to this definition"></a></dt>
-<dd><p>Method that when implemented, should handle the receival of graphical sensor data</p>
-<dl class="field-list simple">
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.update_imu_data">
-<span class="sig-name descname"><span class="pre">update_imu_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.update_imu_data" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.update_lidar_data">
-<span class="sig-name descname"><span class="pre">update_lidar_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.update_lidar_data" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.update_mag_data">
-<span class="sig-name descname"><span class="pre">update_mag_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.update_mag_data" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.update_monocular_camera_data">
-<span class="sig-name descname"><span class="pre">update_monocular_camera_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.update_monocular_camera_data" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.update_sensor">
-<span class="sig-name descname"><span class="pre">update_sensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sensor_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.update_sensor" title="Permalink to this definition"></a></dt>
-<dd><p>Method that when implemented, should handle the receival of sensor data</p>
-<dl class="field-list simple">
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.update_state">
-<span class="sig-name descname"><span class="pre">update_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pegasus.simulator.logic.backends.ros2_backend.ROS2Backend.update_state" title="Permalink to this definition"></a></dt>
-<dd><p>Method that when implemented, should handle the receivel of the state of the vehicle using this callback</p>
-</dd></dl>
-
-</dd></dl>
-
+  <section id="ros2-backend">
+<h1>ROS2 Backend<a class="headerlink" href="#ros2-backend" title="Permalink to this heading"></a></h1>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="backends.mavlink_backend.html" class="btn btn-neutral float-left" title="Mavlink Backend" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="backends.ardupilot_mavlink_backend.html" class="btn btn-neutral float-left" title="Ardupilot Mavlink Backend" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="state.html" class="btn btn-neutral float-right" title="State" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

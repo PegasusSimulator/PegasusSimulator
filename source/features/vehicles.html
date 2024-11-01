@@ -62,6 +62,7 @@
 <li class="toctree-l1"><a class="reference internal" href="environments.html">Environments</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Vehicles</a></li>
 <li class="toctree-l1"><a class="reference internal" href="px4_integration.html">PX4 Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ardupilot.html">ArduPilot (Experimental)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Source API</span></p>
 <ul>
@@ -139,7 +140,7 @@ topologies and the <a class="reference internal" href="../references/contributin
 <span class="c1"># for logging purposes) but only the first backend in the list will be used</span>
 <span class="c1"># to send commands to the vehicles. The others will just be used to receive the</span>
 <span class="c1"># current state of the vehicle and the data produced by the sensors</span>
-<span class="n">multirotor_config</span><span class="o">.</span><span class="n">backends</span> <span class="o">=</span> <span class="p">[</span><span class="n">MavlinkBackend</span><span class="p">()]</span>
+<span class="n">multirotor_config</span><span class="o">.</span><span class="n">backends</span> <span class="o">=</span> <span class="p">[</span><span class="n">PX4MavlinkBackend</span><span class="p">()]</span>
 
 <span class="c1"># Create and spawn the multirotor object in the scene</span>
 <span class="n">Multirotor</span><span class="p">(</span>

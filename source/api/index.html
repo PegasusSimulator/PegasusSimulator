@@ -21,7 +21,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Sensor" href="sensors.sensor.html" />
-    <link rel="prev" title="PX4 Integration" href="../features/px4_integration.html" /> 
+    <link rel="prev" title="ArduPilot (Experimental)" href="../features/ardupilot.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -62,6 +62,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../features/environments.html">Environments</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../features/vehicles.html">Vehicles</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../features/px4_integration.html">PX4 Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../features/ardupilot.html">ArduPilot (Experimental)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Source API</span></p>
 <ul class="current">
@@ -96,7 +97,8 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#control-backends">Control Backends</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="backends.backend.html">Backend</a></li>
-<li class="toctree-l3"><a class="reference internal" href="backends.mavlink_backend.html">Mavlink Backend</a></li>
+<li class="toctree-l3"><a class="reference internal" href="backends.px4_mavlink_backend.html">PX4 Mavlink Backend</a></li>
+<li class="toctree-l3"><a class="reference internal" href="backends.ardupilot_mavlink_backend.html">Ardupilot Mavlink Backend</a></li>
 <li class="toctree-l3"><a class="reference internal" href="backends.ros2_backend.html">ROS2 Backend</a></li>
 </ul>
 </li>
@@ -208,10 +210,7 @@
 <h2>Graphs<a class="headerlink" href="#graphs" title="Permalink to this heading"></a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="graphs.graph.html">Graph</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="graphs.graph.html#pegasus.simulator.logic.graphs.graph.Graph"><code class="docutils literal notranslate"><span class="pre">Graph</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="graphs.graph.html">Graph</a></li>
 <li class="toctree-l1"><a class="reference internal" href="graphs.ros2_camera_graph.html">ROS2 Camera Graph</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="graphs.ros2_camera_graph.html#pegasus.simulator.logic.graphs.ros2_camera_graph.ROS2CameraGraph"><code class="docutils literal notranslate"><span class="pre">ROS2CameraGraph</span></code></a></li>
 </ul>
@@ -251,17 +250,16 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="backends.backend.html">Backend</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="backends.backend.html#pegasus.simulator.logic.backends.backend.Backend"><code class="docutils literal notranslate"><span class="pre">Backend</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="backends.backend.html#pegasus.simulator.logic.backends.backend.BackendConfig"><code class="docutils literal notranslate"><span class="pre">BackendConfig</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="backends.mavlink_backend.html">Mavlink Backend</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="backends.mavlink_backend.html#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackend"><code class="docutils literal notranslate"><span class="pre">MavlinkBackend</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="backends.mavlink_backend.html#pegasus.simulator.logic.backends.mavlink_backend.MavlinkBackendConfig"><code class="docutils literal notranslate"><span class="pre">MavlinkBackendConfig</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="backends.px4_mavlink_backend.html">PX4 Mavlink Backend</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="backends.px4_mavlink_backend.html#pegasus.simulator.logic.backends.px4_mavlink_backend.PX4MavlinkBackend"><code class="docutils literal notranslate"><span class="pre">PX4MavlinkBackend</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="backends.px4_mavlink_backend.html#pegasus.simulator.logic.backends.px4_mavlink_backend.PX4MavlinkBackendConfig"><code class="docutils literal notranslate"><span class="pre">PX4MavlinkBackendConfig</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="backends.ros2_backend.html">ROS2 Backend</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="backends.ros2_backend.html#pegasus.simulator.logic.backends.ros2_backend.ROS2Backend"><code class="docutils literal notranslate"><span class="pre">ROS2Backend</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="backends.ardupilot_mavlink_backend.html">Ardupilot Mavlink Backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="backends.ros2_backend.html">ROS2 Backend</a></li>
 </ul>
 </div>
 </section>
@@ -328,7 +326,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../features/px4_integration.html" class="btn btn-neutral float-left" title="PX4 Integration" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../features/ardupilot.html" class="btn btn-neutral float-left" title="ArduPilot (Experimental)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="sensors.sensor.html" class="btn btn-neutral float-right" title="Sensor" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

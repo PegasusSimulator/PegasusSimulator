@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ArduPilot (Experimental) &mdash; Pegasus Simulator  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="API Reference" href="../api/index.html" />
+    <link rel="prev" title="PX4 Integration" href="px4_integration.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #FFD700" >
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../setup/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup/developer.html">Development</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/run_extension_mode.html">Run in Extension Mode (GUI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/create_standalone_application.html">Create a Standalone Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/create_standalone_simulation.html">Your First Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/create_custom_backend.html">Create a Custom Controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/create_simulation_with_people.html">Simulation with Moving People</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Features</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="environments.html">Environments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vehicles.html">Vehicles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="px4_integration.html">PX4 Integration</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">ArduPilot (Experimental)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installing-ardupilot-arducopter">Installing Ardupilot (Arducopter)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#running-a-simulation-with-ardupilot-gui-mode">Running a Simulation with Ardupilot (GUI Mode)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ardupilot-integration-architecture">Ardupilot Integration Architecture</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Source API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../references/contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/known_issues.html">Known Issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/roadmap.html">Roadmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/bibliography.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #FFD700" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Pegasus Simulator</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">ArduPilot (Experimental)</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/source/features/ardupilot.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="ardupilot-experimental">
+<h1>ArduPilot (Experimental)<a class="headerlink" href="#ardupilot-experimental" title="Permalink to this heading"></a></h1>
+<a class="reference external image-reference" href="https://developer.nvidia.com/isaac-sim"><img alt="IsaacSim 4.2.0" src="https://img.shields.io/badge/IsaacSim-4.2.0-brightgreen.svg" /></a>
+<a class="reference external image-reference" href="https://github.com/ArduPilot/ardupilot"><img alt="ArduPilot-Copter 4.4" src="https://img.shields.io/badge/ArduPilot--Copter-4.4.0-brightgreen.svg" /></a>
+<a class="reference external image-reference" href="https://releases.ubuntu.com/22.04/"><img alt="Ubuntu 22.04" src="https://img.shields.io/badge/Ubuntu-22.04LTS-brightgreen.svg" /></a>
+<p>The Ardupilot integration is an experimental feature that bridges the gap between the ArduPilot project and IsaacSim, allowing the ArduPilot community to leverage IsaacSim’s physics simulation and photorealistic rendering capabilities! <strong>This feature is tailored at researchers that use Ardupilot instead of PX4.</strong></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This feature is highly experimental and was developed by the open-source contributor <a class="reference external" href="https://github.com/TomerTip">Tomer Tiplitsky</a> in <a class="reference external" href="https://github.com/TomerTip/PegasusArduPilot">PegasusArduPilot</a>, and merged into the main project.</p>
+</div>
+<p>To get PegasusSimulator and ArduPilot SITL talking, the open-source contributor <a class="reference external" href="https://github.com/TomerTip">Tomer Tiplitsky</a> created a Python implementation of the custom protocol used between ArduPilot SITL and the simulator - called <a class="reference external" href="https://github.com/TomerTip/PyArduPilotPlugin">PyArduPilotPlugin</a>.
+This project allows developers to create a custom simulator and integrate it with ArduPilot SITL control using Python!</p>
+<section id="installing-ardupilot-arducopter">
+<h2>Installing Ardupilot (Arducopter)<a class="headerlink" href="#installing-ardupilot-arducopter" title="Permalink to this heading"></a></h2>
+<ol class="arabic">
+<li><p>Ensure that you have the PegasusSimulator already installed. If you have not, follow the <a class="reference external" href="https://pegasussimulator.github.io/PegasusSimulator/source/setup/installation.html">PegasusSimulator Installation</a> steps, and then come back to this page.</p></li>
+<li><p>Install the extra dependencies:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Linux packages</span>
+sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>git<span class="w"> </span>make<span class="w"> </span>cmake<span class="w"> </span>python3-pip<span class="w"> </span>build-essential<span class="w"> </span>ccache<span class="w"> </span>g++<span class="w"> </span>gawk<span class="w"> </span>wget<span class="w"> </span>valgrind<span class="w"> </span>screen<span class="w"> </span>python3-pexpect<span class="w"> </span>pkg-config<span class="w"> </span>libtool<span class="w"> </span>libxml2-dev<span class="w"> </span>libxslt1-dev<span class="w"> </span>xterm
+
+<span class="c1"># Install this additional package to be able to see the window map and UI to interface with Ardupilot</span>
+sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>python3-wxgtk4.0<span class="w"> </span>-y<span class="w"> </span>--no-install-recommends
+
+<span class="c1"># Python packages</span>
+pip<span class="w"> </span>install<span class="w"> </span>pymavlink<span class="w"> </span>MAVProxy<span class="w"> </span>kconfiglib<span class="w"> </span>jinja2<span class="w"> </span>empy<span class="w"> </span>jsonschema<span class="w"> </span>pyros-genmsg<span class="w"> </span>packaging<span class="w"> </span>toml<span class="w"> </span>numpy<span class="w"> </span>future<span class="w"> </span>future<span class="w"> </span>lxml<span class="w"> </span>pymavlink<span class="w"> </span>pyserial<span class="w"> </span>geocoder<span class="w"> </span><span class="nv">empy</span><span class="o">==</span><span class="m">3</span>.3.4<span class="w"> </span>ptyprocess<span class="w"> </span>dronecan<span class="w"> </span>flake8<span class="w"> </span>junitparser<span class="w"> </span>pygame<span class="w"> </span>intelhex<span class="w"> </span>--user
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p>Clone <a class="reference external" href="https://github.com/ArduPilot/ardupilot">Ardupilot</a> into your home directory:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Option 1: With HTTPS</span>
+git<span class="w"> </span>clone<span class="w"> </span>https://github.com/ArduPilot/ardupilot.git
+<span class="c1"># Option 2: With SSH (you need to setup a github account with ssh keys)</span>
+git<span class="w"> </span>clone<span class="w"> </span>git@github.com:ArduPilot/ardupilot.git
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p>Checkout to the stable version and compile the code for software-in-the-loop (SITL) mode:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Go to the PX4 directory</span>
+<span class="nb">cd</span><span class="w"> </span>ardupilot
+
+<span class="c1"># Checkout to the latest stable release</span>
+git<span class="w"> </span>checkout<span class="w"> </span>ArduCopter-stable
+
+<span class="c1"># Initiate all the submodules. Note this will download modules such as SITL-gazebo which we do not need</span>
+<span class="c1"># but this is the safest way to make sure that the PX4-Autopilot and its submodules are all checked out in</span>
+<span class="c1"># a stable and well tested release</span>
+git<span class="w"> </span>submodule<span class="w"> </span>update<span class="w"> </span>--init<span class="w"> </span>--recursive
+
+<span class="c1"># Generate the configuration for compilation</span>
+./waf<span class="w"> </span>configure<span class="w"> </span>--board<span class="w"> </span>MatekH743
+
+<span class="c1"># Compile the code</span>
+./waf<span class="w"> </span>copter
+
+<span class="c1"># Go to the tools folder and run the python script to setup the simulation</span>
+<span class="nb">cd</span><span class="w"> </span>Tools/autotest
+
+<span class="c1"># Run the script to setup the simulation</span>
+python3<span class="w"> </span>sim_vehicle.py<span class="w"> </span>-v<span class="w"> </span>copter<span class="w"> </span>--console<span class="w"> </span>--map<span class="w"> </span>-w
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>In the end, a white terminal should pop-up. Press Ctrl+C to exit and close the window.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you did not install ArduPilot at <code class="docutils literal notranslate"><span class="pre">~/ardupilot</span></code>, you can also set your custom installation path inside the Pegasus Simulator GUI, or by editing the file <code class="docutils literal notranslate"><span class="pre">PegasusSimulator/extensions/pegasus/simulator/config/config.yaml</span></code> and setting the <code class="docutils literal notranslate"><span class="pre">ardupilot_dir</span></code> field to the correct path.</p>
+</div>
+<dl class="simple">
+<dt>This installation guide was based on the following resources:</dt><dd><ul class="simple">
+<li><p><a class="reference external" href="https://ardupilot.org/dev/docs/building-setup-linux.html#building-setup-linux">ArduPilot SITL Installation</a></p></li>
+<li><p><a class="reference external" href="https://ardupilot.org/dev/docs/setting-up-sitl-on-linux.html#setting-up-sitl-on-linux">Setting up SITL on Linux</a></p></li>
+</ul>
+</dd>
+</dl>
+</section>
+<section id="running-a-simulation-with-ardupilot-gui-mode">
+<h2>Running a Simulation with Ardupilot (GUI Mode)<a class="headerlink" href="#running-a-simulation-with-ardupilot-gui-mode" title="Permalink to this heading"></a></h2>
+<ol class="arabic">
+<li><p>Open <code class="docutils literal notranslate"><span class="pre">ISAACSIM</span></code>, either by using the Omniverse Launcher or the terminal command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ISAACSIM
+</pre></div>
+</div>
+</li>
+<li><p>Make sure the Pegasus Simulator Extension is enabled.</p>
+<a class="reference internal image-reference" href="../../_images/pegasus_inside_extensions_menu.png"><img alt="Enable the Pegasus Simulator extension inside Isaac Sim" class="align-center" src="../../_images/pegasus_inside_extensions_menu.png" style="width: 600px;" /></a>
+</li>
+<li><p>Select the appropriate control backend and drone model.</p>
+<img alt="Backend Selection" class="align-center" src="../../_images/pegasus_backend_ui.gif" />
+</li>
+</ol>
+<ol class="arabic" start="3">
+<li><p>On the new terminal that was opened, run the following commands to perform a takeoff:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mode<span class="w"> </span>guided
+arm<span class="w"> </span>throttle
+takeoff<span class="w"> </span><span class="m">3</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<p>Drone spawn:</p>
+<img alt="ArduPilot drone spawn" class="align-center" src="../../_images/ardupilot_spawn.gif" />
+<p>Drone takeoff:</p>
+<img alt="ArduPilot drone takeoff" class="align-center" src="../../_images/drone_takeoff.gif" />
+<p>Camera demo:</p>
+<img alt="ArduPilot Camera Demo" class="align-center" src="../../_images/ardupilot_camera.gif" />
+</section>
+<section id="ardupilot-integration-architecture">
+<h2>Ardupilot Integration Architecture<a class="headerlink" href="#ardupilot-integration-architecture" title="Permalink to this heading"></a></h2>
+<p>The Ardupilot integration is composed of two main components: the Ardupilot Mavlink Backend and the Ardupilot Mavlink Plugin. See the diagram below for a high-level overview of the architecture:</p>
+<img alt="Pegasus Backends" class="align-center" src="../../_images/pegasus_backends.png" />
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="px4_integration.html" class="btn btn-neutral float-left" title="PX4 Integration" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../api/index.html" class="btn btn-neutral float-right" title="API Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Marcelo Jacinto.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

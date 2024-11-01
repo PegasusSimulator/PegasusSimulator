@@ -77,6 +77,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../features/environments.html">Environments</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../features/vehicles.html">Vehicles</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../features/px4_integration.html">PX4 Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../features/ardupilot.html">ArduPilot (Experimental)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Source API</span></p>
 <ul>
@@ -120,12 +121,12 @@
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this heading"></a></h1>
 <section id="installing-nvidia-isaac-sim">
 <h2>Installing NVIDIA Isaac Sim<a class="headerlink" href="#installing-nvidia-isaac-sim" title="Permalink to this heading"></a></h2>
-<a class="reference external image-reference" href="https://developer.nvidia.com/isaac-sim"><img alt="IsaacSim 4.1.0" src="https://img.shields.io/badge/IsaacSim-4.1.0-brightgreen.svg" /></a>
+<a class="reference external image-reference" href="https://developer.nvidia.com/isaac-sim"><img alt="IsaacSim 4.2.0" src="https://img.shields.io/badge/IsaacSim-4.2.0-brightgreen.svg" /></a>
 <a class="reference external image-reference" href="https://github.com/PX4/PX4-Autopilot"><img alt="PX4-Autopilot 1.14.3" src="https://img.shields.io/badge/PX4--Autopilot-1.14.3-brightgreen.svg" /></a>
 <a class="reference external image-reference" href="https://releases.ubuntu.com/22.04/"><img alt="Ubuntu 22.04" src="https://img.shields.io/badge/Ubuntu-22.04LTS-brightgreen.svg" /></a>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>We have tested Pegasus Simulator with Isaac Sim 4.1.0 release on Ubuntu 22.04LTS with NVIDIA driver 550.90.07. The PX4-Autopilot used during development was v.14.3. Older versions Ubuntu and PX4-Autopilot were not tested. This extension was not tested on Windows.</p>
+<p>We have tested Pegasus Simulator with Isaac Sim 4.2.0 release on Ubuntu 22.04LTS with NVIDIA driver 550.90.07. The PX4-Autopilot used during development was v.14.3. Older versions Ubuntu and PX4-Autopilot were not tested. This extension was not tested on Windows.</p>
 </div>
 <p>In order to install Isaac Sim on linux, download the <a class="reference external" href="https://install.launcher.omniverse.nvidia.com/installers/omniverse-launcher-linux.AppImage">Omniverse AppImage here</a> or run the following line on the terminal:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>wget<span class="w"> </span>https://install.launcher.omniverse.nvidia.com/installers/omniverse-launcher-linux.AppImage
@@ -153,7 +154,7 @@ by navigating to Isaac Sim’s root folder. Typically, in Linux, this folder can
 where the <code class="docutils literal notranslate"><span class="pre">*</span></code> is the version number.</p>
 <p>Add the following lines to your <code class="docutils literal notranslate"><span class="pre">~/.bashrc</span></code> or <code class="docutils literal notranslate"><span class="pre">~/.zshrc</span></code> file.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Isaac Sim root directory</span>
-<span class="nb">export</span><span class="w"> </span><span class="nv">ISAACSIM_PATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">HOME</span><span class="si">}</span><span class="s2">/.local/share/ov/pkg/isaac_sim-4.1.0&quot;</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">ISAACSIM_PATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">HOME</span><span class="si">}</span><span class="s2">/.local/share/ov/pkg/isaac_sim-4.2.0&quot;</span>
 <span class="c1"># Isaac Sim python executable</span>
 <span class="nb">alias</span><span class="w"> </span><span class="nv">ISAACSIM_PYTHON</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">ISAACSIM_PATH</span><span class="si">}</span><span class="s2">/python.sh&quot;</span>
 <span class="c1"># Isaac Sim app</span>
@@ -258,6 +259,10 @@ ISAACSIM_PYTHON<span class="w"> </span>-m<span class="w"> </span>pip<span class=
 </div>
 <p>We use the <code class="docutils literal notranslate"><span class="pre">--editable</span></code> flag so that the content of the extension is linked instead of copied. After this step, you
 should be able to run the python standalone examples inside the <code class="docutils literal notranslate"><span class="pre">examples</span></code> folder.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you want to use Ardupilot with PegasusSimulator, please refer to the <a class="reference external" href="features/ardupilot.rst">ArduPilot documentation</a> to use this experimental feature. If you don’t know what Ardupilot is, you can safely ignore this.</p>
+</div>
 </section>
 </section>
 <section id="installing-px4-autopilot">
