@@ -66,11 +66,44 @@ for asset in NVIDIA_SIMULATION_ENVIRONMENTS:
 for asset in OMNIVERSE_ENVIRONMENTS:
     SIMULATION_ENVIRONMENTS[asset] = OMNIVERSE_ENVIRONMENTS[asset]
 
+BACKENDS = {
+    "px4": "px4",
+    "ardupilot": "ardupilot",
+    "ros2": "ros2"
+}
+
 # Define the default settings for the simulation environment
-DEFAULT_WORLD_SETTINGS = {"physics_dt": 1.0 / 250.0, "stage_units_in_meters": 1.0, "rendering_dt": 1.0 / 60.0, "device": "cpu"}
+WORLD_SETTINGS = {
+    'px4': {
+        "physics_dt": 1.0 / 250.0,
+        "stage_units_in_meters": 1.0,
+        "rendering_dt": 1.0 / 60.0,
+        "device": "cpu"
+    },
+    'ardupilot': {
+        "physics_dt": 1.0 / 800.0, # Reach communication of 250hz with ardupilot sitl
+        "stage_units_in_meters": 1.0,
+        "rendering_dt": 1.0 / 100.0,
+        "device": "cpu"
+    },
+    'ros2': {
+        "physics_dt": 1.0 / 250.0,
+        "stage_units_in_meters": 1.0,
+        "rendering_dt": 1.0 / 60.0,
+        "device": "cpu"
+    }
+}
+DEFAULT_WORLD_SETTINGS = WORLD_SETTINGS['px4']
 
 # Define where the thumbnail of the vehicle is located
 THUMBNAIL = ROBOTS_ASSETS + "/Iris/iris_thumbnail.png"
 
 # Define where the thumbail of the world is located
 WORLD_THUMBNAIL = ASSET_PATH + "/Worlds/Empty_thumbnail.png"
+
+BACKENDS_THUMBMAILS_PATH = ASSET_PATH + "/Backends"
+BACKENDS_THUMBMAILS = {
+    "px4": BACKENDS_THUMBMAILS_PATH + "/px4_logo.png",
+    "ardupilot": BACKENDS_THUMBMAILS_PATH + "/ardupilot_logo.png",
+    "ros2": BACKENDS_THUMBMAILS_PATH + "/ros2_logo.png"
+}

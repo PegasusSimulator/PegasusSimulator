@@ -7,11 +7,11 @@
 
 __all__ = ["PegasusInterface"]
 
-# Importing Lock in ordef to have a multithread safe Pegasus singleton that manages the entire Pegasus extension
 import gc
 import yaml
 import asyncio
 import os
+# Importing Lock in order to have a multithread safe Pegasus singleton that manages the entire Pegasus extension
 from threading import Lock
 
 # NVidia API imports
@@ -69,6 +69,12 @@ class PegasusInterface:
         self._px4_default_airframe: str = self._get_px4_default_airframe_from_config()
         carb.log_info("Default PX4 path:" + str(self._px4_path))
 
+        # Get the ardupilot_path from the extension configuration file
+        self._ardupilot_path: str = self._get_ardupilot_path_from_config()
+        self._ardupilot_default_airframe: str = self._get_ardupilot_default_airframe_from_config()
+        carb.log_info("Default ArduPilot path:" + str(self._ardupilot_path))
+
+
     @property
     def world(self):
         """The current omni.isaac.core.world World instance
@@ -124,6 +130,15 @@ class PegasusInterface:
         return self._px4_path
     
     @property
+    def ardupilot_path(self):
+        """A string with the installation directory for ArduPilot (if it was setup). Otherwise it is None.
+
+        Returns:
+            str: A string with the installation directory for ArduPilot (if it was setup). Otherwise it is None.
+        """
+        return self._ardupilot_path
+    
+    @property
     def px4_default_airframe(self):
         """A string with the PX4 default airframe (if it was setup). Otherwise it is None.
 
@@ -131,6 +146,15 @@ class PegasusInterface:
             str: A string with the PX4 default airframe (if it was setup). Otherwise it is None.
         """
         return self._px4_default_airframe
+    
+    @property
+    def ardupilot_default_airframe(self):
+        """A string with the ArduPilot default airframe (if it was setup). Otherwise it is None.
+
+        Returns:
+            str: A string with the ArduPilot default airframe (if it was setup). Otherwise it is None.
+        """
+        return self._ardupilot_default_airframe
     
     def set_global_coordinates(self, latitude=None, longitude=None, altitude=None):
         """Method that can be used to set the latitude, longitude and altitude of the simulation world at the origin.
@@ -230,7 +254,7 @@ class PegasusInterface:
         asyncio.ensure_future(self._world.initialize_simulation_context_async())
         carb.log_info("Current scene and its vehicles has been deleted")
 
-    async def load_environment_async(self, usd_path: str, force_clear: bool=False):
+    async def load_environment_async(self, usd_path: str, backend: str = 'px4', force_clear: bool=False):
         """Method that loads a given world (specified in the usd_path) into the simulator asynchronously.
 
         Args:
@@ -323,12 +347,11 @@ class PegasusInterface:
         # Set the camera view to a fixed value
         set_camera_view(eye=camera_position, target=camera_target)
 
-    def set_world_settings(self, physics_dt=None, stage_units_in_meters=None, rendering_dt=None):
+    def set_world_settings(self, physics_dt=None, stage_units_in_meters=None, rendering_dt=None, device=None):
         """
         Set the current world settings to the pre-defined settings. TODO - finish the implementation of this method.
         For now these new setting will never override the default ones.
         """
-
         # Set the physics engine update rate
         if physics_dt is not None:
             self._world_settings["physics_dt"] = physics_dt
@@ -340,6 +363,9 @@ class PegasusInterface:
         # Set the render engine update rate (might not be the same as the physics engine)
         if rendering_dt is not None:
             self._world_settings["rendering_dt"] = rendering_dt
+
+        if device is not None:
+            self._world_settings["device"] = device
 
     def _get_px4_path_from_config(self):
         """
@@ -361,6 +387,26 @@ class PegasusInterface:
 
         return px4_dir
     
+    def _get_ardupilot_path_from_config(self):
+        """
+        Method that reads the configured ArduPilot installation directory from the extension configuration file 
+
+        Returns:
+            str: A string with the path to the ardupilot configuration directory or empty string ''
+        """
+
+        ardupilot_dir = ""
+        
+        # Open the configuration file. If it fails, just return the empty path
+        try:
+            with open(CONFIG_FILE, 'r') as f:
+                data = yaml.safe_load(f)
+            ardupilot_dir = os.path.expanduser(data.get("ardupilot_dir", None))
+        except:
+            carb.log_warn("Could not retrieve ardupilot_dir from: " + str(CONFIG_FILE))
+
+        return ardupilot_dir
+    
     def _get_px4_default_airframe_from_config(self):
         """
         Method that reads the configured PX4 default airframe from the extension configuration file 
@@ -379,6 +425,25 @@ class PegasusInterface:
             carb.log_warn("Could not retrieve px4_default_airframe from: " + str(CONFIG_FILE))
 
         return px4_default_airframe
+    
+    def _get_ardupilot_default_airframe_from_config(self):
+        """
+        Method that reads the configured Ardupilot default airframe from the extension configuration file 
+
+        Returns:
+            str: A string with the path to the Ardupilot default airframe or empty string ''
+        """
+        ardupilot_default_airframe = ""
+        
+        # Open the configuration file. If it fails, just return the empty path
+        try:
+            with open(CONFIG_FILE, 'r') as f:
+                data = yaml.safe_load(f)
+            ardupilot_default_airframe = os.path.expanduser(data.get("ardupilot_default_airframe", None))
+        except:
+            carb.log_warn("Could not retrieve ardupilot_default_airframe from: " + str(CONFIG_FILE))
+
+        return ardupilot_default_airframe
 
 
     def _get_global_coordinates_from_config(self):
@@ -433,6 +498,32 @@ class PegasusInterface:
 
         carb.log_warn("New px4_dir set to: " + str(self._px4_path))
 
+    def set_ardupilot_path(self, path: str):
+        """Method that allows a user to save a new ArduPilot directory in the configuration files of the extension.
+
+        Args:
+            absolute_path (str): The new path of the ArduPilot installation directory
+        """
+        
+        # Save the new path for current use during this simulation
+        self._ardupilot_path = os.path.expanduser(path)
+
+        # Save the new path in the configurations file for the next simulations
+        try:
+
+            # Open the configuration file and the all the configurations that it contains
+            with open(CONFIG_FILE, 'r') as f:
+                data = yaml.safe_load(f)
+
+            # Open the configuration file. If it fails, just warn in the console
+            with open(CONFIG_FILE, 'w') as f:
+                data["ardupilot_dir"] = path
+                yaml.dump(data, f)
+        except:
+            carb.log_warn("Could not save ardupilot_dir to: " + str(CONFIG_FILE))
+
+        carb.log_warn("New ardupilot_dir set to: " + str(self._ardupilot_path))
+
     def set_px4_default_airframe(self, airframe: str):
         """Method that allows a user to save a new px4 default airframe for the extension.
 
@@ -458,6 +549,32 @@ class PegasusInterface:
             carb.log_warn("Could not save px4_default_airframe to: " + str(CONFIG_FILE))
 
         carb.log_warn("New px4_default_airframe set to: " + str(self._px4_default_airframe))
+
+    def set_ardupilot_default_airframe(self, airframe: str):
+        """Method that allows a user to save a new ArduPilot default airframe for the extension.
+
+        Args:
+            airframe (str): The new ArduPilot default airframe
+        """
+        
+        # Save the new airframe for current use during this simulation
+        self._ardupilot_default_airframe = airframe
+
+        # Save the new airframe in the configurations file for the next simulations
+        try:
+
+            # Open the configuration file and the all the configurations that it contains
+            with open(CONFIG_FILE, 'r') as f:
+                data = yaml.safe_load(f)
+
+            # Open the configuration file. If it fails, just warn in the console
+            with open(CONFIG_FILE, 'w') as f:
+                data["ardupilot_default_airframe"] = airframe
+                yaml.dump(data, f)
+        except:
+            carb.log_warn("Could not save ardupilot_default_airframe to: " + str(CONFIG_FILE))
+
+        carb.log_warn("New ardupilot_default_airframe set to: " + str(self._ardupilot_default_airframe))
 
     def set_default_global_coordinates(self):
         """

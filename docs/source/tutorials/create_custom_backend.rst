@@ -114,7 +114,7 @@ use that to feedback into our control law.
 
 .. note::
 
-   You can take a look on how the ``MavlinkBackend`` is implemented to check on how to parse sensor data produced by IMU, GPS, etc. 
+   You can take a look on how the ``PX4MavlinkBackend`` is implemented to check on how to parse sensor data produced by IMU, GPS, etc. 
    A simple strategy is to use an if-statement to check for which sensor we are receive the data from and parse it accordingly, for example:
 
    .. code:: Python

@@ -150,7 +150,7 @@ class ROS2CameraGraph(Graph):
             camera_helper_name = f"camera_helper_{camera_type}"
 
             graph_config[keys.CREATE_NODES] += [
-                (camera_helper_name, "omni.isaac.ros2_bridge.OgnROS2CameraInfoHelper")
+                (camera_helper_name, "omni.isaac.ros2_bridge.ROS2CameraHelper")
             ]
             graph_config[keys.CONNECT] += [
                 ("set_camera.outputs:execOut", f"{camera_helper_name}.inputs:execIn"),

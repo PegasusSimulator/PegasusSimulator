@@ -111,8 +111,7 @@ class Vehicle(Robot):
         self._world.add_physics_callback(self._stage_prefix + "/state", self.update_state)
 
         # Add the update method to the physics callback if the world was received
-        # so that we can apply forces and torques to the vehicle. Note, this method should
-        # be implemented in classes that inherit the vehicle object
+        # so that we can apply forces and torques to the vehicle. Note, this method should        # be implemented in classes that inherit the vehicle object
         self._world.add_physics_callback(self._stage_prefix + "/update", self.update)
 
         # Set the flag that signals if the simulation is running or not
@@ -360,7 +359,7 @@ class Vehicle(Robot):
     def update_sensors(self, dt: float):
         """Callback that is called at every physics steps and will call the sensor.update method to generate new
         sensor data. For each data that the sensor generates, the backend.update_sensor method will also be called for
-        every backend. For example, if new data is generated for an IMU and we have a MavlinkBackend, then the update_sensor
+        every backend. For example, if new data is generated for an IMU and we have a PX4MavlinkBackend, then the update_sensor
         method will be called for that backend so that this data can latter be sent thorugh mavlink.
 
         Args:

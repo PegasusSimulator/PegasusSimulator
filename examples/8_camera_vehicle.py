@@ -26,7 +26,7 @@ from omni.isaac.core.world import World
 from pegasus.simulator.params import ROBOTS, SIMULATION_ENVIRONMENTS
 from pegasus.simulator.logic.graphical_sensors.monocular_camera import MonocularCamera
 from pegasus.simulator.logic.graphical_sensors.lidar import Lidar
-from pegasus.simulator.logic.backends.mavlink_backend import MavlinkBackend, MavlinkBackendConfig
+from pegasus.simulator.logic.backends.px4_mavlink_backend import PX4MavlinkBackend, PX4MavlinkBackendConfig
 from pegasus.simulator.logic.backends.ros2_backend import ROS2Backend
 from pegasus.simulator.logic.vehicles.multirotor import Multirotor, MultirotorConfig
 from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
@@ -75,13 +75,13 @@ class PegasusApp:
         # Try to spawn the selected robot in the world to the specified namespace
         config_multirotor = MultirotorConfig()
         # Create the multirotor configuration
-        mavlink_config = MavlinkBackendConfig({
+        mavlink_config = PX4MavlinkBackendConfig({
             "vehicle_id": 0,
             "px4_autolaunch": True,
             "px4_dir": "/home/marcelo/PX4-Autopilot"
         })
         config_multirotor.backends = [
-            MavlinkBackend(mavlink_config), 
+            PX4MavlinkBackend(mavlink_config), 
             ROS2Backend(vehicle_id=1, 
                         config={
                             "namespace": 'drone', 
