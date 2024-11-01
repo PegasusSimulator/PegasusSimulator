@@ -17,7 +17,7 @@
 Check the provided documentation [here](https://pegasussimulator.github.io/PegasusSimulator/) to discover how to install and use this framework.
 
 ## Latest Updates
-
+* **2024-11-01**: Pegasus Simulator v4.2.0 is released for Isaac 4.2.0. This version is **NOT** compatible with older versions of Isaac Sim. This version includes a new experimental interface for Ardupilot integration, provided by open-source contributor [Tomer Tip](https://github.com/TomerTip).
 * **2024-08-02**: Pegasus Simulator v4.1.0 is released for Isaac 4.1.0. This version is **NOT** compatible with older versions of Isaac Sim.
 
 ## Citation
@@ -43,13 +43,15 @@ This simulation framework is an open-source effort, started by me, Marcelo Jacin
 * Project Founder
 	* [Marcelo Jacinto](https://github.com/MarceloJacinto), under the supervision of <u>Prof. Rita Cunha</u> and <u>Prof. Antonio Pascoal</u> (IST/ISR-Lisbon)
 * Architecture
-    * [Marcelo Jacinto](https://github.com/MarceloJacinto)
+  * [Marcelo Jacinto](https://github.com/MarceloJacinto)
 	* [João Pinto](https://github.com/jschpinto)
 * Multirotor Dynamic Simulation and Control
-    * [Marcelo Jacinto](https://github.com/MarceloJacinto)
+  * [Marcelo Jacinto](https://github.com/MarceloJacinto)
 * Example Applications
 	* [Marcelo Jacinto](https://github.com/MarceloJacinto)
 	* [João Pinto](https://github.com/jschpinto)
+* Ardupilot Integration (Experimental)
+  * [Tomer Tip](https://github.com/TomerTip)
 
 Also check the always up-to-date [Github contributors list](https://github.com/PegasusSimulator/PegasusSimulator/graphs/contributors) with all the open-source contributors.
 

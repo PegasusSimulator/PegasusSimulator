@@ -1,5 +1,5 @@
-Mavlink Backend
-===============
+PX4 Mavlink Backend
+===================
 
 .. automodule:: pegasus.simulator.logic.backends.px4_mavlink_backend
    :members:

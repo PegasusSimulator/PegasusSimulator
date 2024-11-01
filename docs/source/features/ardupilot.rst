@@ -18,6 +18,10 @@ The Ardupilot integration is an experimental feature that bridges the gap betwee
 .. note:: 
    This feature is highly experimental and was developed by the open-source contributor `TomerTip <https://github.com/TomerTip>`_ in `PegasusArduPilot <https://github.com/TomerTip/PegasusArduPilot>`_, and merged into the main project.
 
+To get PegasusSimulator and ArduPilot SITL talking, the open-source contributor `TomerTip <https://github.com/TomerTip>`_ created a Python implementation of the custom protocol used between ArduPilot SITL and the simulator - called `PyArduPilotPlugin <https://github.com/TomerTip/PyArduPilotPlugin>`_.
+This project allows developers to create a custom simulator and integrate it with ArduPilot SITL control using Python!
+
+
 Installing Ardupilot (Arducopter)
 ---------------------------------
 
@@ -79,45 +83,39 @@ In the end, a white terminal should pop-up. Press Ctrl+C to exit and close the w
    If you did not install ArduPilot at ``~/ardupilot``, you can also set your custom installation path inside the Pegasus Simulator GUI, or by editing the file ``PegasusSimulator/extensions/pegasus/simulator/config/config.yaml`` and setting the ``ardupilot_dir`` field to the correct path.
 
 
-
-2. Follow ArduPilot SITL installation steps:
+This installation guide was based on the following resources:
    - `ArduPilot SITL Installation <https://ardupilot.org/dev/docs/building-setup-linux.html#building-setup-linux>`_
    - `Setting up SITL on Linux <https://ardupilot.org/dev/docs/setting-up-sitl-on-linux.html#setting-up-sitl-on-linux>`_
-   
-   You may install ArduPilot at ``~/ardupilot``, or change the path in the UI inside Pegasus backend selection menu.
 
-Running a Simulation with Ardupilot
------------------------------------
+Running a Simulation with Ardupilot (GUI Mode)
+----------------------------------------------
 
-1. Run the PegasusSimulator:
+1. Open ``ISAACSIM``, either by using the Omniverse Launcher or the terminal command:
 
-    .. code:: bash
+   .. code:: bash
 
-        # Launch Isaac Sim
-        ISAACSIM
+      ISAACSIM
 
-        # Add the vehicle to the scene using the UI
-        
+2. Make sure the Pegasus Simulator Extension is enabled.
 
-2. On the new terminal that was opened
+   .. image:: /_static/pegasus_inside_extensions_menu.png
+      :width: 600px
+      :align: center
+      :alt: Enable the Pegasus Simulator extension inside Isaac Sim
+
+3. Select the appropriate control backend and drone model.
+
+   .. image:: /_static/ardupilot/pegasus_backend_ui.gif
+      :alt: Backend Selection
+      :align: center
+
+3. On the new terminal that was opened
 
    .. code:: bash
 
          mode guided
          arm throttle
          takeoff 3
-
-`PyArduPilotPlugin <https://github.com/TomerTip/PyArduPilotPlugin>`_
--------------------------
-
-To get PegasusSimulator and ArduPilot SITL talking, I created a Python implementation of the custom protocol used between ArduPilot SITL and the simulator - called `PyArduPilotPlugin <https://github.com/TomerTip/PyArduPilotPlugin>`_.
-This project allows developers to create a custom simulator and integrate it with ArduPilot SITL control using Python!
-
-Backend selection:
-
-.. figure:: /_static/ardupilot/pegasus_backend_ui.gif
-   :alt: Backend Selection
-   :align: center
 
 Drone spawn:
 
@@ -137,8 +135,9 @@ Camera demo:
    :alt: ArduPilot Camera Demo
    :align: center
 
-Changes to main Project
------------------------
+
+Ardupilot Integration Architecture
+----------------------------------
 
 Since the code of PegasusSimulator is currently tightly coupled with `PX4`, I had to change the backend class hierarchy to become more generic and extendable. 
 

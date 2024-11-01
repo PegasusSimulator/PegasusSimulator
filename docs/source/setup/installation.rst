@@ -174,6 +174,9 @@ extension as a ``pip`` python module for the built-in ``ISAACSIM_PYTHON`` to rec
 We use the ``--editable`` flag so that the content of the extension is linked instead of copied. After this step, you 
 should be able to run the python standalone examples inside the ``examples`` folder.
 
+.. note::
+    If you want to use Ardupilot with PegasusSimulator, please refer to the `ArduPilot documentation <features/ardupilot.rst>`__ to use this experimental feature. If you don't know what Ardupilot is, you can safely ignore this.
+
 Installing PX4-Autopilot
 ------------------------
 

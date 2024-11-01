@@ -1,8 +1,8 @@
 """
 | File: ardupilot_launch_tool.py
-| Author: Marcelo Jacinto (marcelo.jacinto@tecnico.ulisboa.pt)
+| Author: Tomer Tip (tomerT1212@gmail.com)
 | Description: Defines an auxiliary tool to launch the Ardupilot process in the background
-| License: BSD-3-Clause. Copyright (c) 2023, Marcelo Jacinto. All rights reserved.
+| License: BSD-3-Clause. Copyright (c) 2024, Tomer Tip. All rights reserved.
 """
 
 # System tools used to launch the ardupilot process in the brackground

@@ -57,6 +57,7 @@ Control Backends
 
    backends.backend
    backends.px4_mavlink_backend
+   backends.ardupilot_mavlink_backend
    backends.ros2_backend
 
 Vehicle

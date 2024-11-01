@@ -1,8 +1,8 @@
 """
 | File: ardupilot_mavlink_backend.py
-| Author: Marcelo Jacinto (marcelo.jacinto@tecnico.ulisboa.pt)
+| Author: Tomer Tip (tomerT1212@gmail.com)
 | Description: File that implements the Mavlink Backend for communication/control with/of the vehicle simulation
-| License: BSD-3-Clause. Copyright (c) 2023, Marcelo Jacinto. All rights reserved.
+| License: BSD-3-Clause. Copyright (c) 2024, Marcelo Jacinto and Tomer Tip. All rights reserved.
 """
 __all__ = ["ArduPilotMavlinkBackend", "ArduPilotMavlinkBackendConfig"]
 

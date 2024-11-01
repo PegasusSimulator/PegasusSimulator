@@ -1,3 +1,9 @@
+"""
+| File: ArduPilotPlugin.py
+| Author: Tomer Tip (tomerT1212@gmail.com)
+| Description: File that implements the Mavlink Backend for communication/control with/of the vehicle simulation
+| License: BSD-3-Clause. Copyright (c) 2024, Tomer Tip. All rights reserved.
+"""
 import time
 import socket
 import struct
