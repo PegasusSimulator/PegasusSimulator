@@ -55,7 +55,7 @@ Add the following lines to your ``~/.bashrc`` or ``~/.zshrc`` file.
 .. code:: bash
 
    # Isaac Sim root directory
-   export ISAACSIM_PATH="${HOME}/.local/share/ov/pkg/isaac_sim-4.2.0"
+   export ISAACSIM_PATH="${HOME}/.local/share/ov/pkg/isaac-sim-4.2.0"
    # Isaac Sim python executable
    alias ISAACSIM_PYTHON="${ISAACSIM_PATH}/python.sh"
    # Isaac Sim app
