@@ -15,12 +15,12 @@ class ArduPilotPlugin:
     SERVO_PACKET_SIZE = 40
     SERVO_PACKET_MAGIC = 18458
     
-    def __init__(self):
+    def __init__(self, fdm_port_in=9002):
 
         # The address for the flight dynamics model (i.e. this plugin)
         self.fdm_address = '127.0.0.1'
         # The port for the flight dynamics model
-        self.fdm_port_in = 9002
+        self.fdm_port_in = fdm_port_in
 
         # FCU address and port are auto detected from receving UDP packet from connected client
         # The address for the SITL flight controller

@@ -290,8 +290,7 @@ class ArduPilotMavlinkBackend(Backend):
         # The connection will only be created once the simulation starts
         self._vehicle_id = config.vehicle_id
         self._connection = None
-        self._connection_port = f"{config.connection_type}:{config.connection_ip}:{config.connection_baseport}"
-        # TODO: config.vehicle_id)
+        self._connection_port = f"{config.connection_type}:{config.connection_ip}:{config.connection_baseport + self._vehicle_id * 10}"
 
         # Check if we need to autolaunch ArduPilot in the background or not
         self.ardupilot_autolaunch: bool = config.ardupilot_autolaunch
@@ -340,7 +339,7 @@ class ArduPilotMavlinkBackend(Backend):
 
         self.test_time = 0
 
-        self.ap = ArduPilotPlugin()
+        self.ap = ArduPilotPlugin(fdm_port_in=9002 + self._vehicle_id * 10)
         self.ap.drain_unread_packets()
 
     def update_sensor(self, sensor_type: str, data):
