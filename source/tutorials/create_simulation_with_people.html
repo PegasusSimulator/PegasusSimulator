@@ -134,8 +134,8 @@ that our API is simpler and more intuitive to use in most user cases. I also nee
 <span class="linenos">  7</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="linenos">  8</span>
 <span class="linenos">  9</span><span class="c1"># Imports to start Isaac Sim from this script</span>
-<span class="linenos"> 10</span><span class="kn">import</span> <span class="nn">carb</span>
-<span class="linenos"> 11</span><span class="kn">from</span> <span class="nn">isaacsim</span> <span class="kn">import</span> <span class="n">SimulationApp</span>
+<span class="linenos"> 10</span><span class="kn">import</span><span class="w"> </span><span class="nn">carb</span>
+<span class="linenos"> 11</span><span class="kn">from</span><span class="w"> </span><span class="nn">isaacsim</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimulationApp</span>
 <span class="linenos"> 12</span>
 <span class="linenos"> 13</span><span class="c1"># Start Isaac Sim&#39;s simulation environment</span>
 <span class="linenos"> 14</span><span class="c1"># Note: this simulation app must be instantiated right after the SimulationApp import, otherwise the simulator will crash</span>
@@ -145,9 +145,9 @@ that our API is simpler and more intuitive to use in most user cases. I also nee
 <span class="linenos"> 18</span><span class="c1"># -----------------------------------</span>
 <span class="linenos"> 19</span><span class="c1"># The actual script should start here</span>
 <span class="linenos"> 20</span><span class="c1"># -----------------------------------</span>
-<span class="linenos"> 21</span><span class="kn">import</span> <span class="nn">omni.timeline</span>
-<span class="linenos"> 22</span><span class="kn">from</span> <span class="nn">omni.isaac.core.world</span> <span class="kn">import</span> <span class="n">World</span>
-<span class="hll"><span class="linenos"> 23</span><span class="kn">from</span> <span class="nn">omni.isaac.core.utils.extensions</span> <span class="kn">import</span> <span class="n">disable_extension</span><span class="p">,</span> <span class="n">enable_extension</span>
+<span class="linenos"> 21</span><span class="kn">import</span><span class="w"> </span><span class="nn">omni.timeline</span>
+<span class="linenos"> 22</span><span class="kn">from</span><span class="w"> </span><span class="nn">omni.isaac.core.world</span><span class="w"> </span><span class="kn">import</span> <span class="n">World</span>
+<span class="hll"><span class="linenos"> 23</span><span class="kn">from</span><span class="w"> </span><span class="nn">omni.isaac.core.utils.extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">disable_extension</span><span class="p">,</span> <span class="n">enable_extension</span>
 </span><span class="hll"><span class="linenos"> 24</span>
 </span><span class="hll"><span class="linenos"> 25</span><span class="n">EXTENSIONS_PEOPLE</span> <span class="o">=</span> <span class="p">[</span>
 </span><span class="hll"><span class="linenos"> 26</span>    <span class="s1">&#39;omni.anim.people&#39;</span><span class="p">,</span> 
@@ -177,21 +177,21 @@ that our API is simpler and more intuitive to use in most user cases. I also nee
 <span class="hll"><span class="linenos"> 50</span><span class="c1"># -------------------------------------------------------------------------------------------------</span>
 </span><span class="hll"><span class="linenos"> 51</span><span class="c1"># These lines are needed to restart the USD stage and make sure that the people extension is loaded</span>
 </span><span class="hll"><span class="linenos"> 52</span><span class="c1"># -------------------------------------------------------------------------------------------------</span>
-</span><span class="hll"><span class="linenos"> 53</span><span class="kn">import</span> <span class="nn">omni.usd</span>
+</span><span class="hll"><span class="linenos"> 53</span><span class="kn">import</span><span class="w"> </span><span class="nn">omni.usd</span>
 </span><span class="hll"><span class="linenos"> 54</span><span class="n">omni</span><span class="o">.</span><span class="n">usd</span><span class="o">.</span><span class="n">get_context</span><span class="p">()</span><span class="o">.</span><span class="n">new_stage</span><span class="p">()</span>
 </span><span class="linenos"> 55</span>
-<span class="linenos"> 56</span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="linenos"> 56</span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="linenos"> 57</span>
 <span class="linenos"> 58</span><span class="c1"># Import the Pegasus API for simulating drones</span>
-<span class="linenos"> 59</span><span class="kn">from</span> <span class="nn">pegasus.simulator.params</span> <span class="kn">import</span> <span class="n">ROBOTS</span><span class="p">,</span> <span class="n">SIMULATION_ENVIRONMENTS</span>
-<span class="linenos"> 60</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.interface.pegasus_interface</span> <span class="kn">import</span> <span class="n">PegasusInterface</span>
-<span class="hll"><span class="linenos"> 61</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.people.person</span> <span class="kn">import</span> <span class="n">Person</span>
-</span><span class="hll"><span class="linenos"> 62</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.people.person_controller</span> <span class="kn">import</span> <span class="n">PersonController</span>
-</span><span class="linenos"> 63</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.graphical_sensors.monocular_camera</span> <span class="kn">import</span> <span class="n">MonocularCamera</span>
-<span class="linenos"> 64</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.backends.px4_mavlink_backend</span> <span class="kn">import</span> <span class="n">PX4MavlinkBackend</span><span class="p">,</span> <span class="n">PX4MavlinkBackendConfig</span>
-<span class="linenos"> 65</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.backends.ros2_backend</span> <span class="kn">import</span> <span class="n">ROS2Backend</span>
-<span class="linenos"> 66</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.vehicles.multirotor</span> <span class="kn">import</span> <span class="n">Multirotor</span><span class="p">,</span> <span class="n">MultirotorConfig</span>
-<span class="linenos"> 67</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.interface.pegasus_interface</span> <span class="kn">import</span> <span class="n">PegasusInterface</span>
+<span class="linenos"> 59</span><span class="kn">from</span><span class="w"> </span><span class="nn">pegasus.simulator.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">ROBOTS</span><span class="p">,</span> <span class="n">SIMULATION_ENVIRONMENTS</span>
+<span class="linenos"> 60</span><span class="kn">from</span><span class="w"> </span><span class="nn">pegasus.simulator.logic.interface.pegasus_interface</span><span class="w"> </span><span class="kn">import</span> <span class="n">PegasusInterface</span>
+<span class="hll"><span class="linenos"> 61</span><span class="kn">from</span><span class="w"> </span><span class="nn">pegasus.simulator.logic.people.person</span><span class="w"> </span><span class="kn">import</span> <span class="n">Person</span>
+</span><span class="hll"><span class="linenos"> 62</span><span class="kn">from</span><span class="w"> </span><span class="nn">pegasus.simulator.logic.people.person_controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">PersonController</span>
+</span><span class="linenos"> 63</span><span class="kn">from</span><span class="w"> </span><span class="nn">pegasus.simulator.logic.graphical_sensors.monocular_camera</span><span class="w"> </span><span class="kn">import</span> <span class="n">MonocularCamera</span>
+<span class="linenos"> 64</span><span class="kn">from</span><span class="w"> </span><span class="nn">pegasus.simulator.logic.backends.px4_mavlink_backend</span><span class="w"> </span><span class="kn">import</span> <span class="n">PX4MavlinkBackend</span><span class="p">,</span> <span class="n">PX4MavlinkBackendConfig</span>
+<span class="linenos"> 65</span><span class="kn">from</span><span class="w"> </span><span class="nn">pegasus.simulator.logic.backends.ros2_backend</span><span class="w"> </span><span class="kn">import</span> <span class="n">ROS2Backend</span>
+<span class="linenos"> 66</span><span class="kn">from</span><span class="w"> </span><span class="nn">pegasus.simulator.logic.vehicles.multirotor</span><span class="w"> </span><span class="kn">import</span> <span class="n">Multirotor</span><span class="p">,</span> <span class="n">MultirotorConfig</span>
+<span class="linenos"> 67</span><span class="kn">from</span><span class="w"> </span><span class="nn">pegasus.simulator.logic.interface.pegasus_interface</span><span class="w"> </span><span class="kn">import</span> <span class="n">PegasusInterface</span>
 <span class="linenos"> 68</span>
 <span class="hll"><span class="linenos"> 69</span><span class="c1"># Example controller class that make a person move in a circle around the origin of the world</span>
 </span><span class="hll"><span class="linenos"> 70</span><span class="c1"># Note: You could create a different controller with a different behaviour. For instance, you could:</span>
@@ -199,16 +199,16 @@ that our API is simpler and more intuitive to use in most user cases. I also nee
 </span><span class="hll"><span class="linenos"> 72</span><span class="c1"># 2. read the target position from a ros topic,</span>
 </span><span class="hll"><span class="linenos"> 73</span><span class="c1"># 3. read the target position from a file,</span>
 </span><span class="hll"><span class="linenos"> 74</span><span class="c1"># 4. etc.</span>
-</span><span class="hll"><span class="linenos"> 75</span><span class="k">class</span> <span class="nc">CirclePersonController</span><span class="p">(</span><span class="n">PersonController</span><span class="p">):</span>
+</span><span class="hll"><span class="linenos"> 75</span><span class="k">class</span><span class="w"> </span><span class="nc">CirclePersonController</span><span class="p">(</span><span class="n">PersonController</span><span class="p">):</span>
 </span><span class="hll"><span class="linenos"> 76</span>
-</span><span class="hll"><span class="linenos"> 77</span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class="hll"><span class="linenos"> 77</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 </span><span class="hll"><span class="linenos"> 78</span>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 </span><span class="hll"><span class="linenos"> 79</span>
 </span><span class="hll"><span class="linenos"> 80</span>        <span class="bp">self</span><span class="o">.</span><span class="n">_radius</span> <span class="o">=</span> <span class="mf">5.0</span>
 </span><span class="hll"><span class="linenos"> 81</span>        <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span> <span class="o">=</span> <span class="mf">0.0</span>
 </span><span class="hll"><span class="linenos"> 82</span>        <span class="bp">self</span><span class="o">.</span><span class="n">gamma_dot</span> <span class="o">=</span> <span class="mf">0.3</span>
 </span><span class="hll"><span class="linenos"> 83</span>        
-</span><span class="hll"><span class="linenos"> 84</span>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+</span><span class="hll"><span class="linenos"> 84</span>    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
 </span><span class="hll"><span class="linenos"> 85</span>
 </span><span class="hll"><span class="linenos"> 86</span>        <span class="c1"># Update the reference position for the person to track</span>
 </span><span class="hll"><span class="linenos"> 87</span>        <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gamma_dot</span> <span class="o">*</span> <span class="n">dt</span>
@@ -218,17 +218,17 @@ that our API is simpler and more intuitive to use in most user cases. I also nee
 </span><span class="linenos"> 91</span>        
 <span class="linenos"> 92</span>
 <span class="linenos"> 93</span><span class="c1"># Auxiliary scipy and numpy modules</span>
-<span class="linenos"> 94</span><span class="kn">from</span> <span class="nn">scipy.spatial.transform</span> <span class="kn">import</span> <span class="n">Rotation</span>
+<span class="linenos"> 94</span><span class="kn">from</span><span class="w"> </span><span class="nn">scipy.spatial.transform</span><span class="w"> </span><span class="kn">import</span> <span class="n">Rotation</span>
 <span class="linenos"> 95</span>
 <span class="linenos"> 96</span><span class="c1"># -------------------------------------------------------------------------------------------------</span>
 <span class="linenos"> 97</span><span class="c1"># Define the PegasusApp class where the simulation will be run</span>
 <span class="linenos"> 98</span><span class="c1"># -------------------------------------------------------------------------------------------------</span>
-<span class="linenos"> 99</span><span class="k">class</span> <span class="nc">PegasusApp</span><span class="p">:</span>
+<span class="linenos"> 99</span><span class="k">class</span><span class="w"> </span><span class="nc">PegasusApp</span><span class="p">:</span>
 <span class="linenos">100</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="linenos">101</span><span class="sd">    A Template class that serves as an example on how to build a simple Isaac Sim standalone App.</span>
 <span class="linenos">102</span><span class="sd">    &quot;&quot;&quot;</span>
 <span class="linenos">103</span>
-<span class="linenos">104</span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos">104</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="linenos">105</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="linenos">106</span><span class="sd">        Method that initializes the PegasusApp and is used to setup the simulation environment.</span>
 <span class="linenos">107</span><span class="sd">        &quot;&quot;&quot;</span>
@@ -302,7 +302,7 @@ that our API is simpler and more intuitive to use in most user cases. I also nee
 <span class="linenos">175</span>        <span class="c1"># Auxiliar variable for the timeline callback example</span>
 <span class="linenos">176</span>        <span class="bp">self</span><span class="o">.</span><span class="n">stop_sim</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="linenos">177</span>
-<span class="linenos">178</span>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos">178</span>    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="linenos">179</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="linenos">180</span><span class="sd">        Method that implements the application main loop, where the physics steps are executed.</span>
 <span class="linenos">181</span><span class="sd">        &quot;&quot;&quot;</span>
@@ -320,7 +320,7 @@ that our API is simpler and more intuitive to use in most user cases. I also nee
 <span class="linenos">193</span>        <span class="bp">self</span><span class="o">.</span><span class="n">timeline</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
 <span class="linenos">194</span>        <span class="n">simulation_app</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 <span class="linenos">195</span>
-<span class="linenos">196</span><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<span class="linenos">196</span><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
 <span class="linenos">197</span>
 <span class="linenos">198</span>    <span class="c1"># Instantiate the template app</span>
 <span class="linenos">199</span>    <span class="n">pg_app</span> <span class="o">=</span> <span class="n">PegasusApp</span><span class="p">()</span>
@@ -336,7 +336,7 @@ that our API is simpler and more intuitive to use in most user cases. I also nee
 <section id="explanation">
 <h2>2. Explanation<a class="headerlink" href="#explanation" title="Permalink to this heading"></a></h2>
 <p>To start a pre-programmed simulation with moving people, you need to ensure that the <code class="docutils literal notranslate"><span class="pre">People</span></code> extension provided by NVIDIA is enabled. Note, in Isaac 4.1.0 we also need to create a new stage for the people extension to start properly.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">23</span><span class="kn">from</span> <span class="nn">omni.isaac.core.utils.extensions</span> <span class="kn">import</span> <span class="n">disable_extension</span><span class="p">,</span> <span class="n">enable_extension</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">23</span><span class="kn">from</span><span class="w"> </span><span class="nn">omni.isaac.core.utils.extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">disable_extension</span><span class="p">,</span> <span class="n">enable_extension</span>
 <span class="linenos">24</span>
 <span class="linenos">25</span><span class="n">EXTENSIONS_PEOPLE</span> <span class="o">=</span> <span class="p">[</span>
 <span class="linenos">26</span>    <span class="s1">&#39;omni.anim.people&#39;</span><span class="p">,</span> 
@@ -365,13 +365,13 @@ that our API is simpler and more intuitive to use in most user cases. I also nee
 <span class="linenos">49</span><span class="c1"># -------------------------------------------------------------------------------------------------</span>
 <span class="linenos">50</span><span class="c1"># These lines are needed to restart the USD stage and make sure that the people extension is loaded</span>
 <span class="linenos">51</span><span class="c1"># -------------------------------------------------------------------------------------------------</span>
-<span class="linenos">52</span><span class="kn">import</span> <span class="nn">omni.usd</span>
+<span class="linenos">52</span><span class="kn">import</span><span class="w"> </span><span class="nn">omni.usd</span>
 <span class="linenos">53</span><span class="n">omni</span><span class="o">.</span><span class="n">usd</span><span class="o">.</span><span class="n">get_context</span><span class="p">()</span><span class="o">.</span><span class="n">new_stage</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>We also need to import the <code class="docutils literal notranslate"><span class="pre">Person</span></code> and the <code class="docutils literal notranslate"><span class="pre">PersonController</span></code> classes. This follows the same strategy adopted for the vehicles and the control backends.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">61</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.people.person</span> <span class="kn">import</span> <span class="n">Person</span>
-<span class="linenos">62</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.people.person_controller</span> <span class="kn">import</span> <span class="n">PersonController</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">61</span><span class="kn">from</span><span class="w"> </span><span class="nn">pegasus.simulator.logic.people.person</span><span class="w"> </span><span class="kn">import</span> <span class="n">Person</span>
+<span class="linenos">62</span><span class="kn">from</span><span class="w"> </span><span class="nn">pegasus.simulator.logic.people.person_controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">PersonController</span>
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">PersonController</span></code> is an interface class that a user defined controller must inherit from. This controller is responsible for defining the behavior of the person in the simulation.
@@ -390,16 +390,16 @@ In this example, our controller makes a person walk in circles, but you can defi
 <span class="linenos">72</span><span class="c1"># 2. read the target position from a ros topic,</span>
 <span class="linenos">73</span><span class="c1"># 3. read the target position from a file,</span>
 <span class="linenos">74</span><span class="c1"># 4. etc.</span>
-<span class="linenos">75</span><span class="k">class</span> <span class="nc">CirclePersonController</span><span class="p">(</span><span class="n">PersonController</span><span class="p">):</span>
+<span class="linenos">75</span><span class="k">class</span><span class="w"> </span><span class="nc">CirclePersonController</span><span class="p">(</span><span class="n">PersonController</span><span class="p">):</span>
 <span class="linenos">76</span>
-<span class="linenos">77</span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos">77</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="linenos">78</span>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 <span class="linenos">79</span>
 <span class="linenos">80</span>        <span class="bp">self</span><span class="o">.</span><span class="n">_radius</span> <span class="o">=</span> <span class="mf">5.0</span>
 <span class="linenos">81</span>        <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span> <span class="o">=</span> <span class="mf">0.0</span>
 <span class="linenos">82</span>        <span class="bp">self</span><span class="o">.</span><span class="n">gamma_dot</span> <span class="o">=</span> <span class="mf">0.3</span>
 <span class="linenos">83</span>        
-<span class="linenos">84</span>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+<span class="linenos">84</span>    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
 <span class="linenos">85</span>
 <span class="linenos">86</span>        <span class="c1"># Update the reference position for the person to track</span>
 <span class="linenos">87</span>        <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gamma_dot</span> <span class="o">*</span> <span class="n">dt</span>

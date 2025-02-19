@@ -108,7 +108,7 @@
 <code class="docutils literal notranslate"><span class="pre">PX4MavlinkBackend</span></code> which contains a built-in tool to launch and kill PX4 in SITL mode automatically.</p>
 <p>To instantiate a <code class="docutils literal notranslate"><span class="pre">PX4MavlinkBackend</span></code> via Python scripting, consider the following example:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import the Mavlink backend module</span>
-<span class="kn">from</span> <span class="nn">pegasus.simulator.logic.backends.px4_mavlink_backend</span> <span class="kn">import</span> <span class="n">PX4MavlinkBackend</span><span class="p">,</span> <span class="n">PX4MavlinkBackendConfig</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pegasus.simulator.logic.backends.px4_mavlink_backend</span><span class="w"> </span><span class="kn">import</span> <span class="n">PX4MavlinkBackend</span><span class="p">,</span> <span class="n">PX4MavlinkBackendConfig</span>
 
 <span class="c1"># Create the multirotor configuration</span>
 <span class="c1"># In this example we are showing the default parameters that are used if you do not specify them</span>
@@ -149,8 +149,8 @@ path for the <code class="docutils literal notranslate"><span class="pre">PX4-Au
 </li>
 <li><p>Use the methods provided by <code class="xref py py-class docutils literal notranslate"><span class="pre">PegasusInterface</span></code>, i.e:</p>
 <blockquote>
-<div><div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pegasus.simulator.params</span> <span class="kn">import</span> <span class="n">SIMULATION_ENVIRONMENTS</span>
-<span class="kn">from</span> <span class="nn">pegasus.simulator.logic.interface.pegasus_interface</span> <span class="kn">import</span> <span class="n">PegasusInterface</span>
+<div><div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pegasus.simulator.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">SIMULATION_ENVIRONMENTS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pegasus.simulator.logic.interface.pegasus_interface</span><span class="w"> </span><span class="kn">import</span> <span class="n">PegasusInterface</span>
 
 <span class="c1"># Start the Pegasus Interface</span>
 <span class="n">pg</span> <span class="o">=</span> <span class="n">PegasusInterface</span><span class="p">()</span>

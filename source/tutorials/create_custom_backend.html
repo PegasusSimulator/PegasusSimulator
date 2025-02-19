@@ -140,8 +140,8 @@ with <cite>Mavlink</cite>, <cite>PX4</cite> or <cite>ROS</cite> like in other si
 <span class="linenos">  8</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="linenos">  9</span>
 <span class="linenos"> 10</span><span class="c1"># Imports to start Isaac Sim from this script</span>
-<span class="linenos"> 11</span><span class="kn">import</span> <span class="nn">carb</span>
-<span class="linenos"> 12</span><span class="kn">from</span> <span class="nn">isaacsim</span> <span class="kn">import</span> <span class="n">SimulationApp</span>
+<span class="linenos"> 11</span><span class="kn">import</span><span class="w"> </span><span class="nn">carb</span>
+<span class="linenos"> 12</span><span class="kn">from</span><span class="w"> </span><span class="nn">isaacsim</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimulationApp</span>
 <span class="linenos"> 13</span>
 <span class="linenos"> 14</span><span class="c1"># Start Isaac Sim&#39;s simulation environment</span>
 <span class="linenos"> 15</span><span class="c1"># Note: this simulation app must be instantiated right after the SimulationApp import, otherwise the simulator will crash</span>
@@ -151,32 +151,32 @@ with <cite>Mavlink</cite>, <cite>PX4</cite> or <cite>ROS</cite> like in other si
 <span class="linenos"> 19</span><span class="c1"># -----------------------------------</span>
 <span class="linenos"> 20</span><span class="c1"># The actual script should start here</span>
 <span class="linenos"> 21</span><span class="c1"># -----------------------------------</span>
-<span class="linenos"> 22</span><span class="kn">import</span> <span class="nn">omni.timeline</span>
-<span class="linenos"> 23</span><span class="kn">from</span> <span class="nn">omni.isaac.core.world</span> <span class="kn">import</span> <span class="n">World</span>
+<span class="linenos"> 22</span><span class="kn">import</span><span class="w"> </span><span class="nn">omni.timeline</span>
+<span class="linenos"> 23</span><span class="kn">from</span><span class="w"> </span><span class="nn">omni.isaac.core.world</span><span class="w"> </span><span class="kn">import</span> <span class="n">World</span>
 <span class="linenos"> 24</span>
 <span class="linenos"> 25</span><span class="c1"># Import the Pegasus API for simulating drones</span>
-<span class="linenos"> 26</span><span class="kn">from</span> <span class="nn">pegasus.simulator.params</span> <span class="kn">import</span> <span class="n">ROBOTS</span><span class="p">,</span> <span class="n">SIMULATION_ENVIRONMENTS</span>
-<span class="linenos"> 27</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.vehicles.multirotor</span> <span class="kn">import</span> <span class="n">Multirotor</span><span class="p">,</span> <span class="n">MultirotorConfig</span>
-<span class="linenos"> 28</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.interface.pegasus_interface</span> <span class="kn">import</span> <span class="n">PegasusInterface</span>
+<span class="linenos"> 26</span><span class="kn">from</span><span class="w"> </span><span class="nn">pegasus.simulator.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">ROBOTS</span><span class="p">,</span> <span class="n">SIMULATION_ENVIRONMENTS</span>
+<span class="linenos"> 27</span><span class="kn">from</span><span class="w"> </span><span class="nn">pegasus.simulator.logic.vehicles.multirotor</span><span class="w"> </span><span class="kn">import</span> <span class="n">Multirotor</span><span class="p">,</span> <span class="n">MultirotorConfig</span>
+<span class="linenos"> 28</span><span class="kn">from</span><span class="w"> </span><span class="nn">pegasus.simulator.logic.interface.pegasus_interface</span><span class="w"> </span><span class="kn">import</span> <span class="n">PegasusInterface</span>
 <span class="linenos"> 29</span>
 <span class="hll"><span class="linenos"> 30</span><span class="c1"># Import the custom python control backend</span>
-</span><span class="hll"><span class="linenos"> 31</span><span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span>
+</span><span class="hll"><span class="linenos"> 31</span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span><span class="o">,</span><span class="w"> </span><span class="nn">os</span>
 </span><span class="hll"><span class="linenos"> 32</span><span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;/utils&#39;</span><span class="p">)</span>
-</span><span class="hll"><span class="linenos"> 33</span><span class="kn">from</span> <span class="nn">nonlinear_controller</span> <span class="kn">import</span> <span class="n">NonlinearController</span>
+</span><span class="hll"><span class="linenos"> 33</span><span class="kn">from</span><span class="w"> </span><span class="nn">nonlinear_controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">NonlinearController</span>
 </span><span class="linenos"> 34</span>
 <span class="linenos"> 35</span><span class="c1"># Auxiliary scipy and numpy modules</span>
-<span class="linenos"> 36</span><span class="kn">from</span> <span class="nn">scipy.spatial.transform</span> <span class="kn">import</span> <span class="n">Rotation</span>
+<span class="linenos"> 36</span><span class="kn">from</span><span class="w"> </span><span class="nn">scipy.spatial.transform</span><span class="w"> </span><span class="kn">import</span> <span class="n">Rotation</span>
 <span class="linenos"> 37</span>
 <span class="linenos"> 38</span><span class="c1"># Use pathlib for parsing the desired trajectory from a CSV file</span>
-<span class="linenos"> 39</span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="linenos"> 39</span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="linenos"> 40</span>
 <span class="linenos"> 41</span>
-<span class="linenos"> 42</span><span class="k">class</span> <span class="nc">PegasusApp</span><span class="p">:</span>
+<span class="linenos"> 42</span><span class="k">class</span><span class="w"> </span><span class="nc">PegasusApp</span><span class="p">:</span>
 <span class="linenos"> 43</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="linenos"> 44</span><span class="sd">    A Template class that serves as an example on how to build a simple Isaac Sim standalone App.</span>
 <span class="linenos"> 45</span><span class="sd">    &quot;&quot;&quot;</span>
 <span class="linenos"> 46</span>
-<span class="linenos"> 47</span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos"> 47</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="linenos"> 48</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="linenos"> 49</span><span class="sd">        Method that initializes the PegasusApp and is used to setup the simulation environment.</span>
 <span class="linenos"> 50</span><span class="sd">        &quot;&quot;&quot;</span>
@@ -220,7 +220,7 @@ with <cite>Mavlink</cite>, <cite>PX4</cite> or <cite>ROS</cite> like in other si
 <span class="linenos"> 88</span>        <span class="c1"># Reset the simulation environment so that all articulations (aka robots) are initialized</span>
 <span class="linenos"> 89</span>        <span class="bp">self</span><span class="o">.</span><span class="n">world</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
 <span class="linenos"> 90</span>
-<span class="linenos"> 91</span>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos"> 91</span>    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="linenos"> 92</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="linenos"> 93</span><span class="sd">        Method that implements the application main loop, where the physics steps are executed.</span>
 <span class="linenos"> 94</span><span class="sd">        &quot;&quot;&quot;</span>
@@ -239,7 +239,7 @@ with <cite>Mavlink</cite>, <cite>PX4</cite> or <cite>ROS</cite> like in other si
 <span class="linenos">107</span>        <span class="bp">self</span><span class="o">.</span><span class="n">timeline</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
 <span class="linenos">108</span>        <span class="n">simulation_app</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 <span class="linenos">109</span>
-<span class="linenos">110</span><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<span class="linenos">110</span><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
 <span class="linenos">111</span>
 <span class="linenos">112</span>    <span class="c1"># Instantiate the template app</span>
 <span class="linenos">113</span>    <span class="n">pg_app</span> <span class="o">=</span> <span class="n">PegasusApp</span><span class="p">()</span>
@@ -265,17 +265,17 @@ with <cite>Mavlink</cite>, <cite>PX4</cite> or <cite>ROS</cite> like in other si
 <span class="linenos"> 11</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="linenos"> 12</span>
 <span class="linenos"> 13</span><span class="c1"># Imports to be able to log to the terminal with fancy colors</span>
-<span class="linenos"> 14</span><span class="kn">import</span> <span class="nn">carb</span>
+<span class="linenos"> 14</span><span class="kn">import</span><span class="w"> </span><span class="nn">carb</span>
 <span class="linenos"> 15</span>
 <span class="linenos"> 16</span><span class="c1"># Imports from the Pegasus library</span>
-<span class="linenos"> 17</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.state</span> <span class="kn">import</span> <span class="n">State</span>
-<span class="hll"><span class="linenos"> 18</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.backends</span> <span class="kn">import</span> <span class="n">Backend</span>
+<span class="linenos"> 17</span><span class="kn">from</span><span class="w"> </span><span class="nn">pegasus.simulator.logic.state</span><span class="w"> </span><span class="kn">import</span> <span class="n">State</span>
+<span class="hll"><span class="linenos"> 18</span><span class="kn">from</span><span class="w"> </span><span class="nn">pegasus.simulator.logic.backends</span><span class="w"> </span><span class="kn">import</span> <span class="n">Backend</span>
 </span><span class="linenos"> 19</span>
 <span class="linenos"> 20</span><span class="c1"># Auxiliary scipy and numpy modules</span>
-<span class="linenos"> 21</span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="linenos"> 22</span><span class="kn">from</span> <span class="nn">scipy.spatial.transform</span> <span class="kn">import</span> <span class="n">Rotation</span>
+<span class="linenos"> 21</span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="linenos"> 22</span><span class="kn">from</span><span class="w"> </span><span class="nn">scipy.spatial.transform</span><span class="w"> </span><span class="kn">import</span> <span class="n">Rotation</span>
 <span class="linenos"> 23</span>
-<span class="hll"><span class="linenos"> 24</span><span class="k">class</span> <span class="nc">NonlinearController</span><span class="p">(</span><span class="n">Backend</span><span class="p">):</span>
+<span class="hll"><span class="linenos"> 24</span><span class="k">class</span><span class="w"> </span><span class="nc">NonlinearController</span><span class="p">(</span><span class="n">Backend</span><span class="p">):</span>
 </span><span class="hll"><span class="linenos"> 25</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;A nonlinear controller class. It implements a nonlinear controller that allows a vehicle to track</span>
 </span><span class="hll"><span class="linenos"> 26</span><span class="sd">    aggressive trajectories. This controlers is well described in the papers</span>
 </span><span class="hll"><span class="linenos"> 27</span><span class="sd">    </span>
@@ -287,7 +287,7 @@ with <cite>Mavlink</cite>, <cite>PX4</cite> or <cite>ROS</cite> like in other si
 </span><span class="hll"><span class="linenos"> 33</span><span class="sd">    pp. 2520-2525, doi: 10.1109/ICRA.2011.5980409.</span>
 </span><span class="hll"><span class="linenos"> 34</span><span class="sd">    &quot;&quot;&quot;</span>
 </span><span class="hll"><span class="linenos"> 35</span>
-</span><span class="hll"><span class="linenos"> 36</span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+</span><span class="hll"><span class="linenos"> 36</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
 </span><span class="hll"><span class="linenos"> 37</span>        <span class="n">trajectory_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
 </span><span class="hll"><span class="linenos"> 38</span>        <span class="n">results_file</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
 </span><span class="hll"><span class="linenos"> 39</span>        <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
@@ -351,7 +351,7 @@ with <cite>Mavlink</cite>, <cite>PX4</cite> or <cite>ROS</cite> like in other si
 <span class="linenos"> 97</span>        <span class="bp">self</span><span class="o">.</span><span class="n">atittude_error_over_time</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="linenos"> 98</span>        <span class="bp">self</span><span class="o">.</span><span class="n">attitude_rate_error_over_time</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="linenos"> 99</span>
-<span class="linenos">100</span>    <span class="k">def</span> <span class="nf">read_trajectory_from_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="linenos">100</span>    <span class="k">def</span><span class="w"> </span><span class="nf">read_trajectory_from_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="linenos">101</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Auxiliar method used to read the desired trajectory from a CSV file</span>
 <span class="linenos">102</span>
 <span class="linenos">103</span><span class="sd">        Args:</span>
@@ -365,14 +365,14 @@ with <cite>Mavlink</cite>, <cite>PX4</cite> or <cite>ROS</cite> like in other si
 <span class="linenos">111</span>        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">flip</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 <span class="linenos">112</span>
 <span class="linenos">113</span>
-<span class="hll"><span class="linenos">114</span>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="hll"><span class="linenos">114</span>    <span class="k">def</span><span class="w"> </span><span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 </span><span class="hll"><span class="linenos">115</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span class="hll"><span class="linenos">116</span><span class="sd">        Reset the control and trajectory index</span>
 </span><span class="hll"><span class="linenos">117</span><span class="sd">        &quot;&quot;&quot;</span>
 </span><span class="linenos">118</span>        <span class="bp">self</span><span class="o">.</span><span class="n">reset_statistics</span><span class="p">()</span>
 <span class="linenos">119</span>        
 <span class="linenos">120</span>
-<span class="hll"><span class="linenos">121</span>    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="hll"><span class="linenos">121</span>    <span class="k">def</span><span class="w"> </span><span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 </span><span class="hll"><span class="linenos">122</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span class="hll"><span class="linenos">123</span><span class="sd">        Stopping the controller. Saving the statistics data for plotting later</span>
 </span><span class="hll"><span class="linenos">124</span><span class="sd">        &quot;&quot;&quot;</span>
@@ -394,7 +394,7 @@ with <cite>Mavlink</cite>, <cite>PX4</cite> or <cite>ROS</cite> like in other si
 <span class="linenos">140</span>
 <span class="linenos">141</span>        <span class="bp">self</span><span class="o">.</span><span class="n">reset_statistics</span><span class="p">()</span>
 <span class="linenos">142</span>
-<span class="hll"><span class="linenos">143</span>    <span class="k">def</span> <span class="nf">update_sensor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sensor_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<span class="hll"><span class="linenos">143</span>    <span class="k">def</span><span class="w"> </span><span class="nf">update_sensor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sensor_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
 </span><span class="hll"><span class="linenos">144</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span class="hll"><span class="linenos">145</span><span class="sd">        Do nothing. For now ignore all the sensor data and just use the state directly for demonstration purposes. </span>
 </span><span class="hll"><span class="linenos">146</span><span class="sd">        This is a callback that is called at every physics step.</span>
@@ -405,7 +405,7 @@ with <cite>Mavlink</cite>, <cite>PX4</cite> or <cite>ROS</cite> like in other si
 </span><span class="hll"><span class="linenos">151</span><span class="sd">        &quot;&quot;&quot;</span>
 </span><span class="linenos">152</span>        <span class="k">pass</span>
 <span class="linenos">153</span>
-<span class="hll"><span class="linenos">154</span>    <span class="k">def</span> <span class="nf">update_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">):</span>
+<span class="hll"><span class="linenos">154</span>    <span class="k">def</span><span class="w"> </span><span class="nf">update_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">):</span>
 </span><span class="hll"><span class="linenos">155</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span class="hll"><span class="linenos">156</span><span class="sd">        Method that updates the current state of the vehicle. This is a callback that is called at every physics step</span>
 </span><span class="hll"><span class="linenos">157</span>
@@ -419,7 +419,7 @@ with <cite>Mavlink</cite>, <cite>PX4</cite> or <cite>ROS</cite> like in other si
 <span class="linenos">165</span>
 <span class="linenos">166</span>        <span class="bp">self</span><span class="o">.</span><span class="n">reveived_first_state</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="linenos">167</span>
-<span class="hll"><span class="linenos">168</span>    <span class="k">def</span> <span class="nf">input_reference</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="hll"><span class="linenos">168</span>    <span class="k">def</span><span class="w"> </span><span class="nf">input_reference</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 </span><span class="hll"><span class="linenos">169</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span class="hll"><span class="linenos">170</span><span class="sd">        Method that is used to return the latest target angular velocities to be applied to the vehicle</span>
 </span><span class="hll"><span class="linenos">171</span>
@@ -428,7 +428,7 @@ with <cite>Mavlink</cite>, <cite>PX4</cite> or <cite>ROS</cite> like in other si
 </span><span class="hll"><span class="linenos">174</span><span class="sd">        &quot;&quot;&quot;</span>
 </span><span class="linenos">175</span>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_ref</span>
 <span class="linenos">176</span>
-<span class="hll"><span class="linenos">177</span>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+<span class="hll"><span class="linenos">177</span>    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
 </span><span class="hll"><span class="linenos">178</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Method that implements the nonlinear control law and updates the target angular velocities for each rotor. </span>
 </span><span class="hll"><span class="linenos">179</span><span class="sd">        This method will be called by the simulation on every physics step</span>
 </span><span class="hll"><span class="linenos">180</span>
@@ -543,7 +543,7 @@ with <cite>Mavlink</cite>, <cite>PX4</cite> or <cite>ROS</cite> like in other si
 <span class="linenos">289</span>        <span class="bp">self</span><span class="o">.</span><span class="n">attitude_rate_error_over_time</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e_w</span><span class="p">)</span>
 <span class="linenos">290</span>
 <span class="linenos">291</span>    <span class="nd">@staticmethod</span>
-<span class="linenos">292</span>    <span class="k">def</span> <span class="nf">vee</span><span class="p">(</span><span class="n">S</span><span class="p">):</span>
+<span class="linenos">292</span>    <span class="k">def</span><span class="w"> </span><span class="nf">vee</span><span class="p">(</span><span class="n">S</span><span class="p">):</span>
 <span class="linenos">293</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Auxiliary function that computes the &#39;v&#39; map which takes elements from so(3) to R^3.</span>
 <span class="linenos">294</span>
 <span class="linenos">295</span><span class="sd">        Args:</span>
@@ -551,7 +551,7 @@ with <cite>Mavlink</cite>, <cite>PX4</cite> or <cite>ROS</cite> like in other si
 <span class="linenos">297</span><span class="sd">        &quot;&quot;&quot;</span>
 <span class="linenos">298</span>        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="n">S</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span> <span class="n">S</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span> <span class="o">-</span><span class="n">S</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]])</span>
 <span class="linenos">299</span>    
-<span class="linenos">300</span>    <span class="k">def</span> <span class="nf">reset_statistics</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos">300</span>    <span class="k">def</span><span class="w"> </span><span class="nf">reset_statistics</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="linenos">301</span>
 <span class="linenos">302</span>        <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
 <span class="linenos">303</span>        <span class="c1"># If we received an external trajectory, reset the time to 0.0</span>
@@ -576,7 +576,7 @@ with <cite>Mavlink</cite>, <cite>PX4</cite> or <cite>ROS</cite> like in other si
 <span class="linenos">322</span>    <span class="c1"># as an argument to the constructor of this class</span>
 <span class="linenos">323</span>    <span class="c1"># ---------------------------------------------------</span>
 <span class="linenos">324</span>
-<span class="linenos">325</span>    <span class="k">def</span> <span class="nf">pd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="linenos">325</span>    <span class="k">def</span><span class="w"> </span><span class="nf">pd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="linenos">326</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;The desired position of the built-in trajectory</span>
 <span class="linenos">327</span>
 <span class="linenos">328</span><span class="sd">        Args:</span>
@@ -597,7 +597,7 @@ with <cite>Mavlink</cite>, <cite>PX4</cite> or <cite>ROS</cite> like in other si
 <span class="linenos">343</span>
 <span class="linenos">344</span>        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">])</span>
 <span class="linenos">345</span>
-<span class="linenos">346</span>    <span class="k">def</span> <span class="nf">d_pd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="linenos">346</span>    <span class="k">def</span><span class="w"> </span><span class="nf">d_pd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="linenos">347</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;The desired velocity of the built-in trajectory</span>
 <span class="linenos">348</span>
 <span class="linenos">349</span><span class="sd">        Args:</span>
@@ -618,7 +618,7 @@ with <cite>Mavlink</cite>, <cite>PX4</cite> or <cite>ROS</cite> like in other si
 <span class="linenos">364</span>
 <span class="linenos">365</span>        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">])</span>
 <span class="linenos">366</span>
-<span class="linenos">367</span>    <span class="k">def</span> <span class="nf">dd_pd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="linenos">367</span>    <span class="k">def</span><span class="w"> </span><span class="nf">dd_pd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="linenos">368</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;The desired acceleration of the built-in trajectory</span>
 <span class="linenos">369</span>
 <span class="linenos">370</span><span class="sd">        Args:</span>
@@ -639,7 +639,7 @@ with <cite>Mavlink</cite>, <cite>PX4</cite> or <cite>ROS</cite> like in other si
 <span class="linenos">385</span>
 <span class="linenos">386</span>        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">])</span>
 <span class="linenos">387</span>
-<span class="linenos">388</span>    <span class="k">def</span> <span class="nf">ddd_pd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="linenos">388</span>    <span class="k">def</span><span class="w"> </span><span class="nf">ddd_pd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="linenos">389</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;The desired jerk of the built-in trajectory</span>
 <span class="linenos">390</span>
 <span class="linenos">391</span><span class="sd">        Args:</span>
@@ -659,7 +659,7 @@ with <cite>Mavlink</cite>, <cite>PX4</cite> or <cite>ROS</cite> like in other si
 <span class="linenos">405</span>
 <span class="linenos">406</span>        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">])</span>
 <span class="linenos">407</span>
-<span class="linenos">408</span>    <span class="k">def</span> <span class="nf">yaw_d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+<span class="linenos">408</span>    <span class="k">def</span><span class="w"> </span><span class="nf">yaw_d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
 <span class="linenos">409</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;The desired yaw of the built-in trajectory</span>
 <span class="linenos">410</span>
 <span class="linenos">411</span><span class="sd">        Args:</span>
@@ -672,7 +672,7 @@ with <cite>Mavlink</cite>, <cite>PX4</cite> or <cite>ROS</cite> like in other si
 <span class="linenos">418</span><span class="sd">        &quot;&quot;&quot;</span>
 <span class="linenos">419</span>        <span class="k">return</span> <span class="mf">0.0</span>
 <span class="linenos">420</span>    
-<span class="linenos">421</span>    <span class="k">def</span> <span class="nf">d_yaw_d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+<span class="linenos">421</span>    <span class="k">def</span><span class="w"> </span><span class="nf">d_yaw_d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
 <span class="linenos">422</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;The desired yaw_rate of the built-in trajectory</span>
 <span class="linenos">423</span>
 <span class="linenos">424</span><span class="sd">        Args:</span>
@@ -685,13 +685,13 @@ with <cite>Mavlink</cite>, <cite>PX4</cite> or <cite>ROS</cite> like in other si
 <span class="linenos">431</span><span class="sd">        &quot;&quot;&quot;</span>
 <span class="linenos">432</span>        <span class="k">return</span> <span class="mf">0.0</span>
 <span class="linenos">433</span>    
-<span class="linenos">434</span>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos">434</span>    <span class="k">def</span><span class="w"> </span><span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="linenos">435</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="linenos">436</span><span class="sd">        Method that when implemented, should handle the reset of the vehicle simulation to its original state</span>
 <span class="linenos">437</span><span class="sd">        &quot;&quot;&quot;</span>
 <span class="linenos">438</span>        <span class="k">pass</span>
 <span class="linenos">439</span>
-<span class="linenos">440</span>    <span class="k">def</span> <span class="nf">update_graphical_sensor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sensor_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<span class="linenos">440</span>    <span class="k">def</span><span class="w"> </span><span class="nf">update_graphical_sensor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sensor_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
 <span class="linenos">441</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="linenos">442</span><span class="sd">        For this demo we do not care about graphical sensors such as camera, therefore we can ignore this callback</span>
 <span class="linenos">443</span><span class="sd">        &quot;&quot;&quot;</span>
@@ -704,9 +704,9 @@ with <cite>Mavlink</cite>, <cite>PX4</cite> or <cite>ROS</cite> like in other si
 <p>To start a pre-programed simulation using a different control backend other than <code class="docutils literal notranslate"><span class="pre">MAVLink</span></code> we include our custom
 <code class="docutils literal notranslate"><span class="pre">control</span> <span class="pre">backend</span></code> module written in pure Python.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">30</span><span class="c1"># Import the custom python control backend</span>
-<span class="linenos">31</span><span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span>
+<span class="linenos">31</span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span><span class="o">,</span><span class="w"> </span><span class="nn">os</span>
 <span class="linenos">32</span><span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;/utils&#39;</span><span class="p">)</span>
-<span class="linenos">33</span><span class="kn">from</span> <span class="nn">nonlinear_controller</span> <span class="kn">import</span> <span class="n">NonlinearController</span>
+<span class="linenos">33</span><span class="kn">from</span><span class="w"> </span><span class="nn">nonlinear_controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">NonlinearController</span>
 </pre></div>
 </div>
 <p>We now create a multirotor configuration and set the multirotor backend to be our <code class="docutils literal notranslate"><span class="pre">NonlinearController</span></code> object. That’s it!
@@ -726,13 +726,13 @@ of the script is the same as in the previous tutorial.</p>
 <p>Now, let’s take a look on how the <code class="docutils literal notranslate"><span class="pre">NonlinearControl</span></code> class is structured and how you can build your own. We must start by
 including the <code class="docutils literal notranslate"><span class="pre">Backend</span></code> class found in the <code class="docutils literal notranslate"><span class="pre">pegasus.simulator.logic.backends</span></code> API. To explore all the functionalities
 offered by this class, check the <a class="reference internal" href="../api/backends.backend.html#module-pegasus.simulator.logic.backends.backend"><span class="std std-ref">Backend</span></a> API reference page.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">18</span><span class="kn">from</span> <span class="nn">pegasus.simulator.logic.backends</span> <span class="kn">import</span> <span class="n">Backend</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">18</span><span class="kn">from</span><span class="w"> </span><span class="nn">pegasus.simulator.logic.backends</span><span class="w"> </span><span class="kn">import</span> <span class="n">Backend</span>
 </pre></div>
 </div>
 <p>Next, we define a class that inherits the <cite>Backend`</cite> class. This class must implement a few methods to be compliant
 with the <code class="docutils literal notranslate"><span class="pre">Multirotor</span></code> API. In this example we will implement an “hard-coded” nonlinear geometrical controller for the
 multirotor to track a pre-defined trajectory.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">24</span><span class="k">class</span> <span class="nc">NonlinearController</span><span class="p">(</span><span class="n">Backend</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">24</span><span class="k">class</span><span class="w"> </span><span class="nc">NonlinearController</span><span class="p">(</span><span class="n">Backend</span><span class="p">):</span>
 <span class="linenos">25</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;A nonlinear controller class. It implements a nonlinear controller that allows a vehicle to track</span>
 <span class="linenos">26</span><span class="sd">    aggressive trajectories. This controlers is well described in the papers</span>
 <span class="linenos">27</span><span class="sd">    </span>
@@ -744,7 +744,7 @@ multirotor to track a pre-defined trajectory.</p>
 <span class="linenos">33</span><span class="sd">    pp. 2520-2525, doi: 10.1109/ICRA.2011.5980409.</span>
 <span class="linenos">34</span><span class="sd">    &quot;&quot;&quot;</span>
 <span class="linenos">35</span>
-<span class="linenos">36</span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+<span class="linenos">36</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
 <span class="linenos">37</span>        <span class="n">trajectory_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
 <span class="linenos">38</span>        <span class="n">results_file</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
 <span class="linenos">39</span>        <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
@@ -758,7 +758,7 @@ multirotor to track a pre-defined trajectory.</p>
 <p>The first method that should be implemented is <code class="docutils literal notranslate"><span class="pre">start()</span></code> . This method gets invoked by
 the vehicle when the simulation starts. You should perform any initialization of your algorithm or communication protocol
 here.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">114</span>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">114</span>    <span class="k">def</span><span class="w"> </span><span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="linenos">115</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="linenos">116</span><span class="sd">        Reset the control and trajectory index</span>
 <span class="linenos">117</span><span class="sd">        &quot;&quot;&quot;</span>
@@ -766,7 +766,7 @@ here.</p>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">stop()</span></code>  method gets invoked by
 the vehicle when the simulation stops. You should perform any cleanup here.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">121</span>    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">121</span>    <span class="k">def</span><span class="w"> </span><span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="linenos">122</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="linenos">123</span><span class="sd">        Stopping the controller. Saving the statistics data for plotting later</span>
 <span class="linenos">124</span><span class="sd">        &quot;&quot;&quot;</span>
@@ -777,7 +777,7 @@ each sensor that generated output data. It receives as input a string which desc
 It is up to you to decide on how to parse the sensor data and use it. In this case we are not going to use the data produced
 by the simulated sensors for our controller. Instead we will get the state of the vehicle directly from the simulation and
 use that to feedback into our control law.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">143</span>    <span class="k">def</span> <span class="nf">update_sensor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sensor_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">143</span>    <span class="k">def</span><span class="w"> </span><span class="nf">update_sensor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sensor_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
 <span class="linenos">144</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="linenos">145</span><span class="sd">        Do nothing. For now ignore all the sensor data and just use the state directly for demonstration purposes. </span>
 <span class="linenos">146</span><span class="sd">        This is a callback that is called at every physics step.</span>
@@ -820,7 +820,7 @@ for the vehicle’s body frame of reference.</p>
 North-East-Down (NED) and Front-Right-Down (FRD) conventions, so you don’t have to make those conversions manually. Check
 the <a class="reference internal" href="../api/state.html#module-pegasus.simulator.logic.state"><span class="std std-ref">State</span></a> API reference page for more information.</p>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">154</span>    <span class="k">def</span> <span class="nf">update_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">154</span>    <span class="k">def</span><span class="w"> </span><span class="nf">update_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">):</span>
 <span class="linenos">155</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="linenos">156</span><span class="sd">        Method that updates the current state of the vehicle. This is a callback that is called at every physics step</span>
 <span class="linenos">157</span>
@@ -839,7 +839,7 @@ To take this into account, the <a class="reference internal" href="../api/backen
 when this gets instantiated. Therefore, it will access to all of its attributes, such as the number of rotors and methods
 to convert torques and forces in the body-frame to target rotor angular velocities!</p>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">168</span>    <span class="k">def</span> <span class="nf">input_reference</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">168</span>    <span class="k">def</span><span class="w"> </span><span class="nf">input_reference</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="linenos">169</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="linenos">170</span><span class="sd">        Method that is used to return the latest target angular velocities to be applied to the vehicle</span>
 <span class="linenos">171</span>
@@ -851,7 +851,7 @@ to convert torques and forces in the body-frame to target rotor angular velociti
 <p>The <code class="docutils literal notranslate"><span class="pre">update(dt:</span> <span class="pre">float)</span></code> method gets invoked at every physics step by the vehicle. It receives as argument the amount of time
 elapsed since the last update (in seconds). This is where you should define your controller/communication layer logic and
 update the list of reference angular velocities for the rotors.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">177</span>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">177</span>    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
 <span class="linenos">178</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Method that implements the nonlinear control law and updates the target angular velocities for each rotor. </span>
 <span class="linenos">179</span><span class="sd">        This method will be called by the simulation on every physics step</span>
 <span class="linenos">180</span>
