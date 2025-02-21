@@ -239,7 +239,7 @@ class Vehicle(Robot):
 
             # Stop the graphical sensors
             for graphical_sensor in self._graphical_sensors:
-                graphical_sensor.stop
+                graphical_sensor.stop()
 
             # Signal all the backends that the simulation has stoped. This method is invoked automatically when the simulation stops
             for backend in self._backends:

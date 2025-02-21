@@ -339,9 +339,6 @@ class ArduPilotMavlinkBackend(Backend):
 
         self.test_time = 0
 
-        self.ap = ArduPilotPlugin(fdm_port_in=9002 + self._vehicle_id * 10)
-        self.ap.drain_unread_packets()
-
     def update_sensor(self, sensor_type: str, data):
         """Method that is used as callback for the vehicle for every iteration that a sensor produces new data. 
         Only the IMU, GPS, Barometer and  Magnetometer sensor data are stored to be sent through mavlink. Every other 
@@ -536,7 +533,7 @@ class ArduPilotMavlinkBackend(Backend):
 
     def start(self):
         """Method that handles the begining of the simulation of vehicle. It will try to open the mavlink connection 
-        interface and also attemp to launch ArduPilot in a background process if that option as specified in the config class
+        interface and also attempt to launch ArduPilot in a background process if that option as specified in the config class
         """
 
         # If we are already running the mavlink interface, then ignore the function call
@@ -571,6 +568,7 @@ class ArduPilotMavlinkBackend(Backend):
         # Close the mavlink connection
         self._connection.close()
         self._connection = None
+        self.ap = None
 
         # Close the ArduPilot if it was running
         if self.ardupilot_autolaunch and self.ardupilot_autolaunch is not None:
@@ -591,6 +589,9 @@ class ArduPilotMavlinkBackend(Backend):
 
         # Restart the sensor data
         self._sensor_data = SensorMsg()
+        
+        self.ap = ArduPilotPlugin(fdm_port_in=9002 + self._vehicle_id * 10)
+        self.ap.drain_unread_packets()
 
         # Restart the connection
         self._connection = mavutil.mavlink_connection(self._connection_port)
