@@ -7,7 +7,6 @@
 """
 
 # Imports to start Isaac Sim from this script
-import carb
 from isaacsim import SimulationApp
 
 # Start Isaac Sim's simulation environment
@@ -18,6 +17,7 @@ simulation_app = SimulationApp({"headless": False})
 # -----------------------------------
 # The actual script should start here
 # -----------------------------------
+import carb
 import omni.timeline
 from omni.isaac.core.world import World
 from omni.isaac.core.utils.extensions import disable_extension, enable_extension
