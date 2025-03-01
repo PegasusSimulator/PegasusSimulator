@@ -76,15 +76,16 @@ class PegasusApp:
         mavlink_config = PX4MavlinkBackendConfig({
             "vehicle_id": 0,
             "px4_autolaunch": True,
-            "px4_dir": "/home/marcelo/PX4-Autopilot"
+            "px4_dir": self.pg.px4_path,
+            "px4_vehicle_model": self.pg.px4_default_airframe # CHANGE this line to 'iris' if using PX4 version bellow v1.14
         })
         config_multirotor.backends = [PX4MavlinkBackend(mavlink_config)]
 
         # Create camera graph for the existing Camera prim on the Iris model, which can be found 
-        # at the prim path `/World/quadrotor/body/Camera`. The camera prim path is the local path from the vehicle's prim path
+        # at the prim path `/World/quadrotor/body/camera`. The camera prim path is the local path from the vehicle's prim path
         # to the camera prim, to which this graph will be connected. All ROS2 topics published by this graph will have 
-        # namespace `quadrotor` and frame_id `Camera` followed by the selected camera types (`rgb`, `camera_info`).
-        config_multirotor.graphs = [ROS2CameraGraph("body/Camera", config={"types": ['rgb', 'camera_info']})]
+        # namespace `quadrotor` and frame_id `camera` followed by the selected camera types (`rgb`, `camera_info`).
+        config_multirotor.graphs = [ROS2CameraGraph("body/camera", config={"types": ['rgb', 'camera_info', 'depth']})]
         
         Multirotor(
             "/World/quadrotor",
