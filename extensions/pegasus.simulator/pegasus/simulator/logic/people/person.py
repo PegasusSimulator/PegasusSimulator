@@ -18,7 +18,7 @@ import omni.anim.graph.core as ag
 from omni.anim.people import PeopleSettings
 from omni.isaac.core.utils import prims
 from omni.usd import get_stage_next_free_path
-from omni.isaac.nucleus import get_assets_root_path
+from isaacsim.storage.native import get_assets_root_path
 
 # Extension APIs
 from pegasus.simulator.logic.state import State

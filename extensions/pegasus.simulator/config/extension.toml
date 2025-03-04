@@ -1,6 +1,6 @@
 [package]
 # Semantic Versioning is used: https://semver.org/
-version = "1.0.0"
+version = "4.5.0"
 
 # Lists people or organizations that are considered the "authors" of the package.
 authors = ["Marcelo Jacinto"]
@@ -13,7 +13,7 @@ description="Extension providing the main framework interfaces for simulating ae
 readme  = "docs/README.md"
 
 # URL of the extension source repository.
-repository = ""
+repository = "https://github.com/PegasusSimulator/PegasusSimulator/tree/main/extensions/pegasus.simulator"
 
 # One of categories for UI.
 category = "Simulation"
@@ -40,7 +40,6 @@ icon = "data/icon.png"
 "omni.isaac.core" = {}
 "omni.ui.scene" = {}
 "omni.kit.window.viewport" = {}
-"omni.anim.navigation.bundle" = {}
 "omni.anim.people" = {}
 "omni.anim.timeline" = {}
 "omni.anim.graph.bundle" = {}
@@ -52,7 +51,7 @@ icon = "data/icon.png"
 name = "pegasus.simulator"
 
 [python.pipapi]
-requirements = ["numpy", "scipy", "pymavlink", "pyyaml"]
+requirements = ["numpy", "scipy", "pymavlink", "pyyaml", "toml"]
 use_online_index = true
 
 [[test]]

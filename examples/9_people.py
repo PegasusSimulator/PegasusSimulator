@@ -20,11 +20,11 @@ simulation_app = SimulationApp({"headless": False})
 # -----------------------------------
 import omni.timeline
 from omni.isaac.core.world import World
-from omni.isaac.core.utils.extensions import disable_extension, enable_extension
+from isaacsim.core.utils.extensions import disable_extension, enable_extension
 
 EXTENSIONS_PEOPLE = [
     'omni.anim.people', 
-    'omni.anim.navigation.bundle', 
+    #'omni.anim.navigation.bundle', 
     'omni.anim.timeline',
     'omni.anim.graph.bundle', 
     'omni.anim.graph.core', 
@@ -62,7 +62,7 @@ from pegasus.simulator.logic.people.person import Person
 from pegasus.simulator.logic.people.person_controller import PersonController
 from pegasus.simulator.logic.graphical_sensors.monocular_camera import MonocularCamera
 from pegasus.simulator.logic.backends.px4_mavlink_backend import PX4MavlinkBackend, PX4MavlinkBackendConfig
-from pegasus.simulator.logic.backends.ros2_backend import ROS2Backend
+#from pegasus.simulator.logic.backends.ros2_backend import ROS2Backend
 from pegasus.simulator.logic.vehicles.multirotor import Multirotor, MultirotorConfig
 from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 
@@ -144,15 +144,15 @@ class PegasusApp:
             "px4_dir": "/home/marcelo/PX4-Autopilot"
         })
         config_multirotor.backends = [
-            PX4MavlinkBackend(mavlink_config),
-            ROS2Backend(vehicle_id=1, 
-                config={
-                    "namespace": 'drone', 
-                    "pub_sensors": False,
-                    "pub_graphical_sensors": True,
-                    "pub_state": True,
-                    "pub_tf": False,
-                    "sub_control": False,})]
+            PX4MavlinkBackend(mavlink_config),]
+            # ROS2Backend(vehicle_id=1, 
+            #     config={
+            #         "namespace": 'drone', 
+            #         "pub_sensors": False,
+            #         "pub_graphical_sensors": True,
+            #         "pub_state": True,
+            #         "pub_tf": False,
+            #         "sub_control": False,})]
 
         # Create a camera
         config_multirotor.graphical_sensors = [MonocularCamera("camera", config={"update_rate": 60.0})]

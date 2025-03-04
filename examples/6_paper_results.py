@@ -24,7 +24,7 @@ import omni.timeline
 from omni.isaac.core.world import World
 
 # Used for adding extra lights to the environment
-import omni.isaac.core.utils.prims as prim_utils
+import isaacsim.core.utils.prims as prim_utils
 
 import omni.kit.commands
 from pxr import Sdf

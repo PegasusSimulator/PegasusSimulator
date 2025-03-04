@@ -8,8 +8,8 @@ import carb
 
 from omni.isaac.core.utils import stage
 import omni.graph.core as og
-from omni.isaac.core.utils.prims import is_prim_path_valid
-from omni.isaac.core.utils.prims import set_targets
+from isaacsim.core.utils.prims import is_prim_path_valid
+from isaacsim.core.utils.prims import set_targets
 from omni.isaac.sensor import Camera
 
 from pegasus.simulator.logic.graphs import Graph

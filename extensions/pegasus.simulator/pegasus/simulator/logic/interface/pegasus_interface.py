@@ -17,10 +17,10 @@ from threading import Lock
 # NVidia API imports
 import carb
 import omni.kit.app
-from omni.isaac.core.world import World
-from omni.isaac.core.utils.stage import clear_stage, create_new_stage_async, update_stage_async, create_new_stage
-from omni.isaac.core.utils.viewports import set_camera_view
-import omni.isaac.nucleus as nucleus
+from isaacsim.core.api.world import World
+from isaacsim.core.utils.stage import clear_stage, create_new_stage_async, update_stage_async, create_new_stage
+from isaacsim.core.utils.viewports import set_camera_view
+import isaacsim.storage.native as nucleus
 
 # Pegasus Simulator internal API
 from pegasus.simulator.params import DEFAULT_WORLD_SETTINGS, SIMULATION_ENVIRONMENTS, CONFIG_FILE
@@ -77,10 +77,10 @@ class PegasusInterface:
 
     @property
     def world(self):
-        """The current omni.isaac.core.world World instance
+        """The current isaacsim.core.api.world World instance
 
         Returns:
-            omni.isaac.core.world: The world instance
+            isaacsim.core.api.world: The world instance
         """
         return self._world
 

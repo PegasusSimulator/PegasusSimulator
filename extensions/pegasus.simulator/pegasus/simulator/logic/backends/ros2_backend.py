@@ -7,8 +7,8 @@
 
 # Make sure the ROS2 extension is enabled
 import carb
-from omni.isaac.core.utils.extensions import enable_extension
-enable_extension("omni.isaac.ros2_bridge")
+from isaacsim.core.utils.extensions import enable_extension
+enable_extension("isaacsim.ros2.bridge")
 
 # ROS2 imports
 import rclpy

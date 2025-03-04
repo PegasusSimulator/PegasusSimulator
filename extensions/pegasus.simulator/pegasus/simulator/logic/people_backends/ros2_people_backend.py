@@ -10,7 +10,7 @@ __all__ = ["ROS2PeopleBackend"]
 # Make sure the ROS2 extension is enabled
 import carb
 from pegasus.simulator.logic.people_backends.people_backend import PeopleBackend
-from omni.isaac.core.utils.extensions import enable_extension
+from isaacsim.core.utils.extensions import enable_extension
 enable_extension("omni.isaac.ros2_bridge")
 
 # ROS2 imports
