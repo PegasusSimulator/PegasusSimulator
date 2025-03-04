@@ -46,7 +46,7 @@ from scipy.spatial.transform import Rotation
 # Use pathlib for parsing the desired trajectory from a CSV file
 from pathlib import Path
 
-from omni.isaac.debug_draw import _debug_draw
+from isaacsim.util.debug_draw import _debug_draw
 
 
 class PegasusApp:
