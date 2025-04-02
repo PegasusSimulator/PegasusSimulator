@@ -60,6 +60,11 @@ Also check the always up-to-date [Github contributors list](https://github.com/P
 In parallel to this project, the Pegasus (GNC) guidance, control, and navigation project serves as the foundation control code for performing real-world experiments for my Ph.D. More information can be found at this link:
 [Pegasus GNC](https://pegasusresearch.github.io/pegasus/)
 
+## Other projects
+### Aerostack2 project using Pegasus Simulator
+
+Aerostack2 is an open-source ROS 2 framework developed to create autonomous multi-aerial-robots systems in an easy and powerful way. With Aerostack 2 you can easily use modules for control, navigation, SLAM, perception, etc. to enable autonomous aerial robots. More information on how to use it with Pegasus Simulator here: [Aerostack2 with Pegasus Simulator](https://github.com/aerostack2/project_pegasus_isaac_sim)
+
 ## Project Roadmap
 
 An high level project roadmap is available [here](https://pegasussimulator.github.io/PegasusSimulator/source/references/roadmap.html).
