@@ -8,7 +8,7 @@
 
 # Imports to start Isaac Sim from this script
 import carb
-from omni.isaac.kit import SimulationApp
+from isaacsim import SimulationApp
 
 # Start Isaac Sim's simulation environment
 # Note: this simulation app must be instantiated right after the SimulationApp import, otherwise the simulator will crash
@@ -24,7 +24,7 @@ from omni.isaac.core.world import World
 # Import the Pegasus API for simulating drones
 from pegasus.simulator.params import ROBOTS, SIMULATION_ENVIRONMENTS
 from pegasus.simulator.logic.state import State
-from pegasus.simulator.logic.backends.mavlink_backend import MavlinkBackend, MavlinkBackendConfig
+from pegasus.simulator.logic.backends.px4_mavlink_backend import PX4MavlinkBackend, PX4MavlinkBackendConfig
 from pegasus.simulator.logic.vehicles.multirotor import Multirotor, MultirotorConfig
 from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 # Auxiliary scipy and numpy modules
@@ -59,13 +59,13 @@ class PegasusApp:
         # Try to spawn the selected robot in the world to the specified namespace
         config_multirotor = MultirotorConfig()
         # Create the multirotor configuration
-        mavlink_config = MavlinkBackendConfig({
+        mavlink_config = PX4MavlinkBackendConfig({
             "vehicle_id": 0,
             "px4_autolaunch": True,
             "px4_dir": self.pg.px4_path,
             "px4_vehicle_model": self.pg.px4_default_airframe # CHANGE this line to 'iris' if using PX4 version bellow v1.14
         })
-        config_multirotor.backends = [MavlinkBackend(mavlink_config)]
+        config_multirotor.backends = [PX4MavlinkBackend(mavlink_config)]
 
         Multirotor(
             "/World/quadrotor",

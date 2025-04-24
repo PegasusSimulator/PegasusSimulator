@@ -13,13 +13,12 @@ If there is some feature missing that you would like to see added, please check 
   * |check_| GPS
   * |check_| IMU (Accelerometer + Gyroscope)
   * |check_| Magnetometer
-  * |uncheck_| Camera (to work with backends such as ROS2 - in the works)
+  * |check_| Camera (Implemented as a Graph Node)
   * |uncheck_| UDP Camera
 
 * Supported actuators
 
   * |check_| Quadratic Thrust Curve
-  * |uncheck_| Gimbal Control
 
 * Base vehicles
 
@@ -31,15 +30,13 @@ If there is some feature missing that you would like to see added, please check 
 * API backends
  
   * |check_| Mavlink (with direct PX4 integration)
-  * |uncheck_| Direct ROS 2 interface (in the works)
+  * |check_| Direct ROS 2 interface
   * |uncheck_| Python backend for Reinforcement Learning (RL)
 
 * UI
   
   * |check_| Select from NVIDIA samples worlds
   * |check_| Select from Pegasus sample vehicles
-  * |uncheck_| Support for custom vehicles in the UI dropdown
-  * |uncheck_| Support for custom worlds in the UI dropdown
   * |uncheck_| Add an option to clone and compile PX4-Autopilot directly from the Pegasus Simulator UI
 
 .. |check| raw:: html

@@ -28,7 +28,7 @@ The tutorial corresponds to the ``4_python_single_vehicle.py`` example in the ``
 
 .. literalinclude:: ../../../examples/4_python_single_vehicle.py
    :language: python
-   :emphasize-lines: 30-31,68-75
+   :emphasize-lines: 30-33,69-77
    :linenos:
 
 The next code section corresponds to the ``nonlinear_controller.py`` in the ``examples/utils`` directory.
@@ -47,7 +47,7 @@ To start a pre-programed simulation using a different control backend other than
 
 .. literalinclude:: ../../../examples/4_python_single_vehicle.py
    :language: python
-   :lines: 30-31
+   :lines: 30-33
    :linenos:
    :lineno-start: 30
 
@@ -57,7 +57,7 @@ of the script is the same as in the previous tutorial.
 
 .. literalinclude:: ../../../examples/4_python_single_vehicle.py
    :language: python
-   :lines: 68-75
+   :lines: 69-77
    :linenos:
    :lineno-start: 68
 
@@ -114,7 +114,7 @@ use that to feedback into our control law.
 
 .. note::
 
-   You can take a look on how the ``MavlinkBackend`` is implemented to check on how to parse sensor data produced by IMU, GPS, etc. 
+   You can take a look on how the ``PX4MavlinkBackend`` is implemented to check on how to parse sensor data produced by IMU, GPS, etc. 
    A simple strategy is to use an if-statement to check for which sensor we are receive the data from and parse it accordingly, for example:
 
    .. code:: Python

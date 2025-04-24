@@ -4,20 +4,20 @@ Installation
 Installing NVIDIA Isaac Sim
 ---------------------------
 
-.. image:: https://img.shields.io/badge/IsaacSim-2023.1.1-brightgreen.svg
+.. image:: https://img.shields.io/badge/IsaacSim-4.2.0-brightgreen.svg
    :target: https://developer.nvidia.com/isaac-sim
-   :alt: IsaacSim 2023.1.1
+   :alt: IsaacSim 4.2.0
 
-.. image:: https://img.shields.io/badge/PX4--Autopilot-1.14.1-brightgreen.svg
+.. image:: https://img.shields.io/badge/PX4--Autopilot-1.14.3-brightgreen.svg
    :target: https://github.com/PX4/PX4-Autopilot
-   :alt: PX4-Autopilot 1.14.1
+   :alt: PX4-Autopilot 1.14.3
 
 .. image:: https://img.shields.io/badge/Ubuntu-22.04LTS-brightgreen.svg
    :target: https://releases.ubuntu.com/22.04/
    :alt: Ubuntu 22.04
 
 .. note::
-	We have tested Pegasus Simulator with Isaac Sim 2023.1.1 release on Ubuntu 22.04LTS with NVIDIA driver 545.23.08. The PX4-Autopilot used during development was v.14.1. Older versions Ubuntu and PX4-Autopilot were not tested. This extension was not tested on Windows. 
+	We have tested Pegasus Simulator with Isaac Sim 4.2.0 release on Ubuntu 22.04LTS with NVIDIA driver 550.90.07. The PX4-Autopilot used during development was v.14.3. Older versions Ubuntu and PX4-Autopilot were not tested. This extension was not tested on Windows. 
 
 In order to install Isaac Sim on linux, download the `Omniverse AppImage here <https://install.launcher.omniverse.nvidia.com/installers/omniverse-launcher-linux.AppImage>`__ or run the following line on the terminal:
 
@@ -55,14 +55,13 @@ Add the following lines to your ``~/.bashrc`` or ``~/.zshrc`` file.
 .. code:: bash
 
    # Isaac Sim root directory
-   export ISAACSIM_PATH="${HOME}/.local/share/ov/pkg/isaac_sim-*"
+   export ISAACSIM_PATH="${HOME}/.local/share/ov/pkg/isaac_sim-4.2.0"
    # Isaac Sim python executable
    alias ISAACSIM_PYTHON="${ISAACSIM_PATH}/python.sh"
    # Isaac Sim app
    alias ISAACSIM="${ISAACSIM_PATH}/isaac-sim.sh"
 
-If you only have one version of Isaac Sim installed, you can leave the ``*``, otherwise you will have to replace it by the 
-version that you desire to use. In the remaining of the documentation, we will refer to the Isaac Sim's path as ``ISAACSIM_PATH`` ,
+In the remaining of the documentation, we will refer to the Isaac Sim's path as ``ISAACSIM_PATH`` ,
 the provided python interpreter as ``ISAACSIM_PYTHON`` and the simulator itself as ``ISAACSIM`` .
 
 Running Isaac Sim
@@ -175,6 +174,9 @@ extension as a ``pip`` python module for the built-in ``ISAACSIM_PYTHON`` to rec
 We use the ``--editable`` flag so that the content of the extension is linked instead of copied. After this step, you 
 should be able to run the python standalone examples inside the ``examples`` folder.
 
+.. note::
+    If you want to use Ardupilot with PegasusSimulator, please refer to the `ArduPilot documentation <features/ardupilot.rst>`__ to use this experimental feature. If you don't know what Ardupilot is, you can safely ignore this.
+
 Installing PX4-Autopilot
 ------------------------
 
@@ -200,7 +202,7 @@ To install PX4-Autopilot, follow the following steps:
         # Option 2: With SSH (you need to setup a github account with ssh keys)
         git clone git@github.com:PX4/PX4-Autopilot.git
 
-3. Checkout to the stable version 1.14.1 and compile the code for software-in-the-loop (SITL) mode:
+3. Checkout to the stable version 1.14.3 and compile the code for software-in-the-loop (SITL) mode:
 
     .. code:: bash
         
@@ -208,7 +210,7 @@ To install PX4-Autopilot, follow the following steps:
         cd PX4-Autopilot
 
         # Checkout to the latest stable release
-        git checkout v1.14.1
+        git checkout v1.14.3
 
         # Initiate all the submodules. Note this will download modules such as SITL-gazebo which we do not need
         # but this is the safest way to make sure that the PX4-Autopilot and its submodules are all checked out in 
