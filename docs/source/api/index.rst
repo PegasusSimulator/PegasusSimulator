@@ -13,6 +13,16 @@ Sensors
    sensors.imu
    sensors.magnetometer
 
+Graphical Sensors
+-----------------
+
+.. toctree::
+   :maxdepth: 2
+
+   graphical_sensors.graphical_sensor
+   graphical_sensors.monocular_camera
+   graphical_sensors.lidar
+
 Graphs
 ------
 
@@ -20,7 +30,7 @@ Graphs
    :maxdepth: 2
 
    graphs.graph
-   graphs.ros2_camera
+   graphs.ros2_camera_graph
    graphs.ros2_odometry
 
 Dynamics
@@ -47,7 +57,8 @@ Control Backends
    :maxdepth: 2
 
    backends.backend
-   backends.mavlink_backend
+   backends.px4_mavlink_backend
+   backends.ardupilot_mavlink_backend
    backends.ros2_backend
 
 Vehicle
@@ -59,6 +70,13 @@ Vehicle
    vehicles.vehicle
    vehicles.vehicle_manager
    vehicles.multirotor 
+
+People
+------
+.. toctree::
+   :maxdepth: 2
+
+   people
 
 Pegasus Interace
 ----------------

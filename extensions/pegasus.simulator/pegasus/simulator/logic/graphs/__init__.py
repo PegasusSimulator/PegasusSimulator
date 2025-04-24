@@ -3,5 +3,5 @@
 """
 
 from .graph import Graph
-from .ros2_camera import ROS2Camera
+from .ros2_camera_graph import ROS2CameraGraph
 from .ros2_odometry import ROS2Odometry

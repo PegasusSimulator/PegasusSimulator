@@ -17,18 +17,32 @@ integration as well as custom python control interface. At the moment, only mult
    <a href="https://youtu.be/_11OCFwf_GE" target="_blank"><img src="_static/mini demo.gif" alt="Pegasus Simulator gif" align="center" height="50"/></a>
    </p>
 
-If you find ``Pegasus Simulator`` useful in your academic work, please cite the paper below. It is also available `here <https://arxiv.org/abs/2307.05263>`_.
+If you find ``Pegasus Simulator`` useful in your academic work, please cite the paper below. It is also available `here <https://doi.org/10.1109/ICUAS60882.2024.10556959>`_.
 
 .. code-block:: bibtex
 
-   @misc{jacinto2023pegasus,
+   @INPROCEEDINGS{10556959,
+      author={Jacinto, Marcelo and Pinto, João and Patrikar, Jay and Keller, John and Cunha, Rita and Scherer, Sebastian and Pascoal, António},
+      booktitle={2024 International Conference on Unmanned Aircraft Systems (ICUAS)}, 
       title={Pegasus Simulator: An Isaac Sim Framework for Multiple Aerial Vehicles Simulation}, 
-      author={Marcelo Jacinto and João Pinto and Jay Patrikar and John Keller and Rita Cunha and Sebastian Scherer and António Pascoal},
-      year={2023},
-      eprint={2307.05263},
-      archivePrefix={arXiv},
-      primaryClass={cs.RO}
-    }
+      year={2024},
+      volume={},
+      number={},
+      pages={917-922},
+      keywords={Simulation;Robot sensing systems;Real-time systems;Sensor systems;Sensors;Task analysis},
+      doi={10.1109/ICUAS60882.2024.10556959}}
+
+Latest Updates
+==============
+
+* **2024-11-01**: Pegasus Simulator v4.2.0 is released for Isaac 4.2.0. This version is **NOT** compatible with older versions of Isaac Sim. This version includes a new experimental interface for Ardupilot integration, provided by open-source contributor `Tomer Tiplitsky <https://github.com/TomerTip>`__.
+* **2024-08-02**: Pegasus Simulator v4.1.0 is released for Isaac 4.1.0. This version is **NOT** compatible with older versions of Isaac Sim.
+
+Guidance, Control and Navigation Project
+========================================
+
+In parallel to this project, the Pegasus (GNC) guidance, control, and navigation project serves as the foundation control code for performing real-world experiments for my Ph.D. More information can be found at this link:
+`Pegasus GNC <https://pegasusresearch.github.io/pegasus/>`__.
 
 Developer Team
 ~~~~~~~~~~~~~~
@@ -45,6 +59,8 @@ This simulation framework is an open-source effort, started by me, Marcelo Jacin
 - Example Applications
    - `Marcelo Jacinto <https://github.com/MarceloJacinto>`__
    - `João Pinto <https://github.com/jschpinto>`__
+- Ardupilot Integration (Experimental)
+   - `Tomer Tiplitsky <https://github.com/TomerTip>`__
 
 .. toctree::
    :maxdepth: 2
@@ -61,6 +77,7 @@ This simulation framework is an open-source effort, started by me, Marcelo Jacin
    source/tutorials/create_standalone_application
    source/tutorials/create_standalone_simulation
    source/tutorials/create_custom_backend
+   source/tutorials/create_simulation_with_people
 
 .. toctree::
    :maxdepth: 2
@@ -69,6 +86,7 @@ This simulation framework is an open-source effort, started by me, Marcelo Jacin
    source/features/environments
    source/features/vehicles
    source/features/px4_integration
+   source/features/ardupilot
 
 .. toctree::
    :maxdepth: 2
