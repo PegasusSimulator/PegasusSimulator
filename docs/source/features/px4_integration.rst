@@ -2,18 +2,18 @@ PX4 Integration
 ===============
 
 The ``PX4-Autopilot`` support is provided by making use of the ``Control Backends API`` , and implementing a custom 
-``MavlinkBackend`` which contains a built-in tool to launch and kill PX4 in SITL mode automatically.
+``PX4MavlinkBackend`` which contains a built-in tool to launch and kill PX4 in SITL mode automatically.
 
-To instantiate a ``MavlinkBackend`` via Python scripting, consider the following example:
+To instantiate a ``PX4MavlinkBackend`` via Python scripting, consider the following example:
 
 .. code:: Python
 
     # Import the Mavlink backend module
-    from pegasus.simulator.logic.backends.mavlink_backend import MavlinkBackend, MavlinkBackendConfig
+    from pegasus.simulator.logic.backends.px4_mavlink_backend import PX4MavlinkBackend, PX4MavlinkBackendConfig
 
     # Create the multirotor configuration
     # In this example we are showing the default parameters that are used if you do not specify them
-    mavlink_config = MavlinkBackendConfig({"vehicle_id": 0,
+    mavlink_config = PX4MavlinkBackendConfig({"vehicle_id": 0,
         "connection_type": "tcpin",
         "connection_ip": "localhost",
         # The actual port that gets used = "connection_baseport" + "vehicle_id"
@@ -31,7 +31,7 @@ To instantiate a ``MavlinkBackend`` via Python scripting, consider the following
         "px4_dir": "PegasusInterface().px4_path",
         "px4_vehicle_model": "iris",
         })
-    config_multirotor.backends = [MavlinkBackend(mavlink_config)]
+    config_multirotor.backends = [PX4MavlinkBackend(mavlink_config)]
 
 .. note::
 

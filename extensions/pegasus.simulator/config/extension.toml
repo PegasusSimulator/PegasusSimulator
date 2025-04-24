@@ -40,6 +40,12 @@ icon = "data/icon.png"
 "omni.isaac.core" = {}
 "omni.ui.scene" = {}
 "omni.kit.window.viewport" = {}
+"omni.anim.navigation.bundle" = {}
+"omni.anim.people" = {}
+"omni.anim.timeline" = {}
+"omni.anim.graph.bundle" = {}
+"omni.anim.graph.core" = {} 
+"omni.anim.graph.ui" = {}
 
 # Main python module this extension provides, it will be publicly available as "import pegasus.simulator".
 [[python.module]]
