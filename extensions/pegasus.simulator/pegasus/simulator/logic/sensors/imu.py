@@ -22,7 +22,7 @@ class IMU(Sensor):
         """Initialize the IMU class
 
         Args:
-            config (dict): A Dictionary that contains all teh parameters for configuring the IMU - it can be empty or only have some of the parameters used by the IMU.
+            config (dict): A Dictionary that contains all the parameters for configuring the IMU - it can be empty or only have some of the parameters used by the IMU.
 
         Examples:
             The dictionary default parameters are

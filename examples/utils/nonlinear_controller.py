@@ -430,3 +430,15 @@ class NonlinearController(Backend):
             np.ndarray: A float with the desired yaw_rate in rad/s
         """
         return 0.0
+    
+    def reset(self):
+        """
+        Method that when implemented, should handle the reset of the vehicle simulation to its original state
+        """
+        pass
+
+    def update_graphical_sensor(self, sensor_type: str, data):
+        """
+        For this demo we do not care about graphical sensors such as camera, therefore we can ignore this callback
+        """
+        pass

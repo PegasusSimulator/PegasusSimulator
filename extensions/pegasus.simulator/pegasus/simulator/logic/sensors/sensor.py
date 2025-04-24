@@ -38,7 +38,9 @@ class Sensor:
         self._origin_lon = -999
         self._origin_alt = 0.0
 
-    def initialize(self, origin_lat, origin_lon, origin_alt):
+        self._vehicle = None
+
+    def initialize(self, vehicle, origin_lat, origin_lon, origin_alt):
         """Method that initializes the sensor latitude, longitude and altitude attributes.
         
         Note:
@@ -46,10 +48,12 @@ class Sensor:
             of the world, then we might as well just save this information for whatever sensor that comes
         
         Args:
+            vehicle (Vehicle): A reference to the vehicle that this sensor is associated with
             origin_lat (float): The latitude of the origin of the world in degrees (might get used by some sensors).
             origin_lon (float): The longitude of the origin of the world in degrees (might get used by some sensors).
             origin_alt (float): The altitude of the origin of the world relative to sea water level (might get used by some sensors).
         """
+        self._vehicle = vehicle
         self._origin_lat = origin_lat
         self._origin_lon = origin_lon
         self._origin_alt = origin_alt
@@ -81,8 +85,6 @@ class Sensor:
             [None, Dict]: This decorator function returns None if there was no data to be produced by the sensor at the
             specified timestamp or a dict with the current state of the sensor otherwise.
         """
-        
-        # 
 
         # Define a wrapper function so that the "self" of the object can be passed to the function as well
         def wrapper(self, state: State, dt: float):
@@ -135,6 +137,21 @@ class Sensor:
 
         Returns:
             (dict) A dictionary containing the current state of the sensor (the data produced by the sensor)
+        """
+        pass
+
+    def start(self):
+        """Method that when implemented should handle the begining of the simulation of vehicle
+        """
+        pass
+
+    def stop(self):
+        """Method that when implemented should handle the stopping of the simulation of vehicle
+        """
+        pass
+
+    def reset(self):
+        """Method that when implemented, should handle the reset of the vehicle simulation to its original state
         """
         pass
 

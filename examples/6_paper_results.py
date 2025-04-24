@@ -11,7 +11,7 @@ otherwise, the path to the HDR environment is not recognized.
 
 # Imports to start Isaac Sim from this script
 import carb
-from omni.isaac.kit import SimulationApp
+from isaacsim import SimulationApp
 
 # Start Isaac Sim's simulation environment
 # Note: this simulation app must be instantiated right after the SimulationApp import, otherwise the simulator will crash
@@ -35,15 +35,15 @@ from pegasus.simulator.logic.vehicles.multirotor import Multirotor, MultirotorCo
 from pegasus.simulator.logic.dynamics.linear_drag import LinearDrag
 from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 
-# Import the custom python control backend
-from utils.nonlinear_controller import NonlinearController
+import sys, os
+sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)) + '/utils')
+from nonlinear_controller import NonlinearController
 
 # Auxiliary scipy and numpy modules
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-# Use os and pathlib for parsing the desired trajectory from a CSV file
-import os
+# Use pathlib for parsing the desired trajectory from a CSV file
 from pathlib import Path
 
 from omni.isaac.debug_draw import _debug_draw
