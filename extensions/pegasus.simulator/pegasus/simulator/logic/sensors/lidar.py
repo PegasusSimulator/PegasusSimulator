@@ -82,13 +82,17 @@ class Lidar(Sensor):
         else:
             self._state = None
 
-    def initialize(self, vehicle: Vehicle):
+    def initialize(self, vehicle: Vehicle, origin_lat, origin_lon, origin_alt):
         """Method that initializes the lidar sensor. It also initalizes the sensor latitude, longitude and
         altitude attributes as well as the vehicle that the sensor is attached to.
         
         Args:
             vehicle (Vehicle): The vehicle that this sensor is attached to.
+            origin_lat (float): The latitude of the origin of the world in degrees (might get used by some sensors).
+            origin_lon (float): The longitude of the origin of the world in degrees (might get used by some sensors).
+            origin_alt (float): The altitude of the origin of the world relative to sea water level (might get used by some sensors).
         """
+        super().initialize(vehicle, origin_lat, origin_lon, origin_alt)
 
         # Set the prim path for the camera
         if self._prim_path[0] != '/':

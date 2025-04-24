@@ -2,7 +2,7 @@
 | File: ros2_lidar.py
 | License: BSD-3-Clause. Copyright (c) 2023, Micah Nye. All rights reserved.
 """
-__all__ = ["ROS2Lidar"]
+__all__ = ["ROS2LidarGraph"]
 
 import carb
 
@@ -12,7 +12,7 @@ from omni.isaac.core.utils.prims import is_prim_path_valid
 from pegasus.simulator.logic.graphs import Graph
 from pegasus.simulator.logic.vehicles import Vehicle
 
-class ROS2Lidar(Graph):
+class ROS2LidarGraph(Graph):
     """The class that implements the ROS2 Lidar graph. This class inherits the base class Graph.
     """
     def __init__(self, lidar_prim_path: str, config: dict = {}):
@@ -33,7 +33,7 @@ class ROS2Lidar(Graph):
         """
 
         # Initialize the Super class "object" attribute
-        super().__init__(graph_type="ROS2Lidar")
+        super().__init__(graph_type="ROS2LidarGraph")
 
         # Save lidar path, frame id and ros topic name
         self._lidar_prim_path = lidar_prim_path

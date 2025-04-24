@@ -4,4 +4,4 @@
 
 from .graph import Graph
 from .ros2_camera_graph import ROS2CameraGraph
-from .ros2_lidar import ROS2Lidar
+from .ros2_lidar_graph import ROS2LidarGraph
