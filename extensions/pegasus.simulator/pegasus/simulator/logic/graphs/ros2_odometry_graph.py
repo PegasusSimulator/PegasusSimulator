@@ -2,7 +2,7 @@
 | File: ros2_odometry.py
 | License: BSD-3-Clause. Copyright (c) 2023, Micah Nye. All rights reserved.
 """
-__all__ = ["ROS2Odometry"]
+__all__ = ["ROS2OdometryGraph"]
 
 import carb
 
@@ -14,7 +14,7 @@ from pegasus.simulator.logic.graphs import Graph
 from pegasus.simulator.logic.vehicles import Vehicle
 
 
-class ROS2Odometry(Graph):
+class ROS2OdometryGraph(Graph):
     """The class that implements the ROS2 Odometry graph. This class inherits the base class Graph."""
 
     def __init__(self, config: dict = {}):
@@ -36,7 +36,7 @@ class ROS2Odometry(Graph):
         """
 
         # Initialize the Super class "object" attribute
-        super().__init__(graph_type="ROS2Odometry")
+        super().__init__(graph_type="ROS2OdometryGraph")
 
         # Process the config dictionary
         self._odom_topic = config.get("odom_topic", "odom")
