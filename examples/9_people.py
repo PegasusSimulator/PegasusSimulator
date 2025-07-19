@@ -23,26 +23,26 @@ from omni.isaac.core.world import World
 from isaacsim.core.utils.extensions import disable_extension, enable_extension
 
 EXTENSIONS_PEOPLE = [
-    'omni.anim.people', 
+    #'omni.anim.people', 
     #'omni.anim.navigation.bundle', 
-    'omni.anim.timeline',
-    'omni.anim.graph.bundle', 
-    'omni.anim.graph.core', 
-    'omni.anim.graph.ui',
-    'omni.anim.retarget.bundle', 
-    'omni.anim.retarget.core',
-    'omni.anim.retarget.ui', 
-    'omni.kit.scripting',
-    'omni.graph.io',
-    'omni.anim.curve.core',
+    #'omni.anim.timeline',
+    #'omni.anim.graph.bundle', 
+    #'omni.anim.graph.core', 
+    #'omni.anim.graph.ui',
+    #'omni.anim.retarget.bundle', 
+    #'omni.anim.retarget.core',
+    #'omni.anim.retarget.ui', 
+    #'omni.kit.scripting',
+    #'omni.graph.nodes',
+    #'omni.anim.curve.core',
+    'isaacsim.replicator.agent.core',
 ]
 
 for ext_people in EXTENSIONS_PEOPLE:
     enable_extension(ext_people)
 
 # Enable/disable ROS bridge extensions to keep only ROS2 Bridge
-disable_extension("omni.isaac.ros_bridge")
-enable_extension("omni.isaac.ros2_bridge")
+enable_extension("isaacsim.ros2.bridge")
 
 # Update the simulation app with the new extensions
 simulation_app.update()
@@ -131,40 +131,8 @@ class PegasusApp:
         p1 = Person("person1", "original_male_adult_construction_05", init_pos=[3.0, 0.0, 0.0], init_yaw=1.0, controller=person_controller)
         
         # Create a person without setting up a controller, and just setting a manual target position for it to track
-        p2 = Person("person2", "original_female_adult_business_02", init_pos=[2.0, 0.0, 0.0])
-        p2.update_target_position([10.0, 0.0, 0.0], 1.0)
-
-        # Create the vehicle
-        # Try to spawn the selected robot in the world to the specified namespace
-        config_multirotor = MultirotorConfig()
-        # # Create the multirotor configuration
-        mavlink_config = PX4MavlinkBackendConfig({
-            "vehicle_id": 0,
-            "px4_autolaunch": True,
-            "px4_dir": "/home/marcelo/PX4-Autopilot"
-        })
-        config_multirotor.backends = [
-            PX4MavlinkBackend(mavlink_config),]
-            # ROS2Backend(vehicle_id=1, 
-            #     config={
-            #         "namespace": 'drone', 
-            #         "pub_sensors": False,
-            #         "pub_graphical_sensors": True,
-            #         "pub_state": True,
-            #         "pub_tf": False,
-            #         "sub_control": False,})]
-
-        # Create a camera
-        config_multirotor.graphical_sensors = [MonocularCamera("camera", config={"update_rate": 60.0})]
-
-        Multirotor(
-            "/World/quadrotor",
-            ROBOTS['Iris'],
-            0,
-            [0.0, 0.0, 0.07],
-            Rotation.from_euler("XYZ", [0.0, 0.0, 0.0], degrees=True).as_quat(),
-            config=config_multirotor,
-        )
+        #p2 = Person("person2", "original_female_adult_business_02", init_pos=[2.0, 0.0, 0.0])
+        #p2.update_target_position([10.0, 0.0, 0.0], 1.0)
 
         # Set the camera of the viewport to a nice position
         self.pg.set_viewport_camera([5.0, 9.0, 6.5], [0.0, 0.0, 0.0])

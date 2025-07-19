@@ -10,15 +10,17 @@ from scipy.spatial.transform import Rotation
 
 # Low level APIs
 import carb
-from pxr import Gf, Sdf
 
 # High level Isaac sim APIs
 import omni.client
-import omni.anim.graph.core as ag
-from omni.anim.people import PeopleSettings
-from omni.isaac.core.utils import prims
 from omni.usd import get_stage_next_free_path
 from isaacsim.storage.native import get_assets_root_path
+
+# New imports from the replicator API
+from isaacsim.replicator.agent.core.settings import PrimPaths
+from isaacsim.replicator.agent.core.stage_util import CharacterUtil
+from isaacsim.replicator.agent.core.simulation import SimulationManager
+
 
 # Extension APIs
 from pegasus.simulator.logic.state import State
@@ -32,13 +34,10 @@ class Person:
     """
 
     # Get root assets path from setting, if not set, get the Isaac-Sim asset path
-    setting_dict = carb.settings.get_settings()
-    people_asset_folder = setting_dict.get(PeopleSettings.CHARACTER_ASSETS_PATH)
-    character_root_prim_path = setting_dict.get(PeopleSettings.CHARACTER_PRIM_PATH)
-    assets_root_path = None
+    people_asset_folder = "http://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/4.2/Isaac/People/Characters/"
+    character_root_prim_path = "/World/Characters"
 
-    if not character_root_prim_path:
-        character_root_prim_path = "/World/Characters"
+    assets_root_path = None   
 
     if people_asset_folder:
         assets_root_path = people_asset_folder
@@ -70,6 +69,9 @@ class Person:
         self._world = PegasusInterface().world
         self._current_stage = self._world.stage
 
+        # Load the simulation manager
+        self.sim_manager = SimulationManager()
+
         # Variable that will hold the current state of the vehicle
         self._state = State()
         self._state.position = np.array(init_pos)
@@ -79,8 +81,9 @@ class Person:
         self._target_position = np.array(init_pos)
         self._target_speed = 0.0
 
-        # Save the name with which the vehicle will appear in the stage
-        # and the character model that will be loaded into the simulator
+        # By default, the characters are placed inside /World/Characters
+        # so we are checking whether the name of the character is already present in the stage inside the character root prim path
+        # or we need to change the name of the character to avoid conflicts
         self._stage_prefix = get_stage_next_free_path(self._current_stage, Person.character_root_prim_path + '/' + stage_prefix, False)
 
         # The name of the character in the USD file
@@ -98,26 +101,26 @@ class Person:
 
         # Set the controller for the person if any and initialize it
         self._controller = controller
-        if self._controller:
-            self._controller.initialize(self)
+        #if self._controller:
+        #    self._controller.initialize(self)
 
         # Set the backend for publishing the state of the person
         self._backend = backend
-        if self._backend:
-            self._backend.initialize(self)
+        #if self._backend:
+        #    self._backend.initialize(self)
 
         # Add a callback to the physics engine to update the current state of the person
-        self._world.add_physics_callback(self._stage_prefix + "/state", self.update_state)
+        #self._world.add_physics_callback(self._stage_prefix + "/state", self.update_state)
 
         # Add the update method to the physics callback if the world was received
         # so that we can apply the new references to be tracked by the person
-        self._world.add_physics_callback(self._stage_prefix + "/update", self.update)
+        #self._world.add_physics_callback(self._stage_prefix + "/update", self.update)
 
         # Set the flag that signals if the simulation is running or not
         self._sim_running = False
 
         # Add a callback to start/stop of the simulation once the play/stop button is hit
-        self._world.add_timeline_callback(self._stage_prefix + "/start_stop_sim", self.sim_start_stop)
+        #self._world.add_timeline_callback(self._stage_prefix + "/start_stop_sim", self.sim_start_stop)
 
     @property
     def state(self):
@@ -168,29 +171,30 @@ class Person:
         """
 
         # Note: this is done to avoid the error of the character_graph being None. The animation graph is only created after the simulation starts
-        if not self.character_graph or self.character_graph is None:
-            self.character_graph = ag.get_character(self.character_skel_root_stage_path)
+        # if not self.character_graph or self.character_graph is None:
+        #     self.character_graph = ag.get_character(self.character_skel_root_stage_path)
 
-        # Call the controller update method that should update the reference of the target position
-        if self._controller:
-            self._controller.update(dt)
+        # # Call the controller update method that should update the reference of the target position
+        # if self._controller:
+        #     self._controller.update(dt)
 
-        # Compute the distance between the current position and the goal position
-        distance_to_target_position = np.linalg.norm(self._target_position - self._state.position)
+        # # Compute the distance between the current position and the goal position
+        # distance_to_target_position = np.linalg.norm(self._target_position - self._state.position)
         
-        # If we are still far away from the target position, keep moving towards it
-        if distance_to_target_position > 0.1:
-            self.character_graph.set_variable("Action", "Walk")
-            self.character_graph.set_variable("PathPoints", [carb.Float3(self._state.position), carb.Float3(self._target_position)])
-            self.character_graph.set_variable("Walk", self._target_speed)
-        else:
-            # If we are close to the target position, stop moving
-            self.character_graph.set_variable("Walk", 0.0)
-            self.character_graph.set_variable("Action", "Idle")
+        # # If we are still far away from the target position, keep moving towards it
+        # if distance_to_target_position > 0.1:
+        #     self.character_graph.set_variable("Action", "Walk")
+        #     self.character_graph.set_variable("PathPoints", [carb.Float3(self._state.position), carb.Float3(self._target_position)])
+        #     self.character_graph.set_variable("Walk", self._target_speed)
+        # else:
+        #     # If we are close to the target position, stop moving
+        #     self.character_graph.set_variable("Walk", 0.0)
+        #     self.character_graph.set_variable("Action", "Idle")
 
-        # If we have a backend, update the state of the person
-        if self._backend:
-            self._backend.update(self._state, dt)
+        # # If we have a backend, update the state of the person
+        # if self._backend:
+        #     self._backend.update(self._state, dt)
+        pass
 
 
     def update_target_position(self, position, walk_speed=1.0):
@@ -213,62 +217,50 @@ class Person:
             dt (float): The time elapsed between the previous and current function calls (s).
         """
         
-        # Note: this is done to avoid the error of the character_graph being None. The animation graph is only created after the simulation starts
-        if not self.character_graph or self.character_graph is None:
-            self.character_graph = ag.get_character(self.character_skel_root_stage_path)
+        # # Note: this is done to avoid the error of the character_graph being None. The animation graph is only created after the simulation starts
+        # if not self.character_graph or self.character_graph is None:
+        #     self.character_graph = ag.get_character(self.character_skel_root_stage_path)
             
-        # Get the current position of the person
-        pos = carb.Float3(0, 0, 0)
-        rot = carb.Float4(0, 0, 0, 0)
-        self.character_graph.get_world_transform(pos, rot)
+        # # Get the current position of the person
+        # pos = carb.Float3(0, 0, 0)
+        # rot = carb.Float4(0, 0, 0, 0)
+        # self.character_graph.get_world_transform(pos, rot)
 
-        # Update the current state of the person
-        self._state.position = np.array([pos[0], pos[1], pos[2]])
-        self._state.orientation = np.array([rot.x, rot.y, rot.z, rot.w])
+        # # Update the current state of the person
+        # self._state.position = np.array([pos[0], pos[1], pos[2]])
+        # self._state.orientation = np.array([rot.x, rot.y, rot.z, rot.w])
 
-        # Signal the controller the updated state
-        if self._controller:
-            self._controller.update_state(self._state)
+        # # Signal the controller the updated state
+        # if self._controller:
+        #     self._controller.update_state(self._state)
+        pass
 
 
     def spawn_agent(self, usd_file, stage_name, init_pos, init_yaw):
 
-        # If there is no XForm primitive in the stage to hold all the people, create one
-        if not self._current_stage.GetPrimAtPath(Person.character_root_prim_path):
-            prims.create_prim(Person.character_root_prim_path, "Xform")
+        # Get the last name after the last slash in the stage name
+        # We only want the name of the character, not the full path
+        character_name = stage_name.split("/")[-1]
 
-        # If the base biped character is not present in the stage, spawn it
-        if not self._current_stage.GetPrimAtPath(Person.character_root_prim_path + "/Biped_Setup"):
-            prim = prims.create_prim(Person.character_root_prim_path + "/Biped_Setup", "Xform", usd_path=Person.assets_root_path + "/Biped_Setup.usd")
-            prim.GetAttribute("visibility").Set("invisible")
+        # Spawn the character in the stage using the NVIDIA replicar API (which is suprisingly similar to the original version I provided in this function in version 4.2.0)
+        CharacterUtil.load_character_usd_to_stage(usd_file, init_pos, init_yaw, character_name)
 
-        # Spawn the person in the world
-        self.prim = prims.create_prim(stage_name, "Xform", usd_path=usd_file)
-
-        # Set the initial position and orientation of the person
-        self.prim.GetAttribute("xformOp:translate").Set(Gf.Vec3d(float(init_pos[0]),float(init_pos[1]), float(init_pos[2])))
-
-        if type(self.prim.GetAttribute("xformOp:orient").Get()) == Gf.Quatf:
-            self.prim.GetAttribute("xformOp:orient").Set(Gf.Quatf(Gf.Rotation(Gf.Vec3d(0,0,1), float(init_yaw)).GetQuat()))
-        else:
-            self.prim.GetAttribute("xformOp:orient").Set(Gf.Rotation(Gf.Vec3d(0,0,1), float(init_yaw)).GetQuat())
-
-        # Get the Skeleton root of the character
-        self.character_skel_root, self.character_skel_root_stage_path = Person._transverse_prim(self._current_stage, self._stage_prefix)
-        
         # Add the current person to the person manager
         PeopleManager.get_people_manager().add_person(self._stage_prefix, self)
 
     def add_animation_graph_to_agent(self):
 
-        # Get the animation graph that we are going to add to the person
-        animation_graph = self._current_stage.GetPrimAtPath(Person.character_root_prim_path + "/Biped_Setup/CharacterAnimation/AnimationGraph")
-
-        # Remove the animation graph attribute if it exists
-        omni.kit.commands.execute("RemoveAnimationGraphAPICommand", paths=[Sdf.Path(self.character_skel_root.GetPrimPath())])
+        self.sim_manager.load_default_skeleton_and_animations()
         
-        # Add the animation graph to the character
-        omni.kit.commands.execute("ApplyAnimationGraphAPICommand", paths=[Sdf.Path(self.character_skel_root.GetPrimPath())], animation_graph_path=Sdf.Path(animation_graph.GetPrimPath()))
+        pass
+        # # Get the animation graph that we are going to add to the person
+        # animation_graph = self._current_stage.GetPrimAtPath(Person.character_root_prim_path + "/Biped_Setup/CharacterAnimation/AnimationGraph")
+
+        # # Remove the animation graph attribute if it exists
+        # omni.kit.commands.execute("RemoveAnimationGraphAPICommand", paths=[Sdf.Path(self.character_skel_root.GetPrimPath())])
+        
+        # # Add the animation graph to the character
+        # omni.kit.commands.execute("ApplyAnimationGraphAPICommand", paths=[Sdf.Path(self.character_skel_root.GetPrimPath())], animation_graph_path=Sdf.Path(animation_graph.GetPrimPath()))
 
 
     @staticmethod
