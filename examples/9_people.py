@@ -27,7 +27,7 @@ EXTENSIONS_PEOPLE = [
     #'omni.anim.navigation.bundle', 
     #'omni.anim.timeline',
     #'omni.anim.graph.bundle', 
-    #'omni.anim.graph.core', 
+    'omni.anim.graph.core', 
     #'omni.anim.graph.ui',
     #'omni.anim.retarget.bundle', 
     #'omni.anim.retarget.core',
