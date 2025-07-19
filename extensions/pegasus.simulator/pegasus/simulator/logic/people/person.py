@@ -10,7 +10,7 @@ from scipy.spatial.transform import Rotation
 
 # Low level APIs
 import carb
-from pxr import Sdf
+from pxr import Sdf, Usd, AnimGraphSchema
 
 # High level Isaac sim APIs
 import NavSchema
@@ -19,10 +19,13 @@ from omni.usd import get_stage_next_free_path
 from isaacsim.storage.native import get_assets_root_path
 
 # New imports from the replicator API
+import isaacsim.replicator.agent.core
 from isaacsim.replicator.agent.core.settings import PrimPaths
 from isaacsim.replicator.agent.core.stage_util import CharacterUtil
 from isaacsim.replicator.agent.core.simulation import SimulationManager
 
+
+from isaacsim.replicator.agent.core.verification import SimulationVerification
 
 # Extension APIs
 from pegasus.simulator.logic.state import State
@@ -103,8 +106,8 @@ class Person:
 
         # Set the controller for the person if any and initialize it
         self._controller = controller
-        #if self._controller:
-        #    self._controller.initialize(self)
+        if self._controller:
+           self._controller.initialize(self)
 
         # Set the backend for publishing the state of the person
         self._backend = backend
@@ -112,11 +115,11 @@ class Person:
             self._backend.initialize(self)
 
         # Add a callback to the physics engine to update the current state of the person
-        #self._world.add_physics_callback(self._stage_prefix + "/state", self.update_state)
+        self._world.add_physics_callback(self._stage_prefix + "/state", self.update_state)
 
         # Add the update method to the physics callback if the world was received
         # so that we can apply the new references to be tracked by the person
-        #self._world.add_physics_callback(self._stage_prefix + "/update", self.update)
+        self._world.add_physics_callback(self._stage_prefix + "/update", self.update)
 
         # Set the flag that signals if the simulation is running or not
         self._sim_running = False
@@ -250,11 +253,13 @@ class Person:
         # Add the current person to the person manager
         PeopleManager.get_people_manager().add_person(self._stage_prefix, self)
 
+        prim = self._current_stage.GetPrimAtPath("/World/Characters/person1/ManRoot/male_adult_construction_05")
+        AnimGraphSchema.AnimationGraphAPI.Apply(prim)
+
         # Get the handle to the character skeleton root prim
         self.character_skel_root, self.character_skel_root_stage_path = Person._transverse_prim(self._current_stage, self._stage_prefix)
 
-        # Update the navigation manager
-        #omni.kit.commands.execute("ApplyNavMeshAPICommand", prim_path=stage_name, api=NavSchema.NavMeshExcludeAPI)
+        omni.kit.commands.execute("ApplyNavMeshAPICommand", prim_path=stage_name, api=NavSchema.NavMeshExcludeAPI)
 
     def add_animation_graph_to_agent(self):
         
@@ -262,18 +267,27 @@ class Person:
         self.sim_manager.load_default_skeleton_and_animations()
 
         chararacter_skelroot_prim_list = CharacterUtil.get_characters_in_stage()
-        self.sim_manager.setup_animation_graph_to_character(chararacter_skelroot_prim_list)
+
+        self.sim_manager.setup_all_characters()
+
+        # Create the animation graph variables in the character skeleton root prim
+        
+        
+        # Setup the actual animation graph of the character
+        #self.sim_manager.setup_animation_graph_to_character(chararacter_skelroot_prim_list)
+
+        #SimulationVerification().verify_animation_graph()
 
         # The part bellow is based on "setup_animation_graph_to_character" from the replicator SimulationManager class
         # default_biped_prim = PrimPaths.biped_prim_path()
         # anim_graph_prim = CharacterUtil.get_anim_graph_from_character(self._current_stage.GetPrimAtPath(default_biped_prim))
 
-        self.sim_manager.setup_animation_graph_to_character([self.character_skel_root_stage_path])
+        #self.sim_manager.setup_animation_graph_to_character([self.character_skel_root_stage_path])
 
         # # Remove the animation graph attribute if it exists
         # omni.kit.commands.execute("RemoveAnimationGraphAPICommand", paths=[Sdf.Path(self.character_skel_root.GetPrimPath())])
 
-        # carb.log_warn(Sdf.Path(anim_graph_prim.GetPrimPath()))
+        # carb.log_warn(Sdf.Path(anim_graph_prim.GetPrimPath())) 
         # carb.log_warn(Sdf.Path(self.character_skel_root.GetPrimPath()))
 
         # # Add the animation graph to the character
