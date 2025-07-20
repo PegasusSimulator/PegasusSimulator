@@ -68,9 +68,9 @@ class NonlinearController(Backend):
 
         # Read the target trajectory from a CSV file inside the trajectories directory
         # if a trajectory is provided. Otherwise, just perform the hard-coded trajectory provided with this controller
+        self.index = 0
         if trajectory_file is not None:
             self.trajectory = self.read_trajectory_from_csv(trajectory_file)
-            self.index = 0
             self.max_index, _ = self.trajectory.shape
             self.total_time = 0.0
         # Use the built-in trajectory hard-coded for this controller
