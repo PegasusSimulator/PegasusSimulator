@@ -40,6 +40,7 @@ icon = "data/icon.png"
 "omni.isaac.core" = {}
 "omni.ui.scene" = {}
 "omni.kit.window.viewport" = {}
+"isaacsim.replicator.agent.core" = {}
 
 # Main python module this extension provides, it will be publicly available as "import pegasus.simulator".
 [[python.module]]
@@ -48,6 +49,9 @@ name = "pegasus.simulator"
 [python.pipapi]
 requirements = ["numpy", "scipy", "pymavlink", "pyyaml", "toml"]
 use_online_index = true
+
+[python.build-system]
+requires = ["setuptools"]
 
 [[test]]
 # Extra dependencies only to be used during test run
