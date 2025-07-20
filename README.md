@@ -53,7 +53,7 @@ This simulation framework is an open-source effort, started by me, Marcelo Jacin
 	* [João Pinto](https://github.com/jschpinto)
 * Ardupilot Integration (Experimental)
   * [Tomer Tiplitsky](https://github.com/TomerTip)
-  * [Tanner Gilbert] (https://github.com/TannerGilbert)
+  * [Tanner Gilbert](https://github.com/TannerGilbert)
 
 Also check the always up-to-date [Github contributors list](https://github.com/PegasusSimulator/PegasusSimulator/graphs/contributors) with all the open-source contributors.
 
