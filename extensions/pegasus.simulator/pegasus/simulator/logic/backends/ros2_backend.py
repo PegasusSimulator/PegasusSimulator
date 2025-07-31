@@ -70,6 +70,7 @@ class ROS2Backend(Backend):
             >>>  "pub_state": True,                             # Publish the state of the vehicle
             >>>  "pub_tf": False,                               # Publish the TF of the vehicle
             >>>  "sub_control": True,                           # Subscribe to the control topics
+            >>>  "use_sim_time": True}                          # Use simulation time published on /clock topic for the ROS2 node
         """
 
         # Save the configurations for this backend
@@ -95,6 +96,11 @@ class ROS2Backend(Backend):
 
         self.node = rclpy.create_node("simulator_vehicle_" + str(vehicle_id))
 
+        if (config.get("use_sim_time", False)):
+            self.node.undeclare_parameter("use_sim_time")  # Unset the parameter if it exists
+            # Declare use_sim_time to true if needed.
+            self.node.declare_parameter("use_sim_time", True)
+        
         # Initialize the publishers and subscribers
         self.initialize_publishers(config)
         self.initialize_subscribers()
