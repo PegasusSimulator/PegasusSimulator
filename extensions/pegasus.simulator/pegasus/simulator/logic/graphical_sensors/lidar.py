@@ -64,7 +64,7 @@ class Lidar(GraphicalSensor):
             "IsaacSensorCreateRtxLidar",
             path=self._lidar_name,
             parent=self._vehicle.prim_path + "/body",
-            config= self._sensor_configuration["sensor_configuration"],
+            config= self._sensor_configuration,
             translation=(self._position[0], self._position[1], self._position[2]),
             orientation=Gf.Quatd(self._orientation[3], self._orientation[0], self._orientation[1], self._orientation[2])
         )
