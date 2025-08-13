@@ -155,8 +155,8 @@ class MonocularCamera(GraphicalSensor):
             self._state["camera"] = self._camera
 
             # Check if we want to get the depth image
-            #if self._depth:
-            #    self._state["depth"] = self._camera.get_depth()
+            if self._depth:
+               self._state["depth"] = self._camera.get_depth()
 
             if self._camera.get_projection_type() == "pinhole":
                 self._state["intrinsics"] = self._camera.get_intrinsics_matrix()
