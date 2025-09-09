@@ -1,0 +1,5 @@
+from .PegasusMultirotorNode import PegasusMultirotorNode
+from .PegasusMultirotorNodeDatabase import PegasusMultirotorNodeDatabase
+
+# Register node database with OmniGraph
+PegasusMultirotorNodeDatabase.register(PegasusMultirotorNode)
