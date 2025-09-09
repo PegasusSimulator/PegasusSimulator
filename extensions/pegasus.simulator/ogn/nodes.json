@@ -1,0 +1,15 @@
+{
+  "extension": "pegasus.simulator",
+  "nodes": {
+    "PegasusMultirotorNode": {
+      "description": [
+        "This script node will initialize a MultiRotor drone in PegasusSim\n",
+        "Currently just empty placeholder classes"
+      ],
+      "version": 2,
+      "uiName": "Pegasus Multirotor Node",
+      "language": "Python",
+      "isVisible": true
+    }
+  }
+}

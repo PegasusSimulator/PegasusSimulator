@@ -33,6 +33,15 @@ preview_image = "data/preview.png"
 icon = "data/icon.png"
 
 # Use omni.ui to build simple UI
+feature = true
+writeTarget.kit = true
+support_level = "Core"
+
+# Watch Ogn nodes and Python files for hot reload
+[fswatcher.patterns]
+include = ["pegasus/simulator/ogn/python/nodes/*.ogn", "pegasus/simulator/ogn/python/nodes/*.py"]
+# exclude = ["Ogn*Database.py"]
+
 [dependencies]
 "omni.ui" = {}
 "omni.usd" = {}
@@ -41,6 +50,11 @@ icon = "data/icon.png"
 "omni.ui.scene" = {}
 "omni.kit.capture.viewport" = {}
 "isaacsim.replicator.agent.core" = {}
+"omni.graph.core" = {}
+"omni.graph" = {}
+"omni.graph.tools" = {}
+"omni.graph.action" = {}
+"omni.graph.ui" = {}
 
 # Main python module this extension provides, it will be publicly available as "import pegasus.simulator".
 [[python.module]]
@@ -49,6 +63,9 @@ name = "pegasus.simulator"
 [python.pipapi]
 requirements = ["numpy", "scipy", "pymavlink", "pyyaml", "toml"]
 use_online_index = true
+
+[[og.node.config]]
+path = "ogn/nodes.json"
 
 [python.build-system]
 requires = ["setuptools"]
