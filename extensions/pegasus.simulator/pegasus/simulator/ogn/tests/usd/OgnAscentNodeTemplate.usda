@@ -1,0 +1,53 @@
+#usda 1.0
+(
+    doc ="""Generated from node description file OgnAscentNode.ogn
+Contains templates for node types found in that file."""
+)
+
+def OmniGraph "TestGraph"
+{
+    token evaluator:type = "push"
+    int2 fileFormatVersion = (1, 3)
+    token flatCacheBacking = "Shared"
+    token pipelineStage = "pipelineStageSimulation"
+
+    def OmniGraphNode "Template_airlab.pegasus_AscentNode" (
+        docs="""This script node allows you to execute arbitrary Python code inside an OmniGraph.
+The compute function is defined by you at runtime and can be unique in every instance of a script node
+that you create. Inside that function you can access the database for the node, which is used for
+getting and setting all attribute values that you define.
+"""
+    )
+    {
+        token node:type = "airlab.pegasus.AscentNode"
+        int node:typeVersion = 2
+
+        # 4 attributes
+        custom uint inputs:execIn (
+            docs="""Signal to the graph that this node is ready to be executed."""
+        )
+        custom string inputs:script (
+            docs="""A string containing a Python script that may define code to be executed when the script node computes.
+            See the default and example scripts for more information."""
+        )
+        custom token inputs:scriptPath (
+            docs="""The path of a file containing a Python script that may define code to be executed when the script node computes.
+            See the default and example scripts for more info."""
+        )
+        custom bool inputs:usePath = false (
+            docs="""When true, the python script is read from the file specified in 'Script File Path' (*inputs:scriptPath*),
+            instead of the string in 'Inline Script' (*inputs:script*)."""
+        )
+
+        # 1 attribute
+        custom uint outputs:execOut (
+            docs="""Signal to the graph that execution can continue downstream."""
+        )
+
+        # 1 attribute
+        custom bool state:omni_initialized (
+            docs="""State attribute used to control when the script should be reloaded.
+            This should be set to false to trigger a reload of the script."""
+        )
+    }
+}
