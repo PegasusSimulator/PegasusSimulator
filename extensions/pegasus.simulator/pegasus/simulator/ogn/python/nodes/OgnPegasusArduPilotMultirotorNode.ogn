@@ -1,0 +1,35 @@
+{
+    "PegasusArduPilotMultirotorNode": {
+        "version": 2,
+        "description": [
+            "This ogn file is just a place-holder for the extension.toml\n"
+            "file to recognize the Pegasus Ascent Node and register it. To change\n"
+            "inputs change them in Database.py file."
+        ],
+        "language": "Python",
+        "uiName": "Script Node",
+        "categories": ["script"],
+        "scheduling": ["usd-write"],
+        "inputs": {
+            "execIn": {
+                "type": "execution",
+                "description": "Signal to the graph that this node is ready to be executed."
+            }
+        },
+        "outputs": {
+            "execOut": {
+                "type": "execution",
+                "description": "Signal to the graph that execution can continue downstream."
+            }
+        },
+        "state": {
+            "omni_initialized": {
+                "type": "bool",
+                "description": [
+                    "State attribute used to control when the script should be reloaded.",
+                    "This should be set to false to trigger a reload of the script."
+                ]
+            }
+        }
+    }
+}
