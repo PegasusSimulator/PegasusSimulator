@@ -68,6 +68,7 @@ class Multirotor(Vehicle):
         init_pos=[0.0, 0.0, 0.07],
         init_orientation=[0.0, 0.0, 0.0, 1.0],
         config=MultirotorConfig(),
+        spawn_prim=True
     ):
         """Initializes the multirotor object
 
@@ -81,7 +82,7 @@ class Multirotor(Vehicle):
         """
 
         # 1. Initiate the Vehicle object itself
-        super().__init__(stage_prefix, usd_file, init_pos, init_orientation, config.sensors, config.graphical_sensors, config.graphs, config.backends)
+        super().__init__(stage_prefix, usd_file, init_pos, init_orientation, config.sensors, config.graphical_sensors, config.graphs, config.backends, spawn_prim)
 
         # 2. Setup the dynamics of the system - get the thrust curve of the vehicle from the configuration
         self._thrusters = config.thrust_curve
