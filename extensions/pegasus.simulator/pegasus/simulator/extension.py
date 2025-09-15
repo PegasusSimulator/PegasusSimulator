@@ -42,6 +42,13 @@ class Pegasus_SimulatorExtension(omni.ext.IExt):
 
         carb.log_info("Pegasus Simulator is starting up")
 
+        # Import and register the OmniGraph nodes
+        try:
+            from pegasus.simulator.ogn.python.nodes.PegasusMultirotorNode import PegasusMultirotorNodeDatabase
+            carb.log_info("Pegasus OmniGraph nodes imported successfully")
+        except Exception as e:
+            carb.log_error(f"Failed to import Pegasus OmniGraph nodes: {e}")
+
         # Save the extension id
         self._ext_id = ext_id
 
