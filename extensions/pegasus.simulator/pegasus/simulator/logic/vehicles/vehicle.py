@@ -54,7 +54,8 @@ class Vehicle(Robot):
         sensors=[],
         graphical_sensors=[],
         graphs=[],
-        backends=[]
+        backends=[],
+        spawn_prim=True
     ):
         """
         Class that initializes a vehicle in the isaac sim's curent stage
@@ -70,18 +71,23 @@ class Vehicle(Robot):
         self._world = PegasusInterface().world
         self._current_stage = self._world.stage
 
-        # Save the name with which the vehicle will appear in the stage
-        # and the name of the .usd file that contains its description
-        self._stage_prefix = get_stage_next_free_path(self._current_stage, stage_prefix, False)
-        self._usd_file = usd_path
+        if spawn_prim:
+            # Save the name with which the vehicle will appear in the stage
+            # and the name of the .usd file that contains its description
+            self._stage_prefix = get_stage_next_free_path(self._current_stage, stage_prefix, False)
+            self._usd_file = usd_path
+
+            # Spawn the vehicle primitive in the world's stage
+            self._prim = define_prim(self._stage_prefix, "Xform")
+            self._prim = get_prim_at_path(self._stage_prefix) # TODO: is this necessary?
+            self._prim.GetReferences().AddReference(self._usd_file)
+        else:
+            # Assume the prim already exists in the stage and just get its handle
+            self._stage_prefix = stage_prefix
+            self._prim = get_prim_at_path(self._stage_prefix)
 
         # Get the vehicle name by taking the last part of vehicle stage prefix
         self._vehicle_name = self._stage_prefix.rpartition("/")[-1]
-
-        # Spawn the vehicle primitive in the world's stage
-        self._prim = define_prim(self._stage_prefix, "Xform")
-        self._prim = get_prim_at_path(self._stage_prefix)
-        self._prim.GetReferences().AddReference(self._usd_file)
 
         # Initialize the "Robot" class
         # Note: we need to change the rotation to have qw first, because NVidia
