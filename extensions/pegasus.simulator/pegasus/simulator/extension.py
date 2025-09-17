@@ -105,9 +105,10 @@ class Pegasus_SimulatorExtension(omni.ext.IExt):
                 # for prim in stage.Traverse():
                 #     print(prim.GetPath())
                 # set the pegasus world to use this stage
-                asyncio.ensure_future(self.set_pegasus_world_and_physics())
+                asyncio.ensure_future(self.set_current_world_to_pegasus_with_physics())
     
-    async def set_pegasus_world_and_physics(self):
+    
+    async def set_current_world_to_pegasus_with_physics(self):
         # set the pegasus world to use the current stage
         self.pg._world = World.instance()
 
@@ -123,36 +124,104 @@ class Pegasus_SimulatorExtension(omni.ext.IExt):
         elif self.pg.world.get_physics_context() is None:
             await self.pg.world.initialize_simulation_context_async()
 
-        # check if the world settings match the required ones
-        if (
-            self.pg.world.get_physics_context() is not None
-            and self.pg.world.get_physics_dt()
-            != self.pg._world_settings["physics_dt"]
-            or self.pg.world.get_rendering_dt()
-            != self.pg._world_settings["rendering_dt"]
-        ):
-            carb.log_warn(
-                "The physics and rendering dt of the world don't match Pegasus required settings. "
-            )
-            print(
-                f"World physics dt: {self.pg.world.get_physics_dt()}, World rendering dt: {self.pg.world.get_rendering_dt()}"
-            )
-            print("Updating the physics and rendering dt of the world")
-            self.pg.world.set_simulation_dt(physics_dt=self.pg._world_settings["physics_dt"], rendering_dt=self.pg._world_settings["rendering_dt"])
+        # all must wait until after the world is initialized
 
-        if (
+        # Check if the world settings match the required ones
+        physics_dt_mismatch = (
+            self.pg.world.get_physics_context() is not None
+            and self.pg.world.get_physics_dt() != self.pg._world_settings["physics_dt"]
+        )
+        rendering_dt_mismatch = (
+            self.pg.world.get_rendering_dt() != self.pg._world_settings["rendering_dt"]
+        )
+        units_mismatch = (
             UsdGeom.GetStageMetersPerUnit(self.pg.world.stage)
             != self.pg._world_settings["stage_units_in_meters"]
-        ):
-            carb.log_warn(
-                "The stage units don't match Pegasus required settings. "
-            )
-            print(
-                f"Stage units: {self.pg.world.stage.GetRootLayer().GetMetersPerUnit()}"
-            )
-            print("Updating the stage units")
-            set_stage_units(self.pg.world.stage, self.pg._world_settings["stage_units_in_meters"])
+        )
 
+        if physics_dt_mismatch or rendering_dt_mismatch or units_mismatch:
+            await self._show_settings_warning_popup(physics_dt_mismatch, rendering_dt_mismatch, units_mismatch)
+
+    async def _show_settings_warning_popup(self, physics_dt_mismatch, rendering_dt_mismatch, units_mismatch):
+        """Show a popup warning about mismatched world settings."""
+        
+        def on_update_settings():
+            """Callback to update the world settings to match Pegasus requirements."""
+            if physics_dt_mismatch or rendering_dt_mismatch:
+                carb.log_info("Updating the physics and rendering dt of the world")
+                self.pg.world.set_simulation_dt(
+                    physics_dt=self.pg._world_settings["physics_dt"], 
+                    rendering_dt=self.pg._world_settings["rendering_dt"]
+                )
+            
+            if units_mismatch:
+                carb.log_info("Updating the stage units")
+                set_stage_units(self.pg.world.stage, self.pg._world_settings["stage_units_in_meters"])
+            
+            popup_window.visible = False
+        
+        def on_keep_current():
+            """Callback to keep current settings."""
+            carb.log_info("Keeping current world settings")
+            popup_window.visible = False
+        
+        def on_close():
+            """Callback when popup is closed."""
+            popup_window.visible = False
+
+        # Create the popup window
+        popup_window = ui.Window(
+            "World Settings Mismatch", 
+            width=500, 
+            height=300,
+            flags=ui.WINDOW_FLAGS_NO_RESIZE | ui.WINDOW_FLAGS_MODAL
+        )
+        
+        with popup_window.frame:
+            with ui.VStack(spacing=10):
+                ui.Label("Warning: World settings don't match Pegasus recommended settings!", 
+                        style={"color": ui.color.yellow, "font_size": 16})
+                
+                ui.Spacer(height=10)
+                
+                # Show specific mismatches
+                if physics_dt_mismatch:
+                    ui.Label(f"Physics dt: Current = {self.pg.world.get_physics_dt():.6f}, "
+                            f"Recommended = {self.pg._world_settings['physics_dt']:.6f}")
+                
+                if rendering_dt_mismatch:
+                    ui.Label(f"Rendering dt: Current = {self.pg.world.get_rendering_dt():.6f}, "
+                            f"Recommended = {self.pg._world_settings['rendering_dt']:.6f}")
+                
+                if units_mismatch:
+                    current_units = UsdGeom.GetStageMetersPerUnit(self.pg.world.stage)
+                    required_units = self.pg._world_settings["stage_units_in_meters"]
+                    ui.Label(f"Stage units: Current = {current_units}, Recommended = {required_units}")
+                
+                ui.Spacer(height=10)
+                
+                ui.Label("How would you like to proceed?", style={"font_size": 14})
+                
+                ui.Spacer(height=10)
+                
+                # Buttons
+                with ui.HStack(spacing=10):
+                    ui.Spacer()
+                    
+                    update_btn = ui.Button("Update to Pegasus Settings", 
+                                         clicked_fn=on_update_settings,
+                                         style={"background_color": 0xFF4CAF50})
+                    update_btn.width = ui.Pixel(180)
+                    
+                    keep_btn = ui.Button("Keep Current Settings", 
+                                       clicked_fn=on_keep_current,
+                                       style={"background_color": 0xFF2196F3})
+                    keep_btn.width = ui.Pixel(150)
+                    
+                    ui.Spacer()
+        
+        popup_window.set_visibility_changed_fn(lambda visible: on_close() if not visible else None)
+        popup_window.visible = True
 
     def show_window(self, menu, show):
         """
