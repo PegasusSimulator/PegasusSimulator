@@ -62,7 +62,7 @@ PX4InputIndex = IntEnum(
     {name: i for i, name in enumerate(PX4_MULTIROTOR_FIELDS)}
 )
 
-class OgnPegasusPX4MultirotorNodeDatabase(og.Database):
+class OgnPegasusMultirotorNodePX4Database(og.Database):
     """Helper class providing simplified access to data on nodes of type pegasus.simulator.PegasusPX4MultirotorNode
 
     Class Members:
@@ -117,7 +117,7 @@ class OgnPegasusPX4MultirotorNodeDatabase(og.Database):
             ("outputs:execOut", "execution", 0, None, "Signal to the graph that execution can continue downstream.", {}, True, None, False, ""),
             
             # Basic vehicle configuration
-            ("inputs:dronePrim", "string", 0, "Drone Prim", "Stage prefix for the drone vehicle.", {}, True, "/World/Quadrotor", False, ""),
+            ("inputs:dronePrim", "string", 0, "Drone Prim", "Stage prefix for the drone vehicle.", {}, True, "/World/drone/Quadrotor", False, ""),
             ("inputs:vehicleID", "int", 0, "Vehicle ID", "Unique identifier for the vehicle.", {}, True, 0, False, ""),
             ("inputs:usdFile", "string", 0, "USD File", "Path to the USD file for the drone model.", {}, True, "/root/Documents/Kit/shared/exts/pegasus.simulator/pegasus/simulator/assets/Robots/Iris/iris.usd", False, ""),
             
@@ -444,18 +444,18 @@ class OgnPegasusPX4MultirotorNodeDatabase(og.Database):
     def __init__(self, node):
         super().__init__(node)
         dynamic_attributes = self.dynamic_attribute_data(node, og.AttributePortType.ATTRIBUTE_PORT_TYPE_INPUT)
-        self.inputs = OgnPegasusPX4MultirotorNodeDatabase.ValuesForInputs(node, self.attributes.inputs, dynamic_attributes)
+        self.inputs = OgnPegasusMultirotorNodePX4Database.ValuesForInputs(node, self.attributes.inputs, dynamic_attributes)
         dynamic_attributes = self.dynamic_attribute_data(node, og.AttributePortType.ATTRIBUTE_PORT_TYPE_OUTPUT)
-        self.outputs = OgnPegasusPX4MultirotorNodeDatabase.ValuesForOutputs(node, self.attributes.outputs, dynamic_attributes)
+        self.outputs = OgnPegasusMultirotorNodePX4Database.ValuesForOutputs(node, self.attributes.outputs, dynamic_attributes)
         dynamic_attributes = self.dynamic_attribute_data(node, og.AttributePortType.ATTRIBUTE_PORT_TYPE_STATE)
-        self.state = OgnPegasusPX4MultirotorNodeDatabase.ValuesForState(node, self.attributes.state, dynamic_attributes)
+        self.state = OgnPegasusMultirotorNodePX4Database.ValuesForState(node, self.attributes.state, dynamic_attributes)
 
     class abi:
         """Class defining the ABI interface for the node type"""
 
         @staticmethod
         def get_node_type():
-            get_node_type_function = getattr(OgnPegasusPX4MultirotorNodeDatabase.NODE_TYPE_CLASS, "get_node_type", None)
+            get_node_type_function = getattr(OgnPegasusMultirotorNodePX4Database.NODE_TYPE_CLASS, "get_node_type", None)
             if callable(get_node_type_function):
                 return get_node_type_function()
             return "pegasus.simulator.PegasusPX4MultirotorNode"
@@ -466,19 +466,19 @@ class OgnPegasusPX4MultirotorNodeDatabase(og.Database):
                 return True
             
             try:
-                per_node_data = OgnPegasusPX4MultirotorNodeDatabase.PER_NODE_DATA[node.node_id()]
+                per_node_data = OgnPegasusMultirotorNodePX4Database.PER_NODE_DATA[node.node_id()]
                 db = per_node_data.get("_db")
                 if db is None:
-                    db = OgnPegasusPX4MultirotorNodeDatabase(node)
+                    db = OgnPegasusMultirotorNodePX4Database(node)
                     per_node_data["_db"] = db
                 if not database_valid():
                     per_node_data["_db"] = None
                     return False
             except Exception as e:
-                db = OgnPegasusPX4MultirotorNodeDatabase(node)
+                db = OgnPegasusMultirotorNodePX4Database(node)
 
             try:
-                compute_function = getattr(OgnPegasusPX4MultirotorNodeDatabase.NODE_TYPE_CLASS, "compute", None)
+                compute_function = getattr(OgnPegasusMultirotorNodePX4Database.NODE_TYPE_CLASS, "compute", None)
                 
                 if callable(compute_function) and compute_function.__code__.co_argcount > 1:
                     return compute_function(context, node)
@@ -486,7 +486,7 @@ class OgnPegasusPX4MultirotorNodeDatabase(og.Database):
                 db.inputs._prefetch()
                 db.inputs._setting_locked = True
                 with og.in_compute():
-                    return OgnPegasusPX4MultirotorNodeDatabase.NODE_TYPE_CLASS.compute(db)
+                    return OgnPegasusMultirotorNodePX4Database.NODE_TYPE_CLASS.compute(db)
             except Exception as error:
                 print('Error in PX4 compute:', error)
                 stack_trace = "".join(traceback.format_tb(sys.exc_info()[2].tb_next))
@@ -498,12 +498,12 @@ class OgnPegasusPX4MultirotorNodeDatabase(og.Database):
 
         @staticmethod
         def initialize(context, node):
-            OgnPegasusPX4MultirotorNodeDatabase._initialize_per_node_data(node)
-            initialize_function = getattr(OgnPegasusPX4MultirotorNodeDatabase.NODE_TYPE_CLASS, "initialize", None)
+            OgnPegasusMultirotorNodePX4Database._initialize_per_node_data(node)
+            initialize_function = getattr(OgnPegasusMultirotorNodePX4Database.NODE_TYPE_CLASS, "initialize", None)
             if callable(initialize_function):
                 initialize_function(context, node)
 
-            per_node_data = OgnPegasusPX4MultirotorNodeDatabase.PER_NODE_DATA[node.node_id()]
+            per_node_data = OgnPegasusMultirotorNodePX4Database.PER_NODE_DATA[node.node_id()]
 
             def on_connection_or_disconnection(*args):
                 per_node_data["_db"] = None
@@ -513,34 +513,34 @@ class OgnPegasusPX4MultirotorNodeDatabase(og.Database):
 
         @staticmethod
         def release(node):
-            release_function = getattr(OgnPegasusPX4MultirotorNodeDatabase.NODE_TYPE_CLASS, "release", None)
+            release_function = getattr(OgnPegasusMultirotorNodePX4Database.NODE_TYPE_CLASS, "release", None)
             if callable(release_function):
                 release_function(node)
-            OgnPegasusPX4MultirotorNodeDatabase._release_per_node_data(node)
+            OgnPegasusMultirotorNodePX4Database._release_per_node_data(node)
 
         @staticmethod
         def init_instance(node, graph_instance_id):
-            init_instance_function = getattr(OgnPegasusPX4MultirotorNodeDatabase.NODE_TYPE_CLASS, "init_instance", None)
+            init_instance_function = getattr(OgnPegasusMultirotorNodePX4Database.NODE_TYPE_CLASS, "init_instance", None)
             if callable(init_instance_function):
                 init_instance_function(node, graph_instance_id)
 
         @staticmethod
         def release_instance(node, graph_instance_id):
-            release_instance_function = getattr(OgnPegasusPX4MultirotorNodeDatabase.NODE_TYPE_CLASS, "release_instance", None)
+            release_instance_function = getattr(OgnPegasusMultirotorNodePX4Database.NODE_TYPE_CLASS, "release_instance", None)
             if callable(release_instance_function):
                 release_instance_function(node, graph_instance_id)
-            OgnPegasusPX4MultirotorNodeDatabase._release_per_node_instance_data(node, graph_instance_id)
+            OgnPegasusMultirotorNodePX4Database._release_per_node_instance_data(node, graph_instance_id)
 
         @staticmethod
         def update_node_version(context, node, old_version, new_version):
-            update_node_version_function = getattr(OgnPegasusPX4MultirotorNodeDatabase.NODE_TYPE_CLASS, "update_node_version", None)
+            update_node_version_function = getattr(OgnPegasusMultirotorNodePX4Database.NODE_TYPE_CLASS, "update_node_version", None)
             if callable(update_node_version_function):
                 return update_node_version_function(context, node, old_version, new_version)
             return False
 
         @staticmethod
         def initialize_type(node_type):
-            initialize_type_function = getattr(OgnPegasusPX4MultirotorNodeDatabase.NODE_TYPE_CLASS, "initialize_type", None)
+            initialize_type_function = getattr(OgnPegasusMultirotorNodePX4Database.NODE_TYPE_CLASS, "initialize_type", None)
             needs_initializing = True
             if callable(initialize_type_function):
                 needs_initializing = initialize_type_function(node_type)
@@ -556,12 +556,12 @@ class OgnPegasusPX4MultirotorNodeDatabase(og.Database):
                 __hints = node_type.get_scheduling_hints()
                 if __hints is not None:
                     __hints.set_data_access(og.eAccessLocation.E_USD, og.eAccessType.E_WRITE)
-                OgnPegasusPX4MultirotorNodeDatabase.INTERFACE.add_to_node_type(node_type)
+                OgnPegasusMultirotorNodePX4Database.INTERFACE.add_to_node_type(node_type)
                 node_type.set_has_state(True)
 
         @staticmethod
         def on_connection_type_resolve(node):
-            on_connection_type_resolve_function = getattr(OgnPegasusPX4MultirotorNodeDatabase.NODE_TYPE_CLASS, "on_connection_type_resolve", None)
+            on_connection_type_resolve_function = getattr(OgnPegasusMultirotorNodePX4Database.NODE_TYPE_CLASS, "on_connection_type_resolve", None)
             if callable(on_connection_type_resolve_function):
                 on_connection_type_resolve_function(node)
 
@@ -570,8 +570,8 @@ class OgnPegasusPX4MultirotorNodeDatabase(og.Database):
     @staticmethod
     def register(node_type_class):
         print("PX4 node type class", node_type_class, type(node_type_class))
-        OgnPegasusPX4MultirotorNodeDatabase.NODE_TYPE_CLASS = node_type_class
-        og.register_node_type(OgnPegasusPX4MultirotorNodeDatabase.abi, 2)
+        OgnPegasusMultirotorNodePX4Database.NODE_TYPE_CLASS = node_type_class
+        og.register_node_type(OgnPegasusMultirotorNodePX4Database.abi, 2)
 
     @staticmethod
     def deregister():

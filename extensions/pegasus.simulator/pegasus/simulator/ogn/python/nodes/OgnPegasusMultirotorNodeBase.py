@@ -61,17 +61,17 @@ def timeline_callback(event):
         drone_sim_dict = {}
 
 
-class OgnPegasusMultirotorBaseNodeState:
+class OgnPegasusMultirotorNodeBaseState:
     def __init__(self):
         self.node_initialized: bool = False  # Flag used to check if the per-instance node state is initialized.
 
 
-class OgnPegasusMultirotorBaseNode:
+class OgnPegasusMultirotorNodeBase:
     """Base class for Pegasus Multirotor OmniGraph nodes"""
     
     @staticmethod
     def internal_state():
-        return OgnPegasusMultirotorBaseNodeState()
+        return OgnPegasusMultirotorNodeBaseState()
 
     @staticmethod
     def _is_initialized(node: og.Node) -> bool:
@@ -92,13 +92,13 @@ class OgnPegasusMultirotorBaseNode:
             # If shared_internal_state doesn't exist, create a simple state
             pass
 
-        OgnPegasusMultirotorBaseNode._set_initialized(node, False)
+        OgnPegasusMultirotorNodeBase._set_initialized(node, False)
 
     @staticmethod
     def release(node: og.Node):
         """Release node resources"""
         # Clean up drone simulation
-        OgnPegasusMultirotorBaseNode.try_cleanup(node)
+        OgnPegasusMultirotorNodeBase.try_cleanup(node)
 
     @staticmethod
     def release_instance(node, graph_instance_id):
@@ -106,7 +106,7 @@ class OgnPegasusMultirotorBaseNode:
         is deleted.
         """
         # Same logic as when the reset button is pressed
-        OgnPegasusMultirotorBaseNode.try_cleanup(node)
+        OgnPegasusMultirotorNodeBase.try_cleanup(node)
 
     @staticmethod
     def try_cleanup(node: og.Node):
@@ -114,7 +114,7 @@ class OgnPegasusMultirotorBaseNode:
         global drone_sim_dict
         
         # Skip if not setup in the first place or already cleaned up
-        if not OgnPegasusMultirotorBaseNode._is_initialized(node):
+        if not OgnPegasusMultirotorNodeBase._is_initialized(node):
             return
 
         node_id = node.node_id()
@@ -140,7 +140,7 @@ class OgnPegasusMultirotorBaseNode:
                 print(f"Error during cleanup for node {node_id}: {e}")
                 traceback.print_exc()
         
-        OgnPegasusMultirotorBaseNode._set_initialized(node, False)
+        OgnPegasusMultirotorNodeBase._set_initialized(node, False)
 
     @staticmethod
     def _print_stacktrace(db):
@@ -196,7 +196,12 @@ class OgnPegasusMultirotorBaseNode:
     def compute_base(db, backend_class, backend_config_class, create_config_func) -> bool:
         """Base compute method that handles common drone spawning and execution"""
         global drone_sim_dict, initialized_timeline_callback
-        
+
+        print("DATABASE", db)
+        print("Drone Prim: " + db.inputs.dronePrim)
+        print("Vehicle ID: " + str(db.inputs.vehicleID))
+
+
         # Initialize timeline callback if not already done
         if not initialized_timeline_callback:
             initialized_timeline_callback = True
@@ -225,7 +230,7 @@ class OgnPegasusMultirotorBaseNode:
                     backend = backend_class(config=backend_config)
 
                     # Create multirotor vehicle
-                    multirotor, multirotor_config = OgnPegasusMultirotorBaseNode.create_multirotor(db, backend)
+                    multirotor, multirotor_config = OgnPegasusMultirotorNodeBase.create_multirotor(db, backend)
 
                     # Store drone simulation data
                     drone_sim_dict[node_id] = {
