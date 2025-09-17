@@ -58,7 +58,7 @@ def spawn_px4_multirotor_node(
     zero_position_armed_3: float = 100.0,
 ):
     """
-    Spawn a PegasusPX4MultirotorNode in OmniGraph with OnTick,
+    Spawn a PegasusMultirotorPX4Node in OmniGraph with OnTick,
     setting all inputs with default values. Safe to call multiple times.
     """
     drone_prim = get_stage_next_free_path(PegasusInterface().world.stage, drone_prim, False)
@@ -80,7 +80,7 @@ def spawn_px4_multirotor_node(
         # {"graph_path": px4_node_path.rsplit("/", 1)[0]},
         {"graph_path": graph_path},
         {og.Controller.Keys.CREATE_NODES: [
-            (node_name, "pegasus.simulator.PegasusPX4MultirotorNode"), 
+            (node_name, "pegasus.simulator.PegasusMultirotorPX4Node"), 
             # ("OnTick", "omni.graph.action.OnTick"),
         ]}
     )
