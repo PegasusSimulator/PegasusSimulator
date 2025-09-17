@@ -81,7 +81,7 @@ def spawn_px4_multirotor_node(
         {"graph_path": graph_path},
         {og.Controller.Keys.CREATE_NODES: [
             (node_name, "pegasus.simulator.PegasusPX4MultirotorNode"), 
-            ("OnTick", "omni.graph.action.OnTick"),
+            # ("OnTick", "omni.graph.action.OnTick"),
         ]}
     )
 

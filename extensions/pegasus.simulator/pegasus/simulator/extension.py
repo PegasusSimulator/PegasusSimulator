@@ -23,10 +23,11 @@ import omni.ui as ui
 import omni.timeline
 
 from omni.kit.viewport.utility import get_active_viewport
+from isaacsim.core.api import World
 
 # Pegasus Extension Files and API
-from pegasus.simulator.params import MENU_PATH, WINDOW_TITLE
-#from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
+from pegasus.simulator.params import MENU_PATH, WINDOW_TITLE, DEFAULT_WORLD_SETTINGS
+from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 
 # Setting up the UI for the extension's Widget
 from pegasus.simulator.ui.ui_window import WidgetWindow
@@ -42,12 +43,14 @@ class Pegasus_SimulatorExtension(omni.ext.IExt):
 
         carb.log_info("Pegasus Simulator is starting up")
 
+
+        # Create the Pegasus interface that manages the simulation
+        pg = PegasusInterface()
+        pg._world_settings = DEFAULT_WORLD_SETTINGS
+        pg.initialize_world()
+        print("Pegasus World is", pg._world)
+
         # Import and register the OmniGraph nodes
-        try:
-            from pegasus.simulator.ogn.python.nodes.PegasusMultirotorNode import PegasusMultirotorNodeDatabase
-            carb.log_info("Pegasus OmniGraph nodes imported successfully")
-        except Exception as e:
-            carb.log_error(f"Failed to import Pegasus OmniGraph nodes: {e}")
 
         # Save the extension id
         self._ext_id = ext_id
