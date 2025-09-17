@@ -101,7 +101,7 @@ class PegasusApp:
 
         # Launch one of the worlds provided by NVIDIA
         #self.pg.load_environment(SIMULATION_ENVIRONMENTS["Curved Gridroom"])
-        self.pg.load_asset(SIMULATION_ENVIRONMENTS["Curved Gridroom"], "/World/layout")
+        self.pg.load_asset(SIMULATION_ENVIRONMENTS["Curved Gridroom"], "/World/stage")
 
         # Check the available assets for people
         people_assets_list = Person.get_character_asset_list()
