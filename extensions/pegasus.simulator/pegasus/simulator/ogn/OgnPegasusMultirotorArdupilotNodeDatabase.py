@@ -1,4 +1,4 @@
-"""Support for simplified access to data on nodes of type pegasus.simulator.PegasusArduPilotMultirotorNode
+"""Support for simplified access to data on nodes of type pegasus.simulator.PegasusMultirotorArduPilotNode
 
 ArduPilot-specific Pegasus Multirotor OmniGraph Node Database
 Provides comprehensive interface for all ArduPilot backend configuration parameters.
@@ -20,7 +20,7 @@ from omni.isaac.core.utils.stage import get_current_stage
 from omni.isaac.core.utils.prims import define_prim, get_prim_at_path
 
 
-"""Python module for OGN node type pegasus.simulator.PegasusArduPilotMultirotor. DO NOT EDIT MANUALLY."""
+"""Python module for OGN node type pegasus.simulator.PegasusMultirotorArduPilot. DO NOT EDIT MANUALLY."""
 
 import carb
 import sys
@@ -80,7 +80,7 @@ ArduPilotInputIndex = IntEnum(
     {name: i for i, name in enumerate(ARDUPILOT_FIELDS)}
 )
 
-class OgnPegasusMultirotorNodeArduPilotDatabase(og.Database):    # Imprint the generator and target ABI versions in the file for JIT generation
+class OgnPegasusMultirotorArduPilotNodeDatabase(og.Database):    # Imprint the generator and target ABI versions in the file for JIT generation
     GENERATOR_VERSION = (1, 76, 0)
     TARGET_VERSION = (2, 170, 0)
 
@@ -483,21 +483,21 @@ class OgnPegasusMultirotorNodeArduPilotDatabase(og.Database):    # Imprint the g
     def __init__(self, node):
         super().__init__(node)
         dynamic_attributes = self.dynamic_attribute_data(node, og.AttributePortType.ATTRIBUTE_PORT_TYPE_INPUT)
-        self.inputs = OgnPegasusMultirotorNodeArduPilotDatabase.ValuesForInputs(node, self.attributes.inputs, dynamic_attributes)
+        self.inputs = OgnPegasusMultirotorArduPilotNodeDatabase.ValuesForInputs(node, self.attributes.inputs, dynamic_attributes)
         dynamic_attributes = self.dynamic_attribute_data(node, og.AttributePortType.ATTRIBUTE_PORT_TYPE_OUTPUT)
-        self.outputs = OgnPegasusMultirotorNodeArduPilotDatabase.ValuesForOutputs(node, self.attributes.outputs, dynamic_attributes)
+        self.outputs = OgnPegasusMultirotorArduPilotNodeDatabase.ValuesForOutputs(node, self.attributes.outputs, dynamic_attributes)
         dynamic_attributes = self.dynamic_attribute_data(node, og.AttributePortType.ATTRIBUTE_PORT_TYPE_STATE)
-        self.state = OgnPegasusMultirotorNodeArduPilotDatabase.ValuesForState(node, self.attributes.state, dynamic_attributes)
+        self.state = OgnPegasusMultirotorArduPilotNodeDatabase.ValuesForState(node, self.attributes.state, dynamic_attributes)
 
     class abi:
         """Class defining the ABI interface for the node type"""
 
         @staticmethod
         def get_node_type():
-            get_node_type_function = getattr(OgnPegasusMultirotorNodeArduPilotDatabase.NODE_TYPE_CLASS, "get_node_type", None)
+            get_node_type_function = getattr(OgnPegasusMultirotorArduPilotNodeDatabase.NODE_TYPE_CLASS, "get_node_type", None)
             if callable(get_node_type_function):
                 return get_node_type_function()
-            return "pegasus.simulator.PegasusArduPilotMultirotorNode"
+            return "pegasus.simulator.PegasusMultirotorArduPilotNode"
 
         @staticmethod
         def compute(context, node):
@@ -505,19 +505,19 @@ class OgnPegasusMultirotorNodeArduPilotDatabase(og.Database):    # Imprint the g
                 return True
 
             try:
-                per_node_data = OgnPegasusMultirotorNodeArduPilotDatabase.PER_NODE_DATA[node.node_id()]
+                per_node_data = OgnPegasusMultirotorArduPilotNodeDatabase.PER_NODE_DATA[node.node_id()]
                 db = per_node_data.get("_db")
                 if db is None:
-                    db = OgnPegasusMultirotorNodeArduPilotDatabase(node)
+                    db = OgnPegasusMultirotorArduPilotNodeDatabase(node)
                     per_node_data["_db"] = db
                 if not database_valid():
                     per_node_data["_db"] = None
                     return False
             except Exception as e:
-                db = OgnPegasusMultirotorNodeArduPilotDatabase(node)
+                db = OgnPegasusMultirotorArduPilotNodeDatabase(node)
 
             try:
-                compute_function = getattr(OgnPegasusMultirotorNodeArduPilotDatabase.NODE_TYPE_CLASS, "compute", None)
+                compute_function = getattr(OgnPegasusMultirotorArduPilotNodeDatabase.NODE_TYPE_CLASS, "compute", None)
                 
                 if callable(compute_function) and compute_function.__code__.co_argcount > 1:
                     return compute_function(context, node)
@@ -525,7 +525,7 @@ class OgnPegasusMultirotorNodeArduPilotDatabase(og.Database):    # Imprint the g
                 db.inputs._prefetch()
                 db.inputs._setting_locked = True
                 with og.in_compute():
-                    return OgnPegasusMultirotorNodeArduPilotDatabase.NODE_TYPE_CLASS.compute(db)
+                    return OgnPegasusMultirotorArduPilotNodeDatabase.NODE_TYPE_CLASS.compute(db)
             except Exception as error:
                 print('Error in ArduPilot compute:', error)
                 stack_trace = "".join(traceback.format_tb(sys.exc_info()[2].tb_next))
@@ -537,12 +537,12 @@ class OgnPegasusMultirotorNodeArduPilotDatabase(og.Database):    # Imprint the g
 
         @staticmethod
         def initialize(context, node):
-            OgnPegasusMultirotorNodeArduPilotDatabase._initialize_per_node_data(node)
-            initialize_function = getattr(OgnPegasusMultirotorNodeArduPilotDatabase.NODE_TYPE_CLASS, "initialize", None)
+            OgnPegasusMultirotorArduPilotNodeDatabase._initialize_per_node_data(node)
+            initialize_function = getattr(OgnPegasusMultirotorArduPilotNodeDatabase.NODE_TYPE_CLASS, "initialize", None)
             if callable(initialize_function):
                 initialize_function(context, node)
 
-            per_node_data = OgnPegasusMultirotorNodeArduPilotDatabase.PER_NODE_DATA[node.node_id()]
+            per_node_data = OgnPegasusMultirotorArduPilotNodeDatabase.PER_NODE_DATA[node.node_id()]
 
             def on_connection_or_disconnection(*args):
                 per_node_data["_db"] = None
@@ -552,34 +552,34 @@ class OgnPegasusMultirotorNodeArduPilotDatabase(og.Database):    # Imprint the g
 
         @staticmethod
         def release(node):
-            release_function = getattr(OgnPegasusMultirotorNodeArduPilotDatabase.NODE_TYPE_CLASS, "release", None)
+            release_function = getattr(OgnPegasusMultirotorArduPilotNodeDatabase.NODE_TYPE_CLASS, "release", None)
             if callable(release_function):
                 release_function(node)
-            OgnPegasusMultirotorNodeArduPilotDatabase._release_per_node_data(node)
+            OgnPegasusMultirotorArduPilotNodeDatabase._release_per_node_data(node)
 
         @staticmethod
         def init_instance(node, graph_instance_id):
-            init_instance_function = getattr(OgnPegasusMultirotorNodeArduPilotDatabase.NODE_TYPE_CLASS, "init_instance", None)
+            init_instance_function = getattr(OgnPegasusMultirotorArduPilotNodeDatabase.NODE_TYPE_CLASS, "init_instance", None)
             if callable(init_instance_function):
                 init_instance_function(node, graph_instance_id)
 
         @staticmethod
         def release_instance(node, graph_instance_id):
-            release_instance_function = getattr(OgnPegasusMultirotorNodeArduPilotDatabase.NODE_TYPE_CLASS, "release_instance", None)
+            release_instance_function = getattr(OgnPegasusMultirotorArduPilotNodeDatabase.NODE_TYPE_CLASS, "release_instance", None)
             if callable(release_instance_function):
                 release_instance_function(node, graph_instance_id)
-            OgnPegasusMultirotorNodeArduPilotDatabase._release_per_node_instance_data(node, graph_instance_id)
+            OgnPegasusMultirotorArduPilotNodeDatabase._release_per_node_instance_data(node, graph_instance_id)
 
         @staticmethod
         def update_node_version(context, node, old_version, new_version):
-            update_node_version_function = getattr(OgnPegasusMultirotorNodeArduPilotDatabase.NODE_TYPE_CLASS, "update_node_version", None)
+            update_node_version_function = getattr(OgnPegasusMultirotorArduPilotNodeDatabase.NODE_TYPE_CLASS, "update_node_version", None)
             if callable(update_node_version_function):
                 return update_node_version_function(context, node, old_version, new_version)
             return False
 
         @staticmethod
         def initialize_type(node_type):
-            initialize_type_function = getattr(OgnPegasusMultirotorNodeArduPilotDatabase.NODE_TYPE_CLASS, "initialize_type", None)
+            initialize_type_function = getattr(OgnPegasusMultirotorArduPilotNodeDatabase.NODE_TYPE_CLASS, "initialize_type", None)
             needs_initializing = True
             if callable(initialize_type_function):
                 needs_initializing = initialize_type_function(node_type)
@@ -590,17 +590,17 @@ class OgnPegasusMultirotorNodeArduPilotDatabase(og.Database):    # Imprint the g
                 node_type.set_metadata(ogn.MetadataKeys.DESCRIPTION, "ArduPilot-specific Pegasus multirotor simulation node.")
                 node_type.set_metadata(ogn.MetadataKeys.LANGUAGE, "Python")
                 icon_path = carb.tokens.get_tokens_interface().resolve("${pegasus.simulator}")
-                icon_path = icon_path + "/" + "ogn/icons/pegasus.simulator.PegasusArduPilotMultirotorNode.svg"
+                icon_path = icon_path + "/" + "ogn/icons/pegasus.simulator.PegasusMultirotorArduPilotNode.svg"
                 node_type.set_metadata(ogn.MetadataKeys.ICON_PATH, icon_path)
                 __hints = node_type.get_scheduling_hints()
                 if __hints is not None:
                     __hints.set_data_access(og.eAccessLocation.E_USD, og.eAccessType.E_WRITE)
-                OgnPegasusMultirotorNodeArduPilotDatabase.INTERFACE.add_to_node_type(node_type)
+                OgnPegasusMultirotorArduPilotNodeDatabase.INTERFACE.add_to_node_type(node_type)
                 node_type.set_has_state(True)
 
         @staticmethod
         def on_connection_type_resolve(node):
-            on_connection_type_resolve_function = getattr(OgnPegasusMultirotorNodeArduPilotDatabase.NODE_TYPE_CLASS, "on_connection_type_resolve", None)
+            on_connection_type_resolve_function = getattr(OgnPegasusMultirotorArduPilotNodeDatabase.NODE_TYPE_CLASS, "on_connection_type_resolve", None)
             if callable(on_connection_type_resolve_function):
                 on_connection_type_resolve_function(node)
 
@@ -609,9 +609,9 @@ class OgnPegasusMultirotorNodeArduPilotDatabase(og.Database):    # Imprint the g
     @staticmethod
     def register(node_type_class):
         print("ArduPilot node type class", node_type_class, type(node_type_class))
-        OgnPegasusMultirotorNodeArduPilotDatabase.NODE_TYPE_CLASS = node_type_class
-        og.register_node_type(OgnPegasusMultirotorNodeArduPilotDatabase.abi, 2)
+        OgnPegasusMultirotorArduPilotNodeDatabase.NODE_TYPE_CLASS = node_type_class
+        og.register_node_type(OgnPegasusMultirotorArduPilotNodeDatabase.abi, 2)
 
     @staticmethod
     def deregister():
-        og.deregister_node_type("pegasus.simulator.PegasusArduPilotMultirotorNode")
+        og.deregister_node_type("pegasus.simulator.PegasusMultirotorArduPilotNode")

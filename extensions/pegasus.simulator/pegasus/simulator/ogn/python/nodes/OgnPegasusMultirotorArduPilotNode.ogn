@@ -1,5 +1,5 @@
 {
-    "OgnPegasusMultirotorNodePX4": {
+    "PegasusMultirotorArduPilotNode": {
         "version": 2,
         "description": [
             "This ogn file is just a place-holder for the extension.toml\n"

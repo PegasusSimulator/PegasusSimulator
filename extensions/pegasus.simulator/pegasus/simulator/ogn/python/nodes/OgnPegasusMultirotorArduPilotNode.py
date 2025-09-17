@@ -10,30 +10,30 @@ import omni.graph.tools.ogn as ogn
 
 from pegasus.simulator.logic.backends import ArduPilotMavlinkBackend, ArduPilotMavlinkBackendConfig
 
-from pegasus.simulator.ogn.OgnPegasusMultirotorNodeArduPilotDatabase import OgnPegasusMultirotorNodeArduPilotDatabase
+from pegasus.simulator.ogn.OgnPegasusMultirotorArduPilotNodeDatabase import OgnPegasusMultirotorArduPilotNodeDatabase
 from pegasus.simulator.ogn.python.nodes.OgnPegasusMultirotorNodeBase import OgnPegasusMultirotorNodeBase
 
 
-class OgnPegasusMultirotorNodeArduPilotState:
+class OgnPegasusMultirotorArduPilotNodeState:
     def __init__(self):
         self.node_initialized: bool = False
 
 
-class OgnPegasusMultirotorNodeArduPilot:
+class OgnPegasusMultirotorArduPilotNode:
     """ArduPilot-specific Pegasus Multirotor OmniGraph node"""
     
     @staticmethod
     def internal_state():
-        return OgnPegasusMultirotorNodeArduPilotState()
+        return OgnPegasusMultirotorArduPilotNodeState()
 
     @staticmethod
     def get_node_type():
-        return "pegasus.simulator.PegasusArduPilotMultirotorNode"
+        return "pegasus.simulator.PegasusMultirotorArduPilotNode"
 
     @staticmethod
     def initialize(context, node: og.Node):
         """Initialize the ArduPilot node"""
-        return OgnPegasusMultirotorNodeBase.initialize(context, node, OgnPegasusMultirotorNodeArduPilotDatabase)
+        return OgnPegasusMultirotorNodeBase.initialize(context, node, OgnPegasusMultirotorArduPilotNodeDatabase)
 
     @staticmethod
     def release(node: og.Node):
@@ -123,7 +123,7 @@ class OgnPegasusMultirotorNodeArduPilot:
                 db, 
                 ArduPilotMavlinkBackend, 
                 ArduPilotMavlinkBackendConfig,
-                OgnPegasusMultirotorNodeArduPilot.create_ardupilot_backend_config
+                OgnPegasusMultirotorArduPilotNode.create_ardupilot_backend_config
             )
                     
         except Exception as e:
