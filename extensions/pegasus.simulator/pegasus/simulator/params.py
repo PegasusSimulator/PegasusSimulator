@@ -79,19 +79,22 @@ WORLD_SETTINGS = {
         "physics_dt": 1.0 / 250.0,
         "stage_units_in_meters": 1.0,
         "rendering_dt": 1.0 / 60.0,
-        "device": "cpu"
+        "device": "cpu",
+        "physics_prim_path": "/World/PhysicsScene" # match the path that gets created from GUI from Create > Physics > Physics Scene
     },
     'ardupilot': {
         "physics_dt": 1.0 / 800.0, # Reach communication of 250hz with ardupilot sitl
         "stage_units_in_meters": 1.0,
         "rendering_dt": 1.0 / 120.0,
-        "device": "cpu"
+        "device": "cpu",
+        "physics_prim_path": "/World/PhysicsScene"
     },
     'ros2': {
         "physics_dt": 1.0 / 250.0,
         "stage_units_in_meters": 1.0,
         "rendering_dt": 1.0 / 60.0,
-        "device": "cpu"
+        "device": "cpu",
+        "physics_prim_path": "/World/PhysicsScene"
     }
 }
 DEFAULT_WORLD_SETTINGS = WORLD_SETTINGS['px4']

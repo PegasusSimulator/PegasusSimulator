@@ -73,7 +73,7 @@ def spawn_px4_multirotor_node(
     # Absolute graph path inside the prim
     graph_path = f"{drone_prim}/{node_name}"
     px4_node_path = f"{graph_path}/{node_name}"
-    on_tick_node_path = f"{graph_path}/OnTick"
+    on_playback_tick_node_path = f"{graph_path}/on_playback_tick"
     # absolute_graph_path = graph_path
 
     og.Controller.edit(
@@ -81,7 +81,8 @@ def spawn_px4_multirotor_node(
         {"graph_path": graph_path},
         {og.Controller.Keys.CREATE_NODES: [
             (node_name, "pegasus.simulator.PegasusMultirotorPX4Node"), 
-            # ("OnTick", "omni.graph.action.OnTick"),
+            ("on_playback_tick", "omni.graph.action.OnPlaybackTick"),
+            ("get_prim_path", "omni.graph.nodes.GetPrimPath"),
         ]}
     )
 
