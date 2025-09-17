@@ -159,11 +159,15 @@ class Pegasus_SimulatorExtension(omni.ext.IExt):
                 set_stage_units(self.pg.world.stage, self.pg._world_settings["stage_units_in_meters"])
             
             popup_window.visible = False
+            # Show confirmation popup
+            self._show_settings_confirmation_popup("updated")
         
         def on_keep_current():
             """Callback to keep current settings."""
             carb.log_info("Keeping current world settings")
             popup_window.visible = False
+            # Show confirmation popup
+            self._show_settings_confirmation_popup("kept")
         
         def on_close():
             """Callback when popup is closed."""
@@ -173,7 +177,7 @@ class Pegasus_SimulatorExtension(omni.ext.IExt):
         popup_window = ui.Window(
             "World Settings Mismatch", 
             width=500, 
-            height=300,
+            height=400,
             flags=ui.WINDOW_FLAGS_NO_RESIZE | ui.WINDOW_FLAGS_MODAL
         )
         
@@ -182,7 +186,7 @@ class Pegasus_SimulatorExtension(omni.ext.IExt):
                 ui.Label("Warning: World settings don't match Pegasus recommended settings!", 
                         style={"color": ui.color.yellow, "font_size": 16})
                 
-                ui.Spacer(height=10)
+                ui.Spacer(height=5)
                 
                 # Show specific mismatches
                 if physics_dt_mismatch:
@@ -198,14 +202,14 @@ class Pegasus_SimulatorExtension(omni.ext.IExt):
                     required_units = self.pg._world_settings["stage_units_in_meters"]
                     ui.Label(f"Stage units: Current = {current_units}, Recommended = {required_units}")
                 
-                ui.Spacer(height=10)
+                ui.Spacer(height=5)
                 
                 ui.Label("How would you like to proceed?", style={"font_size": 14})
                 
-                ui.Spacer(height=10)
+                ui.Spacer(height=5)
                 
                 # Buttons
-                with ui.HStack(spacing=10):
+                with ui.HStack(spacing=5):
                     ui.Spacer()
                     
                     update_btn = ui.Button("Update to Pegasus Settings", 
@@ -222,6 +226,66 @@ class Pegasus_SimulatorExtension(omni.ext.IExt):
         
         popup_window.set_visibility_changed_fn(lambda visible: on_close() if not visible else None)
         popup_window.visible = True
+
+    def _show_settings_confirmation_popup(self, action):
+        """Show a confirmation popup with the user's choice and manual override instructions."""
+        
+        def on_ok():
+            """Callback to close the confirmation popup."""
+            confirmation_window.visible = False
+        
+        # Create the confirmation window
+        confirmation_window = ui.Window(
+            "Settings Updated" if action == "updated" else "Settings Preserved", 
+            width=450, 
+            height=320,
+            flags=ui.WINDOW_FLAGS_NO_RESIZE | ui.WINDOW_FLAGS_MODAL
+        )
+        
+        with confirmation_window.frame:
+            with ui.VStack(spacing=10):
+                # Success message based on action
+                if action == "updated":
+                    ui.Label("World settings have been updated to Pegasus recommendations!", 
+                            style={"color": 0xFF4CAF50, "font_size": 16})
+                else:
+                    ui.Label("Current world settings have been preserved.", 
+                            style={"color": 0xFF2196F3, "font_size": 16})
+                
+                ui.Spacer(height=5)
+                
+                # Information about manual override
+                ui.Label("You can manually change these settings at any time by:", 
+                        style={"font_size": 14})
+                
+                ui.Spacer(height=5)
+                
+                with ui.VStack(spacing=3):
+                    ui.Label("1. Opening the Stage panel", style={"font_size": 14, "margin_left": 15})
+                    ui.Label("2. Navigating to /World/PhysicsScene", style={"font_size": 14, "margin_left": 15})
+                    ui.Label("3. Viewing the Property panel", style={"font_size": 14, "margin_left": 15})
+                    ui.Label("4. Adjusting physics and rendering settings", style={"font_size": 14, "margin_left": 15})
+                ui.Spacer(height=5)
+
+                # OK button
+                with ui.HStack():
+                    ui.Spacer()
+                    
+                    ok_btn = ui.Button("OK", 
+                                     clicked_fn=on_ok,
+                                     style={"background_color": 0xFF607D8B})
+                    ok_btn.width = ui.Pixel(80)
+                    
+                    ui.Spacer()
+        
+        confirmation_window.visible = True
+        
+        # Auto-close after 10 seconds
+        def auto_close():
+            if confirmation_window.visible:
+                confirmation_window.visible = False
+        
+        Timer(10.0, auto_close).start()
 
     def show_window(self, menu, show):
         """
