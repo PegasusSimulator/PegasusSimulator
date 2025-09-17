@@ -281,7 +281,7 @@ class PegasusInterface:
 
         # Load the USD asset that will be used for the environment
         try:
-            self.load_asset(usd_path, "/World/layout")
+            self.load_asset(usd_path, "/World/stage")
         except Exception as e:
             carb.log_warn("Could not load the desired environment: " + str(e))
 
@@ -316,7 +316,7 @@ class PegasusInterface:
         usd_path = nvidia_assets_path + environments_path + "/" + environment_asset
 
         # Try to load the asset into the world
-        self.load_asset(usd_path, "/World/layout")
+        self.load_asset(usd_path, "/World/stage")
 
     def load_asset(self, usd_asset: str, stage_prefix: str):
         """
