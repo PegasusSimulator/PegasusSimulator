@@ -179,6 +179,7 @@ class OgnPegasusMultirotorNodeBase:
         # Get USD file from input parameter
         selected_usd_file = db.inputs.usdFile
 
+        print(f"Creating multirotor with USD file: {selected_usd_file}")
         # Create multirotor vehicle directly without validation
         multirotor = Multirotor(
             stage_prefix=db.inputs.dronePrim,
@@ -189,6 +190,7 @@ class OgnPegasusMultirotorNodeBase:
             config=multirotor_config,
             spawn_prim=False
         )
+        print(f"Successfully created multirotor: {multirotor}")
         
         return multirotor, multirotor_config
 
@@ -197,9 +199,9 @@ class OgnPegasusMultirotorNodeBase:
         """Base compute method that handles common drone spawning and execution"""
         global drone_sim_dict, initialized_timeline_callback
 
-        print("DATABASE", db)
-        print("Drone Prim: " + db.inputs.dronePrim)
-        print("Vehicle ID: " + str(db.inputs.vehicleID))
+        # print("DATABASE", db)
+        # print("Drone Prim: " + db.inputs.dronePrim)
+        # print("Vehicle ID: " + str(db.inputs.vehicleID))
 
 
         # Initialize timeline callback if not already done

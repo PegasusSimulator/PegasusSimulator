@@ -104,8 +104,7 @@ class OgnPegasusMultirotorPX4Node:
     @staticmethod
     def compute(db) -> bool:
         """Main compute method that handles PX4 drone spawning and execution"""
-        print("==========~~~~~~~~PX4 Multirotor Node compute called.=====================")
-        print("potato")
+        # print("==========~~~~~~~~PX4 Multirotor Node compute called.=====================")
         try:
             # Use base compute functionality with PX4-specific backend
             return OgnPegasusMultirotorNodeBase.compute_base(
