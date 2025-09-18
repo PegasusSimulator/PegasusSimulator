@@ -13,12 +13,16 @@ from omni.isaac.dynamic_control import _dynamic_control
 from pegasus.simulator.logic.vehicles.vehicle import Vehicle
 
 # Mavlink interface
-from pegasus.simulator.logic.backends.px4_mavlink_backend import PX4MavlinkBackend, PX4MavlinkBackendConfig
+from pegasus.simulator.logic.backends.px4_mavlink_backend import (
+    PX4MavlinkBackend,
+    PX4MavlinkBackendConfig,
+)
 
 # Sensors and dynamics setup
 from pegasus.simulator.logic.dynamics import LinearDrag
 from pegasus.simulator.logic.thrusters import QuadraticThrustCurve
 from pegasus.simulator.logic.sensors import Barometer, IMU, Magnetometer, GPS
+
 
 class MultirotorConfig:
     """
@@ -56,8 +60,8 @@ class MultirotorConfig:
 
 
 class Multirotor(Vehicle):
-    """Multirotor class - It defines a base interface for creating a multirotor
-    """
+    """Multirotor class - It defines a base interface for creating a multirotor"""
+
     def __init__(
         self,
         # Simulation specific configurations
@@ -68,7 +72,7 @@ class Multirotor(Vehicle):
         init_pos=[0.0, 0.0, 0.07],
         init_orientation=[0.0, 0.0, 0.0, 1.0],
         config=MultirotorConfig(),
-        spawn_prim=True
+        spawn_prim=True,
     ):
         """Initializes the multirotor object
 
@@ -82,11 +86,31 @@ class Multirotor(Vehicle):
         """
 
         # 1. Initiate the Vehicle object itself
-        super().__init__(stage_prefix, usd_file, init_pos, init_orientation, config.sensors, config.graphical_sensors, config.graphs, config.backends, spawn_prim)
+        super().__init__(
+            stage_prefix,
+            usd_file,
+            vehicle_id,
+            init_pos,
+            init_orientation,
+            config.sensors,
+            config.graphical_sensors,
+            config.graphs,
+            config.backends,
+            spawn_prim,
+        )
 
         # 2. Setup the dynamics of the system - get the thrust curve of the vehicle from the configuration
         self._thrusters = config.thrust_curve
         self._drag = config.drag
+    
+    def __str__(self):
+        """String representation of the multirotor.
+        Outputs all the attributes of the multirotor.
+        
+        Returns:
+            str: Description of the multirotor
+        """
+        return "Multirotor " + super().__str__()
 
     def start(self):
         """In this case we do not need to do anything extra when the simulation starts"""
@@ -98,7 +122,7 @@ class Multirotor(Vehicle):
 
     def update(self, dt: float):
         """
-        Method that computes and applies the forces to the vehicle in simulation based on the motor speed. 
+        Method that computes and applies the forces to the vehicle in simulation based on the motor speed.
         This method must be implemented by a class that inherits this type. This callback
         is called on every physics step.
 
@@ -143,7 +167,7 @@ class Multirotor(Vehicle):
 
     def handle_propeller_visual(self, rotor_number, force: float, articulation):
         """
-        Auxiliar method used to set the joint velocity of each rotor (for animation purposes) based on the 
+        Auxiliar method used to set the joint velocity of each rotor (for animation purposes) based on the
         amount of force being applied on each joint
 
         Args:
@@ -153,14 +177,20 @@ class Multirotor(Vehicle):
         """
 
         # Rotate the joint to yield the visual of a rotor spinning (for animation purposes only)
-        joint = self.get_dc_interface().find_articulation_dof(articulation, "joint" + str(rotor_number))
+        joint = self.get_dc_interface().find_articulation_dof(
+            articulation, "joint" + str(rotor_number)
+        )
 
         # Spinning when armed but not applying force
         if 0.0 < force < 0.1:
-            self.get_dc_interface().set_dof_velocity(joint, 5 * self._thrusters.rot_dir[rotor_number])
+            self.get_dc_interface().set_dof_velocity(
+                joint, 5 * self._thrusters.rot_dir[rotor_number]
+            )
         # Spinning when armed and applying force
         elif 0.1 <= force:
-            self.get_dc_interface().set_dof_velocity(joint, 100 * self._thrusters.rot_dir[rotor_number])
+            self.get_dc_interface().set_dof_velocity(
+                joint, 100 * self._thrusters.rot_dir[rotor_number]
+            )
         # Not spinning
         else:
             self.get_dc_interface().set_dof_velocity(joint, 0)
@@ -185,23 +215,44 @@ class Multirotor(Vehicle):
         rb = self.get_dc_interface().get_rigid_body(self._stage_prefix + "/body")
 
         # Get the rotors of the vehicle
-        rotors = [self.get_dc_interface().get_rigid_body(self._stage_prefix + "/rotor" + str(i)) for i in range(self._thrusters._num_rotors)]
+        rotors = [
+            self.get_dc_interface().get_rigid_body(
+                self._stage_prefix + "/rotor" + str(i)
+            )
+            for i in range(self._thrusters._num_rotors)
+        ]
 
         # Get the relative position of the rotors with respect to the body frame of the vehicle (ignoring the orientation for now)
         relative_poses = self.get_dc_interface().get_relative_body_poses(rb, rotors)
 
         # Define the alocation matrix
         aloc_matrix = np.zeros((4, self._thrusters._num_rotors))
-        
+
         # Define the first line of the matrix (T [N])
-        aloc_matrix[0, :] = np.array(self._thrusters._rotor_constant)                                           
+        aloc_matrix[0, :] = np.array(self._thrusters._rotor_constant)
 
         # Define the second and third lines of the matrix (\tau_x [Nm] and \tau_y [Nm])
-        aloc_matrix[1, :] = np.array([relative_poses[i].p[1] * self._thrusters._rotor_constant[i] for i in range(self._thrusters._num_rotors)])
-        aloc_matrix[2, :] = np.array([-relative_poses[i].p[0] * self._thrusters._rotor_constant[i] for i in range(self._thrusters._num_rotors)])
+        aloc_matrix[1, :] = np.array(
+            [
+                relative_poses[i].p[1] * self._thrusters._rotor_constant[i]
+                for i in range(self._thrusters._num_rotors)
+            ]
+        )
+        aloc_matrix[2, :] = np.array(
+            [
+                -relative_poses[i].p[0] * self._thrusters._rotor_constant[i]
+                for i in range(self._thrusters._num_rotors)
+            ]
+        )
 
         # Define the forth line of the matrix (\tau_z [Nm])
-        aloc_matrix[3, :] = np.array([self._thrusters._rolling_moment_coefficient[i] * self._thrusters._rot_dir[i] for i in range(self._thrusters._num_rotors)])
+        aloc_matrix[3, :] = np.array(
+            [
+                self._thrusters._rolling_moment_coefficient[i]
+                * self._thrusters._rot_dir[i]
+                for i in range(self._thrusters._num_rotors)
+            ]
+        )
 
         # Compute the inverse allocation matrix, so that we can get the angular velocities (squared) from the total thrust and torques
         aloc_inv = np.linalg.pinv(aloc_matrix)

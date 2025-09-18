@@ -49,6 +49,7 @@ class Vehicle(Robot):
         self,
         stage_prefix: str,
         usd_path: str = None,
+        vehicle_id: int = 0,
         init_pos=[0.0, 0.0, 0.0],
         init_orientation=[0.0, 0.0, 0.0, 1.0],
         sensors=[],
@@ -70,6 +71,7 @@ class Vehicle(Robot):
         # Get the current world at which we want to spawn the vehicle
         self._world = PegasusInterface().world
         self._current_stage = self._world.stage
+        self._vehicle_id = vehicle_id
 
         if spawn_prim:
             # Save the name with which the vehicle will appear in the stage
@@ -83,6 +85,7 @@ class Vehicle(Robot):
             self._prim.GetReferences().AddReference(self._usd_file)
         else:
             # Assume the prim already exists in the stage and just get its handle
+            self._usd_file = None
             self._stage_prefix = stage_prefix
             self._prim = get_prim_at_path(self._stage_prefix)
 
@@ -99,6 +102,9 @@ class Vehicle(Robot):
             orientation=[init_orientation[3], init_orientation[0], init_orientation[1], init_orientation[2]],
             articulation_controller=None,
         )
+
+        self._init_pos = init_pos
+        self._init_orientation = init_orientation
 
         self._vehicle_dc_interface = None
 
@@ -173,6 +179,15 @@ class Vehicle(Robot):
         # Add a callbacks for the
         self._world.add_physics_callback(self._stage_prefix + "/mav_state", self.update_sim_state)
 
+    def __str__(self):
+        """String representation of the vehicle.
+        Outputs all the attributes of the vehicle.
+
+        Returns:
+            str: Description of the vehicle
+        """
+        return f"Vehicle: {self._stage_prefix}, Vehicle ID: {self._vehicle_id}, USD File: {self._usd_file}, Initial Position: {self._init_pos}, Initial Orientation: {self._init_orientation}, Sensors: {self._sensors}, Graphical Sensors: {self._graphical_sensors}, Graphs: {self._graphs}, Backends: {self._backends}"
+
 
     def __del__(self):
         """
@@ -195,6 +210,15 @@ class Vehicle(Robot):
             State: The current state of the vehicle, i.e., position, orientation, linear and angular velocities...
         """
         return self._state
+    
+    @property
+    def vehicle_id(self) -> int:
+        """Vehicle ID.
+
+        Returns:
+            Vehicle ID (int): Unique identifier of the vehicle
+        """
+        return self._vehicle_id
     
     @property
     def vehicle_name(self) -> str:
