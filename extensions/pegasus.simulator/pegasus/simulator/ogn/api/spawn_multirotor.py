@@ -12,6 +12,7 @@ def spawn_px4_multirotor_node(
 
     # Vehicle config
     vehicle_id: int = 0,
+    domain_id: int = 1,
 
     # Initial pose
     init_pos_x: float = 0.0,
@@ -79,6 +80,8 @@ def spawn_px4_multirotor_node(
                 ("OnPlaybackTick", "omni.graph.action.OnPlaybackTick"),
                 ("get_prim_path", "omni.graph.nodes.GetPrimPath"),
                 ("IsaacReadSimTime", "isaacsim.core.nodes.IsaacReadSimulationTime"),
+                ("ROS2Context", "isaacsim.ros2.bridge.ROS2Context"),
+                ("ROS2PublishClock", "isaacsim.ros2.bridge.ROS2PublishClock"),
             ],
             og.Controller.Keys.SET_VALUES: [
                 # PX4 inputs
@@ -113,9 +116,14 @@ def spawn_px4_multirotor_node(
                 (f"{node_name}.inputs:zeroPositionArmed1", zero_position_armed_1),
                 (f"{node_name}.inputs:zeroPositionArmed2", zero_position_armed_2),
                 (f"{node_name}.inputs:zeroPositionArmed3", zero_position_armed_3),
+                # ROS2 Context
+                ("ROS2Context.inputs:domain_id", domain_id),
             ],
             og.Controller.Keys.CONNECT: [
-                ("OnPlaybackTick.outputs:tick", f"{node_name}.inputs:execIn")
+                ("OnPlaybackTick.outputs:tick", f"{node_name}.inputs:execIn"),
+                ("OnPlaybackTick.outputs:tick", f"ROS2PublishClock.inputs:execIn"),
+                ("IsaacReadSimTime.outputs:simulationTime", "ROS2PublishClock.inputs:timeStamp"),
+                ("ROS2Context.outputs:context", "ROS2PublishClock.inputs:context"),
             ],
         }
     )
