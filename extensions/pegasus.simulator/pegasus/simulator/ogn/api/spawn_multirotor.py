@@ -78,6 +78,7 @@ def spawn_px4_multirotor_node(
                 (node_name, "pegasus.simulator.PegasusMultirotorPX4Node"),
                 ("OnPlaybackTick", "omni.graph.action.OnPlaybackTick"),
                 ("get_prim_path", "omni.graph.nodes.GetPrimPath"),
+                ("IsaacReadSimTime", "isaacsim.core.nodes.IsaacReadSimulationTime"),
             ],
             og.Controller.Keys.SET_VALUES: [
                 # PX4 inputs
