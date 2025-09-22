@@ -3,16 +3,10 @@ from isaacsim.core.utils.prims import define_prim, get_prim_at_path
 from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 from omni.usd import get_stage_next_free_path
 
-def omnigraph_node_exists(node_path: str) -> bool:
-    try:
-        og.Controller.node(node_path)
-        return True
-    except og.OmniGraphValueError:
-        return False
-
 
 def spawn_px4_multirotor_node(
     node_name: str = "PX4Multirotor",
+    graph_name: str = "PX4MultirotorGraph",
     drone_prim: str = "/World/Quadrotor",
     usd_file: str = "/root/Documents/Kit/shared/exts/pegasus.simulator/pegasus/simulator/assets/Robots/Iris/iris.usd",
 
@@ -57,86 +51,75 @@ def spawn_px4_multirotor_node(
     zero_position_armed_2: float = 100.0,
     zero_position_armed_3: float = 100.0,
 ):
-    """
-    Spawn a PegasusMultirotorPX4Node in OmniGraph with OnTick,
-    setting all inputs with default values. Safe to call multiple times.
-    """
+    # Get a free path for the drone prim
     drone_prim = get_stage_next_free_path(PegasusInterface().world.stage, drone_prim, False)
 
-    # --- Spawn the prim if missing ---
+    # --- Spawn prim if missing ---
     prim = get_prim_at_path(drone_prim)
     if not prim.IsValid():
         prim = define_prim(drone_prim, "Xform")
         prim.GetReferences().AddReference(usd_file)
     else:
         print(f"Prim at {drone_prim} already exists, reusing.")
-    # Absolute graph path inside the prim
-    graph_path = f"{drone_prim}/{node_name}"
-    px4_node_path = f"{graph_path}/{node_name}"
-    on_playback_tick_node_path = f"{graph_path}/on_playback_tick"
-    # absolute_graph_path = graph_path
 
-    og.Controller.edit(
-        # {"graph_path": px4_node_path.rsplit("/", 1)[0]},
-        {"graph_path": graph_path},
-        {og.Controller.Keys.CREATE_NODES: [
-            (node_name, "pegasus.simulator.PegasusMultirotorPX4Node"), 
-            ("on_playback_tick", "omni.graph.action.OnPlaybackTick"),
-            ("get_prim_path", "omni.graph.nodes.GetPrimPath"),
-        ]}
+    graph_path = f"{drone_prim}/{graph_name}"
+    px4_node_path = f"{graph_path}/{node_name}"
+    playback_tick_node_path = f"{graph_path}/OnPlaybackTick"
+
+    # --- Create on-demand graph with nodes using Controller.edit ---
+    demand_graph_handle, _, _, _ = og.Controller.edit(
+        {
+            "graph_path": graph_path,
+            "evaluator_name": "execution",
+            "pipeline_stage": og.GraphPipelineStage.GRAPH_PIPELINE_STAGE_SIMULATION
+        },
+        {
+            og.Controller.Keys.CREATE_NODES: [
+                (node_name, "pegasus.simulator.PegasusMultirotorPX4Node"),
+                ("OnPlaybackTick", "omni.graph.action.OnPlaybackTick"),
+                ("get_prim_path", "omni.graph.nodes.GetPrimPath"),
+            ],
+            og.Controller.Keys.SET_VALUES: [
+                # PX4 inputs
+                (f"{node_name}.inputs:dronePrim", drone_prim),
+                (f"{node_name}.inputs:vehicleID", vehicle_id),
+                (f"{node_name}.inputs:usdFile", usd_file),
+                (f"{node_name}.inputs:initPosX", init_pos_x),
+                (f"{node_name}.inputs:initPosY", init_pos_y),
+                (f"{node_name}.inputs:initPosZ", init_pos_z),
+                (f"{node_name}.inputs:initOrientX", init_orient_x),
+                (f"{node_name}.inputs:initOrientY", init_orient_y),
+                (f"{node_name}.inputs:initOrientZ", init_orient_z),
+                (f"{node_name}.inputs:initOrientW", init_orient_w),
+                (f"{node_name}.inputs:connectionType", connection_type),
+                (f"{node_name}.inputs:connectionIP", connection_ip),
+                (f"{node_name}.inputs:connectionBaseport", connection_baseport),
+                (f"{node_name}.inputs:px4Autolaunch", px4_autolaunch),
+                (f"{node_name}.inputs:px4Dir", px4_dir),
+                (f"{node_name}.inputs:px4VehicleModel", px4_vehicle_model),
+                (f"{node_name}.inputs:enableLockstep", enable_lockstep),
+                (f"{node_name}.inputs:numRotors", num_rotors),
+                (f"{node_name}.inputs:updateRate", update_rate),
+                (f"{node_name}.inputs:inputOffset0", input_offset_0),
+                (f"{node_name}.inputs:inputOffset1", input_offset_1),
+                (f"{node_name}.inputs:inputOffset2", input_offset_2),
+                (f"{node_name}.inputs:inputOffset3", input_offset_3),
+                (f"{node_name}.inputs:inputScaling0", input_scaling_0),
+                (f"{node_name}.inputs:inputScaling1", input_scaling_1),
+                (f"{node_name}.inputs:inputScaling2", input_scaling_2),
+                (f"{node_name}.inputs:inputScaling3", input_scaling_3),
+                (f"{node_name}.inputs:zeroPositionArmed0", zero_position_armed_0),
+                (f"{node_name}.inputs:zeroPositionArmed1", zero_position_armed_1),
+                (f"{node_name}.inputs:zeroPositionArmed2", zero_position_armed_2),
+                (f"{node_name}.inputs:zeroPositionArmed3", zero_position_armed_3),
+            ],
+            og.Controller.Keys.CONNECT: [
+                ("OnPlaybackTick.outputs:tick", f"{node_name}.inputs:execIn")
+            ],
+        }
     )
 
-    # --- Set all input attributes ---
-    defaults = {
-        # Vehicle config
-        "inputs:dronePrim": drone_prim,
-        "inputs:vehicleID": vehicle_id,
-        "inputs:usdFile": usd_file,
+    # demand_graph_handle.evaluate() # Trigger graph evaluation to apply changes
 
-        # Initial pose
-        "inputs:initPosX": init_pos_x,
-        "inputs:initPosY": init_pos_y,
-        "inputs:initPosZ": init_pos_z,
-        "inputs:initOrientX": init_orient_x,
-        "inputs:initOrientY": init_orient_y,
-        "inputs:initOrientZ": init_orient_z,
-        "inputs:initOrientW": init_orient_w,
-
-        # Connection config
-        "inputs:connectionType": connection_type,
-        "inputs:connectionIP": connection_ip,
-        "inputs:connectionBaseport": connection_baseport,
-
-        # PX4 config
-        "inputs:px4Autolaunch": px4_autolaunch,
-        "inputs:px4Dir": px4_dir,
-        "inputs:px4VehicleModel": px4_vehicle_model,
-
-        # Simulation config
-        "inputs:enableLockstep": enable_lockstep,
-        "inputs:numRotors": num_rotors,
-        "inputs:updateRate": update_rate,
-
-        # Rotor inputs
-        "inputs:inputOffset0": input_offset_0,
-        "inputs:inputOffset1": input_offset_1,
-        "inputs:inputOffset2": input_offset_2,
-        "inputs:inputOffset3": input_offset_3,
-        "inputs:inputScaling0": input_scaling_0,
-        "inputs:inputScaling1": input_scaling_1,
-        "inputs:inputScaling2": input_scaling_2,
-        "inputs:inputScaling3": input_scaling_3,
-        "inputs:zeroPositionArmed0": zero_position_armed_0,
-        "inputs:zeroPositionArmed1": zero_position_armed_1,
-        "inputs:zeroPositionArmed2": zero_position_armed_2,
-        "inputs:zeroPositionArmed3": zero_position_armed_3,
-    }
-
-    for attr, val in defaults.items():
-        og.Controller.set(f"{px4_node_path}.{attr}", val)
-
-    # # --- Connect OnTick to PX4 execIn ---
-    # og.Controller.connect(f"{on_tick_node_path}.outputs:tick", f"{px4_node_path}.inputs:execIn")
-
-    print(f"PX4 node at {px4_node_path} ready with OnTick driver.")
-    return px4_node_path
+    print(f"PX4 node at {px4_node_path} created in on-demand graph.")
+    return demand_graph_handle
