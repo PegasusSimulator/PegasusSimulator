@@ -5,7 +5,7 @@ from omni.usd import get_stage_next_free_path
 
 
 def spawn_px4_multirotor_node(
-    node_name: str = "PX4Multirotor",
+    pegasus_node_name: str = "PX4Multirotor",
     graph_name: str = "PX4MultirotorGraph",
     drone_prim: str = "/World/Quadrotor",
     usd_file: str = "/root/Documents/Kit/shared/exts/pegasus.simulator/pegasus/simulator/assets/Robots/Iris/iris.usd",
@@ -64,7 +64,7 @@ def spawn_px4_multirotor_node(
         print(f"Prim at {drone_prim} already exists, reusing.")
 
     graph_path = f"{drone_prim}/{graph_name}"
-    px4_node_path = f"{graph_path}/{node_name}"
+    px4_node_path = f"{graph_path}/{pegasus_node_name}"
     playback_tick_node_path = f"{graph_path}/OnPlaybackTick"
 
     # --- Create on-demand graph with nodes using Controller.edit ---
@@ -76,7 +76,7 @@ def spawn_px4_multirotor_node(
         },
         {
             og.Controller.Keys.CREATE_NODES: [
-                (node_name, "pegasus.simulator.PegasusMultirotorPX4Node"),
+                (pegasus_node_name, "pegasus.simulator.PegasusMultirotorPX4Node"),
                 ("OnPlaybackTick", "omni.graph.action.OnPlaybackTick"),
                 ("get_prim_path", "omni.graph.nodes.GetPrimPath"),
                 ("IsaacReadSimTime", "isaacsim.core.nodes.IsaacReadSimulationTime"),
@@ -85,45 +85,48 @@ def spawn_px4_multirotor_node(
             ],
             og.Controller.Keys.SET_VALUES: [
                 # PX4 inputs
-                (f"{node_name}.inputs:dronePrim", drone_prim),
-                (f"{node_name}.inputs:vehicleID", vehicle_id),
-                (f"{node_name}.inputs:usdFile", usd_file),
-                (f"{node_name}.inputs:initPosX", init_pos_x),
-                (f"{node_name}.inputs:initPosY", init_pos_y),
-                (f"{node_name}.inputs:initPosZ", init_pos_z),
-                (f"{node_name}.inputs:initOrientX", init_orient_x),
-                (f"{node_name}.inputs:initOrientY", init_orient_y),
-                (f"{node_name}.inputs:initOrientZ", init_orient_z),
-                (f"{node_name}.inputs:initOrientW", init_orient_w),
-                (f"{node_name}.inputs:connectionType", connection_type),
-                (f"{node_name}.inputs:connectionIP", connection_ip),
-                (f"{node_name}.inputs:connectionBaseport", connection_baseport),
-                (f"{node_name}.inputs:px4Autolaunch", px4_autolaunch),
-                (f"{node_name}.inputs:px4Dir", px4_dir),
-                (f"{node_name}.inputs:px4VehicleModel", px4_vehicle_model),
-                (f"{node_name}.inputs:enableLockstep", enable_lockstep),
-                (f"{node_name}.inputs:numRotors", num_rotors),
-                (f"{node_name}.inputs:updateRate", update_rate),
-                (f"{node_name}.inputs:inputOffset0", input_offset_0),
-                (f"{node_name}.inputs:inputOffset1", input_offset_1),
-                (f"{node_name}.inputs:inputOffset2", input_offset_2),
-                (f"{node_name}.inputs:inputOffset3", input_offset_3),
-                (f"{node_name}.inputs:inputScaling0", input_scaling_0),
-                (f"{node_name}.inputs:inputScaling1", input_scaling_1),
-                (f"{node_name}.inputs:inputScaling2", input_scaling_2),
-                (f"{node_name}.inputs:inputScaling3", input_scaling_3),
-                (f"{node_name}.inputs:zeroPositionArmed0", zero_position_armed_0),
-                (f"{node_name}.inputs:zeroPositionArmed1", zero_position_armed_1),
-                (f"{node_name}.inputs:zeroPositionArmed2", zero_position_armed_2),
-                (f"{node_name}.inputs:zeroPositionArmed3", zero_position_armed_3),
+                (f"{pegasus_node_name}.inputs:dronePrim", drone_prim),
+                (f"{pegasus_node_name}.inputs:vehicleID", vehicle_id),
+                (f"{pegasus_node_name}.inputs:usdFile", usd_file),
+                (f"{pegasus_node_name}.inputs:initPosX", init_pos_x),
+                (f"{pegasus_node_name}.inputs:initPosY", init_pos_y),
+                (f"{pegasus_node_name}.inputs:initPosZ", init_pos_z),
+                (f"{pegasus_node_name}.inputs:initOrientX", init_orient_x),
+                (f"{pegasus_node_name}.inputs:initOrientY", init_orient_y),
+                (f"{pegasus_node_name}.inputs:initOrientZ", init_orient_z),
+                (f"{pegasus_node_name}.inputs:initOrientW", init_orient_w),
+                (f"{pegasus_node_name}.inputs:connectionType", connection_type),
+                (f"{pegasus_node_name}.inputs:connectionIP", connection_ip),
+                (f"{pegasus_node_name}.inputs:connectionBaseport", connection_baseport),
+                (f"{pegasus_node_name}.inputs:px4Autolaunch", px4_autolaunch),
+                (f"{pegasus_node_name}.inputs:px4Dir", px4_dir),
+                (f"{pegasus_node_name}.inputs:px4VehicleModel", px4_vehicle_model),
+                (f"{pegasus_node_name}.inputs:enableLockstep", enable_lockstep),
+                (f"{pegasus_node_name}.inputs:numRotors", num_rotors),
+                (f"{pegasus_node_name}.inputs:updateRate", update_rate),
+                (f"{pegasus_node_name}.inputs:inputOffset0", input_offset_0),
+                (f"{pegasus_node_name}.inputs:inputOffset1", input_offset_1),
+                (f"{pegasus_node_name}.inputs:inputOffset2", input_offset_2),
+                (f"{pegasus_node_name}.inputs:inputOffset3", input_offset_3),
+                (f"{pegasus_node_name}.inputs:inputScaling0", input_scaling_0),
+                (f"{pegasus_node_name}.inputs:inputScaling1", input_scaling_1),
+                (f"{pegasus_node_name}.inputs:inputScaling2", input_scaling_2),
+                (f"{pegasus_node_name}.inputs:inputScaling3", input_scaling_3),
+                (f"{pegasus_node_name}.inputs:zeroPositionArmed0", zero_position_armed_0),
+                (f"{pegasus_node_name}.inputs:zeroPositionArmed1", zero_position_armed_1),
+                (f"{pegasus_node_name}.inputs:zeroPositionArmed2", zero_position_armed_2),
+                (f"{pegasus_node_name}.inputs:zeroPositionArmed3", zero_position_armed_3),
                 # ROS2 Context
                 ("ROS2Context.inputs:domain_id", domain_id),
+                # Prim path
+                ("get_prim_path.inputs:prim", "../.."),
             ],
             og.Controller.Keys.CONNECT: [
-                ("OnPlaybackTick.outputs:tick", f"{node_name}.inputs:execIn"),
+                ("OnPlaybackTick.outputs:tick", f"{pegasus_node_name}.inputs:execIn"),
                 ("OnPlaybackTick.outputs:tick", f"ROS2PublishClock.inputs:execIn"),
                 ("IsaacReadSimTime.outputs:simulationTime", "ROS2PublishClock.inputs:timeStamp"),
                 ("ROS2Context.outputs:context", "ROS2PublishClock.inputs:context"),
+                ("get_prim_path.outputs:path", f"{pegasus_node_name}.inputs:dronePrim"),
             ],
         }
     )
