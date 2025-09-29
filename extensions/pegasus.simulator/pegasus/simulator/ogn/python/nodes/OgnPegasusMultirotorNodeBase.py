@@ -91,7 +91,7 @@ class OgnPegasusMultirotorNodeBase:
         except AttributeError:
             # If shared_internal_state doesn't exist, create a simple state
             pass
-
+        
         OgnPegasusMultirotorNodeBase._set_initialized(node, False)
 
     @staticmethod
@@ -185,8 +185,8 @@ class OgnPegasusMultirotorNodeBase:
             stage_prefix=db.inputs.dronePrim,
             usd_file=selected_usd_file,  # Use USD file directly
             vehicle_id=0,  # This is used internally by multirotor, separate from backend vehicle_id
-            init_pos=[db.inputs.initPosX, db.inputs.initPosY, db.inputs.initPosZ],
-            init_orientation=[db.inputs.initOrientX, db.inputs.initOrientY, db.inputs.initOrientZ, db.inputs.initOrientW],
+            init_pos=[db.inputs.initPos[0], db.inputs.initPos[1], db.inputs.initPos[2]],
+            init_orientation=[db.inputs.initOrient[0], db.inputs.initOrient[1], db.inputs.initOrient[2], db.inputs.initOrient[3]],
             config=multirotor_config,
             spawn_prim=False
         )

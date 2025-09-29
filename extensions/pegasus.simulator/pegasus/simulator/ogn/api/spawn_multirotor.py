@@ -70,10 +70,9 @@ def spawn_px4_multirotor_node(
 
     graph_path = f"{drone_prim}/{graph_name}"
     px4_node_path = f"{graph_path}/{pegasus_node_name}"
-    playback_tick_node_path = f"{graph_path}/OnPlaybackTick"
 
     # --- Create on-demand graph with nodes using Controller.edit ---
-    demand_graph_handle, _, _, _ = og.Controller.edit(
+    graph_handle, _, _, _ = og.Controller.edit(
         {
             "graph_path": graph_path,
             "evaluator_name": "execution",
@@ -81,25 +80,26 @@ def spawn_px4_multirotor_node(
         },
         {
             og.Controller.Keys.CREATE_NODES: [
+                # Pegasus PX4 Backend Node
                 (pegasus_node_name, "pegasus.simulator.PegasusMultirotorPX4Node"),
-                ("OnPlaybackTick", "omni.graph.action.OnPlaybackTick"),
                 ("get_prim_path", "omni.graph.nodes.GetPrimPath"),
+                # Synchronization and ROS2 Clock Publisher
+                ("OnPlaybackTick", "omni.graph.action.OnPlaybackTick"),
                 ("IsaacReadSimTime", "isaacsim.core.nodes.IsaacReadSimulationTime"),
                 ("ROS2Context", "isaacsim.ros2.bridge.ROS2Context"),
                 ("ROS2PublishClock", "isaacsim.ros2.bridge.ROS2PublishClock"),
+                # Constants for initial pose
+                ("InitPosition", "omni.graph.nodes.ConstantFloat3"),
+                ("InitOrientation", "omni.graph.nodes.ConstantFloat4"),
             ],
             og.Controller.Keys.SET_VALUES: [
-                # PX4 inputs
+                # --- PX4 inputs that are constants ---
+                ("InitPosition.inputs:value", (init_pos_x, init_pos_y, init_pos_z)),
+                ("InitOrientation.inputs:value", (init_orient_x, init_orient_y, init_orient_z, init_orient_w)),
+                # --- PX4 inputs ---
                 (f"{pegasus_node_name}.inputs:dronePrim", drone_prim),
                 (f"{pegasus_node_name}.inputs:vehicleID", vehicle_id),
                 (f"{pegasus_node_name}.inputs:usdFile", usd_file),
-                (f"{pegasus_node_name}.inputs:initPosX", init_pos_x),
-                (f"{pegasus_node_name}.inputs:initPosY", init_pos_y),
-                (f"{pegasus_node_name}.inputs:initPosZ", init_pos_z),
-                (f"{pegasus_node_name}.inputs:initOrientX", init_orient_x),
-                (f"{pegasus_node_name}.inputs:initOrientY", init_orient_y),
-                (f"{pegasus_node_name}.inputs:initOrientZ", init_orient_z),
-                (f"{pegasus_node_name}.inputs:initOrientW", init_orient_w),
                 (f"{pegasus_node_name}.inputs:connectionType", connection_type),
                 (f"{pegasus_node_name}.inputs:connectionIP", connection_ip),
                 (f"{pegasus_node_name}.inputs:connectionBaseport", connection_baseport),
@@ -132,11 +132,13 @@ def spawn_px4_multirotor_node(
                 ("IsaacReadSimTime.outputs:simulationTime", "ROS2PublishClock.inputs:timeStamp"),
                 ("ROS2Context.outputs:context", "ROS2PublishClock.inputs:context"),
                 ("get_prim_path.outputs:path", f"{pegasus_node_name}.inputs:dronePrim"),
+                # --- Initial Position ---
+                ("InitPosition.inputs:value", f"{pegasus_node_name}.inputs:initPos"),
+                ("InitOrientation.inputs:value", f"{pegasus_node_name}.inputs:initOrient"),
             ],
         }
     )
 
-    # demand_graph_handle.evaluate() # Trigger graph evaluation to apply changes
 
     print(f"PX4 node at {px4_node_path} created in on-demand graph.")
-    return demand_graph_handle
+    return graph_handle
