@@ -15,13 +15,8 @@ def spawn_px4_multirotor_node(
     domain_id: int = 1,
 
     # Initial pose
-    init_pos_x: float = 0.0,
-    init_pos_y: float = 0.0,
-    init_pos_z: float = 0.07,
-    init_orient_x: float = 0.0,
-    init_orient_y: float = 0.0,
-    init_orient_z: float = 0.0,
-    init_orient_w: float = 1.0,
+    init_pos: list = [0.0, 0.0, 0.07],
+    init_orient: list = [0.0, 0.0, 0.0, 1.0],
 
     # Connection config
     connection_type: str = "tcpin",
@@ -52,6 +47,16 @@ def spawn_px4_multirotor_node(
     zero_position_armed_2: float = 100.0,
     zero_position_armed_3: float = 100.0,
 ):
+    
+    # Unpack initial position and orientation
+    init_pos_x: float = init_pos[0]
+    init_pos_y: float = init_pos[1]
+    init_pos_z: float = init_pos[2]
+    init_orient_x: float = init_orient[0]
+    init_orient_y: float = init_orient[1]
+    init_orient_z: float = init_orient[2]
+    init_orient_w: float = init_orient[3]
+
     # Get a free path for the drone prim
     drone_prim = get_stage_next_free_path(PegasusInterface().world.stage, drone_prim, False)
 
