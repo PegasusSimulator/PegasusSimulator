@@ -1,0 +1,10 @@
+
+
+GET_PRIM_PATH_NODE = "GetPrimPath"
+PLAYBACK_TICK_NODE = "OnPlaybackTick"
+ISAAC_READ_SIM_TIME_NODE = "IsaacReadSimulationTime"
+ROS2_CONTEXT_NODE = "ROS2Context"
+ROS2_PUBLISH_CLOCK_NODE = "ROS2PublishClock"
+INIT_POSITION_NODE = "InitPosition"
+INIT_ORIENTATION_NODE = "InitOrientation"
+ROBOT_NAME_NODE = "RobotName"
