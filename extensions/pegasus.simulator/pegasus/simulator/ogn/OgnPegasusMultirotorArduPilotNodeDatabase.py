@@ -45,13 +45,8 @@ ARDUPILOT_FIELDS = [
     "ENABLE_LOCKSTEP",
     "NUM_ROTORS",
     "UPDATE_RATE",
-    "INIT_POS_X",
-    "INIT_POS_Y",
-    "INIT_POS_Z",
-    "INIT_ORIENT_X",
-    "INIT_ORIENT_Y",
-    "INIT_ORIENT_Z",
-    "INIT_ORIENT_W",
+    "INIT_POS",
+    "INIT_ORIENT",
     "INPUT_OFFSET_0",
     "INPUT_OFFSET_1",
     "INPUT_OFFSET_2",
@@ -104,13 +99,8 @@ class OgnPegasusMultirotorArduPilotNodeDatabase(og.Database):    # Imprint the g
             ("inputs:usdFile", "string", 0, "USD File", "Path to the USD file for the drone model.", {}, True, "/root/Documents/Kit/shared/exts/pegasus.simulator/pegasus/simulator/assets/Robots/Iris/iris.usd", False, ""),
             
             # Initial pose
-            ("inputs:initPosX", "double", 0, "Initial Position X", "Initial X position of the vehicle.", {}, True, 0.0, False, ""),
-            ("inputs:initPosY", "double", 0, "Initial Position Y", "Initial Y position of the vehicle.", {}, True, 0.0, False, ""),
-            ("inputs:initPosZ", "double", 0, "Initial Position Z", "Initial Z position of the vehicle.", {}, True, 0.07, False, ""),
-            ("inputs:initOrientX", "double", 0, "Initial Orientation X", "Initial X quaternion component.", {}, True, 0.0, False, ""),
-            ("inputs:initOrientY", "double", 0, "Initial Orientation Y", "Initial Y quaternion component.", {}, True, 0.0, False, ""),
-            ("inputs:initOrientZ", "double", 0, "Initial Orientation Z", "Initial Z quaternion component.", {}, True, 0.0, False, ""),
-            ("inputs:initOrientW", "double", 0, "Initial Orientation W", "Initial W quaternion component.", {}, True, 1.0, False, ""),
+            ("inputs:initPos", "float3", 0, "Initial Position", "Initial position of the vehicle in the world.", {}, True, [0.0, 0.0, 0.07], False, ""),
+            ("inputs:initOrient", "float4", 0, "Initial Orientation", "Initial orientation of the vehicle as a quaternion.", {}, True, [0.0, 0.0, 0.0, 1.0], False, ""),
             
             # Connection configuration
             ("inputs:connectionType", "string", 0, "Connection Type", "MAVLink connection type (e.g., 'tcpin', 'udp').", {}, True, "tcpin", False, ""),
@@ -171,7 +161,7 @@ class OgnPegasusMultirotorArduPilotNodeDatabase(og.Database):    # Imprint the g
         LOCAL_PROPERTY_NAMES = {
             "execIn", "dronePrim", "vehicleID", "usdFile", "connectionType", "connectionIP", "connectionBaseport",
             "ardupilotAutolaunch", "ardupilotDir", "ardupilotVehicleModel", "enableLockstep", "numRotors", "updateRate",
-            "initPosX", "initPosY", "initPosZ", "initOrientX", "initOrientY", "initOrientZ", "initOrientW",
+            "initPos", "initOrient",
             "inputOffset0", "inputOffset1", "inputOffset2", "inputOffset3",
             "inputScaling0", "inputScaling1", "inputScaling2", "inputScaling3",
             "inputMin0", "inputMin1", "inputMin2", "inputMin3",
@@ -188,7 +178,7 @@ class OgnPegasusMultirotorArduPilotNodeDatabase(og.Database):    # Imprint the g
             self._batchedReadAttributes = [getattr(self._attributes, name) for name in [
                 "execIn", "dronePrim", "vehicleID", "usdFile", "connectionType", "connectionIP", "connectionBaseport",
                 "ardupilotAutolaunch", "ardupilotDir", "ardupilotVehicleModel", "enableLockstep", "numRotors", "updateRate",
-                "initPosX", "initPosY", "initPosZ", "initOrientX", "initOrientY", "initOrientZ", "initOrientW",
+                "initPos", "initOrient",
                 "inputOffset0", "inputOffset1", "inputOffset2", "inputOffset3",
                 "inputScaling0", "inputScaling1", "inputScaling2", "inputScaling3",
                 "inputMin0", "inputMin1", "inputMin2", "inputMin3",
@@ -265,40 +255,15 @@ class OgnPegasusMultirotorArduPilotNodeDatabase(og.Database):    # Imprint the g
 
         # Initial position properties
         @property
-        def initPosX(self): return self._batchedReadValues[ArduPilotInputIndex.INIT_POS_X]
-        @initPosX.setter
-        def initPosX(self, value): self._batchedReadValues[ArduPilotInputIndex.INIT_POS_X] = value
-
-        @property
-        def initPosY(self): return self._batchedReadValues[ArduPilotInputIndex.INIT_POS_Y]
-        @initPosY.setter
-        def initPosY(self, value): self._batchedReadValues[ArduPilotInputIndex.INIT_POS_Y] = value
-
-        @property
-        def initPosZ(self): return self._batchedReadValues[ArduPilotInputIndex.INIT_POS_Z]
-        @initPosZ.setter
-        def initPosZ(self, value): self._batchedReadValues[ArduPilotInputIndex.INIT_POS_Z] = value
+        def initPos(self): return self._batchedReadValues[ArduPilotInputIndex.INIT_POS]
+        @initPos.setter
+        def initPos(self, value): self._batchedReadValues[ArduPilotInputIndex.INIT_POS] = value
 
         # Initial orientation properties
         @property
-        def initOrientX(self): return self._batchedReadValues[ArduPilotInputIndex.INIT_ORIENT_X]
-        @initOrientX.setter
-        def initOrientX(self, value): self._batchedReadValues[ArduPilotInputIndex.INIT_ORIENT_X] = value
-
-        @property
-        def initOrientY(self): return self._batchedReadValues[ArduPilotInputIndex.INIT_ORIENT_Y]
-        @initOrientY.setter
-        def initOrientY(self, value): self._batchedReadValues[ArduPilotInputIndex.INIT_ORIENT_Y] = value
-
-        @property
-        def initOrientZ(self): return self._batchedReadValues[ArduPilotInputIndex.INIT_ORIENT_Z]
-        @initOrientZ.setter
-        def initOrientZ(self, value): self._batchedReadValues[ArduPilotInputIndex.INIT_ORIENT_Z] = value
-
-        @property
-        def initOrientW(self): return self._batchedReadValues[ArduPilotInputIndex.INIT_ORIENT_W]
-        @initOrientW.setter
-        def initOrientW(self, value): self._batchedReadValues[ArduPilotInputIndex.INIT_ORIENT_W] = value
+        def initOrient(self): return self._batchedReadValues[ArduPilotInputIndex.INIT_ORIENT]
+        @initOrient.setter
+        def initOrient(self, value): self._batchedReadValues[ArduPilotInputIndex.INIT_ORIENT] = value
 
         # Input offset properties
         @property
@@ -418,10 +383,18 @@ class OgnPegasusMultirotorArduPilotNodeDatabase(og.Database):    # Imprint the g
                 super().__setattr__(item, new_value)
 
         def _prefetch(self):
+            """Batch-read all input attributes, including vectorized initPos and initOrient"""
             readAttributes = self._batchedReadAttributes
             newValues = _og._prefetch_input_attributes_data(readAttributes)
-            if len(readAttributes) == len(newValues):
-                self._batchedReadValues = newValues
+
+            if len(readAttributes) != len(newValues):
+                raise RuntimeError("Mismatch in batched input read lengths")
+
+            # For vectorized attributes, convert flat arrays to tuples
+            newValues[ArduPilotInputIndex.INIT_POS] = tuple(newValues[ArduPilotInputIndex.INIT_POS])
+            newValues[ArduPilotInputIndex.INIT_ORIENT] = tuple(newValues[ArduPilotInputIndex.INIT_ORIENT])
+
+            self._batchedReadValues = newValues
 
     class ValuesForOutputs(og.DynamicAttributeAccess):
         LOCAL_PROPERTY_NAMES = {"execOut", "_batchedWriteValues"}
