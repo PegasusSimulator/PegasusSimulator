@@ -322,7 +322,7 @@ class UIDelegate:
             if camera_position is not None and camera_target is not None:
 
                 # Set the camera view to a fixed value
-                self._pegasus_sim.set_viewport_camera(eye=camera_position, target=camera_target)
+                self._pegasus_sim.set_viewport_camera(camera_position, camera_target)
     
     def on_set_new_default_px4_path(self):
         """
