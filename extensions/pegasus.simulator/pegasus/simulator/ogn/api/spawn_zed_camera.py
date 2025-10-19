@@ -4,7 +4,6 @@ from pxr import UsdGeom, Gf
 from omni.physx.scripts import utils as physx_utils
 from pegasus.simulator.ogn.api.shared_node_names import *
 
-
 def attach_camera_to_drone(drone_prim_path, camera_name, camera_usd, camera_offset, camera_orientation_offset):
     """
     Attach a camera USD to a drone prim with a fixed offset and orientation.
@@ -66,7 +65,7 @@ def add_zed_stereo_camera_subgraph(
     drone_prim: str,
     px4_node_name: str = "PX4MultirotorNode",
     camera_name: str = "ZEDCamera",
-    camera_usd: str = "omniverse://airlab-storage.andrew.cmu.edu:8443/NVIDIA/Assets/Isaac/4.5/Isaac/Sensors/Stereolabs/ZED_X/ZED_X.usd",
+    camera_usd: str = "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/4.5/Isaac/Sensors/Stereolabs/ZED_X/ZED_X.usd",
     camera_offset: list = [0.12, 0.0, -0.02],
     camera_orientation_offset: list = [0.0, 0.0, 0.0, 1.0],
     robot_name: str = "robot_1",
