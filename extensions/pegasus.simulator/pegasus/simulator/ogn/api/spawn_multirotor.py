@@ -47,16 +47,17 @@ def spawn_px4_multirotor_node(
     zero_position_armed_1: float = 100.0,
     zero_position_armed_2: float = 100.0,
     zero_position_armed_3: float = 100.0,
+
+    robot_name_var_name: str = "robot_name_var",
+    domain_id_var_name: str = "domain_id_var",
+    vehicle_id_var_name: str = "vehicle_id_var",
+    sensors_topic_var_name: str = "sensors_topic_var",
+    sensors_topic_namespace: str = "sensors",
 ):
     
     # Unpack initial position and orientation
-    init_pos_x: float = init_pos[0]
-    init_pos_y: float = init_pos[1]
-    init_pos_z: float = init_pos[2]
-    init_orient_x: float = init_orient[0]
-    init_orient_y: float = init_orient[1]
-    init_orient_z: float = init_orient[2]
-    init_orient_w: float = init_orient[3]
+    init_pos_x, init_pos_y, init_pos_z = init_pos
+    init_orient_x, init_orient_y, init_orient_z, init_orient_w = init_orient
 
     # Get a free path for the drone prim
     drone_prim = get_stage_next_free_path(PegasusInterface().world.stage, drone_prim, False)
@@ -72,6 +73,16 @@ def spawn_px4_multirotor_node(
     graph_path = f"{drone_prim}/{graph_name}"
     px4_node_path = f"{graph_path}/{pegasus_node_name}"
 
+    playbackTick_node_name = f"{robot_name}_PlaybackTick"
+    ros2Context_node_name = f"{robot_name}_ROS2Context"
+    ros2PublishClock_node_name = f"{robot_name}_ROS2PublishClock"
+    isaacReadSimTime_node_name = f"{robot_name}_IsaacReadSimTime"
+    getPrimPath_node_name = f"{robot_name}_GetPrimPath"
+    initPosition_node_name = f"{robot_name}_InitPosition"
+    initOrientation_node_name = f"{robot_name}_InitOrientation"
+    robotNameReader_node_name = f"{robot_name}_RobotName"
+    domainIDReader_node_name = f"{robot_name}_DomainIDReader"
+    vehicleIDReader_node_name = f"{robot_name}_VehicleIDReader"
 
     # --- Create on-demand graph with nodes using Controller.edit ---
     graph_handle, _, _, _ = og.Controller.edit(
@@ -81,28 +92,34 @@ def spawn_px4_multirotor_node(
             "pipeline_stage": og.GraphPipelineStage.GRAPH_PIPELINE_STAGE_SIMULATION
         },
         {
+            og.Controller.Keys.CREATE_VARIABLES: [
+                (robot_name_var_name, "string", robot_name),
+                (domain_id_var_name, og.Type(og.BaseDataType.UCHAR), domain_id),
+                (vehicle_id_var_name, og.Type(og.BaseDataType.INT), vehicle_id),
+                (sensors_topic_var_name, "string", sensors_topic_namespace),
+            ],
             og.Controller.Keys.CREATE_NODES: [
+                # Variables
+                (domainIDReader_node_name, "omni.graph.core.ReadVariable"),
+                (vehicleIDReader_node_name, "omni.graph.core.ReadVariable"),
                 # Pegasus PX4 Backend Node
                 (pegasus_node_name, "pegasus.simulator.PegasusMultirotorPX4Node"),
-                (GET_PRIM_PATH_NODE, "omni.graph.nodes.GetPrimPath"),
-                # Robot name constant
-                (ROBOT_NAME_NODE, "omni.graph.nodes.ConstantString"),
+                (getPrimPath_node_name, "omni.graph.nodes.GetPrimPath"),
                 # Synchronization and ROS2 Clock Publisher
-                (PLAYBACK_TICK_NODE, "omni.graph.action.OnPlaybackTick"),
-                (ISAAC_READ_SIM_TIME_NODE, "isaacsim.core.nodes.IsaacReadSimulationTime"),
-                (ROS2_CONTEXT_NODE, "isaacsim.ros2.bridge.ROS2Context"),
-                (ROS2_PUBLISH_CLOCK_NODE, "isaacsim.ros2.bridge.ROS2PublishClock"),
+                (playbackTick_node_name, "omni.graph.action.OnPlaybackTick"),
+                (isaacReadSimTime_node_name, "isaacsim.core.nodes.IsaacReadSimulationTime"),
+                (ros2Context_node_name, "isaacsim.ros2.bridge.ROS2Context"),
+                (ros2PublishClock_node_name, "isaacsim.ros2.bridge.ROS2PublishClock"),
                 # Constants for initial pose
-                (INIT_POSITION_NODE, "omni.graph.nodes.ConstantFloat3"),
-                (INIT_ORIENTATION_NODE, "omni.graph.nodes.ConstantFloat4"),
+                (initPosition_node_name, "omni.graph.nodes.ConstantFloat3"),
+                (initOrientation_node_name, "omni.graph.nodes.ConstantFloat4"),
             ],
             og.Controller.Keys.SET_VALUES: [
                 # --- PX4 inputs that are constants ---
-                ("InitPosition.inputs:value", (init_pos_x, init_pos_y, init_pos_z)),
-                ("InitOrientation.inputs:value", (init_orient_x, init_orient_y, init_orient_z, init_orient_w)),
+                (f"{initPosition_node_name}.inputs:value", (init_pos_x, init_pos_y, init_pos_z)),
+                (f"{initOrientation_node_name}.inputs:value", (init_orient_x, init_orient_y, init_orient_z, init_orient_w)),
                 # --- PX4 inputs ---
                 (f"{pegasus_node_name}.inputs:dronePrim", drone_prim),
-                (f"{pegasus_node_name}.inputs:vehicleID", vehicle_id),
                 (f"{pegasus_node_name}.inputs:usdFile", usd_file),
                 (f"{pegasus_node_name}.inputs:connectionType", connection_type),
                 (f"{pegasus_node_name}.inputs:connectionIP", connection_ip),
@@ -125,22 +142,24 @@ def spawn_px4_multirotor_node(
                 (f"{pegasus_node_name}.inputs:zeroPositionArmed1", zero_position_armed_1),
                 (f"{pegasus_node_name}.inputs:zeroPositionArmed2", zero_position_armed_2),
                 (f"{pegasus_node_name}.inputs:zeroPositionArmed3", zero_position_armed_3),
-                # ROS2 Context
-                (f"{ROS2_CONTEXT_NODE}.inputs:domain_id", domain_id),
                 # Prim path
-                (f"{GET_PRIM_PATH_NODE}.inputs:prim", "../.."),
-                # Robot name
-                (f"{ROBOT_NAME_NODE}.inputs:value", robot_name),
+                (f"{getPrimPath_node_name}.inputs:prim", "../.."),
+                # Variable reader setup
+                (f"{domainIDReader_node_name}.inputs:variableName", domain_id_var_name),
+                (f"{vehicleIDReader_node_name}.inputs:variableName", vehicle_id_var_name),
             ],
             og.Controller.Keys.CONNECT: [
-                (f"{PLAYBACK_TICK_NODE}.outputs:tick", f"{pegasus_node_name}.inputs:execIn"),
-                (f"{PLAYBACK_TICK_NODE}.outputs:tick", f"{ROS2_PUBLISH_CLOCK_NODE}.inputs:execIn"),
-                (f"{ISAAC_READ_SIM_TIME_NODE}.outputs:simulationTime", f"{ROS2_PUBLISH_CLOCK_NODE}.inputs:timeStamp"),
-                (f"{ROS2_CONTEXT_NODE}.outputs:context", f"{ROS2_PUBLISH_CLOCK_NODE}.inputs:context"),
-                (f"{GET_PRIM_PATH_NODE}.outputs:path", f"{pegasus_node_name}.inputs:dronePrim"),
+                (f"{playbackTick_node_name}.outputs:tick", f"{pegasus_node_name}.inputs:execIn"),
+                (f"{playbackTick_node_name}.outputs:tick", f"{ros2PublishClock_node_name}.inputs:execIn"),
+                (f"{isaacReadSimTime_node_name}.outputs:simulationTime", f"{ros2PublishClock_node_name}.inputs:timeStamp"),
+                (f"{ros2Context_node_name}.outputs:context", f"{ros2PublishClock_node_name}.inputs:context"),
+                (f"{getPrimPath_node_name}.outputs:path", f"{pegasus_node_name}.inputs:dronePrim"),
                 # --- Initial Position ---
-                (f"{INIT_POSITION_NODE}.inputs:value", f"{pegasus_node_name}.inputs:initPos"),
-                (f"{INIT_ORIENTATION_NODE}.inputs:value", f"{pegasus_node_name}.inputs:initOrient"),
+                (f"{initPosition_node_name}.inputs:value", f"{pegasus_node_name}.inputs:initPos"),
+                (f"{initOrientation_node_name}.inputs:value", f"{pegasus_node_name}.inputs:initOrient"),
+                # --- Variable connections ---
+                (f"{domainIDReader_node_name}.outputs:value", f"{ros2Context_node_name}.inputs:domain_id"),
+                (f"{vehicleIDReader_node_name}.outputs:value", f"{pegasus_node_name}.inputs:vehicleID"),
             ],
         }
     )
