@@ -3,6 +3,7 @@ from isaacsim.core.utils.prims import define_prim, get_prim_at_path
 from pxr import UsdGeom, Gf
 from omni.physx.scripts import utils as physx_utils
 from pegasus.simulator.ogn.api.shared_node_names import *
+import omni
 
 def attach_camera_to_drone(drone_prim_path, camera_name, camera_usd, camera_offset, camera_orientation_offset):
     """
@@ -16,6 +17,8 @@ def attach_camera_to_drone(drone_prim_path, camera_name, camera_usd, camera_offs
         camera_orientation_offset (list[float], optional): Quaternion [x, y, z, w] representing additional rotation. Default identity.
     """
 
+    stage = omni.usd.get_context().get_stage()
+
     # Construct full camera prim path
     camera_prim_path = f"{drone_prim_path}/{camera_name}"
     prim = get_prim_at_path(camera_prim_path)
@@ -24,14 +27,18 @@ def attach_camera_to_drone(drone_prim_path, camera_name, camera_usd, camera_offs
         # Create Xform prim under the drone
         prim = define_prim(camera_prim_path, "Xform")
         prim.GetReferences().AddReference(camera_usd)
-
+    
     # Remove physics if present
-    physx_utils.removeRigidBody(prim)
+    # physx_utils.removeRigidBody(prim)
     physx_utils.removeCollider(prim)
+    # /World/drone/base_link/body
 
     # Get Xformable interface
     xform = UsdGeom.Xformable(prim)
     xform.ClearXformOpOrder()  # reset any previous transforms
+
+    # Define the desired xformOpOrder
+    xform_ops_to_set = [] # This will store the actual XformOp objects
 
     # Corrective rotation for ZED USD orientation (90 deg around Z)
     corrective_quat = Gf.Rotation(Gf.Vec3d(0, 0, 1), 90).GetQuat()
@@ -52,10 +59,26 @@ def attach_camera_to_drone(drone_prim_path, camera_name, camera_usd, camera_offs
 
     # Combine rotations: corrective first, then user offset
     final_rot = user_rot * corrective_rot
-    xform.AddOrientOp().Set(final_rot)
 
-    # Apply local translation offset
-    xform.AddTranslateOp().Set(Gf.Vec3d(*camera_offset))
+    # Add translate op first (standard order)
+    translate_op = xform.AddTranslateOp()
+    translate_op.Set(Gf.Vec3d(*camera_offset))
+    xform_ops_to_set.append(translate_op) # Append the XformOp object
+
+    # Add orient op second
+    orient_op = xform.AddOrientOp()
+    orient_op.Set(final_rot)
+    xform_ops_to_set.append(orient_op) # Append the XformOp object
+
+    # Set the xformOpOrder explicitly using the list of XformOp objects
+    xform.SetXformOpOrder(xform_ops_to_set)
+
+    joint_prim = omni.physx.scripts.utils.createJoint(
+        stage,
+        joint_type="Fixed",
+        from_prim=stage.GetPrimAtPath(f"{drone_prim_path}/body/body"),
+        to_prim=stage.GetPrimAtPath(camera_prim_path),
+    )
 
     print(f"Camera '{camera_name}' attached to '{drone_prim_path}' with offset {camera_offset} and rotation {camera_orientation_offset}.")
 
@@ -66,7 +89,7 @@ def add_zed_stereo_camera_subgraph(
     px4_node_name: str = "PX4MultirotorNode",
     camera_name: str = "ZEDCamera",
     camera_usd: str = "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/4.5/Isaac/Sensors/Stereolabs/ZED_X/ZED_X.usd",
-    camera_offset: list = [0.0, -0.12, -0.02],
+    camera_offset: list = [0.12, 0.0, -0.02],
     camera_orientation_offset: list = [0.0, 0.0, 0.0, 1.0],
     robot_name: str = "robot_1",
     stereo_topic_namespace: str = "front_stereo",
@@ -103,14 +126,14 @@ def add_zed_stereo_camera_subgraph(
     # stereo_ns_const = f"{robot_name}_{camera_name}NamespaceConst"
     stereo_context_node = f"{robot_name}_{camera_name}ROS2ContextNode"
 
-    robot_name_reader_node = f"{robot_name}_{camera_name}RobotNameReader"
-    robot_name_build_ns = f"{robot_name}_{camera_name}BuildRobotNamespace"
-    sensor_name_reader_node = f"{robot_name}_{camera_name}SensorNameReader"
-    sensor_name_build_ns = f"{robot_name}_{camera_name}BuildSensorNamespace"
-    stereo_name_reader_node = f"{robot_name}_{camera_name}StereoNameReader"
-    stereo_name_build_ns = f"{robot_name}_{camera_name}BuildStereoNamespace"
-    robot_sensor_build_ns = f"{robot_name}_{camera_name}BuildRobotSensorNamespace"
-    robot_sensor_stereo_build_ns = f"{robot_name}_{camera_name}BuildRobotSensorStereoNamespace"
+    # robot_name_reader_node = f"{robot_name}_{camera_name}RobotNameReader"
+    # robot_name_build_ns = f"{robot_name}_{camera_name}BuildRobotNamespace"
+    # sensor_name_reader_node = f"{robot_name}_{camera_name}SensorNameReader"
+    # sensor_name_build_ns = f"{robot_name}_{camera_name}BuildSensorNamespace"
+    # stereo_name_reader_node = f"{robot_name}_{camera_name}StereoNameReader"
+    # stereo_name_build_ns = f"{robot_name}_{camera_name}BuildStereoNamespace"
+    # robot_sensor_build_ns = f"{robot_name}_{camera_name}BuildRobotSensorNamespace"
+    # robot_sensor_stereo_build_ns = f"{robot_name}_{camera_name}BuildRobotSensorStereoNamespace"
 
     # left child
     left_const_prim = f"{robot_name}_{camera_name}LeftConstPrimName"
@@ -142,7 +165,7 @@ def add_zed_stereo_camera_subgraph(
     right_depth_camera_helper = f"{robot_name}_{camera_name}RightDepthCameraHelper"
     right_playback = f"{robot_name}_{camera_name}RightPlaybackTick"
     right_context_forwarder = f"{robot_name}_{camera_name}RightContextForwarder"
-
+    return
     controller.edit(
         graph_id=parent_graph_path,
         edit_commands={
@@ -263,16 +286,16 @@ def add_zed_stereo_camera_subgraph(
                             (stereo_context_node, "isaacsim.ros2.bridge.ROS2Context"),
 
                             # Namespace building nodes
-                            (robot_name_build_ns, "omni.graph.nodes.BuildString"),
-                            (sensor_name_build_ns, "omni.graph.nodes.BuildString"),
-                            (stereo_name_build_ns, "omni.graph.nodes.BuildString"),
-                            (robot_sensor_build_ns, "omni.graph.nodes.BuildString"),
-                            (robot_sensor_stereo_build_ns, "omni.graph.nodes.BuildString"),
+                            # (robot_name_build_ns, "omni.graph.nodes.BuildString"),
+                            # (sensor_name_build_ns, "omni.graph.nodes.BuildString"),
+                            # (stereo_name_build_ns, "omni.graph.nodes.BuildString"),
+                            # (robot_sensor_build_ns, "omni.graph.nodes.BuildString"),
+                            # (robot_sensor_stereo_build_ns, "omni.graph.nodes.BuildString"),
 
                             # Variable readers
-                            (robot_name_reader_node, "omni.graph.core.ReadVariable"),
-                            (sensor_name_reader_node, "omni.graph.core.ReadVariable"),
-                            (stereo_name_reader_node, "omni.graph.core.ReadVariable"),
+                            # (robot_name_reader_node, "omni.graph.core.ReadVariable"),
+                            # (sensor_name_reader_node, "omni.graph.core.ReadVariable"),
+                            # (stereo_name_reader_node, "omni.graph.core.ReadVariable"),
                         ],
 
                         
@@ -282,15 +305,15 @@ def add_zed_stereo_camera_subgraph(
 
                         og.Controller.Keys.CONNECT: [
                             # namespace building
-                            (f"{robot_name_reader_node}.outputs:value", f"{robot_name_build_ns}.inputs:a"),
-                            (f"{sensor_name_reader_node}.outputs:value", f"{sensor_name_build_ns}.inputs:a"),
-                            (f"{stereo_name_reader_node}.outputs:value", f"{stereo_name_build_ns}.inputs:a"),
+                            # (f"{robot_name_reader_node}.outputs:value", f"{robot_name_build_ns}.inputs:a"),
+                            # (f"{sensor_name_reader_node}.outputs:value", f"{sensor_name_build_ns}.inputs:a"),
+                            # (f"{stereo_name_reader_node}.outputs:value", f"{stereo_name_build_ns}.inputs:a"),
 
-                            (f"{robot_name_build_ns}.outputs:value", f"{robot_sensor_build_ns}.inputs:a"),
-                            (f"{sensor_name_build_ns}.outputs:value", f"{robot_sensor_build_ns}.inputs:b"),
+                            # (f"{robot_name_build_ns}.outputs:value", f"{robot_sensor_build_ns}.inputs:a"),
+                            # (f"{sensor_name_build_ns}.outputs:value", f"{robot_sensor_build_ns}.inputs:b"),
 
-                            (f"{robot_sensor_build_ns}.outputs:value", f"{robot_sensor_stereo_build_ns}.inputs:a"),
-                            (f"{stereo_name_build_ns}.outputs:value", f"{robot_sensor_stereo_build_ns}.inputs:b"),
+                            # (f"{robot_sensor_build_ns}.outputs:value", f"{robot_sensor_stereo_build_ns}.inputs:a"),
+                            # (f"{stereo_name_build_ns}.outputs:value", f"{robot_sensor_stereo_build_ns}.inputs:b"),
 
                             (f"{stereo_context_node}.outputs:context", f"{left_subgraph_name}.inputs:context"),
                             (f"{stereo_context_node}.outputs:context", f"{right_subgraph_name}.inputs:context"),
