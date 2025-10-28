@@ -332,7 +332,7 @@ def add_zed_stereo_camera_subgraph(
                             (f"{stereo_info_helper}.inputs:topicName", f"left/camera_info"),
                             (f"{stereo_info_helper}.inputs:topicNameRight", f"right/camera_info"),
                             (f"{stereo_context_node}.inputs:domain_id", domain_id),
-                            (f"{stereo_info_helper}.inputs:nodeNamespace", f"{robot_name}/{stereo_topic_namespace}"),
+                            (f"{stereo_info_helper}.inputs:nodeNamespace", f"{robot_name}/{sensors_topic_namespace}/{stereo_topic_namespace}"),
                         ],
                     },
                 ),
