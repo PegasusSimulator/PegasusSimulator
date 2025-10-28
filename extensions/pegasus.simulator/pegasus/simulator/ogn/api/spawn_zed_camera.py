@@ -165,7 +165,6 @@ def add_zed_stereo_camera_subgraph(
     right_depth_camera_helper = f"{robot_name}_{camera_name}RightDepthCameraHelper"
     right_playback = f"{robot_name}_{camera_name}RightPlaybackTick"
     right_context_forwarder = f"{robot_name}_{camera_name}RightContextForwarder"
-    return
     controller.edit(
         graph_id=parent_graph_path,
         edit_commands={
