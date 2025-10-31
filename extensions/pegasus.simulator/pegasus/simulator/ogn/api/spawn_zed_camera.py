@@ -120,28 +120,13 @@ def add_zed_stereo_camera_subgraph(
     right_camera_prim_path = f"{camera_prim_path}/base_link/ZED_X/CameraRight"
 
     # stereo-level nodes
-    # stereo_ns_var_name = f"{robot_name}_{camera_name}StereoNamespaceReader"
+    # TODO: Add variable-level node namespace building
     stereo_playback = f"{robot_name}_{camera_name}PlaybackTick"
     stereo_info_helper = f"{robot_name}_{camera_name}InfoHelper"
-    # stereo_ns_const = f"{robot_name}_{camera_name}NamespaceConst"
     stereo_context_node = f"{robot_name}_{camera_name}ROS2ContextNode"
-
-    # robot_name_reader_node = f"{robot_name}_{camera_name}RobotNameReader"
-    # robot_name_build_ns = f"{robot_name}_{camera_name}BuildRobotNamespace"
-    # sensor_name_reader_node = f"{robot_name}_{camera_name}SensorNameReader"
-    # sensor_name_build_ns = f"{robot_name}_{camera_name}BuildSensorNamespace"
-    # stereo_name_reader_node = f"{robot_name}_{camera_name}StereoNameReader"
-    # stereo_name_build_ns = f"{robot_name}_{camera_name}BuildStereoNamespace"
-    # robot_sensor_build_ns = f"{robot_name}_{camera_name}BuildRobotSensorNamespace"
-    # robot_sensor_stereo_build_ns = f"{robot_name}_{camera_name}BuildRobotSensorStereoNamespace"
 
     # left child
     left_const_prim = f"{robot_name}_{camera_name}LeftConstPrimName"
-    # left_robot_name_build_ns = f"{robot_name}_{camera_name}LeftBuildNodeNamespace"
-    # left_sensor_name_build_ns = f"{robot_name}_{camera_name}LeftBuildSensorNamespace"
-    # left_stereo_name_build_ns = f"{robot_name}_{camera_name}LeftBuildStereoNamespace"
-    # left_robot_sensor_build_ns = f"{robot_name}_{camera_name}LeftBuildRobotSensorNamespace"
-    # left_robot_sensor_stereo_build_ns = f"{robot_name}_{camera_name}LeftBuildRobotSensorStereoNamespace"
     left_camera_ns_node = f"{robot_name}_{camera_name}LeftCameraNamespace"
     left_camera_namespace = f"{robot_name}/{sensors_topic_namespace}/{stereo_topic_namespace}/left"
     left_create_rp = f"{robot_name}_{camera_name}LeftCreateRenderProduct"
@@ -153,11 +138,6 @@ def add_zed_stereo_camera_subgraph(
 
     # right child
     right_const_prim = f"{robot_name}_{camera_name}RightConstPrimName"
-    # right_robot_name_build_ns = f"{robot_name}_{camera_name}RightBuildNodeNamespace"
-    # right_sensor_name_build_ns = f"{robot_name}_{camera_name}RightBuildSensorNamespace"
-    # right_stereo_name_build_ns = f"{robot_name}_{camera_name}RightBuildStereoNamespace"
-    # right_robot_sensor_build_ns = f"{robot_name}_{camera_name}RightBuildRobotSensorNamespace"
-    # right_robot_sensor_stereo_build_ns = f"{robot_name}_{camera_name}RightBuildRobotSensorStereoNamespace"
     right_camera_ns_node = f"{robot_name}_{camera_name}RightCameraNamespace"
     right_camera_namespace = f"{robot_name}/{sensors_topic_namespace}/{stereo_topic_namespace}/right"
     right_create_rp = f"{robot_name}_{camera_name}RightCreateRenderProduct"
@@ -180,7 +160,6 @@ def add_zed_stereo_camera_subgraph(
                                     og.Controller.Keys.CREATE_NODES: [
                                         (left_playback, "omni.graph.action.OnPlaybackTick"),
                                         (left_const_prim, "omni.graph.nodes.ConstantString"),
-                                        # (left_build_ns, "omni.graph.nodes.BuildString"),
                                         (left_camera_ns_node, "omni.graph.nodes.ConstantString"),
                                         (left_create_rp, "isaacsim.core.nodes.IsaacCreateRenderProduct"),
                                         (left_rgb_camera_helper, "isaacsim.ros2.bridge.ROS2CameraHelper"),
@@ -198,7 +177,6 @@ def add_zed_stereo_camera_subgraph(
 
                                         # Left RGB camera connections
                                         (f"{left_context_forwarder}.outputs:converted", f"{left_rgb_camera_helper}.inputs:context"),
-                                        # (f"{left_build_ns}.outputs:value", f"{left_rgb_camera_helper}.inputs:nodeNamespace"),
                                         (f"{left_camera_ns_node}.inputs:value", f"{left_rgb_camera_helper}.inputs:nodeNamespace"),
                                         (f"{left_const_prim}.inputs:value", f"{left_rgb_camera_helper}.inputs:frameId"),
                                         (f"{left_create_rp}.outputs:renderProductPath", f"{left_rgb_camera_helper}.inputs:renderProductPath"),
@@ -206,7 +184,6 @@ def add_zed_stereo_camera_subgraph(
 
                                         # Left Depth camera connections
                                         (f"{left_context_forwarder}.outputs:converted", f"{left_depth_camera_helper}.inputs:context"),
-                                        # (f"{left_build_ns}.outputs:value", f"{left_depth_camera_helper}.inputs:nodeNamespace"),
                                         (f"{left_camera_ns_node}.inputs:value", f"{left_depth_camera_helper}.inputs:nodeNamespace"),
                                         (f"{left_const_prim}.inputs:value", f"{left_depth_camera_helper}.inputs:frameId"),
                                         (f"{left_create_rp}.outputs:renderProductPath", f"{left_depth_camera_helper}.inputs:renderProductPath"),
@@ -258,7 +235,6 @@ def add_zed_stereo_camera_subgraph(
 
                                         # Right Depth camera connections
                                         (f"{right_context_forwarder}.outputs:converted", f"{right_depth_camera_helper}.inputs:context"),
-                                        # (f"{right_build_ns}.outputs:value", f"{right_depth_camera_helper}.inputs:nodeNamespace"),
                                         (f"{right_camera_ns_node}.inputs:value", f"{right_depth_camera_helper}.inputs:nodeNamespace"),
                                         (f"{right_const_prim}.inputs:value", f"{right_depth_camera_helper}.inputs:frameId"),
                                         (f"{right_create_rp}.outputs:renderProductPath", f"{right_depth_camera_helper}.inputs:renderProductPath"),
@@ -281,20 +257,8 @@ def add_zed_stereo_camera_subgraph(
                             # Stereo-level
                             (stereo_playback, "omni.graph.action.OnPlaybackTick"),
                             (stereo_info_helper, "isaacsim.ros2.bridge.ROS2CameraInfoHelper"),
-                            # (stereo_ns_const, "omni.graph.nodes.ConstantString"),
                             (stereo_context_node, "isaacsim.ros2.bridge.ROS2Context"),
 
-                            # Namespace building nodes
-                            # (robot_name_build_ns, "omni.graph.nodes.BuildString"),
-                            # (sensor_name_build_ns, "omni.graph.nodes.BuildString"),
-                            # (stereo_name_build_ns, "omni.graph.nodes.BuildString"),
-                            # (robot_sensor_build_ns, "omni.graph.nodes.BuildString"),
-                            # (robot_sensor_stereo_build_ns, "omni.graph.nodes.BuildString"),
-
-                            # Variable readers
-                            # (robot_name_reader_node, "omni.graph.core.ReadVariable"),
-                            # (sensor_name_reader_node, "omni.graph.core.ReadVariable"),
-                            # (stereo_name_reader_node, "omni.graph.core.ReadVariable"),
                         ],
 
                         
@@ -303,17 +267,6 @@ def add_zed_stereo_camera_subgraph(
 
 
                         og.Controller.Keys.CONNECT: [
-                            # namespace building
-                            # (f"{robot_name_reader_node}.outputs:value", f"{robot_name_build_ns}.inputs:a"),
-                            # (f"{sensor_name_reader_node}.outputs:value", f"{sensor_name_build_ns}.inputs:a"),
-                            # (f"{stereo_name_reader_node}.outputs:value", f"{stereo_name_build_ns}.inputs:a"),
-
-                            # (f"{robot_name_build_ns}.outputs:value", f"{robot_sensor_build_ns}.inputs:a"),
-                            # (f"{sensor_name_build_ns}.outputs:value", f"{robot_sensor_build_ns}.inputs:b"),
-
-                            # (f"{robot_sensor_build_ns}.outputs:value", f"{robot_sensor_stereo_build_ns}.inputs:a"),
-                            # (f"{stereo_name_build_ns}.outputs:value", f"{robot_sensor_stereo_build_ns}.inputs:b"),
-
                             (f"{stereo_context_node}.outputs:context", f"{left_subgraph_name}.inputs:context"),
                             (f"{stereo_context_node}.outputs:context", f"{right_subgraph_name}.inputs:context"),
                             (f"{stereo_context_node}.outputs:context", f"{stereo_info_helper}.inputs:context"),
