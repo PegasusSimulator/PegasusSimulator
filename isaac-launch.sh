@@ -102,7 +102,7 @@ case $ACTION in
         export AUTO_BUILD=false AUTO_RUN=false
         echo "Entering the container..."
         if ! docker ps --filter "name=pegasus-simulator" --filter "status=running" | grep -q "pegasus-simulator"; then
-            echo -e "Container 'pegasus-simulator' is not running.\nStarting without build or run..."
+            echo -e "Container 'pegasus-simulator' is not running."
             docker compose up -d
         fi
         docker exec -it --user ubuntu pegasus-simulator bash || echo "Exited container without shutting it down."
