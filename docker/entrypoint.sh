@@ -39,21 +39,48 @@ echo "Using RMW implementation: $RMW_IMPLEMENTATION"
 cd /home/ubuntu/PegasusSimulator
 
 # Check and install Pegasus Simulator extension (only if not already installed)
-PEGASUS_INSTALLED=$(${ISAACSIM_PYTHON} -m pip list 2>/dev/null | grep -c "pegasus-simulator" || echo "0")
+echo "Checking Pegasus Simulator installation..."
+PEGASUS_INSTALLED=$(${ISAACSIM_PYTHON} -m pip list 2>/dev/null | grep -c "pegasus-simulator" || true)
 
-if [ "$PEGASUS_INSTALLED" = "0" ]; then
+if [ -z "$PEGASUS_INSTALLED" ] || [ "$PEGASUS_INSTALLED" = "0" ]; then
     echo "Installing Pegasus Simulator extension (first time setup)..."
     cd /home/ubuntu/PegasusSimulator/extensions
-    ${ISAACSIM_PYTHON} -m pip install --editable pegasus.simulator
+    
+    # Remove old egg-info if exists
+    rm -rf pegasus.simulator/pegasus_simulator.egg-info 2>/dev/null || true
+    
+    # Install the package
+    ${ISAACSIM_PYTHON} -m pip install --editable pegasus.simulator || {
+        echo "ERROR: Failed to install Pegasus Simulator!"
+        exit 1
+    }
+    
+    # Fix permissions for the egg-info directory
+    chown -R ubuntu:ubuntu pegasus.simulator/pegasus_simulator.egg-info 2>/dev/null || true
+    
     cd /home/ubuntu/PegasusSimulator
-    echo "Pegasus Simulator extension installed."
+    echo "✓ Pegasus Simulator extension installed successfully."
 else
-    echo "Pegasus Simulator extension already installed"
+    echo "✓ Pegasus Simulator extension already installed (found $PEGASUS_INSTALLED package(s))"
+    # Ensure permissions are correct even if already installed
+    chown -R ubuntu:ubuntu /home/ubuntu/PegasusSimulator/extensions/pegasus.simulator/pegasus_simulator.egg-info 2>/dev/null || true
 fi
+
+# Create necessary directories with proper permissions
+echo "Creating necessary directories..."
+mkdir -p /isaac-sim/kit/data/Kit/"Isaac-Sim Python"/4.5/pip3-envs/default
+mkdir -p /home/ubuntu/.config/pulse
+mkdir -p /home/ubuntu/Documents/Kit/apps/"Isaac-Sim Python"/scripts/new_stage
+mkdir -p /home/ubuntu/Documents/Kit/shared/screenshots
+mkdir -p /isaac-sim/kit/logs
 
 # Create symbolic link for Isaac Sim to find extension assets
 rm -rf /root/.local/share/ov/data/exts/v2/pegasus.simulator-*
 ln -sf /home/ubuntu/PegasusSimulator/extensions/pegasus.simulator /root/.local/share/ov/data/exts/v2/pegasus.simulator-4.5.0
+
+# Set proper ownership
+chown -R ubuntu:ubuntu /home/ubuntu/.config 2>/dev/null || true
+chown -R ubuntu:ubuntu /home/ubuntu/Documents 2>/dev/null || true
 
 # Auto run program
 if [ "${AUTO_RUN}" = "true" ]; then

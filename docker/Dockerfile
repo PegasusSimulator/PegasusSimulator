@@ -164,6 +164,9 @@ RUN apt-get update && apt-get remove -y modemmanager && rm -rf /var/lib/apt/list
 USER ubuntu
 WORKDIR /home/ubuntu
 
+# Set proper ownership for Isaac Sim installation
+RUN sudo chown -R ubuntu:ubuntu /isaac-sim
+
 # Install PX4 Python dependencies
 RUN pip3 install --no-cache-dir \
     kconfiglib \
