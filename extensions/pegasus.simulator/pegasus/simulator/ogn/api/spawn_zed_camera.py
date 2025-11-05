@@ -1,11 +1,11 @@
 import omni.graph.core as og
 from isaacsim.core.utils.prims import define_prim, get_prim_at_path
-from pxr import UsdGeom, Gf
+from pxr import UsdGeom, Gf, Sdf, UsdUtils
 from omni.physx.scripts import utils as physx_utils
 import omni
 
 
-def attach_camera_to_drone(drone_prim_path, camera_name, camera_usd, camera_offset, camera_orientation_offset):
+def attach_camera_to_drone(drone_prim_path, camera_name, camera_usd, camera_offset, camera_orientation_offset, left_frame_id, right_frame_id):
     """
     Attach a camera USD to a drone prim with a fixed offset and orientation.
 
@@ -25,6 +25,7 @@ def attach_camera_to_drone(drone_prim_path, camera_name, camera_usd, camera_offs
     if not prim.IsValid():
         prim = define_prim(camera_prim_path, "Xform")
         prim.GetReferences().AddReference(camera_usd)
+        # UsdUtils.FlattenLayerStack(stage.GetEditTarget().GetLayer(), Sdf.Path(camera_prim_path))
 
     physx_utils.removeCollider(prim)
 
@@ -67,6 +68,27 @@ def attach_camera_to_drone(drone_prim_path, camera_name, camera_usd, camera_offs
         to_prim=stage.GetPrimAtPath(camera_prim_path),
     )
 
+    # Rename the internal sensor prim
+    left_sensor_prim_path_old = Sdf.Path(f"{camera_prim_path}/base_link/ZED_X/CameraLeft") # Original name
+    right_sensor_prim_path_old = Sdf.Path(f"{camera_prim_path}/base_link/ZED_X/CameraRight") # Original name
+    left_sensor_prim_path_new = Sdf.Path(f"{camera_prim_path}/base_link/ZED_X/{left_frame_id}")  # Desired new name
+    right_sensor_prim_path_new = Sdf.Path(f"{camera_prim_path}/base_link/ZED_X/{right_frame_id}")  # Desired new name
+
+    omni.kit.app.get_app().update()
+
+    omni.kit.commands.execute(
+        "CopyPrim",
+        path_from=left_sensor_prim_path_old,
+        path_to=left_sensor_prim_path_new,
+    )
+    omni.kit.commands.execute(
+        "CopyPrim",
+        path_from=right_sensor_prim_path_old,
+        path_to=right_sensor_prim_path_new,
+    )
+
+    omni.kit.app.get_app().update() # Ensure deletion is processed
+
     print(f"Camera '{camera_name}' attached to '{drone_prim_path}'.")
 
 
@@ -90,7 +112,7 @@ def add_zed_stereo_camera_subgraph(
 
     camera_prim_path = f"{drone_prim}/{camera_name}"
 
-    attach_camera_to_drone(drone_prim, camera_name, camera_usd, camera_offset, camera_orientation_offset)
+    attach_camera_to_drone(drone_prim, camera_name, camera_usd, camera_offset, camera_orientation_offset, left_frame_id, right_frame_id)
 
     parent_graph_path = parent_graph_handle.get_path_to_graph()
     stereo_graph_name = f"{robot_name}_{camera_name}StereoGraph"
