@@ -229,14 +229,12 @@ def add_ouster_lidar_subgraph(parent_graph_handle: og._omni_graph_core.Graph,
                         ],
                         og.Controller.Keys.SET_VALUES: [
                             (("inputs:value", frame_const), lidar_name),
-                            (("inputs:value", ns_const), lidar_topic_namespace),
+                            (("inputs:value", ns_const), f"{robot_name}/{lidar_topic_namespace}"),
                             (("inputs:cameraPrim", create_render), lidar_prim_path),
                             (("inputs:height", create_render), frame_height),
                             (("inputs:width", create_render), frame_width),
-                            # (("inputs:domain_id", ros2_context), domain_id),
                             (("inputs:topicName", rtx_helper), f"{lidar_topic_name}"),
                             (("inputs:type", rtx_helper), f"point_cloud"),
-                            (("inputs:nodeNamespace", rtx_helper), f"{robot_name}/{lidar_topic_namespace}"),
                         ],
                         og.Controller.Keys.CONNECT: [
                             # Simulation frame tick
@@ -247,7 +245,6 @@ def add_ouster_lidar_subgraph(parent_graph_handle: og._omni_graph_core.Graph,
                             
                             # Render product to RTX Helper
                             (f"{create_render}.outputs:renderProductPath", f"{rtx_helper}.inputs:renderProductPath"),
-                            # (f"{ros2_context}.outputs:context", f"{rtx_helper}.inputs:context"),
                             (f"{frame_const}.inputs:value", f"{rtx_helper}.inputs:frameId"),
                             (f"{ns_const}.inputs:value", f"{rtx_helper}.inputs:nodeNamespace"),
 
