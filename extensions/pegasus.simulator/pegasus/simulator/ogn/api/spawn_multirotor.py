@@ -3,6 +3,7 @@ from isaacsim.core.utils.prims import define_prim, get_prim_at_path
 from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 from omni.usd import get_stage_next_free_path
 from pegasus.simulator.ogn.api.shared_node_names import *
+from pxr import UsdGeom, Gf
 
 def spawn_px4_multirotor_node(
     pegasus_node_name: str = "PX4Multirotor",
@@ -10,31 +11,19 @@ def spawn_px4_multirotor_node(
     drone_prim: str = "/World/Quadrotor",
     usd_file: str = "/root/Documents/Kit/shared/exts/pegasus.simulator/pegasus/simulator/assets/Robots/Iris/iris.usd",
     robot_name: str = "robot_1",
-
-    # Vehicle config
     vehicle_id: int = 0,
     domain_id: int = 1,
-
-    # Initial pose
     init_pos: list = [0.0, 0.0, 0.07],
     init_orient: list = [0.0, 0.0, 0.0, 1.0],
-
-    # Connection config
     connection_type: str = "tcpin",
     connection_ip: str = "localhost",
     connection_baseport: int = 4560,
-
-    # PX4 config
     px4_autolaunch: bool = True,
     px4_dir: str = "/root/PX4-Autopilot",
     px4_vehicle_model: str = "gazebo-classic_iris",
-
-    # Simulation config
     enable_lockstep: bool = True,
     num_rotors: int = 4,
     update_rate: float = 250.0,
-
-    # Rotor inputs
     input_offset_0: float = 0.0,
     input_offset_1: float = 0.0,
     input_offset_2: float = 0.0,
@@ -47,14 +36,16 @@ def spawn_px4_multirotor_node(
     zero_position_armed_1: float = 100.0,
     zero_position_armed_2: float = 100.0,
     zero_position_armed_3: float = 100.0,
-
     robot_name_var_name: str = "robot_name_var",
     domain_id_var_name: str = "domain_id_var",
     vehicle_id_var_name: str = "vehicle_id_var",
     sensors_topic_var_name: str = "sensors_topic_var",
     sensors_topic_namespace: str = "sensors",
 ):
-    
+    """
+    Spawn a PX4 multirotor node in an on-demand graph and place its USD prim
+    at the specified initial position and orientation.
+    """
     # Unpack initial position and orientation
     init_pos_x, init_pos_y, init_pos_z = init_pos
     init_orient_x, init_orient_y, init_orient_z, init_orient_w = init_orient
@@ -62,11 +53,20 @@ def spawn_px4_multirotor_node(
     # Get a free path for the drone prim
     drone_prim = get_stage_next_free_path(PegasusInterface().world.stage, drone_prim, False)
 
-    # --- Spawn prim if missing ---
+    # Spawn prim if missing
     prim = get_prim_at_path(drone_prim)
     if not prim.IsValid():
         prim = define_prim(drone_prim, "Xform")
         prim.GetReferences().AddReference(usd_file)
+        # Apply initial transform to Xform prim
+        xform = UsdGeom.Xformable(prim)
+        xform.ClearXformOpOrder()
+        translate_op = xform.AddTranslateOp()
+        orient_op = xform.AddOrientOp()
+        translate_op.Set(Gf.Vec3d(init_pos_x, init_pos_y, init_pos_z))
+        orient_op.Set(Gf.Quatf(init_orient_w, init_orient_x, init_orient_y, init_orient_z))
+        xform.SetXformOpOrder([translate_op, orient_op])
+        print(f"Prim '{drone_prim}' created at initial position {init_pos} and orientation {init_orient}.")
     else:
         print(f"Prim at {drone_prim} already exists, reusing.")
 
@@ -84,7 +84,7 @@ def spawn_px4_multirotor_node(
     domainIDReader_node_name = f"{robot_name}_DomainIDReader"
     vehicleIDReader_node_name = f"{robot_name}_VehicleIDReader"
 
-    # --- Create on-demand graph with nodes using Controller.edit ---
+    # Create on-demand graph with nodes using Controller.edit
     graph_handle, _, _, _ = og.Controller.edit(
         {
             "graph_path": graph_path,
@@ -115,10 +115,10 @@ def spawn_px4_multirotor_node(
                 (initOrientation_node_name, "omni.graph.nodes.ConstantFloat4"),
             ],
             og.Controller.Keys.SET_VALUES: [
-                # --- PX4 inputs that are constants ---
+                # PX4 inputs that are constants
                 (f"{initPosition_node_name}.inputs:value", (init_pos_x, init_pos_y, init_pos_z)),
                 (f"{initOrientation_node_name}.inputs:value", (init_orient_x, init_orient_y, init_orient_z, init_orient_w)),
-                # --- PX4 inputs ---
+                # PX4 inputs
                 (f"{pegasus_node_name}.inputs:dronePrim", drone_prim),
                 (f"{pegasus_node_name}.inputs:usdFile", usd_file),
                 (f"{pegasus_node_name}.inputs:connectionType", connection_type),
@@ -154,10 +154,10 @@ def spawn_px4_multirotor_node(
                 (f"{isaacReadSimTime_node_name}.outputs:simulationTime", f"{ros2PublishClock_node_name}.inputs:timeStamp"),
                 (f"{ros2Context_node_name}.outputs:context", f"{ros2PublishClock_node_name}.inputs:context"),
                 (f"{getPrimPath_node_name}.outputs:path", f"{pegasus_node_name}.inputs:dronePrim"),
-                # --- Initial Position ---
+                # Initial Position
                 (f"{initPosition_node_name}.inputs:value", f"{pegasus_node_name}.inputs:initPos"),
                 (f"{initOrientation_node_name}.inputs:value", f"{pegasus_node_name}.inputs:initOrient"),
-                # --- Variable connections ---
+                # Variable connections
                 (f"{domainIDReader_node_name}.outputs:value", f"{ros2Context_node_name}.inputs:domain_id"),
                 (f"{vehicleIDReader_node_name}.outputs:value", f"{pegasus_node_name}.inputs:vehicleID"),
             ],
