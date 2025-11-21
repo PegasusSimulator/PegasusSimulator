@@ -84,7 +84,7 @@ WORLD_SETTINGS = {
     'ardupilot': {
         "physics_dt": 1.0 / 800.0, # Reach communication of 250hz with ardupilot sitl
         "stage_units_in_meters": 1.0,
-        "rendering_dt": 1.0 / 100.0,
+        "rendering_dt": 1.0 / 120.0,
         "device": "cpu"
     },
     'ros2': {
