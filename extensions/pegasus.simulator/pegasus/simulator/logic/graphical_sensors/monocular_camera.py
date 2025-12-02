@@ -56,7 +56,7 @@ class MonocularCamera(GraphicalSensor):
         # Configurations of the camera
         self._depth = config.get("depth", True)
         self._position = config.get("position", np.array([0.30, 0.0, 0.0]))
-        self._orientation = config.get("orientation", np.array([0.0, 0.0, 180.0]))
+        self._orientation = Rotation.from_euler("ZYX", config.get("orientation", np.array([0.0, 0.0, 180.0])), degrees=True).as_quat()
         self._resolution = config.get("resolution", (1920, 1200))
         self._frequency = config.get("frequency", 30)
         self._intrinsics = config.get("intrinsics", np.array([[958.8, 0.0, 957.8], [0.0, 956.7, 589.5], [0.0, 0.0, 1.0]]))
@@ -88,7 +88,7 @@ class MonocularCamera(GraphicalSensor):
             resolution=self._resolution)
         
         # Set the camera position locally with respect to the drone
-        self._camera.set_local_pose(np.array(self._position), Rotation.from_euler("ZYX", self._orientation, degrees=True).as_quat())
+        self._camera.set_local_pose(np.array(self._position), self._orientation)
         
     def start(self):
 
@@ -112,6 +112,13 @@ class MonocularCamera(GraphicalSensor):
 
     def stop(self):
         self._camera_full_set = False
+
+    @property
+    def name(self):
+        """
+        (str) The name of the camera sensor.
+        """
+        return self._camera_name
 
     @property
     def state(self):

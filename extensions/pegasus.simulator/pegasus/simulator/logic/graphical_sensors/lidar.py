@@ -44,6 +44,7 @@ class Lidar(GraphicalSensor):
         self._position = config.get("position", np.array([0.0, 0.0, 0.10]))
         self._orientation = Rotation.from_euler("ZYX", config.get("orientation", np.array([0.0, 0.0, 0.0])), degrees=True).as_quat()
         self._sensor_configuration = config.get("sensor_configuration", "Example_Rotary")
+        self._sensor_attributes = config.get("sensor_attributes", {})
         self._show_render = config.get("show_render", False)
 
         self._sensor = None
@@ -64,10 +65,13 @@ class Lidar(GraphicalSensor):
             "IsaacSensorCreateRtxLidar",
             path=self._lidar_name,
             parent=self._vehicle.prim_path + "/body",
-            config= self._sensor_configuration["sensor_configuration"],
+            config= self._sensor_configuration,
             translation=(self._position[0], self._position[1], self._position[2]),
-            orientation=Gf.Quatd(self._orientation[3], self._orientation[0], self._orientation[1], self._orientation[2])
+            orientation=Gf.Quatd(self._orientation[3], self._orientation[0], self._orientation[1], self._orientation[2]),
+            **self._sensor_attributes
         )
+        self._stage_prim_path = self._sensor.GetPath()
+        self._number_of_emitters = self._sensor.GetAttribute("omni:sensor:Core:numberOfEmitters").Get()
     
     def start(self):
 
@@ -77,6 +81,13 @@ class Lidar(GraphicalSensor):
             writer = rep.writers.get("RtxLidar" + "ROS2PublishPointCloud")
             writer.initialize(topicName="point_cloud", frameId="base_scan")
             writer.attach([hydra_texture])
+
+    @property
+    def name(self):
+        """
+        (str) The name of the lidar sensor.
+        """
+        return self._lidar_name
 
     @property
     def state(self):
@@ -98,6 +109,6 @@ class Lidar(GraphicalSensor):
         """
 
         # Just return the prim path and the name of the lidar
-        self._state = {"lidar_name": self._lidar_name, "stage_prim_path": self._stage_prim_path}
+        self._state = {"lidar_name": self._lidar_name, "stage_prim_path": self._stage_prim_path, "number_of_emitters": self._number_of_emitters}
 
         return self._state

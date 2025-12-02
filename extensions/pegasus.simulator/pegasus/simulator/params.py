@@ -48,10 +48,12 @@ NVIDIA_SIMULATION_ENVIRONMENTS = {
     "Rough Plane": "Terrains/rough_plane.usd",
     "Slope Plane": "Terrains/slope.usd",
     "Stairs Plane": "Terrains/stairs.usd",
+    "River Mark": "Outdoor/Rivermark/rivermark.usd"
 }
 
 OMNIVERSE_ENVIRONMENTS = {
-    "Exhibition Hall": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/4.5/NVIDIA/Assets/Scenes/Templates/Interior/ZetCG_ExhibitionHall.usd"
+    #"Exhibition Hall": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.1/NVIDIA/Assets/Scenes/Templates/Interior/ZetCG_ExhibitionHall.usd"
+    "Exhibition Hall": "/NVIDIA/Assets/Scenes/Templates/Interior/ZetCG_ExhibitionHall.usd"
 }
 
 

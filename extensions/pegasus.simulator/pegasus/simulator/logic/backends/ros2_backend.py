@@ -12,7 +12,11 @@ enable_extension("isaacsim.ros2.bridge")
 
 # ROS2 imports
 import rclpy
+from rclpy.time import Time
+from rclpy.clock import ClockType
+from rclpy.parameter import Parameter
 from std_msgs.msg import Float64
+from rosgraph_msgs.msg import Clock
 from geometry_msgs.msg import TransformStamped
 from sensor_msgs.msg import Imu, MagneticField, NavSatFix, NavSatStatus
 from geometry_msgs.msg import PoseStamped, TwistStamped, AccelStamped
@@ -37,6 +41,9 @@ from isaacsim.ros2.bridge import read_camera_info
 
 
 class ROS2Backend(Backend):
+
+    # Class-level flag to track if clock publisher has been created by any instance
+    _clock_publisher_created = False
 
     def __init__(self, vehicle_id: int, num_rotors=4, config: dict = {}):
         """Initialize the ROS2 Camera class
@@ -70,6 +77,7 @@ class ROS2Backend(Backend):
             >>>  "pub_state": True,                             # Publish the state of the vehicle
             >>>  "pub_tf": False,                               # Publish the TF of the vehicle
             >>>  "sub_control": True,                           # Subscribe to the control topics
+            >>>  "use_sim_time": False,                         # Use system time or simulation time
         """
 
         # Save the configurations for this backend
@@ -86,6 +94,9 @@ class ROS2Backend(Backend):
         # Check if the tf2_ros library is loaded and if the flag is set to True
         self._pub_tf = config.get("pub_tf", False) and tf2_ros_loaded
 
+        # Check if we should use simulation time instead of system time
+        self._use_sim_time = config.get("use_sim_time", False)
+
         # Start the actual ROS2 setup here
         try:
             rclpy.init()
@@ -94,6 +105,10 @@ class ROS2Backend(Backend):
             pass
 
         self.node = rclpy.create_node("simulator_vehicle_" + str(vehicle_id))
+        
+        # Set the use_sim_time parameter if enabled
+        if self._use_sim_time:
+            self.node.set_parameters([Parameter('use_sim_time', Parameter.Type.BOOL, True)])
 
         # Initialize the publishers and subscribers
         self.initialize_publishers(config)
@@ -106,6 +121,9 @@ class ROS2Backend(Backend):
         
         # Setup zero input reference for the thrusters
         self.input_ref = [0.0 for i in range(self._num_rotors)]
+
+    def initialize(self, vehicle):
+        super().initialize(vehicle)
 
         # -----------------------------------------------------
         # Initialize the static and dynamic tf broadcasters
@@ -120,7 +138,6 @@ class ROS2Backend(Backend):
 
             # Initialize the dynamic tf broadcaster for the position of the body of the vehicle (base_link) with respect to the inertial frame (map - ENU) expressed in the inertil frame (map - ENU)
             self.tf_broadcaster = TransformBroadcaster(self.node)
-    
     
     def initialize_publishers(self, config: dict):
 
@@ -156,6 +173,15 @@ class ROS2Backend(Backend):
             if config.get("pub_gps_vel", True):
                 self.gps_vel_pub = self.node.create_publisher(TwistStamped, self._namespace + str(self._id) + "/" + config.get("gps_vel_topic", "sensors/gps_twist"), rclpy.qos.qos_profile_sensor_data)
         
+        # -----------------------------------------------------
+        # Create publisher for the simulation clock
+        # -----------------------------------------------------
+        self.clock_pub = None
+        if self._use_sim_time:
+            # Only create clock publisher if no other ROS2Backend instance has created one
+            if not ROS2Backend._clock_publisher_created:
+                self.clock_pub = self.node.create_publisher(Clock, "/clock", 10)
+                ROS2Backend._clock_publisher_created = True
 
     def initialize_subscribers(self):
 
@@ -165,11 +191,13 @@ class ROS2Backend(Backend):
             # The current setup as it is.... its a pain!!!!
             self.rotor_subs = []
             for i in range(self._num_rotors):
-                self.rotor_subs.append(self.node.create_subscription(Float64, self._namespace + str(self._id) + "/control/rotor" + str(i) + "/ref", lambda x: self.rotor_callback(x, i),10))
+                # FIX: Use default argument to capture loop variable correctly
+                self.rotor_subs.append(self.node.create_subscription(Float64, self._namespace + str(self._id) + "/control/rotor" + str(i) + "/ref", lambda x, rotor_id=i: self.rotor_callback(x, rotor_id),10))
 
 
     def send_static_transforms(self):
 
+        l = []
         # Create the transformation from base_link FLU (ROS standard) to base_link FRD (standard in airborn and marine vehicles)
         t = TransformStamped()
         t.header.stamp = self.node.get_clock().now().to_msg()
@@ -185,7 +213,8 @@ class ROS2Backend(Backend):
         t.transform.rotation.z = 0.0
         t.transform.rotation.w = 0.0
 
-        self.tf_static_broadcaster.sendTransform(t)
+        #self.tf_static_broadcaster.sendTransform(t)
+        l.append(t)
 
         # Create the transform from map, i.e inertial frame (ROS standard) to map_ned (standard in airborn or marine vehicles)
         t = TransformStamped()
@@ -202,12 +231,50 @@ class ROS2Backend(Backend):
         t.transform.rotation.z = 0.0
         t.transform.rotation.w = 0.0
 
-        self.tf_static_broadcaster.sendTransform(t)
+        #self.tf_static_broadcaster.sendTransform(t)
+        l.append(t)
+
+        # Create the transforms for all graphical sensors
+        for graphical_sensor in self.vehicle._graphical_sensors:
+            gs_position = graphical_sensor.position
+            gs_orientation = graphical_sensor.orientation
+
+            t = TransformStamped()
+            t.header.stamp = self.node.get_clock().now().to_msg()
+            t.header.frame_id = self._namespace + '_' + 'base_link'
+            t.child_frame_id = graphical_sensor.name
+
+            t.transform.translation.x = gs_position[0]
+            t.transform.translation.y = gs_position[1]
+            t.transform.translation.z = gs_position[2]
+            t.transform.rotation.x = gs_orientation[0]
+            t.transform.rotation.y = gs_orientation[1]
+            t.transform.rotation.z = gs_orientation[2]
+            t.transform.rotation.w = gs_orientation[3]
+
+            l.append(t)
+
+        self.tf_static_broadcaster.sendTransform(l)
 
     def update_state(self, state):
         """
         Method that when implemented, should handle the receivel of the state of the vehicle using this callback
         """
+
+        # Update the dynamic tf broadcaster with the current position of the vehicle in the inertial frame
+        if self._pub_tf:
+            t = TransformStamped()
+            t.header.stamp = self.node.get_clock().now().to_msg()
+            t.header.frame_id = "map"
+            t.child_frame_id = self._namespace + '_' + 'base_link'
+            t.transform.translation.x = state.position[0]
+            t.transform.translation.y = state.position[1]
+            t.transform.translation.z = state.position[2]
+            t.transform.rotation.x = state.attitude[0]
+            t.transform.rotation.y = state.attitude[1]
+            t.transform.rotation.z = state.attitude[2]
+            t.transform.rotation.w = state.attitude[3]
+            self.tf_broadcaster.sendTransform(t)
 
         # Publish the state of the vehicle only if the flag is set to True
         if not self._pub_state:
@@ -263,22 +330,6 @@ class ROS2Backend(Backend):
         self.twist_pub.publish(twist)
         self.twist_inertial_pub.publish(twist_inertial)
         self.accel_pub.publish(accel)
-
-        # Update the dynamic tf broadcaster with the current position of the vehicle in the inertial frame
-        if self._pub_tf:
-            t = TransformStamped()
-            t.header.stamp = pose.header.stamp
-            t.header.frame_id = "map"
-            t.child_frame_id = self._namespace + '_' + 'base_link'
-            t.transform.translation.x = state.position[0]
-            t.transform.translation.y = state.position[1]
-            t.transform.translation.z = state.position[2]
-            t.transform.rotation.x = state.attitude[0]
-            t.transform.rotation.y = state.attitude[1]
-            t.transform.rotation.z = state.attitude[2]
-            t.transform.rotation.w = state.attitude[3]
-            self.tf_broadcaster.sendTransform(t)
-        
 
     def rotor_callback(self, ros_msg: Float64, rotor_id):
         # Update the reference for the rotor of the vehicle
@@ -397,8 +448,12 @@ class ROS2Backend(Backend):
         # List all the available writers: print(rep.writers.WriterRegistry._writers)
         render_prod_path = data["camera"]._render_product_path
 
+        # System time or simulation time
+        time_type = ""
+        if not self._use_sim_time:
+            time_type = "SystemTime"
         # Create the writer for the rgb camera
-        writer = rep.writers.get("LdrColorSDROS2PublishImage")
+        writer = rep.writers.get(f"LdrColorSDROS2{time_type}PublishImage")
         writer.initialize(nodeNamespace=self._namespace + str(self._id), topicName=data["camera_name"] + "/color/image_raw", frameId=data["camera_name"], queueSize=1)
         writer.attach([render_prod_path])
 
@@ -409,7 +464,7 @@ class ROS2Backend(Backend):
         if "depth" in data:
 
             # Create the writer for the depth camera
-            writer_depth = rep.writers.get("DistanceToImagePlaneSDROS2PublishImage")
+            writer_depth = rep.writers.get(f"DistanceToImagePlaneSDROS2{time_type}PublishImage")
             writer_depth.initialize(nodeNamespace=self._namespace + str(self._id), topicName=data["camera_name"] + "/depth", frameId=data["camera_name"], queueSize=1)
             writer_depth.attach([render_prod_path])
 
@@ -417,7 +472,7 @@ class ROS2Backend(Backend):
             self.graphical_sensors_writers[data["camera_name"]].append(writer_depth)
 
         # Create a writer for publishing the camera info
-        writer_info = rep.writers.get("ROS2PublishCameraInfo")
+        writer_info = rep.writers.get(f"ROS2{time_type}PublishCameraInfo")
         camera_info, _ = read_camera_info(render_product_path=render_prod_path)
         writer_info.initialize(
             nodeNamespace=self._namespace + str(self._id), 
@@ -444,6 +499,12 @@ class ROS2Backend(Backend):
         # Set step input of the Isaac Simulation Gate nodes upstream of ROS publishers to control their execution rate
         og.Controller.attribute(gate_path + ".inputs:step").set(int(60/data["frequency"]))
 
+        # Only set the simulation time reset on stop if using sim time
+        if self._use_sim_time:
+            omni.syntheticdata.SyntheticData.Get().set_node_attributes(
+                "IsaacReadSimulationTime", {"inputs:resetOnStop": True}, render_prod_path
+            )
+
     def update_lidar_data(self, data):
 
         # Check if the lidar name exists in the writers dictionary
@@ -455,19 +516,31 @@ class ROS2Backend(Backend):
         # List all the available writers: print(rep.writers.WriterRegistry._writers)
         render_prod_path = rep.create.render_product(data["stage_prim_path"], [1, 1], name=data["lidar_name"])
 
+        # System time or simulation time
+        time_type = ""
+        if not self._use_sim_time:
+            time_type = "SystemTime"
         # Create the writer for the lidar
-        writer = rep.writers.get("RtxLidarROS2PublishPointCloud")
+        writer = rep.writers.get(f"RtxLidarROS2{time_type}PublishPointCloud")
         writer.initialize(nodeNamespace=self._namespace + str(self._id), topicName=data["lidar_name"] + "/pointcloud", frameId=data["lidar_name"])
         writer.attach([render_prod_path])
 
         # Add the writer to the dictionary
         self.graphical_sensors_writers[data["lidar_name"]] = [writer]
 
-        # Create the writer for publishing a laser scan message along with the point cloud
-        writer = rep.writers.get("RtxLidarROS2PublishLaserScan")
-        writer.initialize(nodeNamespace=self._namespace + str(self._id), topicName=data["lidar_name"] + "/laserscan", frameId=data["lidar_name"])
-        writer.attach([render_prod_path])
-        self.graphical_sensors_writers[data["lidar_name"]].append(writer)
+        # Only add LaserScan writer for 2D Lidar
+        if data["number_of_emitters"] == 1:
+            # Create the writer for publishing a laser scan message along with the point cloud
+            writer = rep.writers.get("RtxLidarROS2PublishLaserScan")
+            writer.initialize(nodeNamespace=self._namespace + str(self._id), topicName=data["lidar_name"] + "/laserscan", frameId=data["lidar_name"])
+            writer.attach([render_prod_path])
+            self.graphical_sensors_writers[data["lidar_name"]].append(writer)
+
+        # Only set the simulation time reset on stop if using sim time
+        if self._use_sim_time:
+            omni.syntheticdata.SyntheticData.Get().set_node_attributes(
+                "IsaacReadSimulationTime", {"inputs:resetOnStop": True}, render_prod_path.path
+            )
 
     def input_reference(self):
         """
@@ -483,6 +556,18 @@ class ROS2Backend(Backend):
         Method that when implemented, should be used to update the state of the backend and the information being sent/received
         from the communication interface. This method will be called by the simulation on every physics step
         """
+
+        # Publish the simulation time to /clock topic (only if this backend owns the clock publisher)
+        if self.clock_pub is not None and self.vehicle is not None and hasattr(self.vehicle, '_world'):
+            # Get the simulation time directly from Isaac Sim's World
+            sim_time = self.vehicle._world.current_time
+            sec = int(sim_time)
+            nanosec = int((sim_time - sec) * 1e9)
+            
+            # Publish the simulation time to /clock topic
+            clock_msg = Clock()
+            clock_msg.clock = Time(seconds=sec, nanoseconds=nanosec, clock_type=ClockType.ROS_TIME).to_msg()
+            self.clock_pub.publish(clock_msg)
 
         # In this case, do nothing as we are sending messages as soon as new data arrives from the sensors and state
         # and updating the reference for the thrusters as soon as receiving from ROS2 topics
@@ -502,6 +587,10 @@ class ROS2Backend(Backend):
         """
         # Reset the reference for the thrusters
         self.input_ref = [0.0 for i in range(self._num_rotors)]
+        
+        # Reset the clock publisher flag if this instance owns the clock publisher
+        if self.clock_pub is not None:
+            ROS2Backend._clock_publisher_created = False
 
     def reset(self):
         """
