@@ -516,12 +516,19 @@ class ROS2Backend(Backend):
         # List all the available writers: print(rep.writers.WriterRegistry._writers)
         render_prod_path = rep.create.render_product(data["stage_prim_path"], [1, 1], name=data["lidar_name"])
 
-        # System time or simulation time
-        time_type = ""
-        if not self._use_sim_time:
-            time_type = "SystemTime"
+        # see: <isaacsim>/exts/isaacsim.ros2.bridge/isaacsim/ros2/bridge/ogn/python/nodes/OgnROS2RtxLidarHelper.py
+        # Use system timestamp or simulation timestamp
+        time_type = "SystemTime"
+        if self._use_sim_time:
+            time_type = ""
+
+        # Check if full scan buffer is enabled
+        buffer = ""
+        if data["full_scan"]:
+            buffer = "Buffer"
+
         # Create the writer for the lidar
-        writer = rep.writers.get(f"RtxLidarROS2{time_type}PublishPointCloud")
+        writer = rep.writers.get(f"RtxLidarROS2{time_type}PublishPointCloud{buffer}")
         writer.initialize(nodeNamespace=self._namespace + str(self._id), topicName=data["lidar_name"] + "/pointcloud", frameId=data["lidar_name"])
         writer.attach([render_prod_path])
 
@@ -531,12 +538,12 @@ class ROS2Backend(Backend):
         # Only add LaserScan writer for 2D Lidar
         if data["number_of_emitters"] == 1:
             # Create the writer for publishing a laser scan message along with the point cloud
-            writer = rep.writers.get("RtxLidarROS2PublishLaserScan")
+            writer = rep.writers.get(f"RtxLidarROS2{time_type}PublishLaserScan")
             writer.initialize(nodeNamespace=self._namespace + str(self._id), topicName=data["lidar_name"] + "/laserscan", frameId=data["lidar_name"])
             writer.attach([render_prod_path])
             self.graphical_sensors_writers[data["lidar_name"]].append(writer)
 
-        # Only set the simulation time reset on stop if using sim time
+        # Simulation time will reset when stop is pressed
         if self._use_sim_time:
             omni.syntheticdata.SyntheticData.Get().set_node_attributes(
                 "IsaacReadSimulationTime", {"inputs:resetOnStop": True}, render_prod_path.path

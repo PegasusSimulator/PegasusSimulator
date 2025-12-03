@@ -47,6 +47,9 @@ class Lidar(GraphicalSensor):
         self._sensor_attributes = config.get("sensor_attributes", {})
         self._show_render = config.get("show_render", False)
 
+        # If True publish a full scan when enough data has accumulated instead of partial scans each frame. Supports point cloud type only
+        self._full_scan = config.get("full_scan", False)
+
         self._sensor = None
 
     def initialize(self, vehicle):
@@ -74,12 +77,11 @@ class Lidar(GraphicalSensor):
         self._number_of_emitters = self._sensor.GetAttribute("omni:sensor:Core:numberOfEmitters").Get()
     
     def start(self):
-
         # If show_render is True, then create a render product for the lidar in the Isaac Sim environment
         if self._show_render:
-            hydra_texture = rep.create.render_product(self._sensor.GetPath(), [1, 1], name="Isaac")
-            writer = rep.writers.get("RtxLidar" + "ROS2PublishPointCloud")
-            writer.initialize(topicName="point_cloud", frameId="base_scan")
+            hydra_texture = rep.create.render_product(self._sensor.GetPath(), [1, 1], name=self._lidar_name)
+            writer = rep.writers.get("RtxLidarDebugDrawPointCloud" + ("Buffer" if not self._full_scan else ""))
+            writer.initialize(doTransform=True)
             writer.attach([hydra_texture])
 
     @property
@@ -109,6 +111,11 @@ class Lidar(GraphicalSensor):
         """
 
         # Just return the prim path and the name of the lidar
-        self._state = {"lidar_name": self._lidar_name, "stage_prim_path": self._stage_prim_path, "number_of_emitters": self._number_of_emitters}
+        self._state = {
+            "lidar_name": self._lidar_name,
+            "stage_prim_path": self._stage_prim_path,
+            "full_scan": self._full_scan,
+            "number_of_emitters": self._number_of_emitters,
+        }
 
         return self._state
