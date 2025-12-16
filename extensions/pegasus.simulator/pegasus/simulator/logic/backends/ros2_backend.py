@@ -15,7 +15,7 @@ import rclpy
 from rclpy.time import Time
 from rclpy.clock import ClockType
 from rclpy.parameter import Parameter
-from std_msgs.msg import Float64
+from std_msgs.msg import Float64, Float64MultiArray
 from rosgraph_msgs.msg import Clock
 from geometry_msgs.msg import TransformStamped
 from sensor_msgs.msg import Imu, MagneticField, NavSatFix, NavSatStatus
@@ -60,6 +60,7 @@ class ROS2Backend(Backend):
             >>>  "pub_twist": True,                             # Publish the twist of the vehicle
             >>>  "pub_twist_inertial": True,                    # Publish the twist of the vehicle in the inertial frame
             >>>  "pub_accel": True,                             # Publish the acceleration of the vehicle
+            >>>  "pub_rotor_speeds": True,                      # Publish the rotor speeds of the vehicle
             >>>  "pub_imu": True,                               # Publish the IMU data
             >>>  "pub_mag": True,                               # Publish the magnetometer data
             >>>  "pub_gps": True,                               # Publish the GPS data
@@ -156,6 +157,9 @@ class ROS2Backend(Backend):
 
             if config.get("pub_accel", True):
                 self.accel_pub = self.node.create_publisher(AccelStamped, self._namespace + "/" + config.get("accel_topic", "state/accel"), rclpy.qos.qos_profile_sensor_data)
+
+            if config.get("pub_rotor_speeds", True):
+                self.rotor_speeds_pub = self.node.create_publisher(Float64MultiArray, self._namespace + "/" + config.get("rotor_speeds_topic", "state/rotor_speeds"), rclpy.qos.qos_profile_sensor_data)
 
         # -----------------------------------------------------
         # Create publishers for the sensors of the vehicle
@@ -330,6 +334,12 @@ class ROS2Backend(Backend):
         self.twist_pub.publish(twist)
         self.twist_inertial_pub.publish(twist_inertial)
         self.accel_pub.publish(accel)
+
+        # Publish the rotor speeds if the flag is set to True
+        if hasattr(self, 'rotor_speeds_pub'):
+            rotor_speeds_msg = Float64MultiArray()
+            rotor_speeds_msg.data = self.vehicle._backends[0].input_reference()
+            self.rotor_speeds_pub.publish(rotor_speeds_msg)
 
     def rotor_callback(self, ros_msg: Float64, rotor_id):
         # Update the reference for the rotor of the vehicle
