@@ -12,12 +12,13 @@ from threading import Lock
 
 import omni.kit.commands
 
+
 class PeopleManager:
     """The PeopleManager class is implemented following a singleton pattern. This means that once a person is spawned
     on the world or an instance of the PeopleManager is created, no either will be running at the same time.
 
     This class keeps track of all the people that are spawned in the simulation world, either trough the extension UI
-    or via Python script. Every time a new person object is created, the 'add_person' method is invoked. Additionally, 
+    or via Python script. Every time a new person object is created, the 'add_person' method is invoked. Additionally,
     a person is removed, i.e. 'remove_person' gets invoked, every time the '__del__' function of the "Person" object
     gets invoked.
     """
@@ -25,7 +26,7 @@ class PeopleManager:
     # The object instance of the people Manager
     _instance = None
     _is_initialized = False
-    
+
     # A dictionary of people that are spawned in the simulator
     _people = {}
 
@@ -104,7 +105,16 @@ class PeopleManager:
 
         PeopleManager._people.clear()
 
-    def rebuild_nav_mesh(height=1.5, radius=0.5, auto_rebake_on_changes=False, auto_rebake_delay_seconds=4, exclude_rigid_bodies=True, view_nav_mesh=False, dynamic_avoidance_enabled=False, navmesh_enabled=False):
+    def rebuild_nav_mesh(
+        height=1.5,
+        radius=0.5,
+        auto_rebake_on_changes=False,
+        auto_rebake_delay_seconds=4,
+        exclude_rigid_bodies=True,
+        view_nav_mesh=False,
+        dynamic_avoidance_enabled=False,
+        navmesh_enabled=False,
+    ):
         """
         Rebuild the navmesh with the correct settings. Used for the people to move around.
         Called only when the sim with people is requested.
@@ -112,43 +122,43 @@ class PeopleManager:
 
         # Set the size of the people moving in the world
         omni.kit.commands.execute(
-            'ChangeSetting',
-            path='/exts/omni.anim.navigation.core/navMesh/config/agentHeight',
-            value=height)
+            "ChangeSetting", path="/exts/omni.anim.navigation.core/navMesh/config/agentHeight", value=height
+        )
         omni.kit.commands.execute(
-            'ChangeSetting',
-            path='/exts/omni.anim.navigation.core/navMesh/config/agentRadius',
-            value=radius)
+            "ChangeSetting", path="/exts/omni.anim.navigation.core/navMesh/config/agentRadius", value=radius
+        )
         # Do not rebake the navigation mesh automatically
         omni.kit.commands.execute(
-            'ChangeSetting',
-            path='/persistent/exts/omni.anim.navigation.core/navMesh/autoRebakeOnChanges',
-            value=auto_rebake_on_changes)
+            "ChangeSetting",
+            path="/persistent/exts/omni.anim.navigation.core/navMesh/autoRebakeOnChanges",
+            value=auto_rebake_on_changes,
+        )
         omni.kit.commands.execute(
-            'ChangeSetting',
-            path='/persistent/exts/omni.anim.navigation.core/navMesh/autoRebakeDelaySeconds',
-            value=auto_rebake_delay_seconds)
+            "ChangeSetting",
+            path="/persistent/exts/omni.anim.navigation.core/navMesh/autoRebakeDelaySeconds",
+            value=auto_rebake_delay_seconds,
+        )
         # Exclude rigid bodies in the world, such as the drone
         omni.kit.commands.execute(
-            'ChangeSetting',
-            path='/exts/omni.anim.navigation.core/navMesh/config/excludeRigidBodies',
-            value=exclude_rigid_bodies)
+            "ChangeSetting",
+            path="/exts/omni.anim.navigation.core/navMesh/config/excludeRigidBodies",
+            value=exclude_rigid_bodies,
+        )
         # Do not show the navigation mesh
         omni.kit.commands.execute(
-            'ChangeSetting',
-            path='/persistent/exts/omni.anim.navigation.core/navMesh/viewNavMesh',
-            value=view_nav_mesh)
-        print('Navigation mesh rebuilt.')
+            "ChangeSetting", path="/persistent/exts/omni.anim.navigation.core/navMesh/viewNavMesh", value=view_nav_mesh
+        )
+        print("Navigation mesh rebuilt.")
 
         # Setup for obstacle avoidance
         omni.kit.commands.execute(
-            'ChangeSetting',
-            path='/exts/omni.anim.people/navigation_settings/dynamic_avoidance_enabled',
-            value=dynamic_avoidance_enabled)
+            "ChangeSetting",
+            path="/exts/omni.anim.people/navigation_settings/dynamic_avoidance_enabled",
+            value=dynamic_avoidance_enabled,
+        )
         omni.kit.commands.execute(
-            'ChangeSetting',
-            path='/exts/omni.anim.people/navigation_settings/navmesh_enabled',
-            value=navmesh_enabled)
+            "ChangeSetting", path="/exts/omni.anim.people/navigation_settings/navmesh_enabled", value=navmesh_enabled
+        )
 
     def __new__(cls):
         """Method that allocated memory for a new people_manager. Since the PeopleManager follows a singleton pattern,

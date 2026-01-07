@@ -16,7 +16,7 @@ class VehicleManager:
     on the world or an instance of the VehicleManager is created, no either will be running at the same time.
 
     This class keeps track of all the vehicles that are spawned in the simulation world, either trough the extension UI
-    or via Python script. Every time a new vehicle object is created, the 'add_vehicle' method is invoked. Additionally, 
+    or via Python script. Every time a new vehicle object is created, the 'add_vehicle' method is invoked. Additionally,
     a vehicle is removed, i.e. 'remove_vehicle' gets invoked, every time the '__del__' function of the "Vehicle" object
     gets invoked.
     """
@@ -24,7 +24,7 @@ class VehicleManager:
     # The object instance of the Vehicle Manager
     _instance = None
     _is_initialized = False
-    
+
     # A dictionary of vehicles that are spawned in the simulator
     _vehicles = {}
 

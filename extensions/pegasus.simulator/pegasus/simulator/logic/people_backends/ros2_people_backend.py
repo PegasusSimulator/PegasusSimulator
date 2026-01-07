@@ -11,17 +11,18 @@ __all__ = ["ROS2PeopleBackend"]
 import carb
 from pegasus.simulator.logic.people_backends.people_backend import PeopleBackend
 from isaacsim.core.utils.extensions import enable_extension
+
 enable_extension("isaacsim.ros2.bridge")
 
 # ROS2 imports
 import rclpy
 from geometry_msgs.msg import PoseStamped
 
-class ROS2PeopleBackend(PeopleBackend):
 
+class ROS2PeopleBackend(PeopleBackend):
     def __init__(self, person_id: int, namespace="people", topic="person"):
         """
-        Initialize the ROS2 People Backend                
+        Initialize the ROS2 People Backend
         """
 
         # Save the configurations for this backend
@@ -40,15 +41,15 @@ class ROS2PeopleBackend(PeopleBackend):
 
         # Initialize the publishers and subscribers
         self.initialize_publishers()
-    
-    
+
     def initialize_publishers(self):
 
-        # ----------------------------------------------------- 
+        # -----------------------------------------------------
         # Create publishers for the state of the person in ENU
         # -----------------------------------------------------
-        self.pose_pub = self.node.create_publisher(PoseStamped, self._namespace + "/" + self._topic + str(self._id), rclpy.qos.qos_profile_sensor_data)
-    
+        self.pose_pub = self.node.create_publisher(
+            PoseStamped, self._namespace + "/" + self._topic + str(self._id), rclpy.qos.qos_profile_sensor_data
+        )
 
     def update_state(self, state):
         """
@@ -65,7 +66,9 @@ class ROS2PeopleBackend(PeopleBackend):
         # Fill the position and attitude of the vehicle in ENU
         pose.pose.position.x = state.position[0]
         pose.pose.position.y = state.position[1]
-        pose.pose.position.z = state.position[2] + 1.0 # Add 1.0 to the z position to simulate the middle of the height of the person
+        pose.pose.position.z = (
+            state.position[2] + 1.0
+        )  # Add 1.0 to the z position to simulate the middle of the height of the person
 
         pose.pose.orientation.x = state.attitude[0]
         pose.pose.orientation.y = state.attitude[1]
@@ -74,7 +77,6 @@ class ROS2PeopleBackend(PeopleBackend):
 
         # Publish the messages containing the state of the vehicle
         self.pose_pub.publish(pose)
-
 
     def update(self, state, dt: float):
         """

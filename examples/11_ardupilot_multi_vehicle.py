@@ -24,12 +24,15 @@ from omni.isaac.core.world import World
 # Import the Pegasus API for simulating drones
 from pegasus.simulator.params import ROBOTS, SIMULATION_ENVIRONMENTS
 from pegasus.simulator.logic.backends.ardupilot_mavlink_backend import (
-    ArduPilotMavlinkBackend, ArduPilotMavlinkBackendConfig)
+    ArduPilotMavlinkBackend,
+    ArduPilotMavlinkBackendConfig,
+)
 from pegasus.simulator.logic.backends.ros2_backend import ROS2Backend
 from pegasus.simulator.logic.vehicles.multirotor import Multirotor, MultirotorConfig
 from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 
 from scipy.spatial.transform import Rotation
+
 
 class PegasusApp:
     """
@@ -47,7 +50,7 @@ class PegasusApp:
         # Start the Pegasus Interface
         self.pg = PegasusInterface()
 
-        # Acquire the World, .i.e, the singleton that controls that is a one stop shop for setting up physics, 
+        # Acquire the World, .i.e, the singleton that controls that is a one stop shop for setting up physics,
         # spawning asset primitives, etc.
         self.pg._world = World(**self.pg._world_settings)
         self.world = self.pg.world
@@ -75,35 +78,38 @@ class PegasusApp:
         # Create the vehicle
         # Try to spawn the selected robot in the world to the specified namespace
         config_multirotor = MultirotorConfig()
-        
+
         # Create the multirotor configuration
-        backend_config = ArduPilotMavlinkBackendConfig({
-            "vehicle_id": vehicle_id,
-            "ardupilot_autolaunch": True,
-            "ardupilot_dir": self.pg.ardupilot_path,
-            "ardupilot_vehicle_model": "gazebo-iris"
-        })
+        backend_config = ArduPilotMavlinkBackendConfig(
+            {
+                "vehicle_id": vehicle_id,
+                "ardupilot_autolaunch": True,
+                "ardupilot_dir": self.pg.ardupilot_path,
+                "ardupilot_vehicle_model": "gazebo-iris",
+            }
+        )
         config_multirotor.backends = [
-            ArduPilotMavlinkBackend(config=backend_config), 
-            ROS2Backend(vehicle_id=vehicle_id, 
+            ArduPilotMavlinkBackend(config=backend_config),
+            ROS2Backend(
+                vehicle_id=vehicle_id,
                 config={
-                    "namespace": f'drone', # vehicle_id is added here by default
+                    "namespace": f"drone",  # vehicle_id is added here by default
                     "pub_sensors": True,
                     "pub_graphical_sensors": True,
                     "pub_state": True,
                     "sub_control": False,
                     "pub_tf": True,
-                }
-            )
+                },
+            ),
         ]
-        
+
         Multirotor(
             f"/World/drone{vehicle_id}",
-            ROBOTS['Iris'],
+            ROBOTS["Iris"],
             vehicle_id,
             [gap_x_axis * vehicle_id, 0.0, 0.07],
             Rotation.from_euler("XYZ", [0.0, 0.0, 0.0], degrees=True).as_quat(),
-            config=config_multirotor
+            config=config_multirotor,
         )
 
     def run(self):
@@ -119,11 +125,12 @@ class PegasusApp:
 
             # Update the UI of the app and perform the physics step
             self.world.step(render=True)
-        
+
         # Cleanup and stop
         carb.log_warn("PegasusApp Simulation App is closing.")
         self.timeline.stop()
         simulation_app.close()
+
 
 def main():
     # Instantiate the template app
@@ -131,6 +138,7 @@ def main():
 
     # Run the application loop
     pg_app.run()
+
 
 if __name__ == "__main__":
     main()

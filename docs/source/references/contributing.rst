@@ -1,11 +1,11 @@
 Contributing
 ============
 
-The Pegasus Simulator is an open-source effort, started by me, Marcelo Jacinto in January/2023. It is a tool that was 
-created with the original purpose of serving my Ph.D. workplan for the next 4 years, which means that you can expect 
-this repository to be mantained by me directly, hopefully until 2027. 
+The Pegasus Simulator is an open-source effort, started by me, Marcelo Jacinto in January/2023. It is a tool that was
+created with the original purpose of serving my Ph.D. workplan for the next 4 years, which means that you can expect
+this repository to be mantained by me directly, hopefully until 2027.
 
-With that said, it is very likely that you will stumble upon bugs on the code or missing features. Information on how 
+With that said, it is very likely that you will stumble upon bugs on the code or missing features. Information on how
 to contribute with code, documentation or suggestions for the project roadmap can be found in the following sections.
 
 Issues, Bug Reporting and Feature Requests
@@ -22,10 +22,10 @@ Branch and Version Model
 
 This project uses a two-branch Git model:
 
-- **main:** By default points to the latest stable tag version of the project. 
+- **main:** By default points to the latest stable tag version of the project.
 - **dev:** Corresponds to an unstable versions of the code that are not well tested yet.
 
-In this project, we avoid performing merges and give preference to a fork/pull-request structure. All code contributions 
+In this project, we avoid performing merges and give preference to a fork/pull-request structure. All code contributions
 have to be made under the permissive BSD 3-clause license and all code must not impose any further constraints on the use.
 
 Contributing with Code
@@ -52,8 +52,8 @@ After sending a pull request, the developer team will review your code, provide 
 Commit Messages
 ~~~~~~~~~~~~~~~
 
-Each commit message should be short and provide a good description of what is being changed or added to the code. As such, 
-we suggest that every commit message start by: 
+Each commit message should be short and provide a good description of what is being changed or added to the code. As such,
+we suggest that every commit message start by:
 
    * ``feat``: For new features.
    * ``fix``: For bug fixes.
@@ -64,7 +64,7 @@ we suggest that every commit message start by:
 Here is an example of a "good" commit:
 
    .. code:: bash
-      
+
       git commit -m "feat: new vehicle thurster dynamics"
 
 .. note::
@@ -82,16 +82,16 @@ The description of the Pull Request should include:
 Code Style
 ~~~~~~~~~~
 
-The inline code documentation follows the `Google Style Guides <https://google.github.io/styleguide/pyguide.html>`__ while the Python code follows the `PEP guidelines <https://peps.python.org/pep-0008/>`__. We use 
-the `pre-commit <https://pre-commit.com/>`__ tool tools for maintaining code quality and consistency over the codebase. 
+The inline code documentation follows the `Google Style Guides <https://google.github.io/styleguide/pyguide.html>`__ while the Python code follows the `PEP guidelines <https://peps.python.org/pep-0008/>`__. We use
+the `pre-commit <https://pre-commit.com/>`__ tool tools for maintaining code quality and consistency over the codebase.
 You can install ``pre-commit`` by running:
 
    .. code:: bash
 
       pip install pre-commit
 
-If you do not want to polute your python environment, please use 
-`venv <https://docs.python.org/3/library/venv.html>`__ or `conda <https://docs.conda.io/en/latest/>`__. 
+If you do not want to polute your python environment, please use
+`venv <https://docs.python.org/3/library/venv.html>`__ or `conda <https://docs.conda.io/en/latest/>`__.
 
 To run ``pre-commit`` over the entire repository, execute:
 
@@ -103,16 +103,16 @@ Contributing with Documentation
 -------------------------------
 
 I know, everyone hates to write documentation - its boring... but it is needed. That's why we tried
-to make it easy to contribute to it. 
+to make it easy to contribute to it.
 
-All the source files for the documentation are located in the ``docs`` directory. The documentation is written in 
-`reStructuredText <https://www.sphinx-doc.org/en/master/>`__ format. We use Sphinx with the 
-`Read the Docs Theme <https://readthedocs.org/projects/sphinx/>`__ for generating the documentation. Sending a pull 
-request for the documentation is the same as sending a pull request for the codebase. Please follow the steps 
-mentioned in the :ref:`Contributing with Code` section. 
+All the source files for the documentation are located in the ``docs`` directory. The documentation is written in
+`reStructuredText <https://www.sphinx-doc.org/en/master/>`__ format. We use Sphinx with the
+`Read the Docs Theme <https://readthedocs.org/projects/sphinx/>`__ for generating the documentation. Sending a pull
+request for the documentation is the same as sending a pull request for the codebase. Please follow the steps
+mentioned in the :ref:`Contributing with Code` section.
 
-To build the documentation, you need to install a few python 
-dependencies. If you do not want to polute your python environment, please use 
+To build the documentation, you need to install a few python
+dependencies. If you do not want to polute your python environment, please use
 `venv <https://docs.python.org/3/library/venv.html>`__ or `conda <https://docs.conda.io/en/latest/>`__.
 
 To generate the html documentation, execute the following commands:
@@ -174,8 +174,8 @@ The work developed by Marcelo Jacinto and João Pinto was supported by Ph.D. gra
 
    <p float="left" align="center">
       <img src="../../_static/dsor_logo.png" width="90" align="center" />
-      <img src="../../_static/logo_isr.png" width="200" align="center"/> 
-      <img src="../../_static/larsys_logo.png" width="200" align="center"/> 
-      <img src="../../_static/ist_logo.png" width="200" align="center"/> 
-      <img src="../../_static/logo_fct.png" width="200" align="center"/> 
+      <img src="../../_static/logo_isr.png" width="200" align="center"/>
+      <img src="../../_static/larsys_logo.png" width="200" align="center"/>
+      <img src="../../_static/ist_logo.png" width="200" align="center"/>
+      <img src="../../_static/logo_fct.png" width="200" align="center"/>
    </p>

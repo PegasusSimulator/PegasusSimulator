@@ -23,8 +23,8 @@ If you find ``Pegasus Simulator`` useful in your academic work, please cite the 
 
    @INPROCEEDINGS{10556959,
       author={Jacinto, Marcelo and Pinto, João and Patrikar, Jay and Keller, John and Cunha, Rita and Scherer, Sebastian and Pascoal, António},
-      booktitle={2024 International Conference on Unmanned Aircraft Systems (ICUAS)}, 
-      title={Pegasus Simulator: An Isaac Sim Framework for Multiple Aerial Vehicles Simulation}, 
+      booktitle={2024 International Conference on Unmanned Aircraft Systems (ICUAS)},
+      title={Pegasus Simulator: An Isaac Sim Framework for Multiple Aerial Vehicles Simulation},
       year={2024},
       volume={},
       number={},
@@ -90,6 +90,9 @@ This simulation framework is an open-source effort, started by me, Marcelo Jacin
    source/tutorials/create_standalone_simulation
    source/tutorials/create_custom_backend
    source/tutorials/create_simulation_with_people
+   source/tutorials/c3bf_quadrotor
+
+
 
 .. toctree::
    :maxdepth: 2
@@ -105,6 +108,7 @@ This simulation framework is an open-source effort, started by me, Marcelo Jacin
    :caption: Source API
 
    source/api/index
+
 
 .. toctree::
    :maxdepth: 1
@@ -151,8 +155,8 @@ The work developed by Marcelo Jacinto and João Pinto was supported by Ph.D. gra
 
    <p float="left" align="center">
       <img src="_static/dsor_logo.png" width="90" align="center" />
-      <img src="_static/logo_isr.png" width="200" align="center"/> 
-      <img src="_static/larsys_logo.png" width="200" align="center"/> 
-      <img src="_static/ist_logo.png" width="200" align="center"/> 
-      <img src="_static/logo_fct.png" width="200" align="center"/> 
+      <img src="_static/logo_isr.png" width="200" align="center"/>
+      <img src="_static/larsys_logo.png" width="200" align="center"/>
+      <img src="_static/ist_logo.png" width="200" align="center"/>
+      <img src="_static/logo_fct.png" width="200" align="center"/>
    </p>

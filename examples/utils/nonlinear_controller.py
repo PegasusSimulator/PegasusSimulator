@@ -3,7 +3,7 @@
 | File: nonlinear_controller.py
 | Author: Marcelo Jacinto and Joao Pinto (marcelo.jacinto@tecnico.ulisboa.pt, joao.s.pinto@tecnico.ulisboa.pt)
 | License: BSD-3-Clause. Copyright (c) 2023, Marcelo Jacinto. All rights reserved.
-| Description: This files serves as an example on how to use the control backends API to create a custom controller 
+| Description: This files serves as an example on how to use the control backends API to create a custom controller
 for the vehicle from scratch and use it to perform a simulation, without using PX4 nor ROS. In this controller, we
 provide a quick way of following a given trajectory specified in csv files or track an hard-coded trajectory based
 on exponentials! NOTE: This is just an example, to demonstrate the potential of the API. A much more flexible solution
@@ -21,37 +21,40 @@ from pegasus.simulator.logic.backends import Backend
 import numpy as np
 from scipy.spatial.transform import Rotation
 
+
 class NonlinearController(Backend):
     """A nonlinear controller class. It implements a nonlinear controller that allows a vehicle to track
     aggressive trajectories. This controlers is well described in the papers
-    
-    [1] J. Pinto, B. J. Guerreiro and R. Cunha, "Planning Parcel Relay Manoeuvres for Quadrotors," 
-    2021 International Conference on Unmanned Aircraft Systems (ICUAS), Athens, Greece, 2021, 
+
+    [1] J. Pinto, B. J. Guerreiro and R. Cunha, "Planning Parcel Relay Manoeuvres for Quadrotors,"
+    2021 International Conference on Unmanned Aircraft Systems (ICUAS), Athens, Greece, 2021,
     pp. 137-145, doi: 10.1109/ICUAS51884.2021.9476757.
-    [2] D. Mellinger and V. Kumar, "Minimum snap trajectory generation and control for quadrotors," 
-    2011 IEEE International Conference on Robotics and Automation, Shanghai, China, 2011, 
+    [2] D. Mellinger and V. Kumar, "Minimum snap trajectory generation and control for quadrotors,"
+    2011 IEEE International Conference on Robotics and Automation, Shanghai, China, 2011,
     pp. 2520-2525, doi: 10.1109/ICRA.2011.5980409.
     """
 
-    def __init__(self, 
-        trajectory_file: str = None, 
-        results_file: str=None, 
-        reverse=False, 
+    def __init__(
+        self,
+        trajectory_file: str = None,
+        results_file: str = None,
+        reverse=False,
         Kp=[10.0, 10.0, 10.0],
         Kd=[8.5, 8.5, 8.5],
         Ki=[1.50, 1.50, 1.50],
         Kr=[3.5, 3.5, 3.5],
-        Kw=[0.5, 0.5, 0.5]):
+        Kw=[0.5, 0.5, 0.5],
+    ):
 
         # The current rotor references [rad/s]
         self.input_ref = [0.0, 0.0, 0.0, 0.0]
 
         # The current state of the vehicle expressed in the inertial frame (in ENU)
-        self.p = np.zeros((3,))                   # The vehicle position
-        self.R: Rotation = Rotation.identity()    # The vehicle attitude
-        self.w = np.zeros((3,))                   # The angular velocity of the vehicle
-        self.v = np.zeros((3,))                   # The linear velocity of the vehicle in the inertial frame
-        self.a = np.zeros((3,))                   # The linear acceleration of the vehicle in the inertial frame
+        self.p = np.zeros((3,))  # The vehicle position
+        self.R: Rotation = Rotation.identity()  # The vehicle attitude
+        self.w = np.zeros((3,))  # The angular velocity of the vehicle
+        self.v = np.zeros((3,))  # The linear velocity of the vehicle in the inertial frame
+        self.a = np.zeros((3,))  # The linear acceleration of the vehicle in the inertial frame
 
         # Define the control gains matrix for the outer-loop
         self.Kp = np.diag(Kp)
@@ -63,8 +66,8 @@ class NonlinearController(Backend):
         self.int = np.array([0.0, 0.0, 0.0])
 
         # Define the dynamic parameters for the vehicle
-        self.m = 1.50        # Mass in Kg
-        self.g = 9.81       # The gravity acceleration ms^-2
+        self.m = 1.50  # Mass in Kg
+        self.g = 9.81  # The gravity acceleration ms^-2
 
         # Read the target trajectory from a CSV file inside the trajectories directory
         # if a trajectory is provided. Otherwise, just perform the hard-coded trajectory provided with this controller
@@ -108,15 +111,13 @@ class NonlinearController(Backend):
         """
 
         # Read the trajectory to a pandas frame
-        return np.flip(np.genfromtxt(file_name, delimiter=','), axis=0)
-
+        return np.flip(np.genfromtxt(file_name, delimiter=","), axis=0)
 
     def start(self):
         """
         Reset the control and trajectory index
         """
         self.reset_statistics()
-        
 
     def stop(self):
         """
@@ -126,7 +127,7 @@ class NonlinearController(Backend):
         # Check if we should save the statistics to some file or not
         if self.results_files is None:
             return
-        
+
         statistics = {}
         statistics["time"] = np.array(self.time_vector)
         statistics["p"] = np.vstack(self.position_over_time)
@@ -142,7 +143,7 @@ class NonlinearController(Backend):
 
     def update_sensor(self, sensor_type: str, data):
         """
-        Do nothing. For now ignore all the sensor data and just use the state directly for demonstration purposes. 
+        Do nothing. For now ignore all the sensor data and just use the state directly for demonstration purposes.
         This is a callback that is called at every physics step.
 
         Args:
@@ -175,13 +176,13 @@ class NonlinearController(Backend):
         return self.input_ref
 
     def update(self, dt: float):
-        """Method that implements the nonlinear control law and updates the target angular velocities for each rotor. 
+        """Method that implements the nonlinear control law and updates the target angular velocities for each rotor.
         This method will be called by the simulation on every physics step
 
         Args:
             dt (float): The time elapsed between the previous and current function calls (s).
         """
-        
+
         if self.reveived_first_state == False:
             return
 
@@ -189,7 +190,6 @@ class NonlinearController(Backend):
         # Update the references for the controller to track
         # -------------------------------------------------
         self.total_time += dt
-        
 
         # Check if we need to update to the next trajectory index
         if self.index < self.max_index - 1 and self.total_time >= self.trajectory[self.index + 1, 0]:
@@ -198,10 +198,18 @@ class NonlinearController(Backend):
         # Update using an external trajectory
         if self.trajectory is not None:
             # the target positions [m], velocity [m/s], accelerations [m/s^2], jerk [m/s^3], yaw-angle [rad], yaw-rate [rad/s]
-            p_ref = np.array([self.trajectory[self.index, 1], self.trajectory[self.index, 2], self.trajectory[self.index, 3]])
-            v_ref = np.array([self.trajectory[self.index, 4], self.trajectory[self.index, 5], self.trajectory[self.index, 6]])
-            a_ref = np.array([self.trajectory[self.index, 7], self.trajectory[self.index, 8], self.trajectory[self.index, 9]])
-            j_ref = np.array([self.trajectory[self.index, 10], self.trajectory[self.index, 11], self.trajectory[self.index, 12]])
+            p_ref = np.array(
+                [self.trajectory[self.index, 1], self.trajectory[self.index, 2], self.trajectory[self.index, 3]]
+            )
+            v_ref = np.array(
+                [self.trajectory[self.index, 4], self.trajectory[self.index, 5], self.trajectory[self.index, 6]]
+            )
+            a_ref = np.array(
+                [self.trajectory[self.index, 7], self.trajectory[self.index, 8], self.trajectory[self.index, 9]]
+            )
+            j_ref = np.array(
+                [self.trajectory[self.index, 10], self.trajectory[self.index, 11], self.trajectory[self.index, 12]]
+            )
             yaw_ref = self.trajectory[self.index, 13]
             yaw_rate_ref = self.trajectory[self.index, 14]
         # Or update the reference using the built-in trajectory
@@ -221,14 +229,16 @@ class NonlinearController(Backend):
         # Compute the tracking errors
         ep = self.p - p_ref
         ev = self.v - v_ref
-        self.int = self.int +  (ep * dt)
+        self.int = self.int + (ep * dt)
         ei = self.int
 
         # Compute F_des term
-        F_des = -(self.Kp @ ep) - (self.Kd @ ev) - (self.Ki @ ei) + np.array([0.0, 0.0, self.m * self.g]) + (self.m * a_ref)
+        F_des = (
+            -(self.Kp @ ep) - (self.Kd @ ev) - (self.Ki @ ei) + np.array([0.0, 0.0, self.m * self.g]) + (self.m * a_ref)
+        )
 
         # Get the current axis Z_B (given by the last column of the rotation matrix)
-        Z_B = self.R.as_matrix()[:,2]
+        Z_B = self.R.as_matrix()[:, 2]
 
         # Get the desired total thrust in Z_B direction (u_1)
         u_1 = F_des @ Z_B
@@ -236,7 +246,7 @@ class NonlinearController(Backend):
         # Compute the desired body-frame axis Z_b
         Z_b_des = F_des / np.linalg.norm(F_des)
 
-        # Compute X_C_des 
+        # Compute X_C_des
         X_c_des = np.array([np.cos(yaw_ref), np.sin(yaw_ref), 0.0])
 
         # Compute Y_b_des
@@ -259,12 +269,10 @@ class NonlinearController(Backend):
         # Compute the desired angular velocity by projecting the angular velocity in the Xb-Yb plane
         # projection of angular velocity on xB − yB plane
         # see eqn (7) from [2].
-        hw = (self.m / u_1) * (j_ref - np.dot(Z_b_des, j_ref) * Z_b_des) 
-        
+        hw = (self.m / u_1) * (j_ref - np.dot(Z_b_des, j_ref) * Z_b_des)
+
         # desired angular velocity
-        w_des = np.array([-np.dot(hw, Y_b_des), 
-                           np.dot(hw, X_b_des), 
-                           yaw_rate_ref * Z_b_des[2]])
+        w_des = np.array([-np.dot(hw, Y_b_des), np.dot(hw, X_b_des), yaw_rate_ref * Z_b_des[2]])
 
         # Compute the angular velocity error
         e_w = self.w - w_des
@@ -295,8 +303,8 @@ class NonlinearController(Backend):
         Args:
             S (np.array): A matrix in so(3)
         """
-        return np.array([-S[1,2], S[0,2], -S[0,1]])
-    
+        return np.array([-S[1, 2], S[0, 2], -S[0, 1]])
+
     def reset_statistics(self):
 
         self.index = 0
@@ -335,13 +343,13 @@ class NonlinearController(Backend):
         """
 
         x = t
-        z = 1 / s * np.exp(-0.5 * np.power(t/s, 2)) + 1.0
-        y = 1 / s * np.exp(-0.5 * np.power(t/s, 2))
+        z = 1 / s * np.exp(-0.5 * np.power(t / s, 2)) + 1.0
+        y = 1 / s * np.exp(-0.5 * np.power(t / s, 2))
 
         if reverse == True:
-            y = -1 / s * np.exp(-0.5 * np.power(t/s, 2)) + 4.5
+            y = -1 / s * np.exp(-0.5 * np.power(t / s, 2)) + 4.5
 
-        return np.array([x,y,z])
+        return np.array([x, y, z])
 
     def d_pd(self, t, s, reverse=False):
         """The desired velocity of the built-in trajectory
@@ -356,13 +364,13 @@ class NonlinearController(Backend):
         """
 
         x = 1.0
-        y = -(t * np.exp(-np.power(t,2)/(2*np.power(s,2))))/np.power(s,3)
-        z = -(t * np.exp(-np.power(t,2)/(2*np.power(s,2))))/np.power(s,3)
+        y = -(t * np.exp(-np.power(t, 2) / (2 * np.power(s, 2)))) / np.power(s, 3)
+        z = -(t * np.exp(-np.power(t, 2) / (2 * np.power(s, 2)))) / np.power(s, 3)
 
         if reverse == True:
-            y = (t * np.exp(-np.power(t,2)/(2*np.power(s,2))))/np.power(s,3)
+            y = (t * np.exp(-np.power(t, 2) / (2 * np.power(s, 2)))) / np.power(s, 3)
 
-        return np.array([x,y,z])
+        return np.array([x, y, z])
 
     def dd_pd(self, t, s, reverse=False):
         """The desired acceleration of the built-in trajectory
@@ -377,13 +385,19 @@ class NonlinearController(Backend):
         """
 
         x = 0.0
-        y = (np.power(t,2)*np.exp(-np.power(t,2)/(2*np.power(s,2))))/np.power(s,5) - np.exp(-np.power(t,2)/(2*np.power(s,2)))/np.power(s,3)
-        z = (np.power(t,2)*np.exp(-np.power(t,2)/(2*np.power(s,2))))/np.power(s,5) - np.exp(-np.power(t,2)/(2*np.power(s,2)))/np.power(s,3)
+        y = (np.power(t, 2) * np.exp(-np.power(t, 2) / (2 * np.power(s, 2)))) / np.power(s, 5) - np.exp(
+            -np.power(t, 2) / (2 * np.power(s, 2))
+        ) / np.power(s, 3)
+        z = (np.power(t, 2) * np.exp(-np.power(t, 2) / (2 * np.power(s, 2)))) / np.power(s, 5) - np.exp(
+            -np.power(t, 2) / (2 * np.power(s, 2))
+        ) / np.power(s, 3)
 
         if reverse == True:
-            y = np.exp(-np.power(t,2)/(2*np.power(s,2)))/np.power(s,3) - (np.power(t,2)*np.exp(-np.power(t,2)/(2*np.power(s,2))))/np.power(s,5)
+            y = np.exp(-np.power(t, 2) / (2 * np.power(s, 2))) / np.power(s, 3) - (
+                np.power(t, 2) * np.exp(-np.power(t, 2) / (2 * np.power(s, 2)))
+            ) / np.power(s, 5)
 
-        return np.array([x,y,z])
+        return np.array([x, y, z])
 
     def ddd_pd(self, t, s, reverse=False):
         """The desired jerk of the built-in trajectory
@@ -397,13 +411,19 @@ class NonlinearController(Backend):
             np.ndarray: A 3x1 array with the ddd_x, ddd_y ,ddd_z desired [m/s^3]
         """
         x = 0.0
-        y = (3*t*np.exp(-np.power(t,2)/(2*np.power(s,2))))/np.power(s,5) - (np.power(t,3)*np.exp(-np.power(t,2)/(2*np.power(s,2))))/np.power(s,7)
-        z = (3*t*np.exp(-np.power(t,2)/(2*np.power(s,2))))/np.power(s,5) - (np.power(t,3)*np.exp(-np.power(t,2)/(2*np.power(s,2))))/np.power(s,7)
+        y = (3 * t * np.exp(-np.power(t, 2) / (2 * np.power(s, 2)))) / np.power(s, 5) - (
+            np.power(t, 3) * np.exp(-np.power(t, 2) / (2 * np.power(s, 2)))
+        ) / np.power(s, 7)
+        z = (3 * t * np.exp(-np.power(t, 2) / (2 * np.power(s, 2)))) / np.power(s, 5) - (
+            np.power(t, 3) * np.exp(-np.power(t, 2) / (2 * np.power(s, 2)))
+        ) / np.power(s, 7)
 
         if reverse == True:
-            y = (np.power(t,3)*np.exp(-np.power(t,2)/(2*np.power(s,2))))/np.power(s,7) - (3*t*np.exp(-np.power(t,2)/(2*np.power(s,2))))/np.power(s,5)
+            y = (np.power(t, 3) * np.exp(-np.power(t, 2) / (2 * np.power(s, 2)))) / np.power(s, 7) - (
+                3 * t * np.exp(-np.power(t, 2) / (2 * np.power(s, 2)))
+            ) / np.power(s, 5)
 
-        return np.array([x,y,z])
+        return np.array([x, y, z])
 
     def yaw_d(self, t, s):
         """The desired yaw of the built-in trajectory
@@ -417,7 +437,7 @@ class NonlinearController(Backend):
             np.ndarray: A float with the desired yaw in rad
         """
         return 0.0
-    
+
     def d_yaw_d(self, t, s):
         """The desired yaw_rate of the built-in trajectory
 
@@ -430,7 +450,7 @@ class NonlinearController(Backend):
             np.ndarray: A float with the desired yaw_rate in rad/s
         """
         return 0.0
-    
+
     def reset(self):
         """
         Method that when implemented, should handle the reset of the vehicle simulation to its original state

@@ -40,6 +40,16 @@ Dynamics
 
    dynamics.drag
    dynamics.linear_drag
+   
+   
+Safety
+------
+
+.. toctree::
+   :maxdepth: 2
+
+   safety.c3bf 
+  
 
 Thruster
 --------
@@ -68,7 +78,7 @@ Vehicle
    state
    vehicles.vehicle
    vehicles.vehicle_manager
-   vehicles.multirotor 
+   vehicles.multirotor
 
 People
 ------
@@ -90,3 +100,5 @@ Default Params
    :maxdepth: 2
 
    params
+   
+

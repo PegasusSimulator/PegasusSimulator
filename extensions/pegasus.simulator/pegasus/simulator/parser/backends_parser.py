@@ -8,6 +8,7 @@ from pegasus.simulator.parser import Parser
 from pegasus.simulator.logic.backends import PX4MavlinkBackend, ArduPilotMavlinkBackend, ROS2Backend
 from pegasus.simulator.params import BACKENDS
 
+
 class BackendsParser(Parser):
     # TODO - improve the structure of the backends in order to clean this parser
 
@@ -21,7 +22,7 @@ class BackendsParser(Parser):
         self.backends = {
             BACKENDS["px4"]: PX4MavlinkBackend,
             BACKENDS["ardupilot"]: ArduPilotMavlinkBackend,
-            BACKENDS["ros2"]: ROS2Backend
+            BACKENDS["ros2"]: ROS2Backend,
         }
 
     def parse(self, data_type: str, data_dict):

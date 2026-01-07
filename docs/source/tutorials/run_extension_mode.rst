@@ -1,8 +1,8 @@
 Run in Extension Mode (GUI)
 =======================================
 
-This tutorial introduces how to interface with the Pegasus Simulator working in extension mode, i.e. with an interactive GUI. 
-This means that ``ISAACSIM`` will be launched as a standard application and the Pegasus Simulator extension should be 
+This tutorial introduces how to interface with the Pegasus Simulator working in extension mode, i.e. with an interactive GUI.
+This means that ``ISAACSIM`` will be launched as a standard application and the Pegasus Simulator extension should be
 enabled from the extension manager.
 
 0. Preparation

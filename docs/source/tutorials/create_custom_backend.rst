@@ -42,8 +42,8 @@ The next code section corresponds to the ``nonlinear_controller.py`` in the ``ex
 2. Explanation
 --------------
 
-To start a pre-programed simulation using a different control backend other than ``MAVLink`` we include our custom 
-``control backend`` module written in pure Python. 
+To start a pre-programed simulation using a different control backend other than ``MAVLink`` we include our custom
+``control backend`` module written in pure Python.
 
 .. literalinclude:: ../../../examples/4_python_single_vehicle.py
    :language: python
@@ -51,9 +51,9 @@ To start a pre-programed simulation using a different control backend other than
    :linenos:
    :lineno-start: 30
 
-We now create a multirotor configuration and set the multirotor backend to be our ``NonlinearController`` object. That's it! 
-It is that simple! Instead of using the `MAVLink/PX4`` control we will use a pure Python controller written by us. The rest 
-of the script is the same as in the previous tutorial. 
+We now create a multirotor configuration and set the multirotor backend to be our ``NonlinearController`` object. That's it!
+It is that simple! Instead of using the `MAVLink/PX4`` control we will use a pure Python controller written by us. The rest
+of the script is the same as in the previous tutorial.
 
 .. literalinclude:: ../../../examples/4_python_single_vehicle.py
    :language: python
@@ -100,10 +100,10 @@ the vehicle when the simulation stops. You should perform any cleanup here.
    :linenos:
    :lineno-start: 121
 
-The ``update_sensor(sensor_type: str, data)``  method gets invoked by the vehicle at every physics step iteration (it is used as a callback) for 
+The ``update_sensor(sensor_type: str, data)``  method gets invoked by the vehicle at every physics step iteration (it is used as a callback) for
 each sensor that generated output data. It receives as input a string which describes the type of sensor and the data produced by that sensor.
 It is up to you to decide on how to parse the sensor data and use it. In this case we are not going to use the data produced
-by the simulated sensors for our controller. Instead we will get the state of the vehicle directly from the simulation and 
+by the simulated sensors for our controller. Instead we will get the state of the vehicle directly from the simulation and
 use that to feedback into our control law.
 
 .. literalinclude:: ../../../examples/utils/nonlinear_controller.py
@@ -114,7 +114,7 @@ use that to feedback into our control law.
 
 .. note::
 
-   You can take a look on how the ``PX4MavlinkBackend`` is implemented to check on how to parse sensor data produced by IMU, GPS, etc. 
+   You can take a look on how the ``PX4MavlinkBackend`` is implemented to check on how to parse sensor data produced by IMU, GPS, etc.
    A simple strategy is to use an if-statement to check for which sensor we are receive the data from and parse it accordingly, for example:
 
    .. code:: Python
@@ -138,8 +138,8 @@ object contains:
 - **angular velocity** of the vehicle's body frame, with respect to the inertial frame, expressed in the vehicle's body frame;
 - **linear acceleration** of the vehicle's body frame, with respect to the inertial frame, expressed in the inertial frame.
 
-All of this data is filled adopting a **East-North-Down (ENU)** convention for the Inertial Reference Frame and a **Front-Left-Up (FLU)** 
-for the vehicle's body frame of reference. 
+All of this data is filled adopting a **East-North-Down (ENU)** convention for the Inertial Reference Frame and a **Front-Left-Up (FLU)**
+for the vehicle's body frame of reference.
 
 .. note::
 
@@ -153,7 +153,7 @@ for the vehicle's body frame of reference.
    :linenos:
    :lineno-start: 154
 
-The ``input_reference()`` method is called at every physics steps by the vehicle to retrieve from the controller a list of floats 
+The ``input_reference()`` method is called at every physics steps by the vehicle to retrieve from the controller a list of floats
 with the target angular velocities in [rad/s] to use as reference to apply to each vehicle rotor. The list of floats
 returned by this method should have the same length as the number of rotors of the vehicle.
 
@@ -172,7 +172,7 @@ returned by this method should have the same length as the number of rotors of t
 
 
 The ``update(dt: float)`` method gets invoked at every physics step by the vehicle. It receives as argument the amount of time
-elapsed since the last update (in seconds). This is where you should define your controller/communication layer logic and 
+elapsed since the last update (in seconds). This is where you should define your controller/communication layer logic and
 update the list of reference angular velocities for the rotors.
 
 .. literalinclude:: ../../../examples/utils/nonlinear_controller.py
@@ -190,9 +190,9 @@ Now let's run the Python script:
 
    isaac_run examples/4_python_single_vehicle.py
 
-This should open a stage with a blue ground-plane with an 3DR Iris vehicle model in it. The simulation should start playing automatically and the stage being rendered. 
+This should open a stage with a blue ground-plane with an 3DR Iris vehicle model in it. The simulation should start playing automatically and the stage being rendered.
 The vehicle will automatically start flying and performing a very fast relay maneuvre. If you miss it, you can just hit the stop/play
-button again to repeat it. 
+button again to repeat it.
 
 Notice now, that unlike the previous tutorial, if you open ``QGroundControl`` you won't see the vehicle. This is normal, because
 now we are not using the ``MAVLink`` control backend, but instead our custom ``NonlinearControl`` backend.

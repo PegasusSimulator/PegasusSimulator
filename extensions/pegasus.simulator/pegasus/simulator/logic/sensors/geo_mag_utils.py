@@ -2,7 +2,7 @@
 | File: geo_mag_utils.py
 | Description: Provides utilities for computing latitude, longitude, and magnetic strength
 given the position of the vehicle in the simulated world. These computations and table constants are in agreement
-with the PX4 stil_gazebo implementation (https://github.com/PX4/PX4-SITL_gazebo). Therefore, PX4 should behave similarly 
+with the PX4 stil_gazebo implementation (https://github.com/PX4/PX4-SITL_gazebo). Therefore, PX4 should behave similarly
 to a gazebo-based simulation.
 """
 import numpy as np

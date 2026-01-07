@@ -14,7 +14,7 @@ import subprocess
 class PX4LaunchTool:
     """
     A class that manages the start/stop of a px4 process. It requires only the path to the PX4 installation (assuming that
-    PX4 was already built with 'make px4_sitl_default none'), the vehicle id and the vehicle model. 
+    PX4 was already built with 'make px4_sitl_default none'), the vehicle id and the vehicle model.
     """
 
     def __init__(self, px4_dir, vehicle_id: int = 0, px4_model: str = "gazebo-classic_iris"):

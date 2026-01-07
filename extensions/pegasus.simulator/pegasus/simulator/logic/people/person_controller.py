@@ -5,16 +5,16 @@
 | License: BSD-3-Clause. Copyright (c) 2024, Marcelo Jacinto. All rights reserved.
 """
 
-class PersonController:
 
+class PersonController:
     def __init__(self):
-        """Initialize the Backend class
-        """
+        """Initialize the Backend class"""
         self._person = None
 
     """
      Properties
     """
+
     @property
     def person(self):
         """A reference to the person associated with this backend.
@@ -25,7 +25,7 @@ class PersonController:
         return self._person
 
     def initialize(self, person):
-        """A method that can be invoked when the simulation is starting to give access to the person control backend 
+        """A method that can be invoked when the simulation is starting to give access to the person control backend
         to the entire person object.
 
         Args:
@@ -51,16 +51,13 @@ class PersonController:
         pass
 
     def start(self):
-        """Method that when implemented should handle the begining of the simulation of person
-        """
+        """Method that when implemented should handle the begining of the simulation of person"""
         pass
 
     def stop(self):
-        """Method that when implemented should handle the stopping of the simulation of person
-        """
+        """Method that when implemented should handle the stopping of the simulation of person"""
         pass
 
     def reset(self):
-        """Method that when implemented, should handle the reset of the person simulation to its original state
-        """
+        """Method that when implemented, should handle the reset of the person simulation to its original state"""
         pass

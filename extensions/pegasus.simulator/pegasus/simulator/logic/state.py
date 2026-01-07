@@ -14,7 +14,7 @@ from pegasus.simulator.logic.rotations import rot_ENU_to_NED, rot_FLU_to_FRD
 class State:
     """
     Stores the state of a given vehicle.
-    
+
     Note:
         - position - A numpy array with the [x,y,z] of the vehicle expressed in the inertial frame according to an ENU convention.
         - orientation - A numpy array with the quaternion [qx, qy, qz, qw] that encodes the attitude of the vehicle's FLU body frame, relative to an ENU inertial frame, expressed in the ENU inertial frame.

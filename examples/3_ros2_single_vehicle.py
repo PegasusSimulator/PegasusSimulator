@@ -3,7 +3,7 @@
 | File: 3_ros2_single_vehicle.py
 | Author: Marcelo Jacinto (marcelo.jacinto@tecnico.ulisboa.pt)
 | License: BSD-3-Clause. Copyright (c) 2024, Marcelo Jacinto. All rights reserved.
-| Description: This files serves as an example on how to build an app that makes use of the Pegasus API to run a 
+| Description: This files serves as an example on how to build an app that makes use of the Pegasus API to run a
 simulation with a single vehicle, controlled using the ROS2 backend system. NOTE: this ROS2 interface only works on Ubuntu 22.04LTS and ROS2 Humble
 """
 
@@ -23,6 +23,7 @@ import omni.timeline
 from omni.isaac.core.world import World
 
 from isaacsim.core.utils.extensions import enable_extension
+
 enable_extension("isaacsim.ros2.bridge")
 
 # Import the Pegasus API for simulating drones
@@ -34,6 +35,7 @@ from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 
 # Auxiliary scipy and numpy modules
 from scipy.spatial.transform import Rotation
+
 
 class PegasusApp:
     """
@@ -51,7 +53,7 @@ class PegasusApp:
         # Start the Pegasus Interface
         self.pg = PegasusInterface()
 
-        # Acquire the World, .i.e, the singleton that controls that is a one stop shop for setting up physics, 
+        # Acquire the World, .i.e, the singleton that controls that is a one stop shop for setting up physics,
         # spawning asset primitives, etc.
         self.pg._world = World(**self.pg._world_settings)
         self.world = self.pg.world
@@ -62,20 +64,24 @@ class PegasusApp:
         # Create the vehicle
         # Try to spawn the selected robot in the world to the specified namespace
         config_multirotor = MultirotorConfig()
-        config_multirotor.backends = [ROS2Backend(vehicle_id=1, config={
-            "namespace": 'drone',
-            "pub_sensors": True,
-            "pub_graphical_sensors": True,
-            "pub_state": True,
-            "pub_tf": False,
-            "sub_control": False}
+        config_multirotor.backends = [
+            ROS2Backend(
+                vehicle_id=1,
+                config={
+                    "namespace": "drone",
+                    "pub_sensors": True,
+                    "pub_graphical_sensors": True,
+                    "pub_state": True,
+                    "pub_tf": False,
+                    "sub_control": False,
+                },
             )
         ]
         config_multirotor.graphical_sensors = [MonocularCamera("camera", config={"update_rate": 60.0})]
-        
+
         Multirotor(
             "/World/quadrotor",
-            ROBOTS['Iris'],
+            ROBOTS["Iris"],
             0,
             [0.0, 0.0, 0.07],
             Rotation.from_euler("XYZ", [0.0, 0.0, 0.0], degrees=True).as_quat(),
@@ -101,11 +107,12 @@ class PegasusApp:
 
             # Update the UI of the app and perform the physics step
             self.world.step(render=True)
-        
+
         # Cleanup and stop
         carb.log_warn("PegasusApp Simulation App is closing.")
         self.timeline.stop()
         simulation_app.close()
+
 
 def main():
 
@@ -114,6 +121,7 @@ def main():
 
     # Run the application loop
     pg_app.run()
+
 
 if __name__ == "__main__":
     main()

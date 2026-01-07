@@ -44,7 +44,6 @@ def get_world_transform_xform(prim: Usd.Prim):
 
 
 class Vehicle(Robot):
-    
     def __init__(
         self,
         stage_prefix: str,
@@ -54,7 +53,7 @@ class Vehicle(Robot):
         sensors=[],
         graphical_sensors=[],
         graphs=[],
-        backends=[]
+        backends=[],
     ):
         """
         Class that initializes a vehicle in the isaac sim's curent stage
@@ -124,9 +123,11 @@ class Vehicle(Robot):
         # -------------------- Add sensors to the vehicle --------------------
         # --------------------------------------------------------------------
         self._sensors = sensors
-        
+
         for sensor in self._sensors:
-            sensor.initialize(self, PegasusInterface().latitude, PegasusInterface().longitude, PegasusInterface().altitude)
+            sensor.initialize(
+                self, PegasusInterface().latitude, PegasusInterface().longitude, PegasusInterface().altitude
+            )
 
         # Add callbacks to the physics engine to update each sensor at every timestep
         # and let the sensor decide depending on its internal update rate whether to generate new data
@@ -143,7 +144,6 @@ class Vehicle(Robot):
         # Add callbacks to the rendering engine to update each graphical sensor at every timestep of the rendering engine
         self._world.add_render_callback(self._stage_prefix + "/GraphicalSensors", self.update_graphical_sensors)
 
-
         # --------------------------------------------------------------------
         # -------------------- Add the graphs to the vehicle -----------------
         # --------------------------------------------------------------------
@@ -151,7 +151,7 @@ class Vehicle(Robot):
 
         for graph in self._graphs:
             graph.initialize(self)
-        
+
         # --------------------------------------------------------------------
         # ---- Add (communication/control) backends to the vehicle -----------
         # --------------------------------------------------------------------
@@ -164,10 +164,9 @@ class Vehicle(Robot):
         # Add a callbacks for the
         self._world.add_physics_callback(self._stage_prefix + "/mav_state", self.update_sim_state)
 
-
     def __del__(self):
         """
-        Method that is invoked when a vehicle object gets destroyed. When this happens, we also invoke the 
+        Method that is invoked when a vehicle object gets destroyed. When this happens, we also invoke the
         'remove_vehicle' from the VehicleManager in order to remove the vehicle from the list of active vehicles.
         """
 
@@ -186,7 +185,7 @@ class Vehicle(Robot):
             State: The current state of the vehicle, i.e., position, orientation, linear and angular velocities...
         """
         return self._state
-    
+
     @property
     def vehicle_name(self) -> str:
         """Vehicle name.
@@ -250,7 +249,7 @@ class Vehicle(Robot):
     def apply_force(self, force, pos=[0.0, 0.0, 0.0], body_part="/body"):
         """
         Method that will apply a force on the rigidbody, on the part specified in the 'body_part' at its relative position
-        given by 'pos' (following a FLU) convention. 
+        given by 'pos' (following a FLU) convention.
 
         Args:
             force (list): A 3-dimensional vector of floats with the force [Fx, Fy, Fz] on the body axis of the vehicle according to a FLU convention.
@@ -387,7 +386,7 @@ class Vehicle(Robot):
 
         # Call the update method for the sensor to update its values internally (if applicable)
         for sensor in self._graphical_sensors:
-            sensor_data = sensor.update(self._state, event.payload['dt'])
+            sensor_data = sensor.update(self._state, event.payload["dt"])
 
             # If some data was updated and we have a ros backend (or other), then just update it
             if sensor_data is not None:

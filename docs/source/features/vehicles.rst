@@ -10,7 +10,7 @@ To create a Multirotor object from scratch, consider the following example code:
 .. code:: Python
 
     from pegasus.simulator.params import ROBOTS
-    
+
     from pegasus.simulator.logic.dynamics import LinearDrag
     from pegasus.simulator.logic.thrusters import QuadraticThrustCurve
     from pegasus.simulator.logic.sensors import Barometer, IMU, Magnetometer, GPS
@@ -33,12 +33,12 @@ To create a Multirotor object from scratch, consider the following example code:
     # to configure them. Check the Sensors API documentation for more information.
     multirotor_config.sensors = [Barometer(), IMU(), Magnetometer(), GPS()]
 
-    # The backends for actually sending commands to the vehicle. 
+    # The backends for actually sending commands to the vehicle.
     # By default use mavlink (with default mavlink configurations).
     # It can also be your own custom Control Backend implementation!
     #
-    # Note: you can have multiple backends (this is usefull for creating backends 
-    # for logging purposes) but only the first backend in the list will be used 
+    # Note: you can have multiple backends (this is usefull for creating backends
+    # for logging purposes) but only the first backend in the list will be used
     # to send commands to the vehicles. The others will just be used to receive the
     # current state of the vehicle and the data produced by the sensors
     multirotor_config.backends = [PX4MavlinkBackend()]
@@ -55,7 +55,7 @@ To create a Multirotor object from scratch, consider the following example code:
         )
 
 To define and use a custom multirotor frame, you must adhere to the adopted convention. Therefore, a vehicle
-must be made in a USD file and have a ``/body`` and multiple ``/rotor<id>`` Xform objects. Each rotor ``/rotor<id>`` 
+must be made in a USD file and have a ``/body`` and multiple ``/rotor<id>`` Xform objects. Each rotor ``/rotor<id>``
 must have inside a Revolut Joint named ``/rotor<id>`` where the ``<id>`` of the joint must coincide with the Xform name.
 
 An example tree of the 3DR Iris quadrotor is presented bellow.

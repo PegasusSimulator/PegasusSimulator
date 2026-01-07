@@ -7,6 +7,7 @@ __all__ = ["Sensor"]
 
 from pegasus.simulator.logic.state import State
 
+
 class Sensor:
     """The base class for implementing a sensor
 
@@ -16,6 +17,7 @@ class Sensor:
         origin_lon (float): The longitude of the origin of the world in degrees (might get used by some sensors).
         origin_alt (float): The altitude of the origin of the world relative to sea water level (might get used by some sensors)
     """
+
     def __init__(self, sensor_type: str, update_rate: float):
         """Initialize the Sensor class
 
@@ -42,11 +44,11 @@ class Sensor:
 
     def initialize(self, vehicle, origin_lat, origin_lon, origin_alt):
         """Method that initializes the sensor latitude, longitude and altitude attributes.
-        
+
         Note:
             Given that some sensors require the knowledge of the latitude, longitude and altitude of the [0, 0, 0] coordinate
             of the world, then we might as well just save this information for whatever sensor that comes
-        
+
         Args:
             vehicle (Vehicle): A reference to the vehicle that this sensor is associated with
             origin_lat (float): The latitude of the origin of the world in degrees (might get used by some sensors).
@@ -68,7 +70,7 @@ class Sensor:
         self._update_period = 1.0 / self._update_rate
 
     def update_at_rate(fnc):
-        """Decorator function used to check if the time elapsed between the last sensor update call and the current 
+        """Decorator function used to check if the time elapsed between the last sensor update call and the current
         sensor update call is higher than the defined update_rate of the sensor. If so, we need to actually compute new
         values to simulate a measurement of the sensor at a given rate.
 
@@ -104,6 +106,7 @@ class Sensor:
 
                 return result
             return None
+
         return wrapper
 
     @property
@@ -141,22 +144,19 @@ class Sensor:
         pass
 
     def start(self):
-        """Method that when implemented should handle the begining of the simulation of vehicle
-        """
+        """Method that when implemented should handle the begining of the simulation of vehicle"""
         pass
 
     def stop(self):
-        """Method that when implemented should handle the stopping of the simulation of vehicle
-        """
+        """Method that when implemented should handle the stopping of the simulation of vehicle"""
         pass
 
     def reset(self):
-        """Method that when implemented, should handle the reset of the vehicle simulation to its original state
-        """
+        """Method that when implemented, should handle the reset of the vehicle simulation to its original state"""
         pass
 
     def config_from_dict(self, config_dict):
-        """Method that should be implemented by the class that inherits Sensor. This is where the configuration of the 
+        """Method that should be implemented by the class that inherits Sensor. This is where the configuration of the
         sensor based on a dictionary input should be performed.
 
         Args:

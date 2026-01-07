@@ -9,7 +9,7 @@ List of provided simulation environments
 ----------------------------------------
 
 .. table::
-    :widths: 25 17 
+    :widths: 25 17
 
     +----------------------------+--------------------------+
     | World                      | Name                     |
@@ -61,7 +61,7 @@ To index the dictionary of pre-made simulation environments, just use the names 
 
 .. note::
 
-    In this initial version it is not possible to spawn a custom 3D USD world using the Pegasus Simulator GUI. 
+    In this initial version it is not possible to spawn a custom 3D USD world using the Pegasus Simulator GUI.
     If you use the Pegasus Simulator in extension mode and want to use your custom worlds, for now you need
     manually drag and drop the assets into the viewport like a cavemen 👌️. This is for sure a feature in the :ref:`Roadmap`.
 
@@ -119,4 +119,4 @@ You can change the default coordinates by either:
 
         # Change the default global coordinates for the simulator
         # This will be saved for future runs
-        pg.set_new_global_coordinates(latitude, longitude, altitude) 
+        pg.set_new_global_coordinates(latitude, longitude, altitude)

@@ -147,9 +147,7 @@ class ThrusterControl:
         self.input_min: int = input_min
         self.input_max: int = input_max
         if self.input_min >= self.input_max:
-            raise ValueError(
-                f"Input min ({self.input_min}) must be less than input max ({self.input_max})"
-            )
+            raise ValueError(f"Input min ({self.input_min}) must be less than input max ({self.input_max})")
         self.input_range = self.input_max - self.input_min
         self.input_range_inv = 1.0 / self.input_range
 
@@ -195,9 +193,7 @@ class ThrusterControl:
             raw_cmd = np.clip(raw_cmd, 0.0, 1.0)
 
             # Apply multiplier and offset
-            self._input_reference[i] = (
-                (raw_cmd + offset) * multiplier
-            ) + self.zero_position_armed[i]
+            self._input_reference[i] = ((raw_cmd + offset) * multiplier) + self.zero_position_armed[i]
 
     def zero_input_reference(self):
         """
@@ -242,20 +238,14 @@ class ArduPilotMavlinkBackendConfig(BackendConfig):
         self.connection_type = config.get("connection_type", "udpin")  # TODO working
         # self.connection_type = config.get("connection_type", "tcp")
         self.connection_ip = config.get("connection_ip", "127.0.0.1")  # TODO working
-        self.connection_baseport = config.get(
-            "connection_baseport", 14550
-        )  # TODO working
+        self.connection_baseport = config.get("connection_baseport", 14550)  # TODO working
         # self.connection_baseport = config.get("connection_baseport", 14551)
         # self.connection_baseport = config.get("connection_baseport", 5760)
 
         # Configure whether to launch ArduPilot in the background automatically or not for every vehicle launched
         self.ardupilot_autolaunch: bool = config.get("ardupilot_autolaunch", True)
-        self.ardupilot_dir: str = config.get(
-            "ardupilot_dir", PegasusInterface().ardupilot_path
-        )
-        self.ardupilot_vehicle_model: str = config.get(
-            "ardupilot_vehicle_model", "gazebo-iris"
-        )
+        self.ardupilot_dir: str = config.get("ardupilot_dir", PegasusInterface().ardupilot_path)
+        self.ardupilot_vehicle_model: str = config.get("ardupilot_vehicle_model", "gazebo-iris")
 
         # Configurations to interpret the rotors control messages coming from mavlink
         self.enable_lockstep: bool = config.get("enable_lockstep", False)
@@ -264,9 +254,7 @@ class ArduPilotMavlinkBackendConfig(BackendConfig):
         self.input_scaling = config.get("input_scaling", [1000, 1000, 1000, 1000])
         self.input_min = config.get("input_min", 1000)
         self.input_max = config.get("input_max", 2000)
-        self.zero_position_armed = config.get(
-            "zero_position_armed", [100, 100, 100, 100]
-        )
+        self.zero_position_armed = config.get("zero_position_armed", [100, 100, 100, 100])
 
         # The update rate at which we will be sending data to mavlink (TODO - remove this from here in the future
         # and infer directly from the function calls)
@@ -294,9 +282,7 @@ class ArduPilotMavlinkBackend(Backend):
     receives via mavlink the thruster commands to apply to each vehicle rotor.
     """
 
-    def __init__(
-        self, config: ArduPilotMavlinkBackendConfig = ArduPilotMavlinkBackendConfig()
-    ):
+    def __init__(self, config: ArduPilotMavlinkBackendConfig = ArduPilotMavlinkBackendConfig()):
         """Initialize the ArduPilotMavlinkBackend
 
         Args:
@@ -310,7 +296,9 @@ class ArduPilotMavlinkBackend(Backend):
         # The connection will only be created once the simulation starts
         self._vehicle_id = config.vehicle_id
         self._connection = None
-        self._connection_port = f"{config.connection_type}:{config.connection_ip}:{config.connection_baseport + self._vehicle_id * 10}"
+        self._connection_port = (
+            f"{config.connection_type}:{config.connection_ip}:{config.connection_baseport + self._vehicle_id * 10}"
+        )
 
         # Check if we need to autolaunch ArduPilot in the background or not
         self.ardupilot_autolaunch: bool = config.ardupilot_autolaunch
@@ -544,9 +532,7 @@ class ArduPilotMavlinkBackend(Backend):
         body_vel = state.get_linear_body_velocity_ned_frd()
         body_vel = state.linear_body_velocity
         self._sensor_data.sim_ind_airspeed = int(body_vel[0] * 100)
-        self._sensor_data.sim_true_airspeed = int(
-            np.linalg.norm(lin_vel) * 100
-        )  # TODO - add wind here
+        self._sensor_data.sim_true_airspeed = int(np.linalg.norm(lin_vel) * 100)  # TODO - add wind here
 
         self._sensor_data.new_sim_state = True
 
@@ -563,16 +549,12 @@ class ArduPilotMavlinkBackend(Backend):
         try:
             self.stop()
         except:
-            carb.log_info(
-                "Mavlink connection was not closed, because it was never opened"
-            )
+            carb.log_info("Mavlink connection was not closed, because it was never opened")
 
     def start(self):
         carb.log_warn("[ArduPilotMavlinkBackend] start() called")
         if self._is_running == True:
-            carb.log_warn(
-                "[ArduPilotMavlinkBackend] start() early return: already running"
-            )
+            carb.log_warn("[ArduPilotMavlinkBackend] start() early return: already running")
             return
 
         if self._connection is None or self.ap is None:
@@ -663,9 +645,7 @@ class ArduPilotMavlinkBackend(Backend):
         """
 
         if self._connection is None or self.ap is None:
-            carb.log_warn(
-                "[ArduPilotMavlinkBackend] update() not ready, starting interface"
-            )
+            carb.log_warn("[ArduPilotMavlinkBackend] update() not ready, starting interface")
             self.start()
 
         self._current_utime += dt
@@ -689,10 +669,7 @@ class ArduPilotMavlinkBackend(Backend):
         # If a message was received
         if msg is not None:
             if not self._armed:
-                if (
-                    msg.get_type() == "HEARTBEAT"
-                    and msg.type != mavutil.mavlink.MAV_TYPE_GCS
-                ):
+                if msg.get_type() == "HEARTBEAT" and msg.type != mavutil.mavlink.MAV_TYPE_GCS:
                     is_armed = self._connection.motors_armed()
                     if is_armed:
                         self._armed = True
@@ -720,9 +697,7 @@ class ArduPilotMavlinkBackend(Backend):
 
         # Note: to know more about these functions, go to pymavlink->dialects->v20->standard.py
         # This contains the definitions for sending the hearbeat and simulated sensor messages
-        self._connection.mav.heartbeat_send(
-            mav_type, mavutil.mavlink.MAV_AUTOPILOT_INVALID, 0, 0, 0
-        )
+        self._connection.mav.heartbeat_send(mav_type, mavutil.mavlink.MAV_AUTOPILOT_INVALID, 0, 0, 0)
 
     def send_sensor_msgs(self, time_usec: int):
         """

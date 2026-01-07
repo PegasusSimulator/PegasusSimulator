@@ -12,16 +12,16 @@ from pegasus.simulator.logic.sensors.geo_mag_utils import reprojection
 
 # TODO - Introduce delay on the GPS data
 
+
 class GPS(Sensor):
-    """The class that implements a GPS sensor. This class inherits the base class Sensor.
-    """
+    """The class that implements a GPS sensor. This class inherits the base class Sensor."""
 
     def __init__(self, config={}):
         """Initialize the GPS class.
 
         Args:
             config (dict): A Dictionary that contains all the parameters for configuring the GPS - it can be empty or only have some of the parameters used by the GPS.
-        
+
         Examples:
             The dictionary default parameters are
 

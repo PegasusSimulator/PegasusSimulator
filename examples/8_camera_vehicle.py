@@ -2,7 +2,7 @@
 """
 | File: 8_camera_vehicle.py
 | License: BSD-3-Clause. Copyright (c) 2024, Marcelo Jacinto. All rights reserved.
-| Description: This files serves as an example on how to build an app that makes use of the Pegasus API, 
+| Description: This files serves as an example on how to build an app that makes use of the Pegasus API,
 | where the data is send/received through mavlink, the vehicle is controled using mavlink and
 | camera data is sent to ROS2 topics at the same time.
 """
@@ -36,6 +36,7 @@ from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 
 # Auxiliary scipy and numpy modules
 from scipy.spatial.transform import Rotation
+
 
 class PegasusApp:
     """
@@ -76,27 +77,29 @@ class PegasusApp:
         # Try to spawn the selected robot in the world to the specified namespace
         config_multirotor = MultirotorConfig()
         # Create the multirotor configuration
-        mavlink_config = PX4MavlinkBackendConfig({
-            "vehicle_id": 0,
-            "px4_autolaunch": True,
-            "px4_dir": "/home/marcelo/PX4-Autopilot"
-        })
+        mavlink_config = PX4MavlinkBackendConfig(
+            {"vehicle_id": 0, "px4_autolaunch": True, "px4_dir": "/home/marcelo/PX4-Autopilot"}
+        )
         config_multirotor.backends = [
-            PX4MavlinkBackend(mavlink_config), 
-            ROS2Backend(vehicle_id=1, 
-                        config={
-                            "namespace": 'drone', 
-                            "pub_sensors": False,
-                            "pub_graphical_sensors": True,
-                            "pub_state": True,
-                            "sub_control": False,})]
+            PX4MavlinkBackend(mavlink_config),
+            ROS2Backend(
+                vehicle_id=1,
+                config={
+                    "namespace": "drone",
+                    "pub_sensors": False,
+                    "pub_graphical_sensors": True,
+                    "pub_state": True,
+                    "sub_control": False,
+                },
+            ),
+        ]
 
         # Create a camera and lidar sensors
         config_multirotor.graphical_sensors = [MonocularCamera("camera", config={"update_rate": 60.0})]
-        
+
         Multirotor(
             "/World/quadrotor",
-            ROBOTS['Iris'],
+            ROBOTS["Iris"],
             0,
             [0.0, 0.0, 0.07],
             Rotation.from_euler("XYZ", [0.0, 0.0, 0.0], degrees=True).as_quat(),
@@ -127,6 +130,7 @@ class PegasusApp:
         self.timeline.stop()
         simulation_app.close()
 
+
 def main():
 
     # Instantiate the template app
@@ -134,6 +138,7 @@ def main():
 
     # Run the application loop
     pg_app.run()
+
 
 if __name__ == "__main__":
     main()

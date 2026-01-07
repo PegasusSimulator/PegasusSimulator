@@ -1,7 +1,7 @@
 | **Author:** Lorenz Meier (lorenz@px4.io) and Thomas Gubler
 | **Description:** The original model has been created by Thomas Gubler. The original model can be found at `PX4 SITL Gazebo <https://github.com/PX4/PX4-SITL_gazebo-classic/>`__.
 
-.. code-block:: text 
+.. code-block:: text
 
   BSD 3-Clause License
 

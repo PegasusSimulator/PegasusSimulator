@@ -16,8 +16,8 @@ from pegasus.simulator.logic.sensors.geo_mag_utils import GRAVITY_VECTOR
 
 
 class IMU(Sensor):
-    """The class that implements the IMU sensor. This class inherits the base class Sensor.
-    """
+    """The class that implements the IMU sensor. This class inherits the base class Sensor."""
+
     def __init__(self, config={}):
         """Initialize the IMU class
 
@@ -51,8 +51,8 @@ class IMU(Sensor):
         self._gyroscope_bias: np.ndarray = np.zeros((3,))
         gyroscope_config = config.get("gyroscope", {})
         self._gyroscope_noise_density = gyroscope_config.get("noise_density", 0.0003393695767766752)
-        self._gyroscope_random_walk = gyroscope_config.get("random_walk", 3.878509448876288E-05)
-        self._gyroscope_bias_correlation_time = gyroscope_config.get("bias_correlation_time", 1.0E3)
+        self._gyroscope_random_walk = gyroscope_config.get("random_walk", 3.878509448876288e-05)
+        self._gyroscope_bias_correlation_time = gyroscope_config.get("bias_correlation_time", 1.0e3)
         self._gyroscope_turn_on_bias_sigma = gyroscope_config.get("turn_on_bias_sigma", 0.008726646259971648)
 
         # Accelerometer noise constants
@@ -82,7 +82,7 @@ class IMU(Sensor):
 
     @Sensor.update_at_rate
     def update(self, state: State, dt: float):
-        """Method that implements the logic of an IMU. In this method we start by generating the random walk of the 
+        """Method that implements the logic of an IMU. In this method we start by generating the random walk of the
         gyroscope. This value is then added to the real angular velocity of the vehicle (FLU relative to ENU inertial frame
         expressed in FLU body frame). The same logic is followed for the accelerometer and the accelerations. After this step,
         the angular velocity is rotated such that it expressed a FRD body frame, relative to a NED inertial frame, expressed
@@ -145,7 +145,7 @@ class IMU(Sensor):
             self._accelerometer_bias[i] = phi_a_d * self._accelerometer_bias[i] + sigma_b_a_d * np.random.rand()
             linear_acceleration[i] = (
                 linear_acceleration[i] + sigma_a_d * np.random.randn()
-            ) #+ self._accelerometer_bias[i]
+            )  # + self._accelerometer_bias[i]
 
         # TODO - Add small "noisy" to the attitude
 

@@ -92,7 +92,7 @@ Now let's run the Python script:
 
    isaac_run examples/9_people.py
 
-This should open a stage with a blue ground-plane with an 3DR Iris vehicle model in it. The simulation should start playing automatically and the stage being rendered. 
+This should open a stage with a blue ground-plane with an 3DR Iris vehicle model in it. The simulation should start playing automatically and the stage being rendered.
 You will see 2 people being simulated with one of them walking in circles.
 
 If you open ``QGroundControl`` you can control the vehicle.

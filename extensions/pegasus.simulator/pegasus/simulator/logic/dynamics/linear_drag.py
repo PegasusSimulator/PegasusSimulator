@@ -8,6 +8,7 @@ import numpy as np
 from pegasus.simulator.logic.dynamics.drag import Drag
 from pegasus.simulator.logic.state import State
 
+
 class LinearDrag(Drag):
     """
     Class that implements linear drag computations afftecting a rigid body. It inherits the Drag base class.

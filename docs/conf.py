@@ -30,8 +30,8 @@ extensions = [
     "sphinx.ext.doctest",
     "sphinx.ext.autodoc",
     "autodocsumm",
-    'sphinx.ext.napoleon',
-    #"sphinx.ext.autosummary",
+    "sphinx.ext.napoleon",
+    # "sphinx.ext.autosummary",
     "sphinx.ext.intersphinx",
     "myst_parser",
     "sphinx.ext.mathjax",
@@ -40,7 +40,7 @@ extensions = [
     "sphinx.ext.githubpages",
     "sphinx.ext.autosectionlabel",
     "sphinxcontrib.youtube",
-    "myst_parser"
+    "myst_parser",
 ]
 
 intersphinx_mapping = {
@@ -60,9 +60,9 @@ mathjax3_config = {
 intersphinx_disabled_domains = ["std"]
 
 # supported file extensions for source files
-#source_suffix = {
+# source_suffix = {
 #    ".rst": "restructuredtext"
-#}
+# }
 
 templates_path = ["_templates"]
 
@@ -132,7 +132,10 @@ autodoc_mock_imports = [
     "sensor_msgs",
     "geometry_msgs",
     "isaacsim",
-    "NavSchema"
+    "NavSchema",
+    "cvxpy",
+    "matplotlib",
+    "matplotlib.pyplot",
 ]
 
 # -- Options for HTML output -------------------------------------------------
@@ -145,11 +148,7 @@ html_theme = "sphinx_rtd_theme"
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
 html_logo = "_static/logo.png"
-html_theme_options = {
-    'logo_only': True,
-    'display_version': False,
-    'style_nav_header_background': '#FFD700'
-}
+html_theme_options = {"logo_only": True, "display_version": False, "style_nav_header_background": "#FFD700"}
 
 html_show_copyright = True
 html_show_sphinx = False

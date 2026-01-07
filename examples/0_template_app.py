@@ -21,6 +21,7 @@ simulation_app = SimulationApp({"headless": False})
 import omni.timeline
 from omni.isaac.core import World
 
+
 class Template:
     """
     A Template class that serves as an example on how to build a simple Isaac Sim standalone App.
@@ -30,11 +31,11 @@ class Template:
         """
         Method that initializes the template App and is used to setup the simulation environment.
         """
-        
+
         # Acquire the timeline that will be used to start/stop the simulation
         self.timeline = omni.timeline.get_timeline_interface()
 
-        # Acquire the World, .i.e, the singleton that controls that is a one stop shop for setting up physics, 
+        # Acquire the World, .i.e, the singleton that controls that is a one stop shop for setting up physics,
         # spawning asset primitives, etc.
         self.world = World()
 
@@ -42,13 +43,13 @@ class Template:
         self.world.scene.add_default_ground_plane()
 
         # Create an example physics callback
-        self.world.add_physics_callback('template_physics_callback', self.physics_callback)
+        self.world.add_physics_callback("template_physics_callback", self.physics_callback)
 
         # Create an example render callback
-        self.world.add_render_callback('template_render_callback', self.render_callback)
+        self.world.add_render_callback("template_render_callback", self.render_callback)
 
         # Create an example timeline callback
-        self.world.add_timeline_callback('template_timeline_callback', self.timeline_callback)
+        self.world.add_timeline_callback("template_timeline_callback", self.timeline_callback)
 
         # Reset the simulation environment so that all articulations (aka robots) are initialized
         self.world.reset()
@@ -95,11 +96,12 @@ class Template:
 
             # Update the UI of the app and perform the physics step
             self.world.step(render=True)
-        
+
         # Cleanup and stop
         carb.log_warn("Template Simulation App is closing.")
         self.timeline.stop()
         simulation_app.close()
+
 
 def main():
 
@@ -108,6 +110,7 @@ def main():
 
     # Run the application loop
     template_app.run()
+
 
 if __name__ == "__main__":
     main()

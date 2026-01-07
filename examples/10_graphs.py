@@ -2,7 +2,7 @@
 """
 | File: 10_graphs.py
 | License: BSD-3-Clause. Copyright (c) 2024, Marcelo Jacinto and Filip Stec. All rights reserved.
-| Description: This files serves as an example on how to build an app that makes use of the Pegasus API, 
+| Description: This files serves as an example on how to build an app that makes use of the Pegasus API,
 | where the data is send/received through mavlink, the vehicle is controled using mavlink and
 | camera data is sent to ROS2 topics at the same time.
 """
@@ -34,6 +34,7 @@ from pegasus.simulator.logic.graphs import ROS2CameraGraph
 # Auxiliary scipy and numpy modules
 from scipy.spatial.transform import Rotation
 
+
 class PegasusApp:
     """
     A Template class that serves as an example on how to build a simple Isaac Sim standalone App.
@@ -58,7 +59,6 @@ class PegasusApp:
         # Launch one of the worlds provided by NVIDIA
         self.pg.load_environment(SIMULATION_ENVIRONMENTS["Curved Gridroom"])
 
-        
         cube_2 = self.world.scene.add(
             DynamicCuboid(
                 prim_path="/new_cube_2",
@@ -74,22 +74,18 @@ class PegasusApp:
         # Try to spawn the selected robot in the world to the specified namespace
         config_multirotor = MultirotorConfig()
         # Create the multirotor configuration
-        mavlink_config = PX4MavlinkBackendConfig({
-            "vehicle_id": 0,
-            "px4_autolaunch": True,
-            "px4_dir": self.pg.px4_path
-        })
+        mavlink_config = PX4MavlinkBackendConfig({"vehicle_id": 0, "px4_autolaunch": True, "px4_dir": self.pg.px4_path})
         config_multirotor.backends = [PX4MavlinkBackend(mavlink_config)]
 
-        # Create camera graph for the existing Camera prim on the Iris model, which can be found 
+        # Create camera graph for the existing Camera prim on the Iris model, which can be found
         # at the prim path `/World/quadrotor/body/Camera`. The camera prim path is the local path from the vehicle's prim path
-        # to the camera prim, to which this graph will be connected. All ROS2 topics published by this graph will have 
+        # to the camera prim, to which this graph will be connected. All ROS2 topics published by this graph will have
         # namespace `quadrotor` and frame_id `Camera` followed by the selected camera types (`rgb`, `camera_info`).
-        config_multirotor.graphs = [ROS2CameraGraph("body/Camera", config={"types": ['rgb', 'camera_info']})]
-        
+        config_multirotor.graphs = [ROS2CameraGraph("body/Camera", config={"types": ["rgb", "camera_info"]})]
+
         Multirotor(
             "/World/quadrotor",
-            ROBOTS['Iris'],
+            ROBOTS["Iris"],
             0,
             [0.0, 0.0, 0.07],
             Rotation.from_euler("XYZ", [0.0, 0.0, 0.0], degrees=True).as_quat(),
@@ -120,6 +116,7 @@ class PegasusApp:
         self.timeline.stop()
         simulation_app.close()
 
+
 def main():
 
     # Instantiate the template app
@@ -127,6 +124,7 @@ def main():
 
     # Run the application loop
     pg_app.run()
+
 
 if __name__ == "__main__":
     main()

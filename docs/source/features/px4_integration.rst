@@ -1,7 +1,7 @@
 PX4 Integration
 ===============
 
-The ``PX4-Autopilot`` support is provided by making use of the ``Control Backends API`` , and implementing a custom 
+The ``PX4-Autopilot`` support is provided by making use of the ``Control Backends API`` , and implementing a custom
 ``PX4MavlinkBackend`` which contains a built-in tool to launch and kill PX4 in SITL mode automatically.
 
 To instantiate a ``PX4MavlinkBackend`` via Python scripting, consider the following example:
@@ -35,11 +35,11 @@ To instantiate a ``PX4MavlinkBackend`` via Python scripting, consider the follow
 
 .. note::
 
-    In general, the Pegasus Simulator does not need to know where you have PX4 running to simulate the vehicle and send data 
+    In general, the Pegasus Simulator does not need to know where you have PX4 running to simulate the vehicle and send data
     through ``MAVLink`` . However, if you intend to use the provided ``PX4 auto-launch`` feature, you must inform Pegasus Simulator
     where you have your local install of PX4.
 
-By default, the simulator expects PX4 to be located at ``~/PX4-Autopilot`` directory. You can set the default 
+By default, the simulator expects PX4 to be located at ``~/PX4-Autopilot`` directory. You can set the default
 path for the ``PX4-Autopilot`` by either:
 
 1. Using the GUI of the Pegasus Simulator when operating in extension mode.
@@ -63,4 +63,3 @@ path for the ``PX4-Autopilot`` by either:
         # Set the default PX4 installation path used by the simulator
         # This will be saved for future runs
         pg.set_px4_path("path_to_px4_directory")
-

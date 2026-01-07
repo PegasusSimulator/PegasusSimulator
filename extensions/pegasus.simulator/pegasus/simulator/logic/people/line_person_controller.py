@@ -7,8 +7,8 @@
 import numpy as np
 from pegasus.simulator.logic.people.person_controller import PersonController
 
-class LinePersonController(PersonController):
 
+class LinePersonController(PersonController):
     def __init__(self, start, stop, speed=0.1):
         """Line Person Controller that makes a person follow a line in the simulation
 
@@ -29,7 +29,7 @@ class LinePersonController(PersonController):
             self.gamma_dot = 0
         else:
             self.gamma_dot = speed / derivative_norm
-        
+
     def update(self, dt: float):
 
         # Get the desired position of the person

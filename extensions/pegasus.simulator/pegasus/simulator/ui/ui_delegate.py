@@ -19,13 +19,21 @@ from pegasus.simulator.params import ROBOTS, SIMULATION_ENVIRONMENTS, BACKENDS, 
 from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 
 # Vehicle Manager to spawn Vehicles
-from pegasus.simulator.logic.backends import Backend, BackendConfig, PX4MavlinkBackend, PX4MavlinkBackendConfig, ArduPilotMavlinkBackend, ArduPilotMavlinkBackendConfig
+from pegasus.simulator.logic.backends import (
+    Backend,
+    BackendConfig,
+    PX4MavlinkBackend,
+    PX4MavlinkBackendConfig,
+    ArduPilotMavlinkBackend,
+    ArduPilotMavlinkBackendConfig,
+)
 from pegasus.simulator.logic.vehicles.multirotor import Multirotor, MultirotorConfig
 from pegasus.simulator.logic.vehicle_manager import VehicleManager
 from pegasus.simulator.logic.graphical_sensors.monocular_camera import MonocularCamera
 
 try:
     from pegasus.simulator.logic.backends import ROS2Backend
+
     ROS2_available = True
 except ImportError:
     ROS2_available = False
@@ -66,7 +74,7 @@ class UIDelegate:
 
         # Selected option for broadcasting the simulated vehicle (PX4+ROS2 or just ROS2)
         # By default we assume PX4
-        self._streaming_backend: str = BACKENDS['px4']
+        self._streaming_backend: str = BACKENDS["px4"]
 
         # Selected value for the the id of the vehicle
         self._vehicle_id_field: ui.AbstractValueModel = None
@@ -101,10 +109,10 @@ class UIDelegate:
 
     def set_scene_dropdown(self, scene_dropdown_model: ui.AbstractItemModel):
         self._scene_dropdown = scene_dropdown_model
-    
+
     def set_latitude_field(self, latitude_model: ui.AbstractValueModel):
         self._latitude_field = latitude_model
-    
+
     def set_longitude_field(self, longitude_model: ui.AbstractValueModel):
         self._longitude_field = longitude_model
 
@@ -117,10 +125,10 @@ class UIDelegate:
     def set_vehicle_id_field(self, vehicle_id_field: ui.AbstractValueModel):
         self._vehicle_id_field = vehicle_id_field
 
-    def set_streaming_backend(self, backend: str = BACKENDS['px4']):
+    def set_streaming_backend(self, backend: str = BACKENDS["px4"]):
         self._streaming_backend = backend
 
-    def set_px4_autostart_checkbox(self, checkbox_model:ui.AbstractValueModel):
+    def set_px4_autostart_checkbox(self, checkbox_model: ui.AbstractValueModel):
         self._px4_autostart_checkbox = checkbox_model
 
     def set_px4_directory_field(self, directory_field_model: ui.AbstractValueModel):
@@ -128,7 +136,7 @@ class UIDelegate:
 
     def set_px4_airframe_field(self, airframe_field_model: ui.AbstractValueModel):
         self._px4_airframe_field = airframe_field_model
-    
+
     def set_ardupilot_autostart_checkbox(self, checkbox_model: ui.AbstractValueModel):
         self._ardupilot_autostart_checkbox = checkbox_model
 
@@ -157,10 +165,12 @@ class UIDelegate:
 
             # Get the name of the selected world
             selected_world = self._scene_names[environemnt_index]
-            
+
             # Try to spawn the selected world
             self._pegasus_sim.set_world_settings(**WORLD_SETTINGS[self._streaming_backend])
-            asyncio.ensure_future(self._pegasus_sim.load_environment_async(SIMULATION_ENVIRONMENTS[selected_world], force_clear=True))
+            asyncio.ensure_future(
+                self._pegasus_sim.load_environment_async(SIMULATION_ENVIRONMENTS[selected_world], force_clear=True)
+            )
 
     def on_set_new_global_coordinates(self):
         """
@@ -169,8 +179,9 @@ class UIDelegate:
         self._pegasus_sim.set_global_coordinates(
             self._latitude_field.get_value_as_float(),
             self._longitude_field.get_value_as_float(),
-            self._altitude_field.get_value_as_float())
-        
+            self._altitude_field.get_value_as_float(),
+        )
+
     def on_reset_global_coordinates(self):
         """
         Method that gets invoked to set the global coordinates to the defaults saved in the extension configuration file
@@ -189,7 +200,7 @@ class UIDelegate:
         self._pegasus_sim.set_new_default_global_coordinates(
             self._latitude_field.get_value_as_float(),
             self._longitude_field.get_value_as_float(),
-            self._altitude_field.get_value_as_float()
+            self._altitude_field.get_value_as_float(),
         )
 
     def on_clear_scene(self):
@@ -224,7 +235,7 @@ class UIDelegate:
 
                 # Get the desired position and orientation of the vehicle from the UI transform
                 pos, euler_angles = self._window.get_selected_vehicle_attitude()
-                
+
                 backend_config: BackendConfig = None
                 backend: Backend = None
 
@@ -238,15 +249,17 @@ class UIDelegate:
                     # Read the PX4 airframe from the field
                     px4_airframe = self._px4_airframe_field.get_value_as_string()
 
-                    backend_config = PX4MavlinkBackendConfig({
-                        "vehicle_id": self._vehicle_id,
-                        "px4_autolaunch": px4_autostart,
-                        "px4_dir": px4_path,
-                        "px4_vehicle_model": px4_airframe
-                    })
+                    backend_config = PX4MavlinkBackendConfig(
+                        {
+                            "vehicle_id": self._vehicle_id,
+                            "px4_autolaunch": px4_autostart,
+                            "px4_dir": px4_path,
+                            "px4_vehicle_model": px4_airframe,
+                        }
+                    )
                     backend = PX4MavlinkBackend(config=backend_config)
                     carb.log_warn("PX4 backend selected.")
-                
+
                 elif self._streaming_backend == BACKENDS["ardupilot"]:
                     # # Read if we should auto-start ardupilot from the checkbox
                     ardupilot_autostart = self._ardupilot_autostart_checkbox.get_value_as_bool()
@@ -257,38 +270,45 @@ class UIDelegate:
                     # Read the ArduPilot airframe from the field
                     ardupilot_airframe = self._ardupilot_airframe_field.get_value_as_string()
 
-                    backend_config = ArduPilotMavlinkBackendConfig({
-                        "vehicle_id": self._vehicle_id,
-                        "ardupilot_autolaunch": ardupilot_autostart,
-                        "ardupilot_dir": ardupilot_path,
-                        "ardupilot_vehicle_model": ardupilot_airframe
-                    })
+                    backend_config = ArduPilotMavlinkBackendConfig(
+                        {
+                            "vehicle_id": self._vehicle_id,
+                            "ardupilot_autolaunch": ardupilot_autostart,
+                            "ardupilot_dir": ardupilot_path,
+                            "ardupilot_vehicle_model": ardupilot_airframe,
+                        }
+                    )
                     backend = ArduPilotMavlinkBackend(config=backend_config)
                     carb.log_warn("Ardupilot backend selected.")
-                
-                elif self._streaming_backend == BACKENDS["ros2"]:    
+
+                elif self._streaming_backend == BACKENDS["ros2"]:
                     if ROS2_available:
-                        backend = ROS2Backend(vehicle_id=self._vehicle_id, config={
-                            "namespace": 'drone',
-                            "pub_sensors": True,
-                            "pub_graphical_sensors": True,
-                            "pub_state": True,
-                            "pub_tf": False,
-                            "sub_control": True}
-                            )
+                        backend = ROS2Backend(
+                            vehicle_id=self._vehicle_id,
+                            config={
+                                "namespace": "drone",
+                                "pub_sensors": True,
+                                "pub_graphical_sensors": True,
+                                "pub_state": True,
+                                "pub_tf": False,
+                                "sub_control": True,
+                            },
+                        )
                         carb.log_warn("ROS2 backend selected.")
                     else:
-                        carb.log_warn("ROS2 not available. Please run Isaac Sim with ROS 2 extension correctly enabled.")
+                        carb.log_warn(
+                            "ROS2 not available. Please run Isaac Sim with ROS 2 extension correctly enabled."
+                        )
                         return
                 else:
                     carb.log_warn("Invalid backend selected. Not spawning the vehicle.")
                     return
-                   
+
                 # Create the multirotor configuration
                 config_multirotor = MultirotorConfig()
                 config_multirotor.backends = [backend]
                 config_multirotor.graphical_sensors = [MonocularCamera("camera", config={"update_rate": 60.0})]
-                
+
                 # Try to spawn the selected robot in the world to the specified namespace
                 Multirotor(
                     "/World/quadrotor",
@@ -299,14 +319,14 @@ class UIDelegate:
                     config=config_multirotor,
                 )
 
-            # Log that a vehicle of the type multirotor was spawned in the world via the extension UI
+                # Log that a vehicle of the type multirotor was spawned in the world via the extension UI
                 carb.log_info("Spawned the robot: " + selected_robot + " using the Pegasus Simulator UI")
             else:
                 # Log that it was not possible to spawn the vehicle in the world using the Pegasus Simulator UI
                 carb.log_error("Could not spawn the robot using the Pegasus Simulator UI")
 
         # Run the actual vehicle spawn async so that the UI does not freeze
-        asyncio.ensure_future(async_load_vehicle())        
+        asyncio.ensure_future(async_load_vehicle())
 
     def on_set_viewport_camera(self):
         """
@@ -323,7 +343,7 @@ class UIDelegate:
 
                 # Set the camera view to a fixed value
                 self._pegasus_sim.set_viewport_camera(camera_position, camera_target)
-    
+
     def on_set_new_default_px4_path(self):
         """
         Method that will try to update the new PX4 autopilot path with whatever is passed on the string field

@@ -6,6 +6,7 @@
 """
 from pegasus.simulator.logic.state import State
 
+
 class Drag:
     """
     Class that serves as a template for the implementation of Drag forces that actuate on a rigid body

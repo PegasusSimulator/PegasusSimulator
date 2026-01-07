@@ -11,14 +11,15 @@ import json
 from dataclasses import dataclass
 import random
 
+
 class ArduPilotPlugin:
     SERVO_PACKET_SIZE = 40
     SERVO_PACKET_MAGIC = 18458
-    
+
     def __init__(self, fdm_port_in=9002):
 
         # The address for the flight dynamics model (i.e. this plugin)
-        self.fdm_address = '127.0.0.1'
+        self.fdm_address = "127.0.0.1"
         # The port for the flight dynamics model
         self.fdm_port_in = fdm_port_in
 
@@ -37,98 +38,89 @@ class ArduPilotPlugin:
         # the ArduPilot controller is detected and online, and false if the
         # connection to the ArduPilot controller times out.
         self.arduPilotOnline = False
-        
+
         # Number of consecutive missed ArduPilot controller messages
         self.connectionTimeoutCount = 0
         #  Max number of consecutive missed ArduPilot controller messages before timeout
         self.connectionTimeoutMaxCount = 5  # Example value
-        
+
         # Set true to enforce lock-step simulation
         self.isLockStep = False
-       
+
         # Last sent JSON string, so we can resend if needed.
         self.json_str: str = ""
-        
+
         # Keep track of controller update sim-time.
         self.last_controller_update_time = 0
         # Keep track of the time the last servo packet was received.
         self.last_servo_packet_recv_time = 0
-        
+
         # Sockets
         self.motor_control_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.motor_control_sock.setblocking(True)
         self.motor_control_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        
+
         try:
             self.motor_control_sock.bind((self.fdm_address, self.fdm_port_in))
             print(f"Flight dynamics model @ {self.fdm_address}:{self.fdm_port_in}")
 
-        except socket.error as e:
+        except OSError as e:
             print(f"Failed to bind with {self.fdm_address}:{self.fdm_port_in}. Aborting plugin.")
 
-        
     def create_state_json(self, sensor_data, sim_time):
         state = {
             "timestamp": sim_time,
             "imu": {
-                "gyro": [
-                    sensor_data.xgyro,
-                    sensor_data.ygyro,
-                    sensor_data.zgyro
-                ],
+                "gyro": [sensor_data.xgyro, sensor_data.ygyro, sensor_data.zgyro],
                 "accel_body": [
                     sensor_data.xacc,
                     sensor_data.yacc,
                     sensor_data.zacc,
-                ]
-            },  
+                ],
+            },
             "position": [
-               sensor_data.sim_position[0], # X
-               sensor_data.sim_position[1], # Y
-               sensor_data.sim_position[2], # Z
+                sensor_data.sim_position[0],  # X
+                sensor_data.sim_position[1],  # Y
+                sensor_data.sim_position[2],  # Z
             ],
             "quaternion": [
-               sensor_data.sim_attitude[0], # W
-               sensor_data.sim_attitude[1], # X
-               sensor_data.sim_attitude[2], # Y
-               sensor_data.sim_attitude[3], # Z
+                sensor_data.sim_attitude[0],  # W
+                sensor_data.sim_attitude[1],  # X
+                sensor_data.sim_attitude[2],  # Y
+                sensor_data.sim_attitude[3],  # Z
             ],
             "velocity": [
-              sensor_data.sim_velocity_inertial[0], # X
-              sensor_data.sim_velocity_inertial[1], # Y
-              sensor_data.sim_velocity_inertial[2]  # Z
-            ]
+                sensor_data.sim_velocity_inertial[0],  # X
+                sensor_data.sim_velocity_inertial[1],  # Y
+                sensor_data.sim_velocity_inertial[2],  # Z
+            ],
         }
 
-        json_str = json.dumps(state, separators=(',', ':'))
+        json_str = json.dumps(state, separators=(",", ":"))
         json_str = "\n" + json_str + "\n"
-        json_str = json_str.encode('utf-8')
+        json_str = json_str.encode("utf-8")
 
         self.json_str = json_str
-        
-        return self.json_str 
-        
+
+        return self.json_str
 
     def send_state(self):
         if self.motor_control_sock:
-            bytes_sent = self.motor_control_sock.sendto(
-                self.json_str,
-                (self.fcu_address, self.fcu_port_out)
-            )
+            bytes_sent = self.motor_control_sock.sendto(self.json_str, (self.fcu_address, self.fcu_port_out))
 
     def unpack_servo_packet(self, data):
         # Ensure the data length is valid
         if len(data) != self.SERVO_PACKET_SIZE:
             raise ValueError(f"Data length must be {self.SERVO_PACKET_SIZE} bytes, got {len(data)} bytes")
-        
+
         # Define the format string according to the structure for little-endian
         # '<HHI16H' specifies:
         #   - < (little-endian byte order)
         #   - HH (2 uint16_t fields)
         #   - I (1 uint32_t field)
         #   - 16H (16 uint16_t fields for pwm values)
-        format_string = '<HHI16H'
-        
+        format_string = "<HHI16H"
+
         try:
             # Unpack the data
             unpacked_data = struct.unpack(format_string, data)
@@ -136,13 +128,13 @@ class ArduPilotPlugin:
             pkt_frame_rate = unpacked_data[1]
             pkt_frame_count = unpacked_data[2]
             pkt_pwm = unpacked_data[3:]
-            
+
             if pkt_magic != self.SERVO_PACKET_MAGIC:
                 print(f"Incorrect protocol magic {pkt_magic}, should be {self.SERVO_PACKET_MAGIC}")
                 return None, None, None, None
-            
+
             return pkt_magic, pkt_frame_rate, pkt_frame_count, pkt_pwm
-        
+
         except struct.error as e:
             print(f"Unpacking error: {e}")
             return None, None, None, None
@@ -169,11 +161,10 @@ class ArduPilotPlugin:
                 # Handle unexpected exceptions
                 print(f"An error occurred while draining packets: {e}")
                 break
-        
+
         # Reset the socket to blocking mode
         self.motor_control_sock.setblocking(True)
         print("Drained all packets.")
-
 
     def receive_servo_packet(self):
         # Determine wait time based on whether ArduPilot is online
@@ -201,7 +192,7 @@ class ArduPilotPlugin:
 
             if pkt_magic is None:
                 return False, ()
-            
+
         except socket.timeout:
             if self.arduPilotOnline:
                 self.connectionTimeoutCount += 1
@@ -239,10 +230,10 @@ class ArduPilotPlugin:
         self.fcu_frame_count = pkt_frame_count
 
         # Reset the connection timeout count
-        self.connectionTimeoutCount = 0    
+        self.connectionTimeoutCount = 0
 
         return True, pkt_pwm
-    
+
     def pre_update(self, sim_time):
         # Update the control surfaces
         recieved, pwms = self.receive_servo_packet()
@@ -263,18 +254,18 @@ class ArduPilotPlugin:
         sim_position = [
             -6.874587183616472e-12 + random.gauss(0, 0.01),
             -1.6699334495870352e-12 + random.gauss(0, 0.01),
-            -0.1949994162458527 + random.gauss(0, 0.01)
+            -0.1949994162458527 + random.gauss(0, 0.01),
         ]
         sim_attitude = [
             1,
             -4.281847537232883e-12 + random.gauss(0, 0.001),
             1.7627199589076353e-11 + random.gauss(0, 0.001),
-            -4.281847537232883e-12 + random.gauss(0, 0.001)
+            -4.281847537232883e-12 + random.gauss(0, 0.001),
         ]
         sim_velocity_inertial = [
             4.4028248386528135e-12 + random.gauss(0, 0.01),
             5.46182226507895e-12 + random.gauss(0, 0.01),
-            5.454422342398644e-18 + random.gauss(0, 0.01)
+            5.454422342398644e-18 + random.gauss(0, 0.01),
         ]
         xgyro: float = 4.4028248386528135e-12
         ygyro: float = 5.46182226507895e-12
@@ -284,7 +275,7 @@ class ArduPilotPlugin:
         zacc: float = -9.80000000000001
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     ap = ArduPilotPlugin()
     ap.drain_unread_packets()
 
@@ -292,4 +283,3 @@ if __name__ == '__main__':
         ap.pre_update()
         ap.post_update(sensor_data=ap.SensorData())
         time.sleep(0.01)
-

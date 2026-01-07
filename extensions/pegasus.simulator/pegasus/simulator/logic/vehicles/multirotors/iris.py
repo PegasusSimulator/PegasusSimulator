@@ -15,8 +15,8 @@ from pegasus.simulator.logic.backends.px4_mavlink_backend import PX4MavlinkBacke
 # Get the location of the IRIS asset
 from pegasus.simulator.params import ROBOTS
 
-class IrisConfig(MultirotorConfig):
 
+class IrisConfig(MultirotorConfig):
     def __init__(self):
 
         # Stage prefix of the vehicle when spawning in the world
@@ -37,8 +37,9 @@ class IrisConfig(MultirotorConfig):
         # or your own custom Backend implementation!
         self.backends = [PX4MavlinkBackend(config=PX4MavlinkBackendConfig())]
 
+
 class Iris(Multirotor):
-
-    def __init__(self, id: int, world, init_pos=[0.0, 0.0, 0.07], init_orientation=[0.0, 0.0, 0.0, 1.0], config=IrisConfig()):
+    def __init__(
+        self, id: int, world, init_pos=[0.0, 0.0, 0.07], init_orientation=[0.0, 0.0, 0.0, 1.0], config=IrisConfig()
+    ):
         super().__init__(config.stage_prefix, config.usd_file, id, world, init_pos, init_orientation, config=config)
-

@@ -24,23 +24,22 @@ INSTALL_REQUIRES = [
 
 # Auxiliar class to patch the Isaac Sim Kit App (to launch the omni.isaac.replicator extension required by the People extension)
 class PatchIsaacSimKitApp(egg_info):
-
     def has_extension(self, file_path: str, extension_name: str) -> bool:
         """
         Checks if a given file contains specific Isaac Sim extension name
         """
-        with open(file_path, 'r') as f:
+        with open(file_path) as f:
             for line in f:
                 if extension_name in line:
                     return True
         return False
-    
+
     def add_extensions(self, file_path: str, extensions: list, marker_line="[dependencies]"):
         """
         Adds a list of extensions to the given file
         """
 
-        with open(file_path, "r") as f:
+        with open(file_path) as f:
             lines = f.readlines()
 
         try:
@@ -48,7 +47,7 @@ class PatchIsaacSimKitApp(egg_info):
         except StopIteration:
             print(f"Could not find marker line '{marker_line}' in file.")
             return
-        
+
         # Insert the extension line right after [dependencies]
         for extension_line in extensions:
             lines.insert(index + 1, extension_line + "\n")
@@ -59,7 +58,6 @@ class PatchIsaacSimKitApp(egg_info):
         with open(file_path, "w") as f:
             f.writelines(lines)
 
-
     def run(self):
         egg_info.run(self)
 
@@ -69,15 +67,19 @@ class PatchIsaacSimKitApp(egg_info):
         # Check if the ISAACSIM_PATH environment variable is set
         if not isaacsim_path:
             # If the environment variable is not set, raise an error
-            raise RuntimeError("ISAACSIM_PATH is not set! Please set it to the path of your Isaac Sim installation. Read the installation instructions at https://pegasussimulator.github.io/PegasusSimulator/source/setup/installation.html")
+            raise RuntimeError(
+                "ISAACSIM_PATH is not set! Please set it to the path of your Isaac Sim installation. Read the installation instructions at https://pegasussimulator.github.io/PegasusSimulator/source/setup/installation.html"
+            )
 
         # Check if the isaacsim.exp.base.kit file contains the "isaacsim.replicator.agent.core" extension
         isaac_sim_kit_app = os.path.join(isaacsim_path, "apps", "isaacsim.exp.base.kit")
 
         if not self.has_extension(isaac_sim_kit_app, "isaacsim.replicator.agent.core"):
-            self.add_extensions(isaac_sim_kit_app, ["\"isaacsim.replicator.agent.core\" = {}"], marker_line="[dependencies]")
+            self.add_extensions(
+                isaac_sim_kit_app, ['"isaacsim.replicator.agent.core" = {}'], marker_line="[dependencies]"
+            )
 
-        
+
 # Installation operation
 setup(
     name="pegasus-simulator",
@@ -92,7 +94,7 @@ setup(
     include_package_data=True,
     python_requires=">=3.7",
     install_requires=INSTALL_REQUIRES,
-    cmdclass={'egg_info': PatchIsaacSimKitApp},
+    cmdclass={"egg_info": PatchIsaacSimKitApp},
     packages=["pegasus.simulator"],
     classifiers=["Natural Language :: English", "Programming Language :: Python :: 3.7"],
     zip_safe=False,

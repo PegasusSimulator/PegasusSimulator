@@ -28,13 +28,13 @@ If there is some feature missing that you would like to see added, please check 
   * |uncheck_| VTOL
 
 * API backends
- 
+
   * |check_| Mavlink (with direct PX4 integration)
   * |check_| Direct ROS 2 interface
   * |uncheck_| Python backend for Reinforcement Learning (RL)
 
 * UI
-  
+
   * |check_| Select from NVIDIA samples worlds
   * |check_| Select from Pegasus sample vehicles
   * |uncheck_| Add an option to clone and compile PX4-Autopilot directly from the Pegasus Simulator UI

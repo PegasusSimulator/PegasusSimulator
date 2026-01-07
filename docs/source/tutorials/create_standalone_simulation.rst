@@ -1,7 +1,7 @@
 Your First Simulation
 =====================
 
-In this tutorial, you will create a standalone Python application to perform a simulation using 1 vehicle and ``PX4-Autopilot``. 
+In this tutorial, you will create a standalone Python application to perform a simulation using 1 vehicle and ``PX4-Autopilot``.
 The end result should be the equivalent to the :ref:`Run in Extension Mode (GUI)` tutorial. To achieve this, we will cover the
 basics of the Pegasus Simulator :ref:`API Reference`.
 
@@ -30,7 +30,7 @@ The tutorial corresponds to the ``1_px4_single_vehicle.py`` example in the ``exa
 ---------------
 
 In order to start using the functionalities provided by the ``Pegasus Simulator``, we import some of the most commonly
-used classes from the ``pegasus.simulator.logic`` module, which contains all the core APIs. To check all the classes and 
+used classes from the ``pegasus.simulator.logic`` module, which contains all the core APIs. To check all the classes and
 methods currently provided, please refer to the :ref:`API Reference` section.
 
 .. literalinclude:: ../../../examples/1_px4_single_vehicle.py
@@ -44,7 +44,7 @@ methods currently provided, please refer to the :ref:`API Reference` section.
    Some APIs may not be documented in the :ref:`API Reference` section. This means one of three things:
    i) they are not meant for public use; ii) under development (untested); iii) or just deprecated and about to be replaced.
 
-Next, we initialize the :class:`PegasusInterface` object. This is a singleton, which means that there exists only one 
+Next, we initialize the :class:`PegasusInterface` object. This is a singleton, which means that there exists only one
 :class:`PegasusInterface` in memory at any time. This interface creates a `World <https://docs.omniverse.nvidia.com/py/isaacsim/source/extensions/omni.isaac.core/docs/index.html?highlight=world#omni.isaac.core.world.World>`__ class environment. The `World <https://docs.omniverse.nvidia.com/py/isaacsim/source/extensions/omni.isaac.core/docs/index.html?highlight=world#omni.isaac.core.world.World>`__  class inherits the `Simulation Context <https://docs.omniverse.nvidia.com/py/isaacsim/source/extensions/omni.isaac.core/docs/index.html#module-omni.isaac.core.simulation_context>`__
 internally, so you do not need to declare your own manually when using this API. By default, when physics engine is set to run
 at ``250 Hz`` and the render engine at ``60Hz``.
@@ -68,8 +68,8 @@ dictionary. To known all provided environments, check the :ref:`Params` API sect
    :linenos:
    :lineno-start: 55
 
-The next step is to create a multirotor vehicle object. For that we start by creating a ``MultirotorConfig``, which contains 
-by default a :class:`QuadraticThrustCurve`, :class:`Linear Drag` model, a list of ``Sensors`` composed of a :class:`GPS`, 
+The next step is to create a multirotor vehicle object. For that we start by creating a ``MultirotorConfig``, which contains
+by default a :class:`QuadraticThrustCurve`, :class:`Linear Drag` model, a list of ``Sensors`` composed of a :class:`GPS`,
 :class:`IMU`, :class:`Magnetometer` and :class:`Barometer`, and a list of control :class:`Backend`.
 
 In this tutorial, we whish to control the vehicle via ``MAVLink``, ``PX4-Autopilot`` and ``QGroundControl``. Therefore,
@@ -82,7 +82,7 @@ we create a ``MAVLink`` control backend configured to also launch ``PX4-Autopilo
    :lineno-start: 58
 
 To create the actual ``Multirotor`` object, we must specify the ``stage_path``, i.e. the name that the vehicle will have inside
-the simulation tree and the ``usd_path`` which defines where the 3D model of the vehicle is stored. Once again, to known all 
+the simulation tree and the ``usd_path`` which defines where the 3D model of the vehicle is stored. Once again, to known all
 provided vehicle models, check the :ref:`Params` API section. Additionally, we can provide the original position and orientation
 of the vehicle, according to an East-North-DOWN (ENU) convention.
 
@@ -111,9 +111,9 @@ Now let's run the Python script:
 
    isaac_run examples/1_px4_single_vehicle.py
 
-This should open a stage with a blue ground-plane with an 3DR Iris vehicle model in it. The simulation should start playing automatically and the stage being rendered. 
+This should open a stage with a blue ground-plane with an 3DR Iris vehicle model in it. The simulation should start playing automatically and the stage being rendered.
 PX4-Autopilot will start running automatically in the background, receiving data from the simulated sensors and sending
-target angular velocities for the vehicle rotors. You can now play with the vehicle using ``QGroundControl`` similarly to 
+target angular velocities for the vehicle rotors. You can now play with the vehicle using ``QGroundControl`` similarly to
 what was shown in :ref:`Run in Extension Mode (GUI)` tutorial.
 
 To stop the simulation, you can either ``close the window``, press the ``STOP button`` in the UI, or press ``Ctrl+C`` in the terminal.

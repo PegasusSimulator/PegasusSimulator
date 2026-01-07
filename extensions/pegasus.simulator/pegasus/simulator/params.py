@@ -28,7 +28,7 @@ ASSET_PATH = ROOT + "/pegasus.simulator/pegasus/simulator/assets"
 ROBOTS_ASSETS = ASSET_PATH + "/Robots"
 
 # Define the built in robots of the extension
-ROBOTS = {"Iris": ROBOTS_ASSETS + "/Iris/iris.usd"} #, "Flying Cube": ROBOTS_ASSETS + "/iris_cube.usda"}
+ROBOTS = {"Iris": ROBOTS_ASSETS + "/Iris/iris.usd"}  # , "Flying Cube": ROBOTS_ASSETS + "/iris_cube.usda"}
 
 # Setup the default simulation environments path
 NVIDIA_ASSETS_PATH = str(nucleus.get_assets_root_path())
@@ -67,34 +67,20 @@ for asset in NVIDIA_SIMULATION_ENVIRONMENTS:
 for asset in OMNIVERSE_ENVIRONMENTS:
     SIMULATION_ENVIRONMENTS[asset] = OMNIVERSE_ENVIRONMENTS[asset]
 
-BACKENDS = {
-    "px4": "px4",
-    "ardupilot": "ardupilot",
-    "ros2": "ros2"
-}
+BACKENDS = {"px4": "px4", "ardupilot": "ardupilot", "ros2": "ros2"}
 
 # Define the default settings for the simulation environment
 WORLD_SETTINGS = {
-    'px4': {
-        "physics_dt": 1.0 / 250.0,
-        "stage_units_in_meters": 1.0,
-        "rendering_dt": 1.0 / 60.0,
-        "device": "cpu"
-    },
-    'ardupilot': {
-        "physics_dt": 1.0 / 800.0, # Reach communication of 250hz with ardupilot sitl
+    "px4": {"physics_dt": 1.0 / 250.0, "stage_units_in_meters": 1.0, "rendering_dt": 1.0 / 60.0, "device": "cpu"},
+    "ardupilot": {
+        "physics_dt": 1.0 / 800.0,  # Reach communication of 250hz with ardupilot sitl
         "stage_units_in_meters": 1.0,
         "rendering_dt": 1.0 / 120.0,
-        "device": "cpu"
+        "device": "cpu",
     },
-    'ros2': {
-        "physics_dt": 1.0 / 250.0,
-        "stage_units_in_meters": 1.0,
-        "rendering_dt": 1.0 / 60.0,
-        "device": "cpu"
-    }
+    "ros2": {"physics_dt": 1.0 / 250.0, "stage_units_in_meters": 1.0, "rendering_dt": 1.0 / 60.0, "device": "cpu"},
 }
-DEFAULT_WORLD_SETTINGS = WORLD_SETTINGS['px4']
+DEFAULT_WORLD_SETTINGS = WORLD_SETTINGS["px4"]
 
 # Define where the thumbnail of the vehicle is located
 THUMBNAIL = ROBOTS_ASSETS + "/Iris/iris_thumbnail.png"
@@ -106,5 +92,5 @@ BACKENDS_THUMBMAILS_PATH = ASSET_PATH + "/Backends"
 BACKENDS_THUMBMAILS = {
     "px4": BACKENDS_THUMBMAILS_PATH + "/px4_logo.png",
     "ardupilot": BACKENDS_THUMBMAILS_PATH + "/ardupilot_logo.png",
-    "ros2": BACKENDS_THUMBMAILS_PATH + "/ros2_logo.png"
+    "ros2": BACKENDS_THUMBMAILS_PATH + "/ros2_logo.png",
 }

@@ -8,15 +8,16 @@ import numpy as np
 from pegasus.simulator.logic.state import State
 from pegasus.simulator.logic.thrusters.thrust_curve import ThrustCurve
 
+
 class QuadraticThrustCurve(ThrustCurve):
-    """Class that implements the dynamics of rotors that can be described by a quadratic thrust curve
-    """
+    """Class that implements the dynamics of rotors that can be described by a quadratic thrust curve"""
+
     def __init__(self, config={}):
         """_summary_
 
         Args:
             config (dict): A Dictionary that contains all the parameters for configuring the QuadraticThrustCurve - it can be empty or only have some of the parameters used by the QuadraticThrustCurve.
-        
+
         Examples:
             The dictionary default parameters are
 

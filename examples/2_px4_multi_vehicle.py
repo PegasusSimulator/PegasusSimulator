@@ -27,9 +27,11 @@ from pegasus.simulator.logic.state import State
 from pegasus.simulator.logic.backends.px4_mavlink_backend import PX4MavlinkBackend, PX4MavlinkBackendConfig
 from pegasus.simulator.logic.vehicles.multirotor import Multirotor, MultirotorConfig
 from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
+
 # Auxiliary scipy and numpy modules
 import os.path
 from scipy.spatial.transform import Rotation
+
 
 class PegasusApp:
     """
@@ -47,7 +49,7 @@ class PegasusApp:
         # Start the Pegasus Interface
         self.pg = PegasusInterface()
 
-        # Acquire the World, .i.e, the singleton that controls that is a one stop shop for setting up physics, 
+        # Acquire the World, .i.e, the singleton that controls that is a one stop shop for setting up physics,
         # spawning asset primitives, etc.
         self.pg._world = World(**self.pg._world_settings)
         self.world = self.pg.world
@@ -58,7 +60,6 @@ class PegasusApp:
         # Spawn 5 vehicles with the PX4 control backend in the simulation, separated by 1.0 m along the x-axis
         for i in range(5):
             self.vehicle_factory(i, gap_x_axis=1.0)
-        
 
         # Reset the simulation environment so that all articulations (aka robots) are initialized
         self.world.reset()
@@ -76,23 +77,26 @@ class PegasusApp:
         # Create the vehicle
         # Try to spawn the selected robot in the world to the specified namespace
         config_multirotor = MultirotorConfig()
-        
+
         # Create the multirotor configuration
-        mavlink_config = PX4MavlinkBackendConfig({
-            "vehicle_id": vehicle_id,
-            "px4_autolaunch": True,
-            "px4_dir": self.pg.px4_path,
-            "px4_vehicle_model": self.pg.px4_default_airframe # CHANGE this line to 'iris' if using PX4 version bellow v1.14
-        })
+        mavlink_config = PX4MavlinkBackendConfig(
+            {
+                "vehicle_id": vehicle_id,
+                "px4_autolaunch": True,
+                "px4_dir": self.pg.px4_path,
+                "px4_vehicle_model": self.pg.px4_default_airframe,  # CHANGE this line to 'iris' if using PX4 version bellow v1.14
+            }
+        )
         config_multirotor.backends = [PX4MavlinkBackend(mavlink_config)]
 
         Multirotor(
             "/World/quadrotor",
-            ROBOTS['Iris'],
+            ROBOTS["Iris"],
             vehicle_id,
             [gap_x_axis * vehicle_id, 0.0, 0.07],
             Rotation.from_euler("XYZ", [0.0, 0.0, 0.0], degrees=True).as_quat(),
-            config=config_multirotor)
+            config=config_multirotor,
+        )
 
     def run(self):
         """
@@ -107,11 +111,12 @@ class PegasusApp:
 
             # Update the UI of the app and perform the physics step
             self.world.step(render=True)
-        
+
         # Cleanup and stop
         carb.log_warn("PegasusApp Simulation App is closing.")
         self.timeline.stop()
         simulation_app.close()
+
 
 def main():
 
@@ -120,6 +125,7 @@ def main():
 
     # Run the application loop
     pg_app.run()
+
 
 if __name__ == "__main__":
     main()

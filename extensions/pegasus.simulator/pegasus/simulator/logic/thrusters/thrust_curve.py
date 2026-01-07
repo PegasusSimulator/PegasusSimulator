@@ -8,8 +8,8 @@ from pegasus.simulator.logic.state import State
 
 
 class ThrustCurve:
-    """Class that implements the dynamics of rotors that can be described by a quadratic thrust curve
-    """
+    """Class that implements the dynamics of rotors that can be described by a quadratic thrust curve"""
+
     def __init__(self):
         pass
 

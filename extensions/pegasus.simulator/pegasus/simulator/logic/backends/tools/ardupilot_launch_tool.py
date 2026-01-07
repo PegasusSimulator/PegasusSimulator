@@ -16,7 +16,7 @@ import psutil
 class ArduPilotLaunchTool:
     """
     A class that manages the start/stop of a ardupilot process. It requires only the path to the Ardupilot installation (assuming that
-    Ardupilot was already built with 'make ardupilot_sitl_default none'), the vehicle id and the vehicle model. 
+    Ardupilot was already built with 'make ardupilot_sitl_default none'), the vehicle id and the vehicle model.
     """
 
     def __init__(self, ardupilot_dir, vehicle_id: int = 0, ardupilot_model: str = "gazebo-iris"):
@@ -43,7 +43,7 @@ class ArduPilotLaunchTool:
 
         # Ardupilot FDM communication type:
         self.model = "JSON"
-        
+
         # Create a temporary filesystem for ardupilot to write data to/from (and modify the origin rcS files)
         self.root_fs = tempfile.TemporaryDirectory()
 
@@ -51,38 +51,45 @@ class ArduPilotLaunchTool:
         self.environment = os.environ
 
     def _sitl_already_exists(self):
-        return os.path.exists(f'{self.ardupilot_dir}/build/sitl/bin/arducopter')
-    
+        return os.path.exists(f"{self.ardupilot_dir}/build/sitl/bin/arducopter")
+
     def _get_vehicle_frame(self):
         return self.ardupilot_model
-    
+
     def launch_ardupilot(self):
         """
         Method that will launch a ardupilot instance with the specified configuration
         """
         # sim_vehicle.py -v ArduCopter -f gazebo-iris --mode JSON --console --map
         command = [
-            "python3", f"{self.ardupilot_dir}/Tools/autotest/sim_vehicle.py",
-            "-v", "ArduCopter",
-            "-f", f"{self._get_vehicle_frame()}",
-            "--model", f"{self.model}",
+            "python3",
+            f"{self.ardupilot_dir}/Tools/autotest/sim_vehicle.py",
+            "-v",
+            "ArduCopter",
+            "-f",
+            f"{self._get_vehicle_frame()}",
+            "--model",
+            f"{self.model}",
             f"{'--no-rebuild' if self._sitl_already_exists() else ''}",
             f"--console",
             f"--map",
-            "-I", f"{self.vehicle_id}",
-            "--sysid", f"{self.vehicle_id + 1}",
-            "--out", f"udp:127.0.0.1:{14550 + self.vehicle_id * 10}",
+            "-I",
+            f"{self.vehicle_id}",
+            "--sysid",
+            f"{self.vehicle_id + 1}",
+            "--out",
+            f"udp:127.0.0.1:{14550 + self.vehicle_id * 10}",
         ]
         command: str = " ".join(command)
-        
+
         # Run in a seperate bash window
         self.ardupilot_process = subprocess.Popen(
             # ["gnome-terminal", '--disable-factory', '--', 'bash', '-c', command],
-            ["gnome-terminal", '--', 'bash', '-c', command],
+            ["gnome-terminal", "--", "bash", "-c", command],
             cwd=self.root_fs.name,
             shell=False,
             env=self.environment,
-            preexec_fn=os.setsid
+            preexec_fn=os.setsid,
         )
 
     def kill_ardupilot(self):
@@ -96,15 +103,14 @@ class ArduPilotLaunchTool:
             self.ardupilot_process = None
 
         # Define the keywords to search for in process names
-        keywords = ['arducopter', 'mavproxy']
+        keywords = ["arducopter", "mavproxy"]
 
         # Get the list of all running processes using the ps command
-        ps_output = subprocess.run(['ps', '-aux'], capture_output=True, text=True)
+        ps_output = subprocess.run(["ps", "-aux"], capture_output=True, text=True)
 
         # Filter processes that match any of the keywords (case insensitive)
         matching_processes = [
-            line for line in ps_output.stdout.splitlines()
-            if any(keyword in line.lower() for keyword in keywords)
+            line for line in ps_output.stdout.splitlines() if any(keyword in line.lower() for keyword in keywords)
         ]
 
         # Extract process IDs (PID) from the filtered lines
@@ -142,9 +148,9 @@ def main():
     ardupilot_tool = ArduPilotLaunchTool(os.environ["HOME"] + "/ardupilot")
     print("Launching ArduPilot")
     ardupilot_tool.launch_ardupilot()
-    
+
     import time
-    
+
     # print("Killing ArduPilot in 5")
     time.sleep(3000)
     # ardupilot_tool.kill_ardupilot()

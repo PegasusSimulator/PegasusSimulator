@@ -33,6 +33,7 @@ simulation_app.update()
 # These lines are needed to restart the USD stage and make sure that the people extension is loaded
 # -------------------------------------------------------------------------------------------------
 import omni.usd
+
 omni.usd.get_context().new_stage()
 
 import numpy as np
@@ -55,22 +56,21 @@ from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 # 3. read the target position from a file,
 # 4. etc.
 class CirclePersonController(PersonController):
-
     def __init__(self):
         super().__init__()
 
         self._radius = 5.0
         self.gamma = 0.0
         self.gamma_dot = 0.3
-        
+
     def update(self, dt: float):
 
         # Update the reference position for the person to track
         self.gamma += self.gamma_dot * dt
-        
+
         # Set the target position for the person to track
         self._person.update_target_position([self._radius * np.cos(self.gamma), self._radius * np.sin(self.gamma), 0.0])
-        
+
 
 # Auxiliary scipy and numpy modules
 from scipy.spatial.transform import Rotation
@@ -100,7 +100,7 @@ class PegasusApp:
         self.world = self.pg.world
 
         # Launch one of the worlds provided by NVIDIA
-        #self.pg.load_environment(SIMULATION_ENVIRONMENTS["Curved Gridroom"])
+        # self.pg.load_environment(SIMULATION_ENVIRONMENTS["Curved Gridroom"])
         self.pg.load_asset(SIMULATION_ENVIRONMENTS["Curved Gridroom"], "/World/layout")
 
         # Check the available assets for people
@@ -110,36 +110,44 @@ class PegasusApp:
 
         # Create the controller to make on person walk around in circles
         person_controller = CirclePersonController()
-        p1 = Person("person1", "original_male_adult_construction_05", init_pos=[3.0, 0.0, 0.0], init_yaw=1.0, controller=person_controller)
-        
+        p1 = Person(
+            "person1",
+            "original_male_adult_construction_05",
+            init_pos=[3.0, 0.0, 0.0],
+            init_yaw=1.0,
+            controller=person_controller,
+        )
+
         # Create a person without setting up a controller, and just setting a manual target position for it to track
         p2 = Person("person2", "original_female_adult_business_02", init_pos=[2.0, 0.0, 0.0])
         p2.update_target_position([10.0, 0.0, 0.0], 1.0)
 
         config_multirotor = MultirotorConfig()
         # Create the multirotor configuration
-        mavlink_config = PX4MavlinkBackendConfig({
-            "vehicle_id": 0,
-            "px4_autolaunch": True,
-            "px4_dir": "/home/marcelo/PX4-Autopilot"
-        })
+        mavlink_config = PX4MavlinkBackendConfig(
+            {"vehicle_id": 0, "px4_autolaunch": True, "px4_dir": "/home/marcelo/PX4-Autopilot"}
+        )
 
         config_multirotor.backends = [
             PX4MavlinkBackend(mavlink_config),
-            ROS2Backend(vehicle_id=1, 
+            ROS2Backend(
+                vehicle_id=1,
                 config={
-                    "namespace": 'drone', 
+                    "namespace": "drone",
                     "pub_sensors": False,
                     "pub_graphical_sensors": True,
                     "pub_state": True,
                     "pub_tf": False,
-                    "sub_control": False,})]
-        
+                    "sub_control": False,
+                },
+            ),
+        ]
+
         config_multirotor.graphical_sensors = [MonocularCamera("camera", config={"update_rate": 60.0})]
-        
+
         Multirotor(
             "/World/quadrotor",
-            ROBOTS['Iris'],
+            ROBOTS["Iris"],
             0,
             [0.0, 0.0, 0.07],
             Rotation.from_euler("XYZ", [0.0, 0.0, 0.0], degrees=True).as_quat(),
@@ -173,6 +181,7 @@ class PegasusApp:
         self.timeline.stop()
         simulation_app.close()
 
+
 def main():
 
     # Instantiate the template app
@@ -180,6 +189,7 @@ def main():
 
     # Run the application loop
     pg_app.run()
+
 
 if __name__ == "__main__":
     main()

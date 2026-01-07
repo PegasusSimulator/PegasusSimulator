@@ -33,32 +33,35 @@ from pegasus.simulator.logic.people_manager import PeopleManager
 from pegasus.simulator.logic.people.person_controller import PersonController
 from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 
+
 class Person:
     """
     Class that implements a person in the simulation world. The person can be controlled by a controller that inherits from the PersonController class.
     """
 
     # Get root assets path from setting, if not set, get the Isaac-Sim asset path
-    people_asset_folder = "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.1/Isaac/People/Characters/"
+    people_asset_folder = (
+        "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.1/Isaac/People/Characters/"
+    )
     character_root_prim_path = PrimPaths.characters_parent_path()
 
-    assets_root_path = None   
+    assets_root_path = None
 
     if people_asset_folder:
         assets_root_path = people_asset_folder
-    else:   
+    else:
         root_path = get_assets_root_path()
         if root_path is not None:
-            assets_root_path  = "{}/Isaac/People/Characters".format(root_path)
+            assets_root_path = f"{root_path}/Isaac/People/Characters"
 
     def __init__(
-        self, 
+        self,
         stage_prefix: str,
         character_name: str = None,
         init_pos=[0.0, 0.0, 0.0],
         init_yaw=0.0,
-        controller: PersonController=None,
-        backend=None
+        controller: PersonController = None,
+        backend=None,
     ):
         """Initializes the person object
 
@@ -77,7 +80,7 @@ class Person:
         # Variable that will hold the current state of the vehicle
         self._state = State()
         self._state.position = np.array(init_pos)
-        self._state.orientation = Rotation.from_euler('z', init_yaw, degrees=False).as_quat()
+        self._state.orientation = Rotation.from_euler("z", init_yaw, degrees=False).as_quat()
 
         # Auxiliar variable to compute the velocity of the person using discrete differentiation
         self._previous_position = np.array(init_pos)
@@ -90,7 +93,9 @@ class Person:
         # By default, the characters are placed inside /World/Characters
         # so we are checking whether the name of the character is already present in the stage inside the character root prim path
         # or we need to change the name of the character to avoid conflicts
-        self._stage_prefix = get_stage_next_free_path(self._current_stage, Person.character_root_prim_path + '/' + stage_prefix, False)
+        self._stage_prefix = get_stage_next_free_path(
+            self._current_stage, Person.character_root_prim_path + "/" + stage_prefix, False
+        )
 
         # The name of the character in the USD file
         self._character_name = character_name
@@ -111,7 +116,7 @@ class Person:
         # Set the controller for the person if any and initialize it
         self._controller = controller
         if self._controller:
-           self._controller.initialize(self)
+            self._controller.initialize(self)
 
         # Set the backend for publishing the state of the person
         self._backend = backend
@@ -139,7 +144,7 @@ class Person:
             State: The current state of the person, i.e., position, orientation, linear and angular velocities...
         """
         return self._state
-    
+
     def sim_start_stop(self, event):
         """
         Callback that is called every time there is a timeline event such as starting/stoping the simulation.
@@ -192,11 +197,13 @@ class Person:
 
             # Compute the distance between the current position and the goal position
             distance_to_target_position = np.linalg.norm(self._target_position - self._state.position)
-            
+
             # If we are still far away from the target position, keep moving towards it
             if distance_to_target_position > 0.1:
                 self.character_graph.set_variable("Action", "Walk")
-                self.character_graph.set_variable("PathPoints", [carb.Float3(self._state.position), carb.Float3(self._target_position)])
+                self.character_graph.set_variable(
+                    "PathPoints", [carb.Float3(self._state.position), carb.Float3(self._target_position)]
+                )
                 self.character_graph.set_variable("Walk", self._target_speed)
             else:
                 # If we are close to the target position, stop moving
@@ -206,7 +213,6 @@ class Person:
             # If we have a backend, update the state of the person
             if self._backend:
                 self._backend.update(self._state, dt)
-
 
     def update_target_position(self, position, walk_speed=1.0):
         """
@@ -218,7 +224,6 @@ class Person:
         self._target_position = np.array(position)
         self._target_speed = walk_speed
 
-
     def update_state(self, dt: float):
         """
         Method that is called at every physics step to retrieve and update the current state of the person, i.e., get
@@ -227,11 +232,11 @@ class Person:
         Args:
             dt (float): The time elapsed between the previous and current function calls (s).
         """
-        
+
         # # Note: this is done to avoid the error of the character_graph being None. The animation graph is only created after the simulation starts
         if not self.character_graph or self.character_graph is None:
             self.character_graph = ag.get_character(self.character_skel_root_stage_path)
-            
+
         # If the character graph is not None, then we can update the character
         if self.character_graph:
 
@@ -258,7 +263,6 @@ class Person:
             if self._controller:
                 self._controller.update_state(self._state)
 
-
     def spawn_agent(self, usd_file, stage_name, init_pos, init_yaw):
 
         # Get the last name after the last slash in the stage name
@@ -272,28 +276,40 @@ class Person:
         PeopleManager.get_people_manager().add_person(self._stage_prefix, self)
 
         # Get the handle to the character skeleton root prim
-        self.character_skel_root, self.character_skel_root_stage_path = Person._transverse_prim(self._current_stage, self._stage_prefix)
+        self.character_skel_root, self.character_skel_root_stage_path = Person._transverse_prim(
+            self._current_stage, self._stage_prefix
+        )
 
         # Update the navigation mesh to include the character skeleton root prim
         omni.kit.commands.execute("ApplyNavMeshAPICommand", prim_path=stage_name, api=NavSchema.NavMeshExcludeAPI)
 
         # If the base biped character is not present in the stage, spawn it
         if not self._current_stage.GetPrimAtPath(Person.character_root_prim_path + "/Biped_Setup"):
-            prim = prims.create_prim(Person.character_root_prim_path + "/Biped_Setup", "Xform", usd_path=Person.assets_root_path + "/Biped_Setup.usd")
+            prim = prims.create_prim(
+                Person.character_root_prim_path + "/Biped_Setup",
+                "Xform",
+                usd_path=Person.assets_root_path + "/Biped_Setup.usd",
+            )
             prim.GetAttribute("visibility").Set("invisible")
-
 
     def add_animation_graph_to_agent(self):
 
         # Get the animation graph that we are going to add to the person
-        animation_graph = self._current_stage.GetPrimAtPath(Person.character_root_prim_path + "/Biped_Setup/CharacterAnimation/AnimationGraph")
+        animation_graph = self._current_stage.GetPrimAtPath(
+            Person.character_root_prim_path + "/Biped_Setup/CharacterAnimation/AnimationGraph"
+        )
 
         # Remove the animation graph attribute if it exists
-        omni.kit.commands.execute("RemoveAnimationGraphAPICommand", paths=[Sdf.Path(self.character_skel_root.GetPrimPath())])
+        omni.kit.commands.execute(
+            "RemoveAnimationGraphAPICommand", paths=[Sdf.Path(self.character_skel_root.GetPrimPath())]
+        )
 
         # Add the animation graph to the character
-        omni.kit.commands.execute("ApplyAnimationGraphAPICommand", paths=[Sdf.Path(self.character_skel_root.GetPrimPath())], animation_graph_path=Sdf.Path(animation_graph.GetPrimPath()))
-
+        omni.kit.commands.execute(
+            "ApplyAnimationGraphAPICommand",
+            paths=[Sdf.Path(self.character_skel_root.GetPrimPath())],
+            animation_graph_path=Sdf.Path(animation_graph.GetPrimPath()),
+        )
 
     @staticmethod
     def _transverse_prim(stage, stage_prefix):
@@ -311,63 +327,63 @@ class Person:
         # If there are no children, return
         if not children or len(children) == 0:
             return None, None
-        
+
         # Recursively look through the children to get the SkelRoot
         for child in children:
             prim_child, child_stage_prefix = Person._transverse_prim(stage, stage_prefix + "/" + child.GetName())
 
             if prim_child is not None:
                 return prim_child, child_stage_prefix
-            
-        return None, None
 
+        return None, None
 
     @staticmethod
     def get_character_asset_list():
         # List all files in characters directory
-        result, folder_list = omni.client.list("{}/".format(Person.assets_root_path))
+        result, folder_list = omni.client.list(f"{Person.assets_root_path}/")
 
         if result != omni.client.Result.OK:
             carb.log_error("Unable to get character assets from provided asset root path.")
             return
 
         # Prune items from folder list that are not directories.
-        pruned_folder_list = [folder.relative_path for folder in folder_list 
-            if (folder.flags & omni.client.ItemFlags.CAN_HAVE_CHILDREN) and not folder.relative_path.startswith(".")]
+        pruned_folder_list = [
+            folder.relative_path
+            for folder in folder_list
+            if (folder.flags & omni.client.ItemFlags.CAN_HAVE_CHILDREN) and not folder.relative_path.startswith(".")
+        ]
 
         return pruned_folder_list
-    
+
     @staticmethod
     def get_path_for_character_prim(agent_name):
 
         # Check if a folder with agent_name exists. If exists we load the character, else we load a random character
-        agent_folder = "{}/{}".format(Person.assets_root_path, agent_name)
+        agent_folder = f"{Person.assets_root_path}/{agent_name}"
         result, properties = omni.client.stat(agent_folder)
 
         # Attempt to load the character if it exists, otherwise load a random character
         if result != omni.client.Result.OK:
             carb.log_error("Character folder does not exist.")
             return None
-        
+
         # Get the usd present in the character folder
-        character_folder = "{}/{}".format(Person.assets_root_path, agent_name)
+        character_folder = f"{Person.assets_root_path}/{agent_name}"
         character_usd = Person.get_usd_in_folder(character_folder)
-    
+
         # Return the character name (folder name) and the usd path to the character
-        return "{}/{}".format(character_folder, character_usd)
-    
+        return f"{character_folder}/{character_usd}"
+
     @staticmethod
     def get_usd_in_folder(character_folder_path):
         result, folder_list = omni.client.list(character_folder_path)
-        
+
         if result != omni.client.Result.OK:
-            carb.log_error("Unable to read character folder path at {}".format(character_folder_path))
+            carb.log_error(f"Unable to read character folder path at {character_folder_path}")
             return
 
         for item in folder_list:
             if item.relative_path.endswith(".usd"):
                 return item.relative_path
 
-        carb.log_error("Unable to file a .usd file in {} character folder".format(character_folder_path))
-
-    
+        carb.log_error(f"Unable to file a .usd file in {character_folder_path} character folder")

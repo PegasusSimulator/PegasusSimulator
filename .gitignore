@@ -41,6 +41,7 @@ _build
 build/
 install/
 <<<<<<< HEAD
+<<<<<<< HEAD
 log/
 =======
 log/
@@ -51,3 +52,6 @@ log/
 # Large media files
 *.mp4
 >>>>>>> 0798588 (feat: add C3BF safety filter example and documentation)
+=======
+log/
+>>>>>>> fd7897c (feat: c3bf extension added with nonlinear controller)

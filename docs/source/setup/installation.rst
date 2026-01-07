@@ -17,7 +17,7 @@ Installing NVIDIA Isaac Sim
    :alt: Ubuntu 22.04
 
 .. note::
-	We have tested Pegasus Simulator with Isaac Sim 5.1.0 release on Ubuntu 22.04LTS with NVIDIA driver 550.163.01. The PX4-Autopilot used during development was v.14.3. Older versions Ubuntu and PX4-Autopilot were not tested. This extension was not tested on Windows. 
+	We have tested Pegasus Simulator with Isaac Sim 5.1.0 release on Ubuntu 22.04LTS with NVIDIA driver 550.163.01. The PX4-Autopilot used during development was v.14.3. Older versions Ubuntu and PX4-Autopilot were not tested. This extension was not tested on Windows.
 
 In order to install Isaac Sim on linux, download the zip file containing the `Workstation Installation here <https://download.isaacsim.omniverse.nvidia.com/isaac-sim-standalone-5.1.0-linux-x86_64.zip>`__ or run the following lines on the terminal:
 
@@ -60,7 +60,7 @@ order for the Pegasus Simulator to work, we require the user to use the same pyt
 from python scripts. As such, we recommend setting up a few custom environment variables to make this process simpler.
 
 .. note::
-    Although it is possible to setup a virtual environment following the 
+    Although it is possible to setup a virtual environment following the
     instructions `here <https://docs.isaacsim.omniverse.nvidia.com/5.1.0/installation/install_python.html>`__, this
     feature was not tested.
 
@@ -101,7 +101,7 @@ Add the following lines to your ``~/.bashrc`` or ``~/.zshrc`` file.
         # -------------------------
         # Unset ROS 2 environment variables to avoid conflicts with Isaac's Python 3.11
         unset ROS_VERSION ROS_PYTHON_VERSION ROS_DISTRO AMENT_PREFIX_PATH COLCON_PREFIX_PATH PYTHONPATH CMAKE_PREFIX_PATH
-        
+
         # Remove ROS 2 paths from LD_LIBRARY_PATH if present
         local ros_paths=("/opt/ros/humble" "/opt/ros/jazzy" "/opt/ros/iron")
         for ros_path in "${ros_paths[@]}"; do
@@ -190,7 +190,7 @@ open a new terminal window (**Ctrl+Alt+T**), and test the following commands:
         # Run the python interpreter and check if we can run a script that starts the simulator and adds cubes to the world
         ISAACSIM_PYTHON ${ISAACSIM_PATH}/standalone_examples/api/isaacsim.core.api/add_cubes.py
 
-If you were unable to run the commands above successfuly, then something is incorrectly configured. 
+If you were unable to run the commands above successfuly, then something is incorrectly configured.
 Please do not proceed with this installation until you have everything setup correctly.
 
 Addtional Isaac Sim resources:
@@ -207,7 +207,7 @@ Clone the `Pegasus Simulator <https://www.github.com/PegasusSimulator/PegasusSim
     git clone https://github.com/PegasusSimulator/PegasusSimulator.git
     # Option 2: With SSH (you need to setup a github account with ssh keys)
     git clone git@github.com:PegasusSimulator/PegasusSimulator.git
-    
+
 
 The Pegasus Simulator was originally developed as an Isaac Sim extension with an interactive GUI, but also provides a powerfull
 API that allows it to run as a standalone app, i.e. by creating python scritps (as shown in the examples directory of this repository).
@@ -222,7 +222,7 @@ To be able to use the extension in both modes, follow these steps:
         :align: center
         :alt: Extensions on top menubar
 
-3. On the Extensions manager menu, we can enable or disable extensions. By pressing the settings button, we can 
+3. On the Extensions manager menu, we can enable or disable extensions. By pressing the settings button, we can
 add a path to the Pegasus-Simulator repository.
 
     .. image:: /_static/extensions_widget.png
@@ -244,7 +244,7 @@ add a path to the Pegasus-Simulator repository.
         :align: center
         :alt: Pegasus Extension on the third-party tab
 
-When enabling the extension for the first time, the python requirements should be install automatically for the build in 
+When enabling the extension for the first time, the python requirements should be install automatically for the build in
 ``ISAACSIM_PYTHON`` , and after a few seconds, the Pegasus widget GUI should pop-up.
 
 6. The Pegasus Simulator window should appear docked to the bottom-right section of the screen.
@@ -257,7 +257,7 @@ When enabling the extension for the first time, the python requirements should b
 Installing the extension as a library
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In order to be able to use the Pegasus Simulator API from python scripts and standalone apps, we must install this 
+In order to be able to use the Pegasus Simulator API from python scripts and standalone apps, we must install this
 extension as a ``pip`` python module for the built-in ``ISAACSIM_PYTHON`` to recognize. For that, run:
 
 .. code:: bash
@@ -271,7 +271,7 @@ extension as a ``pip`` python module for the built-in ``ISAACSIM_PYTHON`` to rec
         # Run the pip command using the built-in python interpreter
         ISAACSIM_PYTHON -m pip install --editable pegasus.simulator
 
-We use the ``--editable`` flag so that the content of the extension is linked instead of copied. After this step, you 
+We use the ``--editable`` flag so that the content of the extension is linked instead of copied. After this step, you
 should be able to run the python standalone examples inside the ``examples`` folder.
 
 .. note::
@@ -289,7 +289,7 @@ To install PX4-Autopilot, follow the following steps:
 
         # Linux packages
         sudo apt install git make cmake python3-pip
-       
+
         # Python packages
         pip install kconfiglib jinja2 empy jsonschema pyros-genmsg packaging toml numpy future
 
@@ -305,7 +305,7 @@ To install PX4-Autopilot, follow the following steps:
 3. Checkout to the stable version 1.14.3 and compile the code for software-in-the-loop (SITL) mode:
 
     .. code:: bash
-        
+
         # Go to the PX4 directory
         cd PX4-Autopilot
 
@@ -313,18 +313,18 @@ To install PX4-Autopilot, follow the following steps:
         git checkout v1.14.3
 
         # Initiate all the submodules. Note this will download modules such as SITL-gazebo which we do not need
-        # but this is the safest way to make sure that the PX4-Autopilot and its submodules are all checked out in 
+        # but this is the safest way to make sure that the PX4-Autopilot and its submodules are all checked out in
         # a stable and well tested release
         git submodule update --init --recursive
 
         # Compile the code in SITL mode
         make px4_sitl_default none
 
-Note: If you are installing a version of PX4 prior to v1.14.1, you may need to go to change the default airframe to 
+Note: If you are installing a version of PX4 prior to v1.14.1, you may need to go to change the default airframe to
 be used by PX4. This can be achieved by:
 
     .. code:: bash
-        
+
         # Go inside the config folder of the pegasus simulator extension
         cd PegasusSimulator/extensions/pegasus/simulator/config
 
@@ -340,10 +340,10 @@ the file ``PegasusSimulator/extensions/pegasus/simulator/config/config.yaml`` an
 Setting the PX4 path inside the Pegasus Simulator
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The simulator provides a feature to auto-launch PX4-Autopilot for every vehicle that is spawned in the simulation world. 
-For this feature to work, we need to tell the Pegasus Simulator extension where the PX4-Autopilot directory can be found. 
-For that, edit the ``PX4 Path`` text field if is not correct by default and press the ``Make Default`` button. This 
-field supports relative paths to the home directory, which means that you can use ``~`` to represent the home directory 
+The simulator provides a feature to auto-launch PX4-Autopilot for every vehicle that is spawned in the simulation world.
+For this feature to work, we need to tell the Pegasus Simulator extension where the PX4-Autopilot directory can be found.
+For that, edit the ``PX4 Path`` text field if is not correct by default and press the ``Make Default`` button. This
+field supports relative paths to the home directory, which means that you can use ``~`` to represent the home directory
 without hard-coding it.
 
 .. image:: /_static/pegasus_GUI_px4_dir.png

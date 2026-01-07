@@ -12,9 +12,7 @@ class GraphParser(Parser):
     def __init__(self):
 
         # Dictionary of available graphs to instantiate
-        self.graphs = {
-            "ROS2 Camera": ROS2Camera
-        }
+        self.graphs = {"ROS2 Camera": ROS2Camera}
 
     def parse(self, data_type: str, data_dict):
 

@@ -26,7 +26,8 @@ from omni.kit.viewport.utility import get_active_viewport
 
 # Pegasus Extension Files and API
 from pegasus.simulator.params import MENU_PATH, WINDOW_TITLE
-#from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
+
+# from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 
 # Setting up the UI for the extension's Widget
 from pegasus.simulator.ui.ui_window import WidgetWindow
@@ -59,7 +60,6 @@ class Pegasus_SimulatorExtension(omni.ext.IExt):
 
         # Show the window (It call the self.show_window)
         ui.Workspace.show_window(WINDOW_TITLE, show=True)
-
 
     def show_window(self, menu, show):
         """

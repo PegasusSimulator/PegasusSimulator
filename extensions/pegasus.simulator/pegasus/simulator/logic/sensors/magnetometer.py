@@ -18,16 +18,16 @@ from pegasus.simulator.logic.sensors.geo_mag_utils import (
     reprojection,
 )
 
+
 class Magnetometer(Sensor):
-    """The class that implements a magnetometer sensor. This class inherits the base class Sensor.
-    """
+    """The class that implements a magnetometer sensor. This class inherits the base class Sensor."""
 
     def __init__(self, config={}):
         """Initialize the Magnetometer class
 
         Args:
             config (dict): A Dictionary that contains all the parameters for configuring the Magnetometer - it can be empty or only have some of the parameters used by the Magnetometer.
-            
+
         Examples:
             The dictionary default parameters are
 
@@ -59,9 +59,9 @@ class Magnetometer(Sensor):
     @Sensor.update_at_rate
     def update(self, state: State, dt: float):
         """Method that implements the logic of a magnetometer. In this method we start by computing the projection
-        of the vehicle body frame such in the elipsoidal model of the earth in order to get its current latitude and 
+        of the vehicle body frame such in the elipsoidal model of the earth in order to get its current latitude and
         longitude. From here the declination and inclination are computed and used to get the strength of the magnetic
-        field, expressed in the inertial frame of reference (in ENU convention). This magnetic field is then rotated 
+        field, expressed in the inertial frame of reference (in ENU convention). This magnetic field is then rotated
         to the body frame such that it becomes expressed in a FRD body frame relative to a NED inertial reference frame.
         (The convention adopted by PX4). Random noise and bias are added to this magnetic field.
 

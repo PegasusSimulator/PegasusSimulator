@@ -3,7 +3,7 @@
 | File: python_control_backend.py
 | Author: Marcelo Jacinto and Joao Pinto (marcelo.jacinto@tecnico.ulisboa.pt, joao.s.pinto@tecnico.ulisboa.pt)
 | License: BSD-3-Clause. Copyright (c) 2023, Marcelo Jacinto. All rights reserved.
-| Description: This files serves as an example on how to use the control backends API to create a custom controller 
+| Description: This files serves as an example on how to use the control backends API to create a custom controller
 for the vehicle from scratch and use it to perform a simulation, without using PX4 nor ROS. NOTE: to see the HDR
 environment as shown in the video and paper, you must have opened ISAAC SIM at least once thorugh the OMNIVERSE APP,
 otherwise, the path to the HDR environment is not recognized.
@@ -36,7 +36,8 @@ from pegasus.simulator.logic.dynamics.linear_drag import LinearDrag
 from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 
 import sys, os
-sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)) + '/utils')
+
+sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)) + "/utils")
 from nonlinear_controller import NonlinearController
 
 # Auxiliary scipy and numpy modules
@@ -65,7 +66,7 @@ class PegasusApp:
         # Start the Pegasus Interface
         self.pg = PegasusInterface()
 
-        # Acquire the World, .i.e, the singleton that controls that is a one stop shop for setting up physics, 
+        # Acquire the World, .i.e, the singleton that controls that is a one stop shop for setting up physics,
         # spawning asset primitives, etc.
         self.pg._world_settings = {"physics_dt": 1.0 / 500.0, "stage_units_in_meters": 1.0, "rendering_dt": 1.0 / 60.0}
         self.pg._world = World(**self.pg._world_settings)
@@ -78,8 +79,8 @@ class PegasusApp:
             attributes={
                 "inputs:intensity": 5e3,
                 "inputs:color": (1.0, 1.0, 1.0),
-                "inputs:texture:file": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/4.5/NVIDIA/Assets/Skies/Indoor/ZetoCGcom_ExhibitionHall_Interior1.hdr"
-            }
+                "inputs:texture:file": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/4.5/NVIDIA/Assets/Skies/Indoor/ZetoCGcom_ExhibitionHall_Interior1.hdr",
+            },
         )
 
         # Get the current directory used to read trajectories and save results
@@ -91,34 +92,35 @@ class PegasusApp:
         config_multirotor1.drag = LinearDrag([0.0, 0.0, 0.0])
 
         # Use the nonlinear controller with the built-in exponential trajectory
-        config_multirotor1.backends = [NonlinearController(
-            trajectory_file=None,
-            results_file=self.curr_dir + "/results/statistics_1.npz")]
+        config_multirotor1.backends = [
+            NonlinearController(trajectory_file=None, results_file=self.curr_dir + "/results/statistics_1.npz")
+        ]
 
         Multirotor(
             "/World/quadrotor1",
-            ROBOTS['Iris'],
+            ROBOTS["Iris"],
             1,
-            [-5.0,0.00,1.00],
+            [-5.0, 0.00, 1.00],
             Rotation.from_euler("XYZ", [0.0, 0.0, 0.0], degrees=True).as_quat(),
             config=config_multirotor1,
         )
 
         # Create the vehicle 2
-        #Try to spawn the selected robot in the world to the specified namespace
+        # Try to spawn the selected robot in the world to the specified namespace
         config_multirotor2 = MultirotorConfig()
 
         # Use the nonlinear controller with the built-in exponential trajectory
-        config_multirotor2.backends = [NonlinearController(
-            trajectory_file=None,
-            results_file=self.curr_dir + "/results/statistics_2.npz",
-            reverse=True)]
+        config_multirotor2.backends = [
+            NonlinearController(
+                trajectory_file=None, results_file=self.curr_dir + "/results/statistics_2.npz", reverse=True
+            )
+        ]
 
         Multirotor(
             "/World/quadrotor2",
-            ROBOTS['Iris'],
+            ROBOTS["Iris"],
             2,
-            [-5.0,4.5,1.0],
+            [-5.0, 4.5, 1.0],
             Rotation.from_euler("XYZ", [0.0, 0.0, 0.0], degrees=True).as_quat(),
             config=config_multirotor2,
         )
@@ -134,10 +136,10 @@ class PegasusApp:
 
         draw = _debug_draw.acquire_debug_draw_interface()
         point_list_1 = [(trajectory1[i][0], trajectory1[i][1], trajectory1[i][2]) for i in range(num_samples)]
-        draw.draw_lines_spline(point_list_1, (31/255, 119/255, 180/255, 1), 5, False)
+        draw.draw_lines_spline(point_list_1, (31 / 255, 119 / 255, 180 / 255, 1), 5, False)
 
         point_list_2 = [(trajectory2[i][0], trajectory2[i][1], trajectory2[i][2]) for i in range(num_samples)]
-        draw.draw_lines_spline(point_list_2, (255/255, 0, 0, 1), 5, False)
+        draw.draw_lines_spline(point_list_2, (255 / 255, 0, 0, 1), 5, False)
 
         # Reset the world
         self.world.reset()
@@ -155,11 +157,12 @@ class PegasusApp:
 
             # Update the UI of the app and perform the physics step
             self.world.step(render=True)
-        
+
         # Cleanup and stop
         carb.log_warn("PegasusApp Simulation App is closing.")
         self.timeline.stop()
         simulation_app.close()
+
 
 def main():
 
@@ -168,6 +171,7 @@ def main():
 
     # Run the application loop
     pg_app.run()
+
 
 if __name__ == "__main__":
     main()

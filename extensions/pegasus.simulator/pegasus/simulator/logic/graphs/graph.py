@@ -3,12 +3,14 @@
 """
 __all__ = ["Graph"]
 
+
 class Graph:
     """The base class for implementing OmniGraphs
 
     Attributes:
         graph_prim_path
     """
+
     def __init__(self, graph_type: str):
         """Initialize Graph class
 

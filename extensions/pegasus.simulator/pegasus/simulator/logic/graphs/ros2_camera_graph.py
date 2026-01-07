@@ -17,9 +17,10 @@ from pegasus.simulator.logic.vehicles import Vehicle
 from scipy.spatial.transform import Rotation
 import numpy as np
 
+
 class ROS2CameraGraph(Graph):
-    """The class that implements the ROS2 Camera graph. This class inherits the base class Graph.
-    """
+    """The class that implements the ROS2 Camera graph. This class inherits the base class Graph."""
+
     def __init__(self, camera_prim_path: str, config: dict = {}):
         """Initialize the ROS2 Camera class
 
@@ -44,7 +45,9 @@ class ROS2CameraGraph(Graph):
 
         # Save camera path, frame id and ros topic name
         self._camera_prim_path = camera_prim_path
-        self._frame_id = camera_prim_path.rpartition("/")[-1] # frame_id of the camera is the last prim path part after `/`
+        self._frame_id = camera_prim_path.rpartition("/")[
+            -1
+        ]  # frame_id of the camera is the last prim path part after `/`
         self._base_topic = config.get("topic", "")
         self._namespace = config.get("namespace", "")
         self._tf_frame_id = config.get("tf_frame_id", "")
@@ -52,7 +55,7 @@ class ROS2CameraGraph(Graph):
         # Process the config dictionary
         self._graph_evaluator = config.get("graph_evaluator", "execution")
         self._resolution = config.get("resolution", [640, 480])
-        self._types = np.array(config.get("types", ['rgb', 'camera_info']))
+        self._types = np.array(config.get("types", ["rgb", "camera_info"]))
         self._publish_labels = config.get("publish_labels", True)
 
     def initialize(self, vehicle: Vehicle):
@@ -75,7 +78,7 @@ class ROS2CameraGraph(Graph):
             self._tf_frame_id = self._frame_id
 
         # Set the prim_path for the camera
-        if self._camera_prim_path[0] != '/':
+        if self._camera_prim_path[0] != "/":
             self._camera_prim_path = f"{vehicle.prim_path}/{self._camera_prim_path}"
 
         # Create the camera object attached to the vehicle
@@ -84,7 +87,7 @@ class ROS2CameraGraph(Graph):
             position=np.array([0.30, 0.0, 0.0]),
             frequency=30.0,
             resolution=self._resolution,
-            orientation=Rotation.from_euler("ZYX", [0.0, 0.0, 0.0], degrees=True).as_quat()
+            orientation=Rotation.from_euler("ZYX", [0.0, 0.0, 0.0], degrees=True).as_quat(),
         )
 
         # Initialize the camera sensor
@@ -92,7 +95,9 @@ class ROS2CameraGraph(Graph):
 
         # Create camera prism
         if not is_prim_path_valid(self._camera_prim_path):
-            carb.log_error(f"Cannot create ROS2 Camera graph, the camera prim path \"{self._camera_prim_path}\" is not valid")
+            carb.log_error(
+                f'Cannot create ROS2 Camera graph, the camera prim path "{self._camera_prim_path}" is not valid'
+            )
             return
 
         # Set the prim paths for camera and tf graphs
@@ -111,7 +116,9 @@ class ROS2CameraGraph(Graph):
                 "pipeline_stage": og.GraphPipelineStage.GRAPH_PIPELINE_STAGE_ONDEMAND,
             }
         else:
-            carb.log_error(f"Cannot create ROS2 Camera graph, graph evaluator type \"{self._graph_evaluator}\" is not valid")
+            carb.log_error(
+                f'Cannot create ROS2 Camera graph, graph evaluator type "{self._graph_evaluator}" is not valid'
+            )
             return
 
         # Creating a graph edit configuration with cameraHelper nodes to generate ROS image publishers
@@ -144,30 +151,43 @@ class ROS2CameraGraph(Graph):
         # Create the camera node that publishes the data from the cameras to ROS2 topics
         valid_camera_type = False
         for camera_type in self._types:
-            if not camera_type in ["rgb", "depth", "depth_pcl", "semantic_segmentation", "instance_segmentation", "bbox_2d_tight", "bbox_2d_loose", "bbox_3d"]:
+            if not camera_type in [
+                "rgb",
+                "depth",
+                "depth_pcl",
+                "semantic_segmentation",
+                "instance_segmentation",
+                "bbox_2d_tight",
+                "bbox_2d_loose",
+                "bbox_3d",
+            ]:
                 continue
 
             camera_helper_name = f"camera_helper_{camera_type}"
 
-            graph_config[keys.CREATE_NODES] += [
-                (camera_helper_name, "isaacsim.ros2.bridge.ROS2CameraHelper")
-            ]
+            graph_config[keys.CREATE_NODES] += [(camera_helper_name, "isaacsim.ros2.bridge.ROS2CameraHelper")]
             graph_config[keys.CONNECT] += [
                 ("set_camera.outputs:execOut", f"{camera_helper_name}.inputs:execIn"),
-                ("get_render_product.outputs:renderProductPath", f"{camera_helper_name}.inputs:renderProductPath")
+                ("get_render_product.outputs:renderProductPath", f"{camera_helper_name}.inputs:renderProductPath"),
             ]
             graph_config[keys.SET_VALUES] += [
                 (f"{camera_helper_name}.inputs:nodeNamespace", self._namespace),
                 (f"{camera_helper_name}.inputs:frameId", self._tf_frame_id),
                 (f"{camera_helper_name}.inputs:topicName", f"{self._base_topic}/{camera_type}"),
-                (f"{camera_helper_name}.inputs:type", camera_type)
+                (f"{camera_helper_name}.inputs:type", camera_type),
             ]
 
             # Publish labels for specific camera types
-            if self._publish_labels and camera_type in ["semantic_segmentation", "instance_segmentation", "bbox_2d_tight", "bbox_2d_loose", "bbox_3d"]:
+            if self._publish_labels and camera_type in [
+                "semantic_segmentation",
+                "instance_segmentation",
+                "bbox_2d_tight",
+                "bbox_2d_loose",
+                "bbox_3d",
+            ]:
                 graph_config[keys.SET_VALUES] += [
                     (camera_helper_name + ".inputs:enableSemanticLabels", True),
-                    (camera_helper_name + ".inputs:semanticLabelsTopicName", f"{self._frame_id}/{camera_type}_labels")
+                    (camera_helper_name + ".inputs:semanticLabelsTopicName", f"{self._frame_id}/{camera_type}_labels"),
                 ]
 
             valid_camera_type = True
@@ -179,9 +199,7 @@ class ROS2CameraGraph(Graph):
 
             camera_helper_name = f"camera_helper_{camera_type}"
 
-            graph_config[keys.CREATE_NODES] += [
-                (camera_helper_name, "isaacsim.ros2.bridge.ROS2CameraInfoHelper")
-            ]
+            graph_config[keys.CREATE_NODES] += [(camera_helper_name, "isaacsim.ros2.bridge.ROS2CameraInfoHelper")]
 
             graph_config[keys.SET_VALUES] += [
                 (f"{camera_helper_name}.inputs:nodeNamespace", self._namespace),
@@ -191,9 +209,8 @@ class ROS2CameraGraph(Graph):
 
             graph_config[keys.CONNECT] += [
                 ("set_camera.outputs:execOut", f"{camera_helper_name}.inputs:execIn"),
-                ("get_render_product.outputs:renderProductPath", f"{camera_helper_name}.inputs:renderProductPath")
+                ("get_render_product.outputs:renderProductPath", f"{camera_helper_name}.inputs:renderProductPath"),
             ]
-
 
             valid_camera_type = True
 
@@ -201,18 +218,14 @@ class ROS2CameraGraph(Graph):
             carb.log_error(f"Cannot create ROS2 Camera graph, no valid camera type was selected")
             return
 
-
         # Create the camera graph
-        (graph, _, _, _) = og.Controller.edit(
-             graph_specs,
-             graph_config
-        )
+        (graph, _, _, _) = og.Controller.edit(graph_specs, graph_config)
 
         # Connect camera to the graphs
         set_targets(
             prim=stage.get_current_stage().GetPrimAtPath(f"{graph_path}/set_camera"),
             attribute="inputs:cameraPrim",
-            target_prim_paths=[self._camera_prim_path]
+            target_prim_paths=[self._camera_prim_path],
         )
 
         # Run the ROS Camera graph once to generate ROS image publishers in SDGPipeline
@@ -243,9 +256,12 @@ class ROS2CameraGraph(Graph):
         Returns:
             Camera labels topic name (str) if the camera type exists, else empty string
         """
-        if not self._publish_labels or \
-           not camera_type in self._types or \
-           not camera_type in ["semantic_segmentation", "instance_segmentation", "bbox_2d_tight", "bbox_2d_loose", "bbox_3d"]:
+        if (
+            not self._publish_labels
+            or not camera_type in self._types
+            or not camera_type
+            in ["semantic_segmentation", "instance_segmentation", "bbox_2d_tight", "bbox_2d_loose", "bbox_3d"]
+        ):
             return ""
 
         return f"{self._namespace}{self._base_topic}/{camera_type}_labels"

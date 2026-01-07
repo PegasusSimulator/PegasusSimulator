@@ -10,4 +10,5 @@ try:
     from .ros2_people_backend_backend import ROS2PeopleBackend
 except:
     import carb
+
     carb.log_warn("ROS2 package not installed. ROS2PeopleBackend will not be available")

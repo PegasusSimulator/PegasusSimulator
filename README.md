@@ -36,8 +36,8 @@ If you find Pegasus Simulator useful in your academic work, please cite the pape
 ```
 @INPROCEEDINGS{10556959,
   author={Jacinto, Marcelo and Pinto, João and Patrikar, Jay and Keller, John and Cunha, Rita and Scherer, Sebastian and Pascoal, António},
-  booktitle={2024 International Conference on Unmanned Aircraft Systems (ICUAS)}, 
-  title={Pegasus Simulator: An Isaac Sim Framework for Multiple Aerial Vehicles Simulation}, 
+  booktitle={2024 International Conference on Unmanned Aircraft Systems (ICUAS)},
+  title={Pegasus Simulator: An Isaac Sim Framework for Multiple Aerial Vehicles Simulation},
   year={2024},
   volume={},
   number={},
@@ -88,7 +88,7 @@ We welcome new contributions from the community to improve this work. Please che
 
 Pegasus Simulator is released under [BSD-3 License](LICENSE). The license files of its dependencies and assets are present in the [`docs/licenses`](docs/licenses) directory.
 
-NVIDIA Isaac Sim is available freely under [individual license](https://www.nvidia.com/en-us/omniverse/download/). 
+NVIDIA Isaac Sim is available freely under [individual license](https://www.nvidia.com/en-us/omniverse/download/).
 
 PX4-Autopilot is available as an open-source project under [BSD-3 License](https://github.com/PX4/PX4-Autopilot).
 
@@ -100,8 +100,8 @@ The work developed by Marcelo Jacinto and João Pinto was supported by Ph.D. gra
 
 <p float="left" align="center">
   <img src="docs/_static/dsor_logo.png" width="90" align="center" />
-  <img src="docs/_static/logo_isr.png" width="200" align="center"/> 
-  <img src="docs/_static/larsys_logo.png" width="200" align="center"/> 
-  <img src="docs/_static/ist_logo.png" width="200" align="center"/> 
-  <img src="docs/_static/logo_fct.png" width="200" align="center"/> 
+  <img src="docs/_static/logo_isr.png" width="200" align="center"/>
+  <img src="docs/_static/larsys_logo.png" width="200" align="center"/>
+  <img src="docs/_static/ist_logo.png" width="200" align="center"/>
+  <img src="docs/_static/logo_fct.png" width="200" align="center"/>
 </p>
