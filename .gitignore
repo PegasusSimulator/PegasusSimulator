@@ -40,4 +40,14 @@ _build
 # ROS 2
 build/
 install/
+<<<<<<< HEAD
 log/
+=======
+log/
+
+# Large media files
+*.mp4
+
+# Large media files
+*.mp4
+>>>>>>> 0798588 (feat: add C3BF safety filter example and documentation)
