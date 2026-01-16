@@ -97,9 +97,9 @@ class NonlinearController(Backend):
         self.p_ref_nom = None
 
         # Extra logs for plots
-        self.v_nominal_over_time = []   # 3D nominal velocity
-        self.min_dist_over_time = []    # min distance to any obstacle
-        self.rpy_over_time = []         # roll/pitch/yaw [deg]
+        self.v_nominal_over_time = []  # 3D nominal velocity
+        self.min_dist_over_time = []  # min distance to any obstacle
+        self.rpy_over_time = []  # roll/pitch/yaw [deg]
 
     # --------------------------------------------------------------------------
     # Pegasus interface methods
@@ -128,21 +128,9 @@ class NonlinearController(Backend):
         eR = np.vstack(self.atittude_error_over_time)
         ew = np.vstack(self.attitude_rate_error_over_time)
 
-        v_nominal = (
-            np.vstack(self.v_nominal_over_time)
-            if len(self.v_nominal_over_time) > 0
-            else None
-        )
-        min_dist = (
-            np.array(self.min_dist_over_time)
-            if len(self.min_dist_over_time) > 0
-            else None
-        )
-        rpy = (
-            np.vstack(self.rpy_over_time)
-            if len(self.rpy_over_time) > 0
-            else None
-        )
+        v_nominal = np.vstack(self.v_nominal_over_time) if len(self.v_nominal_over_time) > 0 else None
+        min_dist = np.array(self.min_dist_over_time) if len(self.min_dist_over_time) > 0 else None
+        rpy = np.vstack(self.rpy_over_time) if len(self.rpy_over_time) > 0 else None
 
         # Save basic statistics
         if self.results_files is not None:
@@ -160,7 +148,7 @@ class NonlinearController(Backend):
 
         # 1) Tracking metrics
         pos_err = p - p_ref
-        rmse = np.sqrt(np.mean(pos_err ** 2, axis=0))
+        rmse = np.sqrt(np.mean(pos_err**2, axis=0))
         mae = np.mean(np.linalg.norm(pos_err, axis=1))
         print("\n====== Baseline Tracking Metrics ======")
         print(f"RMSE_x: {rmse[0]:.4f} m")
@@ -210,7 +198,7 @@ class NonlinearController(Backend):
         # same obstacles as CBF case
         obstacles_xy = [
             (np.array([-1.0, -1.7]), 0.5 + 0.2),
-            (np.array([-2.3, 0.5]), 0.5+0.2),
+            (np.array([-2.3, 0.5]), 0.5 + 0.2),
         ]
         for center, rad in obstacles_xy:
             circle = plt.Circle(center, rad, fill=False, linestyle="--")
@@ -309,24 +297,16 @@ class NonlinearController(Backend):
                 self.index += 1
 
             p_ref = np.array(
-                [self.trajectory[self.index, 1],
-                 self.trajectory[self.index, 2],
-                 self.trajectory[self.index, 3]]
+                [self.trajectory[self.index, 1], self.trajectory[self.index, 2], self.trajectory[self.index, 3]]
             )
             v_ref = np.array(
-                [self.trajectory[self.index, 4],
-                 self.trajectory[self.index, 5],
-                 self.trajectory[self.index, 6]]
+                [self.trajectory[self.index, 4], self.trajectory[self.index, 5], self.trajectory[self.index, 6]]
             )
             a_ref = np.array(
-                [self.trajectory[self.index, 7],
-                 self.trajectory[self.index, 8],
-                 self.trajectory[self.index, 9]]
+                [self.trajectory[self.index, 7], self.trajectory[self.index, 8], self.trajectory[self.index, 9]]
             )
             j_ref = np.array(
-                [self.trajectory[self.index, 10],
-                 self.trajectory[self.index, 11],
-                 self.trajectory[self.index, 12]]
+                [self.trajectory[self.index, 10], self.trajectory[self.index, 11], self.trajectory[self.index, 12]]
             )
             yaw_ref = self.trajectory[self.index, 13]
             yaw_rate_ref = self.trajectory[self.index, 14]
@@ -374,11 +354,7 @@ class NonlinearController(Backend):
         ei = self.int
 
         F_des = (
-            -(self.Kp @ ep)
-            - (self.Kd @ ev)
-            - (self.Ki @ ei)
-            + np.array([0.0, 0.0, self.m * self.g])
-            + (self.m * a_ref)
+            -(self.Kp @ ep) - (self.Kd @ ev) - (self.Ki @ ei) + np.array([0.0, 0.0, self.m * self.g]) + (self.m * a_ref)
         )
 
         Z_B = self.R.as_matrix()[:, 2]
@@ -398,9 +374,7 @@ class NonlinearController(Backend):
         self.a = (u_1 * Z_B) / self.m - np.array([0.0, 0.0, self.g])
 
         hw = (self.m / u_1) * (j_ref - np.dot(Z_b_des, j_ref) * Z_b_des)
-        w_des = np.array(
-            [-np.dot(hw, Y_b_des), np.dot(hw, X_b_des), yaw_rate_ref * Z_b_des[2]]
-        )
+        w_des = np.array([-np.dot(hw, Y_b_des), np.dot(hw, X_b_des), yaw_rate_ref * Z_b_des[2]])
 
         e_w = self.w - w_des
         tau = -(self.Kr @ e_R) - (self.Kw @ e_w)
@@ -425,22 +399,21 @@ class NonlinearController(Backend):
         # Obstacles (same as CBF experiment) – only for distance logging
         obstacles = [
             {
-                "shape": "cylinder_z",                     
-                "c": np.array([-1.0, -1.4, 1.2]),          
-                "z_min": 0.0,                              
-                "z_max": 2.0,                              
+                "shape": "cylinder_z",
+                "c": np.array([-1.0, -1.4, 1.2]),
+                "z_min": 0.0,
+                "z_max": 2.0,
                 "c_dot": np.zeros(3),
-                "r_obs": 0.5                               
+                "r_obs": 0.5,
             },
-
             {
                 "shape": "cylinder_z",
                 "c": np.array([-2.3, 0.5, 1.2]),
                 "z_min": 0.0,
                 "z_max": 2.0,
                 "c_dot": np.zeros(3),
-                "r_obs": 0.5
-            }
+                "r_obs": 0.5,
+            },
         ]
         drone_radius = 0.2
         min_dist = np.inf
@@ -454,7 +427,7 @@ class NonlinearController(Backend):
 
             elif shape == "cylinder_z":
                 z_min = obs.get("z_min", -np.inf)
-                z_max = obs.get("z_max",  np.inf)
+                z_max = obs.get("z_max", np.inf)
 
                 # If outside vertical extent, treat as "far"
                 if self.p[2] < (z_min - drone_radius) or self.p[2] > (z_max + drone_radius):
@@ -524,32 +497,26 @@ class NonlinearController(Backend):
 
     def dd_pd(self, t, s, reverse=False):
         x = 0.0
-        y = (np.power(t, 2) * np.exp(-np.power(t, 2) / (2 * np.power(s, 2)))) / np.power(
-            s, 5
-        ) - np.exp(-np.power(t, 2) / (2 * np.power(s, 2))) / np.power(s, 3)
+        y = (np.power(t, 2) * np.exp(-np.power(t, 2) / (2 * np.power(s, 2)))) / np.power(s, 5) - np.exp(
+            -np.power(t, 2) / (2 * np.power(s, 2))
+        ) / np.power(s, 3)
         z = y
         if reverse:
-            y = np.exp(-np.power(t, 2) / (2 * np.power(s, 2))) / np.power(
-                s, 3
-            ) - (np.power(t, 2) * np.exp(-np.power(t, 2) / (2 * np.power(s, 2)))) / np.power(
-                s, 5
-            )
+            y = np.exp(-np.power(t, 2) / (2 * np.power(s, 2))) / np.power(s, 3) - (
+                np.power(t, 2) * np.exp(-np.power(t, 2) / (2 * np.power(s, 2)))
+            ) / np.power(s, 5)
         return np.array([x, y, z])
 
     def ddd_pd(self, t, s, reverse=False):
         x = 0.0
-        y = (3 * t * np.exp(-np.power(t, 2) / (2 * np.power(s, 2)))) / np.power(
-            s, 5
-        ) - (np.power(t, 3) * np.exp(-np.power(t, 2) / (2 * np.power(s, 2)))) / np.power(
-            s, 7
-        )
+        y = (3 * t * np.exp(-np.power(t, 2) / (2 * np.power(s, 2)))) / np.power(s, 5) - (
+            np.power(t, 3) * np.exp(-np.power(t, 2) / (2 * np.power(s, 2)))
+        ) / np.power(s, 7)
         z = y
         if reverse:
-            y = (np.power(t, 3) * np.exp(-np.power(t, 2) / (2 * np.power(s, 2)))) / np.power(
-                s, 7
-            ) - (3 * t * np.exp(-np.power(t, 2) / (2 * np.power(s, 2)))) / np.power(
-                s, 5
-            )
+            y = (np.power(t, 3) * np.exp(-np.power(t, 2) / (2 * np.power(s, 2)))) / np.power(s, 7) - (
+                3 * t * np.exp(-np.power(t, 2) / (2 * np.power(s, 2)))
+            ) / np.power(s, 5)
         return np.array([x, y, z])
 
     def yaw_d(self, t, s):
