@@ -40,15 +40,15 @@ class MonocularCamera(GraphicalSensor):
             >>> "position": np.array([0.30, 0.0, 0.0]),
             >>> "orientation": np.array([0.0, 0.0, 0.0]),
             >>> "resolution": (1920, 1200),
+            >>> "clipping_range": (0.05, 100.0),
             >>> "frequency": 30,
-            >>> "intrinsics": np.array([[958.8, 0.0, 957.8], [0.0, 956.7, 589.5], [0.0, 0.0, 1.0]]),
-            >>> "distortion_coefficients": [0.14, -0.03, -0.0002, -0.00003, 0.009, 0.5, -0.07, 0.017]),
-            >>> "diagonal_fov": 140.0}
+            >>> "intrinsics": None),
+            >>> "distortion_coefficients": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])}
         """
 
         # Initialize the Super class "object" attributes
-        super().__init__(sensor_type="MonocularCamera", update_rate=config.get("frequency", 60.0))
-
+        super().__init__(sensor_type="MonocularCamera", update_rate=config.get("frequency", 30.0))        
+        
         # Setup the name of the camera primitive path
         self._camera_name = camera_name
         self._stage_prim_path = ""
@@ -58,14 +58,26 @@ class MonocularCamera(GraphicalSensor):
         self._position = config.get("position", np.array([0.30, 0.0, 0.0]))
         self._orientation = config.get("orientation", np.array([0.0, 0.0, 180.0]))
         self._resolution = config.get("resolution", (1920, 1200))
+        self._clipping_range = config.get("clipping_range", (0.05, 100.0))
         self._frequency = config.get("frequency", 30)
-        self._intrinsics = config.get(
-            "intrinsics", np.array([[958.8, 0.0, 957.8], [0.0, 956.7, 589.5], [0.0, 0.0, 1.0]])
-        )
-        self._distortion_coefficients = config.get(
-            "distortion_coefficients", [0.14, -0.03, -0.0002, -0.00003, 0.009, 0.5, -0.07, 0.017]
-        )
-        self._diagonal_fov = config.get("diagonal_fov", 140.0)
+        self._intrinsics = config.get("intrinsics", None)
+        self._distortion_coefficients = config.get("distortion_coefficients", None)
+
+        # Set the values for the intrinsics if provided
+        if self._intrinsics is not None:
+            # Set the camera intrinsics
+            ((fx,_,cx),(_,fy,cy),(_,_,_)) = self._intrinsics
+        else:
+            # Assume a default field of view of 70 degrees
+            self.fov = 70.0  # degrees
+            self.fx = 0.5 * self._resolution[0] / np.tan(0.5 * np.radians(self.fov))
+            self.fy = self.fx
+            self.cx = 0.5 * self._resolution[0]
+            self.cy = 0.5 * self._resolution[1]
+
+        self._intrinsics = np.array([[self.fx, 0.0, self.cx],
+                                     [0.0, self.fy, self.cy],
+                                     [0.0, 0.0, 1.0]])
 
         # Setup an empty camera output dictionary
         self._state = {}
@@ -96,23 +108,15 @@ class MonocularCamera(GraphicalSensor):
 
     def start(self):
 
-        # Set the camera intrinsics
-        ((fx, _, cx), (_, fy, cy), (_, _, _)) = self._intrinsics
-
         # Start the camera
         self._camera.initialize()
 
         # Set the correct properties of the camera (this must be done after the camera object is initialized)
         self._camera.set_lens_distortion_model("OmniLensDistortionOpenCvPinholeAPI")
-        self._camera.set_rational_polynomial_properties(
-            nominal_width=self._resolution[0],
-            nominal_height=self._resolution[1],
-            optical_centre_x=cx,
-            optical_centre_y=cy,
-            max_fov=self._diagonal_fov,
-            distortion_model=self._distortion_coefficients,
-        )
-        self._camera.set_clipping_range(0.05, 100.0)
+        self._camera.set_resolution(self._resolution, maintain_square_pixels=True)
+        self._camera.set_clipping_range(*self._clipping_range)
+        self._camera.set_opencv_pinhole_properties(cx=self.cx, cy=self.cy, fx=self.fx, fy=self.fy)
+        self._camera.set_frequency(self._frequency)
 
         # Check if depth is enabled, if so, set the depth properties
         if self._depth:
@@ -152,24 +156,19 @@ class MonocularCamera(GraphicalSensor):
             return None
 
         # Get the data from the camera
-        # TODO: Fix this feature later
         try:
             self._state = {}
             self._state["camera_name"] = self._camera_name
             self._state["stage_prim_path"] = self._stage_prim_path
-            # self._state["image"] = self._camera.get_rgba()[:, :, :3]
             self._state["height"] = self._resolution[1]
             self._state["width"] = self._resolution[0]
             self._state["frequency"] = self._frequency
             self._state["camera"] = self._camera
+            self._state["intrinsics"] = self._intrinsics
 
-            # Check if we want to get the depth image
-            # if self._depth:
-            #    self._state["depth"] = self._camera.get_depth()
-
-            if self._camera.get_lens_distortion_model() == "pinhole":
-                self._state["intrinsics"] = self._camera.get_intrinsics_matrix()
-
+            # To actually get the image data from the camera, you can use:
+            #self._state["camera"].get_rgb_image()  # For RGB image
+            
         # If something goes wrong during the data acquisition, just return None
         except:
             self._state = None
