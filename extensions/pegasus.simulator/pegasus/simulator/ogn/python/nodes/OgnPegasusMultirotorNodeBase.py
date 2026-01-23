@@ -50,14 +50,6 @@ def timeline_callback(event):
     elif event.type == int(omni.timeline.TimelineEventType.PAUSE):
         pass
     elif event.type == int(omni.timeline.TimelineEventType.STOP):
-        # Reset orientation and position of the drone
-        for k, v in drone_sim_dict.items():
-            if 'multirotor' in v and hasattr(v['multirotor'], '_prim') and v['multirotor']._prim:
-                prim = v['multirotor']._prim
-                if prim.GetAttribute("xformOp:orient").Get() is not None:
-                    prim.GetAttribute("xformOp:orient").Set(Gf.Quatf(1, 0, 0, 0))
-                prim.GetAttribute("xformOp:translate").Set((0, 0, 0))
-
         drone_sim_dict = {}
 
 
