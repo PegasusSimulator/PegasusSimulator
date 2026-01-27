@@ -9,7 +9,7 @@
 import os
 import tempfile
 import subprocess
-
+import carb
 
 class PX4LaunchTool:
     """
@@ -41,8 +41,13 @@ class PX4LaunchTool:
         self.root_fs = tempfile.TemporaryDirectory()
 
         # Set the environement variables that let PX4 know which vehicle model to use internally
-        self.environment = os.environ
+        self.environment = os.environ.copy()
         self.environment["PX4_SIM_MODEL"] = px4_model
+        self.environment["px4_instance"] = str(vehicle_id)
+
+        alias_script = self.px4_dir + "/build/px4_sitl_default/bin/px4-alias.sh"
+        if os.path.exists(alias_script):
+            subprocess.run(["sed", "-i", "s/px4_instance=0/px4_instance=${px4_instance:-0}/", alias_script])
 
     def launch_px4(self):
         """
