@@ -111,10 +111,6 @@ class OgnPegasusMultirotorPX4NodeDatabase(og.Database):
             ("inputs:vehicleID", "int", 0, "Vehicle ID", "Unique identifier for the vehicle.", {}, True, 0, False, ""),
             ("inputs:usdFile", "string", 0, "USD File", "Path to the USD file for the drone model.", {}, True, "/root/Documents/Kit/shared/exts/pegasus.simulator/pegasus/simulator/assets/Robots/Iris/iris.usd", False, ""),
             
-            # Initial pose
-            ("inputs:initPos", "float3", 0, "Initial Position", "Initial position of the vehicle as a 3D vector.", {}, True, (0.0, 0.0, 0.07), False, ""),
-            ("inputs:initOrient", "float4", 0, "Initial Orientation", "Initial orientation of the vehicle as a quaternion.", {}, True, (0.0, 0.0, 0.0, 1.0), False, ""),
-            
             # Connection configuration
             ("inputs:connectionType", "string", 0, "Connection Type", "MAVLink connection type (e.g., 'tcpin', 'udp').", {}, True, "tcpin", False, ""),
             ("inputs:connectionIP", "string", 0, "Connection IP", "IP address for MAVLink connection.", {}, True, "localhost", False, ""),
