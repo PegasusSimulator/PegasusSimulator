@@ -18,7 +18,7 @@ import omni.usd
 import omni.replicator.core as rep
 import omni.timeline
 import usdrt.Sdf
-from omni.isaac.core.prims import GeometryPrim, RigidPrim
+from omni.isaac.core.prims import GeometryPrim, RigidPrim, XFormPrim
 from omni.isaac.core.utils import extensions, stage
 from omni.isaac.core.world import World
 from pxr import Gf, Usd, UsdGeom
@@ -173,12 +173,19 @@ class OgnPegasusMultirotorNodeBase:
 
         print(f"Creating multirotor with USD file: {selected_usd_file}")
         # Create multirotor vehicle directly without validation
+
+        # get where the drone is on the stage
+        drone_xform = XFormPrim(prim_path=db.inputs.dronePrim)
+        position, orientation = drone_xform.get_world_pose()
+
+        print(f"Multirotor initial position: {position}, orientation: {orientation}")
+
         multirotor = Multirotor(
             stage_prefix=db.inputs.dronePrim,
             usd_file=selected_usd_file,  # Use USD file directly
             vehicle_id=0,  # This is used internally by multirotor, separate from backend vehicle_id
-            init_pos=[db.inputs.initPos[0], db.inputs.initPos[1], db.inputs.initPos[2]],
-            init_orientation=[db.inputs.initOrient[0], db.inputs.initOrient[1], db.inputs.initOrient[2], db.inputs.initOrient[3]],
+            init_pos=position,
+            init_orientation=orientation,
             config=multirotor_config,
             spawn_prim=False
         )
