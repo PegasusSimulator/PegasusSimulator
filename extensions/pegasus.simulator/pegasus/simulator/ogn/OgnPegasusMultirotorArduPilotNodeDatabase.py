@@ -161,7 +161,6 @@ class OgnPegasusMultirotorArduPilotNodeDatabase(og.Database):    # Imprint the g
         LOCAL_PROPERTY_NAMES = {
             "execIn", "dronePrim", "vehicleID", "usdFile", "connectionType", "connectionIP", "connectionBaseport",
             "ardupilotAutolaunch", "ardupilotDir", "ardupilotVehicleModel", "enableLockstep", "numRotors", "updateRate",
-            "initPos", "initOrient",
             "inputOffset0", "inputOffset1", "inputOffset2", "inputOffset3",
             "inputScaling0", "inputScaling1", "inputScaling2", "inputScaling3",
             "inputMin0", "inputMin1", "inputMin2", "inputMin3",
@@ -178,7 +177,6 @@ class OgnPegasusMultirotorArduPilotNodeDatabase(og.Database):    # Imprint the g
             self._batchedReadAttributes = [getattr(self._attributes, name) for name in [
                 "execIn", "dronePrim", "vehicleID", "usdFile", "connectionType", "connectionIP", "connectionBaseport",
                 "ardupilotAutolaunch", "ardupilotDir", "ardupilotVehicleModel", "enableLockstep", "numRotors", "updateRate",
-                "initPos", "initOrient",
                 "inputOffset0", "inputOffset1", "inputOffset2", "inputOffset3",
                 "inputScaling0", "inputScaling1", "inputScaling2", "inputScaling3",
                 "inputMin0", "inputMin1", "inputMin2", "inputMin3",
@@ -252,18 +250,6 @@ class OgnPegasusMultirotorArduPilotNodeDatabase(og.Database):    # Imprint the g
         def updateRate(self): return self._batchedReadValues[ArduPilotInputIndex.UPDATE_RATE]
         @updateRate.setter
         def updateRate(self, value): self._batchedReadValues[ArduPilotInputIndex.UPDATE_RATE] = value
-
-        # Initial position properties
-        @property
-        def initPos(self): return self._batchedReadValues[ArduPilotInputIndex.INIT_POS]
-        @initPos.setter
-        def initPos(self, value): self._batchedReadValues[ArduPilotInputIndex.INIT_POS] = value
-
-        # Initial orientation properties
-        @property
-        def initOrient(self): return self._batchedReadValues[ArduPilotInputIndex.INIT_ORIENT]
-        @initOrient.setter
-        def initOrient(self, value): self._batchedReadValues[ArduPilotInputIndex.INIT_ORIENT] = value
 
         # Input offset properties
         @property
@@ -383,16 +369,12 @@ class OgnPegasusMultirotorArduPilotNodeDatabase(og.Database):    # Imprint the g
                 super().__setattr__(item, new_value)
 
         def _prefetch(self):
-            """Batch-read all input attributes, including vectorized initPos and initOrient"""
+            """Batch-read all input attributes"""
             readAttributes = self._batchedReadAttributes
             newValues = _og._prefetch_input_attributes_data(readAttributes)
 
             if len(readAttributes) != len(newValues):
                 raise RuntimeError("Mismatch in batched input read lengths")
-
-            # For vectorized attributes, convert flat arrays to tuples
-            newValues[ArduPilotInputIndex.INIT_POS] = tuple(newValues[ArduPilotInputIndex.INIT_POS])
-            newValues[ArduPilotInputIndex.INIT_ORIENT] = tuple(newValues[ArduPilotInputIndex.INIT_ORIENT])
 
             self._batchedReadValues = newValues
 

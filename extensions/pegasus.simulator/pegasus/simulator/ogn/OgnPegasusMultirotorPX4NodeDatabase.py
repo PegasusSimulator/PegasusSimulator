@@ -35,8 +35,6 @@ PX4_MULTIROTOR_FIELDS = [
     "ENABLE_LOCKSTEP",
     "NUM_ROTORS",
     "UPDATE_RATE",
-    "INIT_POS",
-    "INIT_ORIENT",
     "INPUT_OFFSET_0",
     "INPUT_OFFSET_1",
     "INPUT_OFFSET_2",
@@ -80,9 +78,6 @@ class OgnPegasusMultirotorPX4NodeDatabase(og.Database):
             inputs.inputScaling0-3
             inputs.zeroPositionArmed0-3
             inputs.updateRate
-            inputs.initPosX
-            inputs.initPosY
-            inputs.initPosZ
             inputs.initOrientX
             inputs.initOrientY
             inputs.initOrientZ
@@ -168,7 +163,6 @@ class OgnPegasusMultirotorPX4NodeDatabase(og.Database):
         LOCAL_PROPERTY_NAMES = {
             "execIn", "dronePrim", "vehicleID", "usdFile", "connectionType", "connectionIP", "connectionBaseport",
             "px4Autolaunch", "px4Dir", "px4VehicleModel", "enableLockstep", "numRotors", "updateRate",
-            "initPos", "initOrient",
             "inputOffset0", "inputOffset1", "inputOffset2", "inputOffset3",
             "inputScaling0", "inputScaling1", "inputScaling2", "inputScaling3",
             "zeroPositionArmed0", "zeroPositionArmed1", "zeroPositionArmed2", "zeroPositionArmed3",
@@ -183,7 +177,6 @@ class OgnPegasusMultirotorPX4NodeDatabase(og.Database):
             self._batchedReadAttributes = [getattr(self._attributes, name) for name in [
                 "execIn", "dronePrim", "vehicleID", "usdFile", "connectionType", "connectionIP", "connectionBaseport",
                 "px4Autolaunch", "px4Dir", "px4VehicleModel", "enableLockstep", "numRotors", "updateRate",
-                "initPos", "initOrient",
                 "inputOffset0", "inputOffset1", "inputOffset2", "inputOffset3",
                 "inputScaling0", "inputScaling1", "inputScaling2", "inputScaling3",
                 "zeroPositionArmed0", "zeroPositionArmed1", "zeroPositionArmed2", "zeroPositionArmed3"
@@ -255,18 +248,6 @@ class OgnPegasusMultirotorPX4NodeDatabase(og.Database):
         def updateRate(self): return self._batchedReadValues[PX4InputIndex.UPDATE_RATE]
         @updateRate.setter
         def updateRate(self, value): self._batchedReadValues[PX4InputIndex.UPDATE_RATE] = value
-
-        # Init position
-        @property
-        def initPos(self): return self._batchedReadValues[PX4InputIndex.INIT_POS]
-        @initPos.setter
-        def initPos(self, value): self._batchedReadValues[PX4InputIndex.INIT_POS] = tuple(value)
-
-        # Init orientation
-        @property
-        def initOrient(self): return self._batchedReadValues[PX4InputIndex.INIT_ORIENT]
-        @initOrient.setter
-        def initOrient(self, value): self._batchedReadValues[PX4InputIndex.INIT_ORIENT] = tuple(value)
 
         # Input offset properties
         @property
@@ -344,16 +325,12 @@ class OgnPegasusMultirotorPX4NodeDatabase(og.Database):
                 super().__setattr__(item, new_value)
 
         def _prefetch(self):
-            """Batch-read all input attributes, including vectorized initPos and initOrient"""
+            """Batch-read all input attributes"""
             readAttributes = self._batchedReadAttributes
             newValues = _og._prefetch_input_attributes_data(readAttributes)
 
             if len(readAttributes) != len(newValues):
                 raise RuntimeError("Mismatch in batched input read lengths")
-
-            # For vectorized attributes, convert flat arrays to tuples
-            newValues[PX4InputIndex.INIT_POS] = tuple(newValues[PX4InputIndex.INIT_POS])
-            newValues[PX4InputIndex.INIT_ORIENT] = tuple(newValues[PX4InputIndex.INIT_ORIENT])
 
             self._batchedReadValues = newValues
 

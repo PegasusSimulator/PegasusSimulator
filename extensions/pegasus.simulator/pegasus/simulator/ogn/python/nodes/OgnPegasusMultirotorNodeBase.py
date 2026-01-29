@@ -173,12 +173,22 @@ class OgnPegasusMultirotorNodeBase:
 
         print(f"Creating multirotor with USD file: {selected_usd_file}")
         # Create multirotor vehicle directly without validation
+
+        # get where the drone is on the stage
+        drone_xform = XFormPrim(prim_path=db.inputs.dronePrim)
+        position, orientation = drone_xform.get_world_pose()
+
+        print(f"Multirotor initial position: {position}, orientation: {orientation}")
+
+        # Initialize the "Robot" class
+        # Note: we need to change the rotation to have qw first, because NVidia
+        # does not keep a standard of quaternions inside its own libraries (not good, but okay)
         multirotor = Multirotor(
             stage_prefix=db.inputs.dronePrim,
             usd_file=selected_usd_file,  # Use USD file directly
             vehicle_id=0,  # This is used internally by multirotor, separate from backend vehicle_id
-            init_pos=[db.inputs.initPos[0], db.inputs.initPos[1], db.inputs.initPos[2]],
-            init_orientation=[db.inputs.initOrient[0], db.inputs.initOrient[1], db.inputs.initOrient[2], db.inputs.initOrient[3]],
+            init_pos=position,
+            init_orientation=[orientation[1], orientation[2], orientation[3], orientation[0]], 
             config=multirotor_config,
             spawn_prim=False
         )
