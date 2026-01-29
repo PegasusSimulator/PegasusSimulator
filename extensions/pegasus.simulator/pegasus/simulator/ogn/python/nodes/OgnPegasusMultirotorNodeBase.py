@@ -180,12 +180,15 @@ class OgnPegasusMultirotorNodeBase:
 
         print(f"Multirotor initial position: {position}, orientation: {orientation}")
 
+        # Initialize the "Robot" class
+        # Note: we need to change the rotation to have qw first, because NVidia
+        # does not keep a standard of quaternions inside its own libraries (not good, but okay)
         multirotor = Multirotor(
             stage_prefix=db.inputs.dronePrim,
             usd_file=selected_usd_file,  # Use USD file directly
             vehicle_id=0,  # This is used internally by multirotor, separate from backend vehicle_id
             init_pos=position,
-            init_orientation=orientation,
+            init_orientation=[orientation[1], orientation[2], orientation[3], orientation[0]], 
             config=multirotor_config,
             spawn_prim=False
         )
