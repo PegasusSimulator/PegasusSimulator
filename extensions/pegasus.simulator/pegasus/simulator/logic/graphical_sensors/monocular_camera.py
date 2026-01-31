@@ -167,8 +167,12 @@ class MonocularCamera(GraphicalSensor):
             self._state["camera"] = self._camera
             self._state["intrinsics"] = self._intrinsics
 
-            # To actually get the image data from the camera, you can use:
-            #self._state["camera"].get_rgb_image()  # For RGB image
+            # Check if we want to get the depth image
+            if self._depth:
+               self._state["depth"] = self._camera.get_depth()
+
+            if self._camera.get_projection_type() == "pinhole":
+                self._state["intrinsics"] = self._camera.get_intrinsics_matrix()
             
         # If something goes wrong during the data acquisition, just return None
         except:
