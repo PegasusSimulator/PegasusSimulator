@@ -74,6 +74,7 @@ def spawn_px4_multirotor_node(
     px4_node_path = f"{graph_path}/{pegasus_node_name}"
 
     playbackTick_node_name = f"{robot_name}_PlaybackTick"
+    physicsStep_node_name = f"{robot_name}_PhysicsStep"
     ros2Context_node_name = f"{robot_name}_ROS2Context"
     ros2PublishClock_node_name = f"{robot_name}_ROS2PublishClock"
     isaacReadSimTime_node_name = f"{robot_name}_IsaacReadSimTime"
@@ -87,7 +88,7 @@ def spawn_px4_multirotor_node(
         {
             "graph_path": graph_path,
             "evaluator_name": "execution",
-            "pipeline_stage": og.GraphPipelineStage.GRAPH_PIPELINE_STAGE_SIMULATION
+            "pipeline_stage": og.GraphPipelineStage.GRAPH_PIPELINE_STAGE_ONDEMAND
         },
         {
             og.Controller.Keys.CREATE_VARIABLES: [
@@ -105,6 +106,7 @@ def spawn_px4_multirotor_node(
                 (getPrimPath_node_name, "omni.graph.nodes.GetPrimPath"),
                 # Synchronization and ROS2 Clock Publisher
                 (playbackTick_node_name, "omni.graph.action.OnPlaybackTick"),
+                (physicsStep_node_name, "isaacsim.core.nodes.OnPhysicsStep"),
                 (isaacReadSimTime_node_name, "isaacsim.core.nodes.IsaacReadSimulationTime"),
                 (ros2Context_node_name, "isaacsim.ros2.bridge.ROS2Context"),
                 (ros2PublishClock_node_name, "isaacsim.ros2.bridge.ROS2PublishClock"),
@@ -141,8 +143,8 @@ def spawn_px4_multirotor_node(
                 (f"{vehicleIDReader_node_name}.inputs:variableName", vehicle_id_var_name),
             ],
             og.Controller.Keys.CONNECT: [
-                (f"{playbackTick_node_name}.outputs:tick", f"{pegasus_node_name}.inputs:execIn"),
-                (f"{playbackTick_node_name}.outputs:tick", f"{ros2PublishClock_node_name}.inputs:execIn"),
+                (f"{physicsStep_node_name}.outputs:step", f"{pegasus_node_name}.inputs:execIn"),
+                (f"{physicsStep_node_name}.outputs:step", f"{ros2PublishClock_node_name}.inputs:execIn"),
                 (f"{isaacReadSimTime_node_name}.outputs:simulationTime", f"{ros2PublishClock_node_name}.inputs:timeStamp"),
                 (f"{ros2Context_node_name}.outputs:context", f"{ros2PublishClock_node_name}.inputs:context"),
                 (f"{getPrimPath_node_name}.outputs:path", f"{pegasus_node_name}.inputs:dronePrim"),
