@@ -105,7 +105,6 @@ def spawn_px4_multirotor_node(
                 (pegasus_node_name, "pegasus.simulator.PegasusMultirotorPX4Node"),
                 (getPrimPath_node_name, "omni.graph.nodes.GetPrimPath"),
                 # Synchronization and ROS2 Clock Publisher
-                (playbackTick_node_name, "omni.graph.action.OnPlaybackTick"),
                 (physicsStep_node_name, "isaacsim.core.nodes.OnPhysicsStep"),
                 (isaacReadSimTime_node_name, "isaacsim.core.nodes.IsaacReadSimulationTime"),
                 (ros2Context_node_name, "isaacsim.ros2.bridge.ROS2Context"),

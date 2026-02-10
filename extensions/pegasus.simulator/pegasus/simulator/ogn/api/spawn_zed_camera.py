@@ -107,14 +107,12 @@ def add_zed_stereo_camera_subgraph(
     right_frame_id: str = "camera_right",
     frame_height: int = 300,
     frame_width: int = 480,
+    domain_id_var: str = "domain_id_var",
 ):
     """
     Create an Isaac Sim OmniGraph subgraph that connects a ZED stereo camera
     to the ROS2 bridge and render pipeline for RGB and depth outputs. Inherits
     the ROS Domain ID and other context from the parent graph.
-
-    Currently, the ROS context needs to be manually dragged into the subgraph
-    once the simulation starts. Automatic forwarding will come in the future.
 
     Args:
         parent_graph_handle: OmniGraph parent where this subgraph will be added.
@@ -158,10 +156,11 @@ def add_zed_stereo_camera_subgraph(
     # Node names
     nodes = {
         "playback": f"{robot_name}_{camera_name}_PlaybackTick",
-        "context_forwarder": f"{robot_name}_{camera_name}ContextForwarder", # "Forwarder" node is created because a promoted attribute (input into the subgraph) was having issues connecting to multiple nodes in the graph. This hacks around the issue by connecting into an "information-forwarding" node, then connecting this node to multiple other nodes. 
         "info_helper": f"{robot_name}_{camera_name}_StereoInfoHelper",
         "domain_id_const": f"{robot_name}_{camera_name}_DomainIdConst",
         "stereo_ns_const": f"{robot_name}_{camera_name}_StereoNsConst",
+        "ros2_context": f"{robot_name}_{camera_name}_ROS2Context",
+        "domain_id_reader": f"{robot_name}_{camera_name}_DomainIdReader",
     }
 
     # Node identifiers for each render/camera output
@@ -192,7 +191,9 @@ def add_zed_stereo_camera_subgraph(
                             # Core nodes
                             (nodes["playback"], "omni.graph.action.OnPlaybackTick"),
                             (nodes["info_helper"], "isaacsim.ros2.bridge.ROS2CameraInfoHelper"),
-                            (nodes["context_forwarder"], "omni.graph.nodes.ToUint64"),
+                            # Context management
+                            (nodes["ros2_context"], "isaacsim.ros2.bridge.ROS2Context"),
+                            (nodes["domain_id_reader"], "omni.graph.core.ReadVariable"),
                             # Constant string inputs
                             (left_nodes["frame_const"], "omni.graph.nodes.ConstantString"),
                             (right_nodes["frame_const"], "omni.graph.nodes.ConstantString"),
@@ -209,10 +210,6 @@ def add_zed_stereo_camera_subgraph(
                             (right_nodes["depth_helper"], "isaacsim.ros2.bridge.ROS2CameraHelper"),
                         ],
 
-                        og.Controller.Keys.PROMOTE_ATTRIBUTES: [
-                            (f"{nodes['context_forwarder']}.inputs:value", f"inputs:context"),
-                        ],
-
                         # Wiring between nodes
                         og.Controller.Keys.CONNECT: [
                             # Trigger render products every playback tick
@@ -220,8 +217,11 @@ def add_zed_stereo_camera_subgraph(
                             (f"{nodes['playback']}.outputs:tick", f"{right_nodes['create_rp']}.inputs:execIn"),
                             (f"{nodes['playback']}.outputs:tick", f"{nodes['info_helper']}.inputs:execIn"),
 
+                            # Domain ID -> Context
+                            (f"{nodes['domain_id_reader']}.outputs:value", f"{nodes['ros2_context']}.inputs:domain_id"),
+
                             # Context propagation
-                            (f"{nodes['context_forwarder']}.outputs:converted", f"{nodes['info_helper']}.inputs:context"),
+                            (f"{nodes['ros2_context']}.outputs:context", f"{nodes['info_helper']}.inputs:context"),
 
                             # Stereo info helper input connections
                             (f"{left_nodes['create_rp']}.outputs:renderProductPath", f"{nodes['info_helper']}.inputs:renderProductPath"),
@@ -233,26 +233,26 @@ def add_zed_stereo_camera_subgraph(
                             (f"{nodes['stereo_ns_const']}.inputs:value", f"{nodes['info_helper']}.inputs:nodeNamespace"),
 
                             # Left camera outputs
-                            (f"{nodes['context_forwarder']}.outputs:converted", f"{left_nodes['rgb_helper']}.inputs:context"),
+                            (f"{nodes['ros2_context']}.outputs:context", f"{left_nodes['rgb_helper']}.inputs:context"),
                             (f"{left_nodes['create_rp']}.outputs:execOut", f"{left_nodes['rgb_helper']}.inputs:execIn"),
                             (f"{left_nodes['create_rp']}.outputs:renderProductPath", f"{left_nodes['depth_helper']}.inputs:renderProductPath"),
                             (f"{left_nodes['frame_const']}.inputs:value", f"{left_nodes['rgb_helper']}.inputs:frameId"),
                             (f"{left_nodes['ns_const']}.inputs:value", f"{left_nodes['rgb_helper']}.inputs:nodeNamespace"),
 
-                            (f"{nodes['context_forwarder']}.outputs:converted", f"{left_nodes['depth_helper']}.inputs:context"),
+                            (f"{nodes['ros2_context']}.outputs:context", f"{left_nodes['depth_helper']}.inputs:context"),
                             (f"{left_nodes['create_rp']}.outputs:execOut", f"{left_nodes['depth_helper']}.inputs:execIn"),
                             (f"{left_nodes['create_rp']}.outputs:renderProductPath", f"{left_nodes['rgb_helper']}.inputs:renderProductPath"),
                             (f"{left_nodes['frame_const']}.inputs:value", f"{left_nodes['depth_helper']}.inputs:frameId"),
                             (f"{left_nodes['ns_const']}.inputs:value", f"{left_nodes['depth_helper']}.inputs:nodeNamespace"),
 
                             # Right camera outputs
-                            (f"{nodes['context_forwarder']}.outputs:converted", f"{right_nodes['rgb_helper']}.inputs:context"),
+                            (f"{nodes['ros2_context']}.outputs:context", f"{right_nodes['rgb_helper']}.inputs:context"),
                             (f"{right_nodes['create_rp']}.outputs:execOut", f"{right_nodes['rgb_helper']}.inputs:execIn"),
                             (f"{right_nodes['create_rp']}.outputs:renderProductPath", f"{right_nodes['rgb_helper']}.inputs:renderProductPath"),
                             (f"{right_nodes['frame_const']}.inputs:value", f"{right_nodes['rgb_helper']}.inputs:frameId"),
                             (f"{right_nodes['ns_const']}.inputs:value", f"{right_nodes['rgb_helper']}.inputs:nodeNamespace"),
 
-                            (f"{nodes['context_forwarder']}.outputs:converted", f"{right_nodes['depth_helper']}.inputs:context"),
+                            (f"{nodes['ros2_context']}.outputs:context", f"{right_nodes['depth_helper']}.inputs:context"),
                             (f"{right_nodes['create_rp']}.outputs:execOut", f"{right_nodes['depth_helper']}.inputs:execIn"),
                             (f"{right_nodes['create_rp']}.outputs:renderProductPath", f"{right_nodes['depth_helper']}.inputs:renderProductPath"),
                             (f"{right_nodes['frame_const']}.inputs:value", f"{right_nodes['depth_helper']}.inputs:frameId"),
@@ -261,6 +261,10 @@ def add_zed_stereo_camera_subgraph(
 
                         # Static attribute values
                         og.Controller.Keys.SET_VALUES: [
+                            # Variables
+                            (f"{nodes['domain_id_reader']}.inputs:graph", parent_graph_path),
+                            (f"{nodes['domain_id_reader']}.inputs:variableName", domain_id_var),
+
                             # Frame IDs and namespaces
                             (("inputs:value", left_nodes["frame_const"]), left_frame_id),
                             (("inputs:value", right_nodes["frame_const"]), right_frame_id),

@@ -138,6 +138,7 @@ def add_ouster_lidar_subgraph(
     frame_height: int = 720,
     frame_width: int = 1280,
     robot_name: str = "robot_1",
+    domain_id_var: str = "domain_id_var",
 ):
     """
     Adds a lidar and builds a minimal ROS2 OmniGraph subgraph that publishes the LiDAR's point cloud.
@@ -187,9 +188,11 @@ def add_ouster_lidar_subgraph(
     playback_tick = f"{lidar_name}PlaybackTick"
     create_render = f"{lidar_name}CreateRenderProduct"
     rtx_helper = f"{lidar_name}ROS2RtxLidarHelper"
+    ros2Context_node_name = f"{robot_name}_ROS2Context"
     run_one_sim_frame = f"{lidar_name}RunOneSimFrame"
     frame_const = f"{lidar_name}FrameIdConst"
     ns_const = f"{lidar_name}NamespaceConst"
+    domainIDReader_node_name = f"{lidar_name}DomainIDReader"
 
     controller.edit(
         graph_id=parent_graph_path,
@@ -205,9 +208,8 @@ def add_ouster_lidar_subgraph(
                             (frame_const, "omni.graph.nodes.ConstantString"),
                             (ns_const, "omni.graph.nodes.ConstantString"),
                             (run_one_sim_frame, "isaacsim.core.nodes.OgnIsaacRunOneSimulationFrame"),
-                        ],
-                        og.Controller.Keys.PROMOTE_ATTRIBUTES: [
-                            (f"{rtx_helper}.inputs:context", f"inputs:context"),
+                            (domainIDReader_node_name, "omni.graph.core.ReadVariable"),
+                            (ros2Context_node_name, "isaacsim.ros2.bridge.ROS2Context"),
                         ],
                         og.Controller.Keys.SET_VALUES: [
                             (("inputs:value", frame_const), lidar_frame_id),
@@ -217,6 +219,10 @@ def add_ouster_lidar_subgraph(
                             (("inputs:width", create_render), frame_width),
                             (("inputs:topicName", rtx_helper), lidar_topic_name),
                             (("inputs:type", rtx_helper), "point_cloud"),
+                            
+                            # Point the Reader at the PARENT graph's variable
+                            (f"{domainIDReader_node_name}.inputs:graph", parent_graph_path),
+                            (f"{domainIDReader_node_name}.inputs:variableName", domain_id_var),
                         ],
                         og.Controller.Keys.CONNECT: [
                             (f"{playback_tick}.outputs:tick", f"{run_one_sim_frame}.inputs:execIn"),
@@ -225,10 +231,12 @@ def add_ouster_lidar_subgraph(
                             (f"{create_render}.outputs:renderProductPath", f"{rtx_helper}.inputs:renderProductPath"),
                             (f"{frame_const}.inputs:value", f"{rtx_helper}.inputs:frameId"),
                             (f"{ns_const}.inputs:value", f"{rtx_helper}.inputs:nodeNamespace"),
+                            (f"{domainIDReader_node_name}.outputs:value", f"{ros2Context_node_name}.inputs:domain_id"),
+                            (f"{ros2Context_node_name}.outputs:context", f"{rtx_helper}.inputs:context"),
                         ],
                     },
                 )
-            ]
+            ],
         },
     )
 
