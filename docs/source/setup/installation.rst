@@ -185,10 +185,10 @@ open a new terminal window (**Ctrl+Alt+T**), and test the following commands:
     .. code:: bash
 
         # Run the bundled python interpreter and see if it prints on the terminal "Hello World."
-        ISAACSIM_PYTHON -c "print('Hello World.')"
+        $ISAACSIM_PYTHON -c "print('Hello World.')"
 
         # Run the python interpreter and check if we can run a script that starts the simulator and adds cubes to the world
-        ISAACSIM_PYTHON ${ISAACSIM_PATH}/standalone_examples/api/isaacsim.core.api/add_cubes.py
+        isaac_run ${ISAACSIM_PATH}/standalone_examples/api/isaacsim.core.api/add_cubes.py
 
 If you were unable to run the commands above successfuly, then something is incorrectly configured. 
 Please do not proceed with this installation until you have everything setup correctly.
@@ -213,7 +213,7 @@ The Pegasus Simulator was originally developed as an Isaac Sim extension with an
 API that allows it to run as a standalone app, i.e. by creating python scritps (as shown in the examples directory of this repository).
 To be able to use the extension in both modes, follow these steps:
 
-1. Launch ``ISAACSIM`` application.
+1. Launch ``ISAACSIM`` application (run ``isaac_run`` in a terminal).
 
 2. Open the Window->extensions on the top menubar inside Isaac Sim.
 
@@ -244,7 +244,7 @@ add a path to the Pegasus-Simulator repository.
         :align: center
         :alt: Pegasus Extension on the third-party tab
 
-When enabling the extension for the first time, the python requirements should be install automatically for the build in 
+When enabling the extension for the first time, the python requirements should be installed automatically for the build in 
 ``ISAACSIM_PYTHON`` , and after a few seconds, the Pegasus widget GUI should pop-up.
 
 6. The Pegasus Simulator window should appear docked to the bottom-right section of the screen.
@@ -269,13 +269,13 @@ extension as a ``pip`` python module for the built-in ``ISAACSIM_PYTHON`` to rec
         cd extensions
 
         # Run the pip command using the built-in python interpreter
-        ISAACSIM_PYTHON -m pip install --editable pegasus.simulator
+        $ISAACSIM_PYTHON -m pip install --editable pegasus.simulator
 
 We use the ``--editable`` flag so that the content of the extension is linked instead of copied. After this step, you 
 should be able to run the python standalone examples inside the ``examples`` folder.
 
 .. note::
-    If you want to use Ardupilot with PegasusSimulator, please refer to the `ArduPilot documentation <features/ardupilot.rst>`__ to use this experimental feature. If you don't know what Ardupilot is, you can safely ignore this.
+    If you want to use Ardupilot with PegasusSimulator, please refer to the `ArduPilot documentation <../features/ardupilot.html>`__ to use this experimental feature. If you don't know what Ardupilot is, you can safely ignore this.
 
 Installing PX4-Autopilot
 ------------------------
@@ -289,7 +289,7 @@ To install PX4-Autopilot, follow the following steps:
 
         # Linux packages
         sudo apt install git make cmake python3-pip
-       
+
         # Python packages
         pip install kconfiglib jinja2 empy jsonschema pyros-genmsg packaging toml numpy future
 
