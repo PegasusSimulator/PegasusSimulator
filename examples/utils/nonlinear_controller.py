@@ -142,7 +142,7 @@ class NonlinearController(Backend):
         statistics["ep"] = torch.stack(self.position_error_over_time)
         statistics["ev"] = torch.stack(self.velocity_error_over_time)
         statistics["er"] = torch.stack(self.atittude_error_over_time)
-        statistics["ew"] = torch.tensor(self.attitude_rate_error_over_time, dtype=torch.float32, device=self.device)
+        statistics["ew"] = torch.stack(self.attitude_rate_error_over_time)
         torch.save(statistics, self.results_files)
         carb.log_warn("Statistics saved to: " + self.results_files)
 
@@ -250,11 +250,11 @@ class NonlinearController(Backend):
         X_c_des = torch.stack([torch.cos(yaw_ref), torch.sin(yaw_ref), torch.tensor(0.0, dtype=torch.float32, device=self.device)])
 
         # Compute Y_b_des
-        Z_b_cross_X_c = torch.cross(Z_b_des, X_c_des)
+        Z_b_cross_X_c = torch.cross(Z_b_des, X_c_des, dim=0)
         Y_b_des = Z_b_cross_X_c / torch.linalg.norm(Z_b_cross_X_c)
 
         # Compute X_b_des
-        X_b_des = torch.cross(Y_b_des, Z_b_des)
+        X_b_des = torch.cross(Y_b_des, Z_b_des, dim=0)
 
         # Compute the desired rotation R_des = [X_b_des | Y_b_des | Z_b_des]
         R_des = torch.stack([X_b_des, Y_b_des, Z_b_des], dim=1)
