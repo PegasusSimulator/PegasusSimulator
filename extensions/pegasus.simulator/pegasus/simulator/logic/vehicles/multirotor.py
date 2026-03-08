@@ -200,7 +200,7 @@ class Multirotor(Vehicle):
         aloc_matrix = torch.zeros((4, self._thrusters._num_rotors), dtype=torch.float32, device=self.device)
         
         # Define the first line of the matrix (T [N])
-        aloc_matrix[0, :] = torch.tensor(self._thrusters._rotor_constant, dtype=torch.float32, device=self.device)
+        aloc_matrix[0, :] = self._thrusters._rotor_constant
 
         # Define the second and third lines of the matrix (\tau_x [Nm] and \tau_y [Nm])
         aloc_matrix[1, :] = torch.tensor([relative_poses[i].p[1] * self._thrusters._rotor_constant[i] for i in range(self._thrusters._num_rotors)], dtype=torch.float32, device=self.device)
