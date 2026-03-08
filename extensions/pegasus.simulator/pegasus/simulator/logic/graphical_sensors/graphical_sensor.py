@@ -5,7 +5,6 @@
 """
 __all__ = ["GraphicalSensor"]
 
-import time
 from pegasus.simulator.logic.state import State
 
 class GraphicalSensor:

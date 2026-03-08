@@ -6,6 +6,8 @@
 """
 __all__ = ["MonocularCamera"]
 
+import torch
+
 from pegasus.simulator.logic.state import State
 from pegasus.simulator.logic.graphical_sensors import GraphicalSensor
 from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface

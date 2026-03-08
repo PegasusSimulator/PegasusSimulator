@@ -5,17 +5,17 @@
 __all__ = ["ROS2CameraGraph"]
 
 import carb
+import torch
 
 from isaacsim.core.utils import stage
 import omni.graph.core as og
 from isaacsim.core.utils.prims import is_prim_path_valid
 from isaacsim.core.utils.prims import set_targets
-from omni.isaac.sensor import Camera
+from isaacsim.sensors.camera import Camera
 
 from pegasus.simulator.logic.graphs import Graph
 from pegasus.simulator.logic.vehicles import Vehicle
-from scipy.spatial.transform import Rotation
-import numpy as np
+from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 
 class ROS2CameraGraph(Graph):
     """The class that implements the ROS2 Camera graph. This class inherits the base class Graph.
@@ -48,12 +48,14 @@ class ROS2CameraGraph(Graph):
         self._base_topic = config.get("topic", "")
         self._namespace = config.get("namespace", "")
         self._tf_frame_id = config.get("tf_frame_id", "")
+        self._device = PegasusInterface()._world_settings["device"]
 
         # Process the config dictionary
         self._graph_evaluator = config.get("graph_evaluator", "execution")
         self._resolution = config.get("resolution", [640, 480])
-        self._types = np.array(config.get("types", ['rgb', 'camera_info']))
+        self._types = torch.tensor(config.get("types", ['rgb', 'camera_info']), dtype=torch.float32, device=self._device)
         self._publish_labels = config.get("publish_labels", True)
+
 
     def initialize(self, vehicle: Vehicle):
         """Method that initializes the graph of the camera.
@@ -81,10 +83,11 @@ class ROS2CameraGraph(Graph):
         # Create the camera object attached to the vehicle
         self.camera = Camera(
             prim_path=self._camera_prim_path,
-            position=np.array([0.30, 0.0, 0.0]),
+            position=torch.tensor([0.30, 0.0, 0.0], dtype=torch.float32, device=self._device),
             frequency=30.0,
             resolution=self._resolution,
-            orientation=Rotation.from_euler("ZYX", [0.0, 0.0, 0.0], degrees=True).as_quat()
+            # Orientation [qw, qx, qy, qz] standard
+            orientation=torch.tensor([1.0, 0.0, 0.0, 0.0], dtype=torch.float32, device=self._device)
         )
 
         # Initialize the camera sensor

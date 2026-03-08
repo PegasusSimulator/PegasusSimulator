@@ -4,12 +4,12 @@
 | Description: Controller class that can be used to make a person follow a line in the simulation
 | License: BSD-3-Clause. Copyright (c) 2024, Marcelo Jacinto. All rights reserved.
 """
-import numpy as np
+import torch
 from pegasus.simulator.logic.people.person_controller import PersonController
 
 class LinePersonController(PersonController):
 
-    def __init__(self, start, stop, speed=0.1):
+    def __init__(self, start: torch.Tensor, stop: torch.Tensor, speed: float = 0.1):
         """Line Person Controller that makes a person follow a line in the simulation
 
         Args:
@@ -24,7 +24,7 @@ class LinePersonController(PersonController):
         self.gamma = 0.0
 
         # Compute the desired speed in the parameterized units (0 - 1)
-        derivative_norm = np.linalg.norm(self.slope)
+        derivative_norm = torch.linalg.norm(self.slope)
         if derivative_norm == 0:
             self.gamma_dot = 0
         else:

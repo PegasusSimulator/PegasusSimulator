@@ -5,8 +5,7 @@
 | Description: Definition of the Person class which is used as the base for spawning people in the simulation world.
 """
 
-import numpy as np
-from scipy.spatial.transform import Rotation
+import torch
 
 # Low level APIs
 import carb
@@ -19,8 +18,6 @@ from isaacsim.core.utils import prims
 from omni.usd import get_stage_next_free_path
 from isaacsim.storage.native import get_assets_root_path
 
-from omni.isaac.core import SimulationContext
-
 # New imports from the replicator API
 import omni.anim.graph.core as ag
 import isaacsim.replicator.agent.core
@@ -32,6 +29,7 @@ from pegasus.simulator.logic.state import State
 from pegasus.simulator.logic.people_manager import PeopleManager
 from pegasus.simulator.logic.people.person_controller import PersonController
 from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
+from pegasus.simulator.logic.transforms import euler_angles_to_matrix, matrix_to_quaternion
 
 
 class Person:
@@ -43,7 +41,7 @@ class Person:
     people_asset_folder = "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.1/Isaac/People/Characters/"
     character_root_prim_path = PrimPaths.characters_parent_path()
 
-    assets_root_path = None   
+    assets_root_path = None
 
     if people_asset_folder:
         assets_root_path = people_asset_folder
@@ -74,18 +72,24 @@ class Person:
         # Get the current world at which we want to spawn the vehicle
         self._world = PegasusInterface().world
         self._current_stage = self._world.stage
+        self._device = PegasusInterface()._world_settings["device"]
 
         # Variable that will hold the current state of the vehicle
         self._state = State()
-        self._state.position = np.array(init_pos)
-        self._state.attitude = Rotation.from_euler('z', init_yaw, degrees=False).as_quat()
+        self._state.position = torch.tensor(init_pos, dtype=torch.float32, device=self._device) 
+        self._state.attitude = matrix_to_quaternion(
+            euler_angles_to_matrix(
+                euler_angles=torch.tensor([init_yaw, 0, 0], dtype=torch.float32, device=self._device), 
+                convention="ZYX"
+            )
+        )
 
         # Auxiliar variable to compute the velocity of the person using discrete differentiation
-        self._previous_position = np.array(init_pos)
+        self._previous_position = torch.tensor(init_pos, dtype=torch.float32, device=self._device)
         self._total_dt = 0.0
 
         # Set the target position for the character
-        self._target_position = np.array(init_pos)
+        self._target_position = torch.tensor(init_pos, dtype=torch.float32, device=self._device)
         self._target_speed = 0.0
 
         # By default, the characters are placed inside /World/Characters
@@ -192,7 +196,7 @@ class Person:
                 self._controller.update(dt)
 
             # Compute the distance between the current position and the goal position
-            distance_to_target_position = np.linalg.norm(self._target_position - self._state.position)
+            distance_to_target_position = torch.linalg.norm(self._target_position - self._state.position)
             
             # If we are still far away from the target position, keep moving towards it
             if distance_to_target_position > 0.1:
@@ -216,7 +220,7 @@ class Person:
         Args:
             position (list): A list with the x, y, z coordinates of the target position.
         """
-        self._target_position = np.array(position)
+        self._target_position = torch.tensor(position, dtype=torch.float32, device=self._device)
         self._target_speed = walk_speed
 
 
@@ -242,8 +246,8 @@ class Person:
             self.character_graph.get_world_transform(pos, rot)
 
             # Update the current state of the person
-            self._state.position = np.array([pos[0], pos[1], pos[2]])
-            self._state.attitude = np.array([rot.x, rot.y, rot.z, rot.w])
+            self._state.position = torch.tensor([pos[0], pos[1], pos[2]], dtype=torch.float32, device=self._device)
+            self._state.attitude = torch.tensor([rot.x, rot.y, rot.z, rot.w], dtype=torch.float32, device=self._device)
 
             # Compute the velocity in the inertial frame using discrete differentiation
             self._total_dt += dt
@@ -252,7 +256,7 @@ class Person:
             # this is not ideal, but it works for now until NVIDIA provides a better way to get the linear velocity of the character
             if self._total_dt > 1/20.0:  # Update at 20 Hz
                 self._state.linear_velocity = (self._state.position - self._previous_position) / self._total_dt
-                self._previous_position = np.array(self._state.position)
+                self._previous_position = torch.tensor(self._state.position, dtype=torch.float32, device=self._device)
                 self._total_dt = 0.0
 
             # Signal the controller the updated state
