@@ -5,7 +5,8 @@
 | Description: Definition of the Multirotor class which is used as the base for all the multirotor vehicles.
 """
 
-import numpy as np
+#import numpy as np
+import torch
 
 from omni.isaac.dynamic_control import _dynamic_control
 
@@ -20,6 +21,10 @@ from pegasus.simulator.logic.dynamics import LinearDrag
 from pegasus.simulator.logic.thrusters import QuadraticThrustCurve
 from pegasus.simulator.logic.sensors import Barometer, IMU, Magnetometer, GPS
 
+# Extension APIs
+from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
+
+
 class MultirotorConfig:
     """
     A data class that is used for configuring a Multirotor
@@ -29,6 +34,8 @@ class MultirotorConfig:
         """
         Initialization of the MultirotorConfig class
         """
+        # Define the same device that is running the simulation
+        device = PegasusInterface()._world_settings["device"]
 
         # Stage prefix of the vehicle when spawning in the world
         self.stage_prefix = "quadrotor"
@@ -37,11 +44,11 @@ class MultirotorConfig:
         self.usd_file = ""
 
         # The default thrust curve for a quadrotor and dynamics relating to drag
-        self.thrust_curve = QuadraticThrustCurve()
+        self.thrust_curve = QuadraticThrustCurve(device = device)
         self.drag = LinearDrag([0.50, 0.30, 0.0])
 
         # The default sensors for a quadrotor
-        self.sensors = [Barometer(), IMU(), Magnetometer(), GPS()]
+        self.sensors = [Barometer(device=device), IMU(device=device), Magnetometer(device=device), GPS(device=device)]
 
         # The default graphical sensors for a quadrotor
         self.graphical_sensors = []
@@ -66,7 +73,7 @@ class Multirotor(Vehicle):
         vehicle_id: int = 0,
         # Spawning pose of the vehicle
         init_pos=[0.0, 0.0, 0.07],
-        init_orientation=[0.0, 0.0, 0.0, 1.0],
+        init_orientation=[1.0, 0.0, 0.0, 0.0],
         config=MultirotorConfig(),
     ):
         """Initializes the multirotor object
@@ -76,7 +83,7 @@ class Multirotor(Vehicle):
             usd_file (str): The USD file that describes the looks and shape of the vehicle. Defaults to "".
             vehicle_id (int): The id to be used for the vehicle. Defaults to 0.
             init_pos (list): The initial position of the vehicle in the inertial frame (in ENU convention). Defaults to [0.0, 0.0, 0.07].
-            init_orientation (list): The initial orientation of the vehicle in quaternion [qx, qy, qz, qw]. Defaults to [0.0, 0.0, 0.0, 1.0].
+            init_orientation (list): The initial orientation of the vehicle in quaternion [qw, qx, qy, qz]. Defaults to [1.0, 0.0, 0.0, 0.0].
             config (MultirotorConfig, optional): Defaults to MultirotorConfig().
         """
 
@@ -112,7 +119,7 @@ class Multirotor(Vehicle):
         if len(self._backends) != 0:
             desired_rotor_velocities = self._backends[0].input_reference()
         else:
-            desired_rotor_velocities = [0.0 for i in range(self._thrusters._num_rotors)]
+            desired_rotor_velocities = torch.zeros(self._thrusters._num_rotors, dtype=torch.float32, device=self.device)
 
         # Input the desired rotor velocities in the thruster model
         self._thrusters.set_input_reference(desired_rotor_velocities)
@@ -122,7 +129,6 @@ class Multirotor(Vehicle):
 
         # Apply force to each rotor
         for i in range(4):
-
             # Apply the force in Z on the rotor frame
             self.apply_force([0.0, 0.0, forces_z[i]], body_part="/rotor" + str(i))
 
@@ -138,6 +144,7 @@ class Multirotor(Vehicle):
 
         # Call the update methods in all backends
         for backend in self._backends:
+            backend._vehicle = self
             backend.update(dt)
 
     def handle_propeller_visual(self, rotor_number, force: float, articulation):
@@ -164,7 +171,7 @@ class Multirotor(Vehicle):
         else:
             self.get_dc_interface().set_dof_velocity(joint, 0)
 
-    def force_and_torques_to_velocities(self, force: float, torque: np.ndarray):
+    def force_and_torques_to_velocities(self, force: float, torque: torch.Tensor):        
         """
         Auxiliar method used to get the target angular velocities for each rotor, given the total desired thrust [N] and
         torque [Nm] to be applied in the multirotor's body frame.
@@ -190,23 +197,23 @@ class Multirotor(Vehicle):
         relative_poses = self.get_dc_interface().get_relative_body_poses(rb, rotors)
 
         # Define the alocation matrix
-        aloc_matrix = np.zeros((4, self._thrusters._num_rotors))
+        aloc_matrix = torch.zeros((4, self._thrusters._num_rotors), dtype=torch.float32, device=self.device)
         
         # Define the first line of the matrix (T [N])
-        aloc_matrix[0, :] = np.array(self._thrusters._rotor_constant)                                           
+        aloc_matrix[0, :] = torch.tensor(self._thrusters._rotor_constant, dtype=torch.float32, device=self.device)
 
         # Define the second and third lines of the matrix (\tau_x [Nm] and \tau_y [Nm])
-        aloc_matrix[1, :] = np.array([relative_poses[i].p[1] * self._thrusters._rotor_constant[i] for i in range(self._thrusters._num_rotors)])
-        aloc_matrix[2, :] = np.array([-relative_poses[i].p[0] * self._thrusters._rotor_constant[i] for i in range(self._thrusters._num_rotors)])
+        aloc_matrix[1, :] = torch.tensor([relative_poses[i].p[1] * self._thrusters._rotor_constant[i] for i in range(self._thrusters._num_rotors)], dtype=torch.float32, device=self.device)
+        aloc_matrix[2, :] = torch.tensor([-relative_poses[i].p[0] * self._thrusters._rotor_constant[i] for i in range(self._thrusters._num_rotors)], dtype=torch.float32, device=self.device)
 
         # Define the forth line of the matrix (\tau_z [Nm])
-        aloc_matrix[3, :] = np.array([self._thrusters._rolling_moment_coefficient[i] * self._thrusters._rot_dir[i] for i in range(self._thrusters._num_rotors)])
+        aloc_matrix[3, :] = torch.tensor([self._thrusters._rolling_moment_coefficient[i] * self._thrusters._rot_dir[i] for i in range(self._thrusters._num_rotors)], dtype=torch.float32, device=self.device)
 
         # Compute the inverse allocation matrix, so that we can get the angular velocities (squared) from the total thrust and torques
-        aloc_inv = np.linalg.pinv(aloc_matrix)
+        aloc_inv = torch.linalg.pinv(aloc_matrix)
 
         # Compute the target angular velocities (squared)
-        squared_ang_vel = aloc_inv @ np.array([force, torque[0], torque[1], torque[2]])
+        squared_ang_vel = aloc_inv @ torch.tensor([force, torque[0], torque[1], torque[2]], dtype=torch.float32, device=self.device)
 
         # Making sure that there is no negative value on the target squared angular velocities
         squared_ang_vel[squared_ang_vel < 0] = 0.0
@@ -214,15 +221,15 @@ class Multirotor(Vehicle):
         # ------------------------------------------------------------------------------------------------
         # Saturate the inputs while preserving their relation to each other, by performing a normalization
         # ------------------------------------------------------------------------------------------------
-        max_thrust_vel_squared = np.power(self._thrusters.max_rotor_velocity[0], 2)
-        max_val = np.max(squared_ang_vel)
+        max_thrust_vel_squared = torch.pow(self._thrusters.max_rotor_velocity[0], 2)
+        max_val = torch.max(squared_ang_vel)
 
         if max_val >= max_thrust_vel_squared:
-            normalize = np.maximum(max_val / max_thrust_vel_squared, 1.0)
+            normalize = torch.clamp(max_val / max_thrust_vel_squared, min=1.0)
 
             squared_ang_vel = squared_ang_vel / normalize
 
         # Compute the angular velocities for each rotor in [rad/s]
-        ang_vel = np.sqrt(squared_ang_vel)
+        ang_vel = torch.sqrt(squared_ang_vel)
 
         return ang_vel
