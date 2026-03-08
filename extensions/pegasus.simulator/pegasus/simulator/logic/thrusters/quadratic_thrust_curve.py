@@ -4,14 +4,15 @@
 | Descriptio: File that implements a quadratic thrust curve for rotors
 | License: BSD-3-Clause. Copyright (c) 2023, Marcelo Jacinto. All rights reserved.
 """
-import numpy as np
+#import numpy as np
+import torch
 from pegasus.simulator.logic.state import State
 from pegasus.simulator.logic.thrusters.thrust_curve import ThrustCurve
 
 class QuadraticThrustCurve(ThrustCurve):
     """Class that implements the dynamics of rotors that can be described by a quadratic thrust curve
     """
-    def __init__(self, config={}):
+    def __init__(self, config={}, device="cpu"):
         """_summary_
 
         Args:
@@ -28,40 +29,42 @@ class QuadraticThrustCurve(ThrustCurve):
             >>>  "max_rotor_velocity": [1100, 1100, 1100, 1100],          # rad/s
             >>> }
         """
+        # Set device
+        self.device = device
 
         # Get the total number of rotors to simulate
         self._num_rotors = config.get("num_rotors", 4)
 
         # The rotor constant used for computing the total thrust produced by the rotor: T = rotor_constant * omega^2
-        self._rotor_constant = config.get("rotor_constant", [8.54858e-6, 8.54858e-6, 8.54858e-6, 8.54858e-6])
+        self._rotor_constant = torch.tensor(config.get("rotor_constant", [8.54858e-6, 8.54858e-6, 8.54858e-6, 8.54858e-6]), dtype=torch.float32, device=self.device)
         assert len(self._rotor_constant) == self._num_rotors
 
         # The rotor constant used for computing the total torque generated about the vehicle Z-axis
-        self._rolling_moment_coefficient = config.get("rolling_moment_coefficient", [1e-6, 1e-6, 1e-6, 1e-6])
+        self._rolling_moment_coefficient = torch.tensor(config.get("rolling_moment_coefficient", [1e-6, 1e-6, 1e-6, 1e-6]), dtype=torch.float32, device=self.device)
         assert len(self._rolling_moment_coefficient) == self._num_rotors
 
         # Save the rotor direction of rotation
-        self._rot_dir = config.get("rot_dir", [-1, -1, 1, 1])
+        self._rot_dir = torch.tensor(config.get("rot_dir", [-1, -1, 1, 1]), dtype=torch.int32, device=self.device)
         assert len(self._rot_dir) == self._num_rotors
 
         # Values for the minimum and maximum rotor velocity in rad/s
-        self.min_rotor_velocity = config.get("min_rotor_velocity", [0, 0, 0, 0])
+        self.min_rotor_velocity = torch.tensor(config.get("min_rotor_velocity", [0, 0, 0, 0]), dtype=torch.float32, device=self.device)
         assert len(self.min_rotor_velocity) == self._num_rotors
 
-        self.max_rotor_velocity = config.get("max_rotor_velocity", [1100, 1100, 1100, 1100])
+        self.max_rotor_velocity = torch.tensor(config.get("max_rotor_velocity", [1100, 1100, 1100, 1100]), dtype=torch.float32, device=self.device)
         assert len(self.max_rotor_velocity) == self._num_rotors
 
         # The actual speed references to apply to the vehicle rotor joints
-        self._input_reference = [0.0 for i in range(self._num_rotors)]
-
+        self._input_reference = torch.zeros(self._num_rotors, dtype=torch.float32, device=self.device)
+        
         # The actual velocity that each rotor is spinning at
-        self._velocity = [0.0 for i in range(self._num_rotors)]
+        self._velocity = torch.zeros(self._num_rotors, dtype=torch.float32, device=self.device)
 
         # The actual force that each rotor is generating
-        self._force = [0.0 for i in range(self._num_rotors)]
+        self._force = torch.zeros(self._num_rotors, dtype=torch.float32, device=self.device)
 
         # The actual rolling moment that is generated on the body frame of the vehicle
-        self._rolling_moment = 0.0
+        self._rolling_moment = torch.tensor(0.0, dtype=torch.float32, device=self.device)
 
     def set_input_reference(self, input_reference):
         """
@@ -69,7 +72,7 @@ class QuadraticThrustCurve(ThrustCurve):
         """
 
         # The target angular velocity of the rotor
-        self._input_reference = input_reference
+        self._input_reference = torch.as_tensor(input_reference, dtype=torch.float32, device=self.device)
 
     def update(self, state: State, dt: float):
         """
@@ -82,22 +85,22 @@ class QuadraticThrustCurve(ThrustCurve):
             dt (float): The time elapsed between the previous and current function calls (s).
         """
 
-        rolling_moment = 0.0
+        rolling_moment = torch.tensor(0.0, dtype=torch.float32, device=self.device)
 
         # Compute the actual force to apply to the rotors and the rolling moment contribution
         for i in range(self._num_rotors):
 
             # Set the actual velocity that each rotor is spinning at (instanenous model - no delay introduced)
             # Only apply clipping of the input reference
-            self._velocity[i] = np.maximum(
-                self.min_rotor_velocity[i], np.minimum(self._input_reference[i], self.max_rotor_velocity[i])
+            self._velocity[i] = torch.maximum(
+                self.min_rotor_velocity[i], torch.minimum(self._input_reference[i], self.max_rotor_velocity[i])
             )
 
             # Set the force using a quadratic thrust curve
-            self._force[i] = self._rotor_constant[i] * np.power(self._velocity[i], 2)
+            self._force[i] = self._rotor_constant[i] * torch.pow(self._velocity[i], 2)
 
             # Compute the rolling moment coefficient
-            rolling_moment += self._rolling_moment_coefficient[i] * np.power(self._velocity[i], 2.0) * self._rot_dir[i]
+            rolling_moment += self._rolling_moment_coefficient[i] * torch.pow(self._velocity[i], 2.0) * self._rot_dir[i]
 
         # Update the rolling moment variable
         self._rolling_moment = rolling_moment

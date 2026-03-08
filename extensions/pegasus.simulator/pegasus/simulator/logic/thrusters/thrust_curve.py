@@ -54,7 +54,7 @@ class ThrustCurve:
         """The total rolling moment being generated on the body frame of the vehicle by the rotating propellers
 
         Returns:
-            float: The total rolling moment to apply to the vehicle body frame (Torque about the Z-axis) in Nm
+            torch.Tensor: The total rolling moment to apply to the vehicle body frame (Torque about the Z-axis) in Nm
         """
         pass
 

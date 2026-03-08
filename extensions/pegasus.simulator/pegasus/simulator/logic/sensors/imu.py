@@ -6,8 +6,11 @@
 """
 __all__ = ["IMU"]
 
-import numpy as np
-from scipy.spatial.transform import Rotation
+#import numpy as np
+import torch
+
+#from scipy.spatial.transform import Rotation
+import pytorch3d.transforms as transforms
 
 from pegasus.simulator.logic.state import State
 from pegasus.simulator.logic.sensors import Sensor
@@ -18,7 +21,7 @@ from pegasus.simulator.logic.sensors.geo_mag_utils import GRAVITY_VECTOR
 class IMU(Sensor):
     """The class that implements the IMU sensor. This class inherits the base class Sensor.
     """
-    def __init__(self, config={}):
+    def __init__(self, config={}, device="cpu"):
         """Initialize the IMU class
 
         Args:
@@ -42,35 +45,72 @@ class IMU(Sensor):
         """
 
         # Initialize the Super class "object" attributes
-        super().__init__(sensor_type="IMU", update_rate=config.get("update_rate", 250.0))
+        super().__init__(sensor_type="IMU", update_rate=torch.tensor(config.get("update_rate", 250.0), dtype=torch.float32, device=device))
+
+        # Set device
+        self.device = device
 
         # Orientation noise constant
-        self._orientation_noise: float = 0.0
+        self._orientation_noise: torch.Tensor = torch.tensor(0.0, dtype=torch.float32, device=self.device)      
 
         # Gyroscope noise constants
-        self._gyroscope_bias: np.ndarray = np.zeros((3,))
+        self._gyroscope_bias: torch.Tensor = torch.zeros(3, dtype=torch.float32, device=self.device)        
         gyroscope_config = config.get("gyroscope", {})
-        self._gyroscope_noise_density = gyroscope_config.get("noise_density", 0.0003393695767766752)
-        self._gyroscope_random_walk = gyroscope_config.get("random_walk", 3.878509448876288E-05)
-        self._gyroscope_bias_correlation_time = gyroscope_config.get("bias_correlation_time", 1.0E3)
-        self._gyroscope_turn_on_bias_sigma = gyroscope_config.get("turn_on_bias_sigma", 0.008726646259971648)
+
+        self._gyroscope_noise_density = torch.tensor(
+            gyroscope_config.get("noise_density", 0.0003393695767766752),
+            dtype=torch.float32,
+            device=self.device
+        )
+        self._gyroscope_random_walk = torch.tensor(
+            gyroscope_config.get("random_walk", 3.878509448876288e-05),
+            dtype=torch.float32,
+            device=self.device
+        )
+        self._gyroscope_bias_correlation_time = torch.tensor(
+            gyroscope_config.get("bias_correlation_time", 1.0e3),
+            dtype=torch.float32,
+            device=self.device
+        )
+        self._gyroscope_turn_on_bias_sigma = torch.tensor(
+            gyroscope_config.get("turn_on_bias_sigma", 0.008726646259971648),
+            dtype=torch.float32,
+            device=self.device
+        )
 
         # Accelerometer noise constants
-        self._accelerometer_bias: np.ndarray = np.zeros((3,))
+        self._accelerometer_bias: torch.Tensor = torch.zeros(3, dtype=torch.float32, device=self.device)
         accelerometer_config = config.get("accelerometer", {})
-        self._accelerometer_noise_density = accelerometer_config.get("noise_density", 0.004)
-        self._accelerometer_random_walk = accelerometer_config.get("random_walk", 0.006)
-        self._accelerometer_bias_correlation_time = accelerometer_config.get("bias_correlation_time", 300.0)
-        self._accelerometer_turn_on_bias_sigma = accelerometer_config.get("turn_on_bias_sigma", 0.196)
+
+        self._accelerometer_noise_density = torch.tensor(
+            accelerometer_config.get("noise_density", 0.004),
+            dtype=torch.float32,
+            device=self.device
+        )
+        self._accelerometer_random_walk = torch.tensor(
+            accelerometer_config.get("random_walk", 0.006),
+            dtype=torch.float32,
+            device=self.device
+        )
+        self._accelerometer_bias_correlation_time = torch.tensor(
+            accelerometer_config.get("bias_correlation_time", 300.0),
+            dtype=torch.float32,
+            device=self.device
+        )
+        self._accelerometer_turn_on_bias_sigma = torch.tensor(
+            accelerometer_config.get("turn_on_bias_sigma", 0.196),
+            dtype=torch.float32,
+            device=self.device
+        )
 
         # Auxiliar variable used to compute the linear acceleration of the vehicle
-        self._prev_linear_velocity = np.zeros((3,))
+        self._prev_linear_velocity: torch.Tensor = torch.zeros(3, dtype=torch.float32, device=self.device)        
 
         # Save the current state measured by the IMU
         self._state = {
-            "orientation": np.array([1.0, 0.0, 0.0, 0.0]),
-            "angular_velocity": np.array([0.0, 0.0, 0.0]),
-            "linear_acceleration": np.array([0.0, 0.0, 0.0]),
+            "orientation": torch.tensor([1.0, 0.0, 0.0, 0.0], dtype=torch.float32, device=self.device),
+            "angular_velocity": torch.zeros(3, dtype=torch.float32, device=self.device),
+            "linear_acceleration": torch.zeros(3, dtype=torch.float32, device=self.device),
         }
 
     @property
@@ -81,7 +121,7 @@ class IMU(Sensor):
         return self._state
 
     @Sensor.update_at_rate
-    def update(self, state: State, dt: float):
+    def update(self, state: State, dt: torch.Tensor):
         """Method that implements the logic of an IMU. In this method we start by generating the random walk of the 
         gyroscope. This value is then added to the real angular velocity of the vehicle (FLU relative to ENU inertial frame
         expressed in FLU body frame). The same logic is followed for the accelerometer and the accelerations. After this step,
@@ -91,60 +131,60 @@ class IMU(Sensor):
 
         Args:
             state (State): The current state of the vehicle.
-            dt (float): The time elapsed between the previous and current function calls (s).
+            dt (torch.Tensor): The time elapsed between the previous and current function calls (s).
 
         Returns:
             (dict) A dictionary containing the current state of the sensor (the data produced by the sensor)
         """
 
         # Gyroscopic terms
-        tau_g: float = self._accelerometer_bias_correlation_time
+        tau_g: torch.Tensor = self._accelerometer_bias_correlation_time # _gyroscope_bias_correlation_time ??
 
         # Discrete-time standard deviation equivalent to an "integrating" sampler with integration time dt
-        sigma_g_d: float = 1 / np.sqrt(dt) * self._gyroscope_noise_density
-        sigma_b_g: float = self._gyroscope_random_walk
+        sigma_g_d: torch.Tensor = 1 / torch.sqrt(dt) * self._gyroscope_noise_density
+        sigma_b_g: torch.Tensor = self._gyroscope_random_walk
 
         # Compute exact covariance of the process after dt [Maybeck 4-114]
-        sigma_b_g_d: float = np.sqrt(-sigma_b_g * sigma_b_g * tau_g / 2.0 * (np.exp(-2.0 * dt / tau_g) - 1.0))
+        sigma_b_g_d: torch.Tensor = torch.sqrt(-sigma_b_g * sigma_b_g * tau_g / 2.0 * (torch.exp(-2.0 * dt / tau_g) - 1.0))
 
         # Compute state-transition
-        phi_g_d: float = np.exp(-1.0 / tau_g * dt)
+        phi_g_d: torch.Tensor = torch.exp(-1.0 / tau_g * dt)
 
         # Simulate gyroscope noise processes and add them to the true angular rate.
-        angular_velocity: np.ndarray = np.zeros((3,))
+        angular_velocity: torch.Tensor = torch.zeros(3, dtype=torch.float32, device=self.device)   
 
         for i in range(3):
-            self._gyroscope_bias[i] = phi_g_d * self._gyroscope_bias[i] + sigma_b_g_d * np.random.randn()
-            angular_velocity[i] = state.angular_velocity[i] + sigma_g_d * np.random.randn() + self._gyroscope_bias[i]
+            self._gyroscope_bias[i] = phi_g_d * self._gyroscope_bias[i] + sigma_b_g_d * torch.randn((), device=self.device)
+            angular_velocity[i] = state.angular_velocity[i] + sigma_g_d * torch.randn((), device=self.device) + self._gyroscope_bias[i]
 
         # Accelerometer terms
-        tau_a: float = self._accelerometer_bias_correlation_time
+        tau_a: torch.Tensor = self._accelerometer_bias_correlation_time
 
         # Discrete-time standard deviation equivalent to an "integrating" sampler with integration time dt
-        sigma_a_d: float = 1.0 / np.sqrt(dt) * self._accelerometer_noise_density
-        sigma_b_a: float = self._accelerometer_random_walk
+        sigma_a_d: torch.Tensor = 1.0 / torch.sqrt(dt) * self._accelerometer_noise_density
+        sigma_b_a: torch.Tensor = self._accelerometer_random_walk
 
         # Compute exact covariance of the process after dt [Maybeck 4-114].
-        sigma_b_a_d: float = np.sqrt(-sigma_b_a * sigma_b_a * tau_a / 2.0 * (np.exp(-2.0 * dt / tau_a) - 1.0))
+        sigma_b_a_d: torch.Tensor = torch.sqrt(-sigma_b_a * sigma_b_a * tau_a / 2.0 * (torch.exp(-2.0 * dt / tau_a) - 1.0))
 
         # Compute state-transition.
-        phi_a_d: float = np.exp(-1.0 / tau_a * dt)
+        phi_a_d: torch.Tensor = torch.exp(-1.0 / tau_a * dt)
 
         # Compute the linear acceleration from diferentiating the velocity of the vehicle expressed in the inertial frame
         linear_acceleration_inertial = (state.linear_velocity - self._prev_linear_velocity) / dt
-        linear_acceleration_inertial = linear_acceleration_inertial - GRAVITY_VECTOR
+        linear_acceleration_inertial = linear_acceleration_inertial - torch.tensor(GRAVITY_VECTOR, device=self.device)
 
         # Update the previous linear velocity for the next computation
         self._prev_linear_velocity = state.linear_velocity
 
         # Compute the linear acceleration of the body frame, with respect to the inertial frame, expressed in the body frame
-        linear_acceleration = np.array(Rotation.from_quat(state.attitude).inv().apply(linear_acceleration_inertial))
+        linear_acceleration = transforms.quaternion_to_matrix(state.attitude).T @ linear_acceleration_inertial
 
         # Simulate the accelerometer noise processes and add them to the true linear aceleration values
         for i in range(3):
-            self._accelerometer_bias[i] = phi_a_d * self._accelerometer_bias[i] + sigma_b_a_d * np.random.rand()
+            self._accelerometer_bias[i] = phi_a_d * self._accelerometer_bias[i] + sigma_b_a_d * torch.randn((), device=self.device)
             linear_acceleration[i] = (
-                linear_acceleration[i] + sigma_a_d * np.random.randn()
+                linear_acceleration[i] + sigma_a_d * torch.randn((), device=self.device)
             ) #+ self._accelerometer_bias[i]
 
         # TODO - Add small "noisy" to the attitude
@@ -154,19 +194,19 @@ class IMU(Sensor):
         # --------------------------------------------------------------------------------------------
 
         # Convert the orientation to the FRD-NED standard
-        attitude_flu_enu = Rotation.from_quat(state.attitude)
-        attitude_frd_enu = attitude_flu_enu * rot_FLU_to_FRD
-        attitude_frd_ned = rot_ENU_to_NED * attitude_frd_enu
+        attitude_flu_enu = transforms.quaternion_to_matrix(state.attitude)
+        attitude_frd_enu = attitude_flu_enu @ rot_FLU_to_FRD(device = self.device, dtype=torch.float32)
+        attitude_frd_ned = rot_ENU_to_NED(device = self.device, dtype=torch.float32) @ attitude_frd_enu
 
         # Convert the angular velocity from FLU to FRD standard
-        angular_velocity_frd = rot_FLU_to_FRD.apply(angular_velocity)
+        angular_velocity_frd = rot_FLU_to_FRD(device = self.device, dtype=torch.float32) @ angular_velocity
 
         # Convert the linear acceleration in the body frame from FLU to FRD standard
-        linear_acceleration_frd = rot_FLU_to_FRD.apply(linear_acceleration)
+        linear_acceleration_frd = rot_FLU_to_FRD(self.device, dtype=torch.float32) @ linear_acceleration
 
         # Add the values to the dictionary and return it
         self._state = {
-            "orientation": attitude_frd_ned.as_quat(),
+            "orientation": transforms.matrix_to_quaternion(attitude_frd_ned),
             "angular_velocity": angular_velocity_frd,
             "linear_acceleration": linear_acceleration_frd,
         }

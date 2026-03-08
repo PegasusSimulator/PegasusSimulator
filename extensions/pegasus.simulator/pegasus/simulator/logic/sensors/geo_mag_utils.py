@@ -5,7 +5,8 @@ given the position of the vehicle in the simulated world. These computations and
 with the PX4 stil_gazebo implementation (https://github.com/PX4/PX4-SITL_gazebo). Therefore, PX4 should behave similarly 
 to a gazebo-based simulation.
 """
-import numpy as np
+#import numpy as np
+import torch
 
 # Declare which functions are visible from this file
 __all__ = ["get_mag_declination", "get_mag_inclination", "get_mag_strength", "reprojection", "GRAVITY_VECTOR"]
@@ -71,43 +72,55 @@ SAMPLING_MAX_LON = 180  # deg
 EARTH_RADIUS = 6353000.0  # meters
 
 # Gravity vector expressed in ENU
-GRAVITY_VECTOR = np.array([0.0, 0.0, -9.80665])  # m/s^2
+GRAVITY_VECTOR = [0.0, 0.0, -9.80665]  # m/s^2
+
+# Base CPU tensors; moved/cast on demand
+_DECLINATION_TABLE_T = torch.tensor(DECLINATION_TABLE, dtype=torch.float32)
+_INCLINATION_TABLE_T = torch.tensor(INCLINATION_TABLE, dtype=torch.float32)
+_STRENGTH_TABLE_T = torch.tensor(STRENGTH_TABLE, dtype=torch.float32)
 
 
-def get_lookup_table_index(val: int, min: int, max: int):
+def get_lookup_table_index(val: torch.Tensor, min_val: int, max_val: int):
 
     # for the rare case of hitting the bounds exactly
     # the rounding logic wouldn't fit, so enforce it.
     # limit to table bounds - required for maxima even when table spans full globe range
     # limit to (table bounds - 1) because bilinear interpolation requires checking (index + 1)
-    val = np.clip(val, min, max - SAMPLING_RES)
-    return int((-min + val) / SAMPLING_RES)
+
+    min_val = torch.as_tensor(min_val, dtype=val.dtype, device=val.device)
+    max_val = torch.as_tensor(max_val, dtype=val.dtype, device=val.device)
+
+    val = torch.clamp(val, min_val, max_val - SAMPLING_RES)
+
+    return ((-min_val + val) / SAMPLING_RES).long()
 
 
-def get_table_data(lat: float, lon: float, table):
+def get_table_data(lat: torch.Tensor, lon: torch.Tensor, table):
 
     # If the values exceed valid ranges, return zero as default
     # as we have no way of knowing what the closest real value
     # would be.
-    if lat < -90.0 or lat > 90.0 or lon < -180.0 or lon > 180.0:
-        return 0.0
+    if ((lat < -90.0) | (lat > 90.0) | (lon < -180.0) | (lon > 180.0)).item():
+        return torch.tensor(0.0, dtype=lat.dtype, device=lat.device)
 
     # round down to nearest sampling resolution
-    min_lat = int(lat / SAMPLING_RES) * SAMPLING_RES
-    min_lon = int(lon / SAMPLING_RES) * SAMPLING_RES
+    min_lat = torch.floor(lat / SAMPLING_RES) * SAMPLING_RES
+    min_lon = torch.floor(lon / SAMPLING_RES) * SAMPLING_RES
 
     # find index of nearest low sampling point
     min_lat_index = get_lookup_table_index(min_lat, SAMPLING_MIN_LAT, SAMPLING_MAX_LAT)
     min_lon_index = get_lookup_table_index(min_lon, SAMPLING_MIN_LON, SAMPLING_MAX_LON)
 
-    data_sw = table[min_lat_index][min_lon_index]
-    data_se = table[min_lat_index][min_lon_index + 1]
-    data_ne = table[min_lat_index + 1][min_lon_index + 1]
-    data_nw = table[min_lat_index + 1][min_lon_index]
+    table = table.to(device=lat.device, dtype=lat.dtype)
+
+    data_sw = table[min_lat_index, min_lon_index]
+    data_se = table[min_lat_index, min_lon_index + 1]
+    data_ne = table[min_lat_index + 1, min_lon_index + 1]
+    data_nw = table[min_lat_index + 1, min_lon_index]
 
     # perform bilinear interpolation on the four grid corners
-    lat_scale = np.clip((lat - min_lat) / SAMPLING_RES, 0.0, 1.0)
-    lon_scale = np.clip((lon - min_lon) / SAMPLING_RES, 0.0, 1.0)
+    lat_scale = torch.clamp((lat - min_lat) / SAMPLING_RES, 0.0, 1.0)
+    lon_scale = torch.clamp((lon - min_lon) / SAMPLING_RES, 0.0, 1.0)
 
     data_min = lon_scale * (data_se - data_sw) + data_sw
     data_max = lon_scale * (data_ne - data_nw) + data_nw
@@ -115,33 +128,36 @@ def get_table_data(lat: float, lon: float, table):
     return lat_scale * (data_max - data_min) + data_min
 
 
-def get_mag_declination(latitude: float, longitude: float):
-    return get_table_data(latitude, longitude, DECLINATION_TABLE)
+def get_mag_declination(latitude: torch.Tensor, longitude: torch.Tensor):
+    return get_table_data(latitude, longitude, _DECLINATION_TABLE_T)
 
 
-def get_mag_inclination(latitude: float, longitude: float):
-    return get_table_data(latitude, longitude, INCLINATION_TABLE)
+def get_mag_inclination(latitude: torch.Tensor, longitude: torch.Tensor):
+    return get_table_data(latitude, longitude, _INCLINATION_TABLE_T)
 
 
-def get_mag_strength(latitude: float, longitude: float):
-    return get_table_data(latitude, longitude, STRENGTH_TABLE)
+def get_mag_strength(latitude: torch.Tensor, longitude: torch.Tensor):
+    return get_table_data(latitude, longitude, _STRENGTH_TABLE_T)
 
 
-def reprojection(position: np.ndarray, origin_lat=-999, origin_long=-999):
+def reprojection(position: torch.Tensor, origin_lat=-999, origin_long=-999):
     """
     Compute the latitude and longitude coordinates from a local position
     """
 
-    # reproject local position to gps coordinates
-    x_rad: float = position[1] / EARTH_RADIUS  # north
-    y_rad: float = position[0] / EARTH_RADIUS  # east
-    c: float = np.sqrt(x_rad * x_rad + y_rad * y_rad)
-    sin_c: float = np.sin(c)
-    cos_c: float = np.cos(c)
+    origin_lat = torch.as_tensor(origin_lat, dtype=position.dtype, device=position.device)
+    origin_long = torch.as_tensor(origin_long, dtype=position.dtype, device=position.device)
 
-    if c != 0.0:
-        latitude_rad = np.arcsin(cos_c * np.sin(origin_lat) + (x_rad * sin_c * np.cos(origin_lat)) / c)
-        longitude_rad = origin_long + np.arctan2(y_rad * sin_c, c * np.cos(origin_lat) * cos_c - x_rad * np.sin(origin_lat) * sin_c)
+    # reproject local position to gps coordinates
+    x_rad: torch.Tensor = position[1] / EARTH_RADIUS  # north
+    y_rad: torch.Tensor = position[0] / EARTH_RADIUS  # east
+    c: torch.Tensor = torch.sqrt(x_rad * x_rad + y_rad * y_rad)
+    sin_c: torch.Tensor = torch.sin(c)
+    cos_c: torch.Tensor = torch.cos(c)
+
+    if c.item() != 0.0:
+        latitude_rad = torch.arcsin(cos_c * torch.sin(origin_lat) + (x_rad * sin_c * torch.cos(origin_lat)) / c)
+        longitude_rad = origin_long + torch.arctan2(y_rad * sin_c, c * torch.cos(origin_lat) * cos_c - x_rad * torch.sin(origin_lat) * sin_c)
     else:
         latitude_rad = origin_lat
         longitude_rad = origin_long

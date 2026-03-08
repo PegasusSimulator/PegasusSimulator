@@ -6,8 +6,12 @@
 """
 
 # Numerical computations
-import numpy as np
-from scipy.spatial.transform import Rotation
+
+# import numpy as np
+import torch
+
+#from scipy.spatial.transform import Rotation
+import pytorch3d.transforms as transforms
 
 # Low level APIs
 import carb
@@ -66,6 +70,9 @@ class Vehicle(Robot):
             init_orientation (list): The initial orientation of the vehicle in quaternion [qx, qy, qz, qw]. Defaults to [0.0, 0.0, 0.0, 1.0].
         """
 
+        # Define the same device that is running the simulation
+        self.device = PegasusInterface()._world_settings["device"]
+
         # Get the current world at which we want to spawn the vehicle
         self._world = PegasusInterface().world
         self._current_stage = self._world.stage
@@ -105,7 +112,7 @@ class Vehicle(Robot):
         VehicleManager.get_vehicle_manager().add_vehicle(self._stage_prefix, self)
 
         # Variable that will hold the current state of the vehicle
-        self._state = State()
+        self._state = State(self.device)
 
         # Add a callback to the physics engine to update the current state of the system
         self._world.add_physics_callback(self._stage_prefix + "/state", self.update_state)
@@ -126,7 +133,12 @@ class Vehicle(Robot):
         self._sensors = sensors
         
         for sensor in self._sensors:
-            sensor.initialize(self, PegasusInterface().latitude, PegasusInterface().longitude, PegasusInterface().altitude)
+            sensor.initialize(
+                self, 
+                torch.tensor(PegasusInterface().latitude, dtype=torch.float32, device=self.device), 
+                torch.tensor(PegasusInterface().longitude, dtype=torch.float32, device=self.device), 
+                torch.tensor(PegasusInterface().altitude, dtype=torch.float32, device=self.device)
+            )
 
         # Add callbacks to the physics engine to update each sensor at every timestep
         # and let the sensor decide depending on its internal update rate whether to generate new data
@@ -308,27 +320,26 @@ class Vehicle(Robot):
 
         # Get the linear acceleration of the body relative to the inertial frame, expressed in the inertial frame
         # Note: we must do this approximation, since the Isaac sim does not output the acceleration of the rigid body directly
-        linear_acceleration = (np.array(linear_vel) - self._state.linear_velocity) / dt
+        linear_acceleration = (torch.tensor([linear_vel.x, linear_vel.y, linear_vel.z], dtype=torch.float32, device=self.device) - self._state.linear_velocity) / dt
 
         # Update the state variable X = [x,y,z]
-        self._state.position = np.array(pose.p)
+        self._state.position = torch.tensor([pose.p.x, pose.p.y, pose.p.z], dtype=torch.float32, device=self.device)
 
-        # Get the quaternion according in the [qx,qy,qz,qw] standard
-        self._state.attitude = np.array(
-            [rotation_quat_img[0], rotation_quat_img[1], rotation_quat_img[2], rotation_quat_real]
+        # Get the quaternion according in the [qw,qx,qy,qz] standard
+        self._state.attitude = torch.tensor(
+            [rotation_quat_real, rotation_quat_img[0], rotation_quat_img[1], rotation_quat_img[2]], dtype=torch.float32, device=self.device
         )
 
         # Express the velocity of the vehicle in the inertial frame X_dot = [x_dot, y_dot, z_dot]
-        self._state.linear_velocity = np.array(linear_vel)
+        self._state.linear_velocity = torch.tensor([linear_vel.x, linear_vel.y, linear_vel.z], dtype=torch.float32, device=self.device)
 
         # The linear velocity V =[u,v,w] of the vehicle's body frame expressed in the body frame of reference
         # Note that: x_dot = Rot * V
-        self._state.linear_body_velocity = (
-            Rotation.from_quat(self._state.attitude).inv().apply(self._state.linear_velocity)
-        )
+        self._state.linear_body_velocity = transforms.quaternion_apply(transforms.quaternion_invert(self._state.attitude), self._state.linear_velocity)
 
         # omega = [p,q,r]
-        self._state.angular_velocity = Rotation.from_quat(self._state.attitude).inv().apply(np.array(ang_vel))
+        ang_vel_tensor = torch.tensor([ang_vel.x, ang_vel.y, ang_vel.z], dtype=torch.float32, device=self.device)
+        self._state.angular_velocity = transforms.quaternion_apply(transforms.quaternion_invert(self._state.attitude), ang_vel_tensor)
 
         # The acceleration of the vehicle expressed in the inertial frame X_ddot = [x_ddot, y_ddot, z_ddot]
         self._state.linear_acceleration = linear_acceleration
@@ -373,6 +384,7 @@ class Vehicle(Robot):
             # If some data was updated and we have a mavlink backend or ros backend (or other), then just update it
             if sensor_data is not None:
                 for backend in self._backends:
+                    backend._vehicle = self
                     backend.update_sensor(sensor.sensor_type, sensor_data)
 
     def update_graphical_sensors(self, event):
@@ -392,6 +404,7 @@ class Vehicle(Robot):
             # If some data was updated and we have a ros backend (or other), then just update it
             if sensor_data is not None:
                 for backend in self._backends:
+                    backend._vehicle = self
                     backend.update_graphical_sensor(sensor.sensor_type, sensor_data)
 
     def update_sim_state(self, dt: float):
@@ -403,6 +416,7 @@ class Vehicle(Robot):
             dt (float): The time elapsed between the previous and current function calls (s).
         """
         for backend in self._backends:
+            backend._vehicle = self
             backend.update_state(self._state)
 
     def get_dc_interface(self):

@@ -57,7 +57,13 @@ class PegasusApp:
 
         # Acquire the World, .i.e, the singleton that controls that is a one stop shop for setting up physics, 
         # spawning asset primitives, etc.
-        self.pg._world = World(**self.pg._world_settings)
+        #self.pg._world = World(**self.pg._world_settings)
+
+        world_settings = dict(self.pg._world_settings) 
+        world_settings["device"] = "cpu"           
+
+        self.pg._world = World(**world_settings)
+
         self.world = self.pg.world
 
         # Launch one of the worlds provided by NVIDIA
