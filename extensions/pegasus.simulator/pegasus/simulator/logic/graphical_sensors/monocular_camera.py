@@ -14,7 +14,6 @@ from isaacsim.sensors.camera.camera import Camera
 from omni.usd import get_stage_next_free_path
 
 # Auxiliary scipy and numpy modules
-import numpy as np
 from scipy.spatial.transform import Rotation
 
 
@@ -167,9 +166,10 @@ class MonocularCamera(GraphicalSensor):
             self._state["camera"] = self._camera
             self._state["intrinsics"] = self._intrinsics
 
-            # To actually get the image data from the camera, you can use:
-            #self._state["camera"].get_rgb_image()  # For RGB image
-            
+            # NOTE: To actually get the image data from the camera, you can use the camera object stored in 
+            # the self._state["camera"]. This is more efficient than just getting the RGB image at every frame
+            # and storing it in the dictionary explicitly
+
         # If something goes wrong during the data acquisition, just return None
         except:
             self._state = None

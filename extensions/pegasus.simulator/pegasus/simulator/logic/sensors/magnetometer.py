@@ -5,14 +5,11 @@
 """
 __all__ = ["Magnetometer"]
 
-#import numpy as np
 import torch
-
-#from scipy.spatial.transform import Rotation
-import pytorch3d.transforms as transforms
 
 from pegasus.simulator.logic.state import State
 from pegasus.simulator.logic.sensors import Sensor
+from pegasus.simulator.logic.transforms import quaternion_to_matrix
 from pegasus.simulator.logic.rotations import rot_ENU_to_NED, rot_FLU_to_FRD
 from pegasus.simulator.logic.sensors.geo_mag_utils import (
     get_mag_declination,
@@ -20,6 +17,7 @@ from pegasus.simulator.logic.sensors.geo_mag_utils import (
     get_mag_strength,
     reprojection,
 )
+
 
 class Magnetometer(Sensor):
     """The class that implements a magnetometer sensor. This class inherits the base class Sensor.
@@ -99,7 +97,7 @@ class Magnetometer(Sensor):
 
         # Rotate the magnetic field vector such that it expresses a field of a body frame according to the front-right-down (FRD)
         # expressed in a North-East-Down (NED) inertial frame (the standard used in magnetometer units)
-        attitude_flu_enu = transforms.quaternion_to_matrix(state.attitude)
+        attitude_flu_enu = quaternion_to_matrix(state.attitude)
 
         # Rotate the magnetic field from the inertial frame to the body frame of reference according to the FLU frame convention
         rot_body_to_world = rot_ENU_to_NED(device=self.device, dtype=torch.float32) @ attitude_flu_enu @ rot_FLU_to_FRD(device=self.device, dtype=torch.float32).T

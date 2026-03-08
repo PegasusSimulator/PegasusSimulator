@@ -6,15 +6,9 @@
 """
 __all__ = ["State"]
 
-
-# import numpy as np
 import torch
-
-#from scipy.spatial.transform import Rotation
-import pytorch3d.transforms as transforms
-
 from pegasus.simulator.logic.rotations import rot_ENU_to_NED, rot_FLU_to_FRD
-
+from pegasus.simulator.logic.transforms import quaternion_to_matrix, matrix_to_quaternion
 
 class State:
     """
@@ -57,6 +51,7 @@ class State:
         # The linear acceleration [ax, ay, az] of the vehicle's body frame relative to the inertial frame, expressed in the inertial frame
         self.linear_acceleration = torch.tensor([0.0, 0.0, 0.0], dtype=torch.float32, device=self.device)
 
+
     def get_position_ned(self):
         """
         Method that, assuming that a state is encoded in ENU standard (the Isaac Sim standard), converts the position
@@ -77,9 +72,10 @@ class State:
             np.ndarray: A torch tensor with the quaternion [qw, qx, qy, qz] that encodes the attitude of the vehicle's FRD body frame, relative to an NED inertial frame, expressed in the NED inertial frame.
         """
 
-        attitude_frd_ned = rot_ENU_to_NED(device=self.device, dtype=torch.float32) @ transforms.quaternion_to_matrix(self.attitude) @ rot_FLU_to_FRD(device=self.device, dtype=torch.float32)
+        attitude_frd_ned = rot_ENU_to_NED(device=self.device, dtype=torch.float32) @ quaternion_to_matrix(self.attitude) @ rot_FLU_to_FRD(device=self.device, dtype=torch.float32)
 
-        return transforms.matrix_to_quaternion(attitude_frd_ned)
+        return matrix_to_quaternion(attitude_frd_ned)
+
 
     def get_linear_body_velocity_ned_frd(self):
         """
@@ -91,10 +87,11 @@ class State:
         """
 
         # Get the linear acceleration in FLU convention
-        linear_acc_body_flu = transforms.quaternion_to_matrix(self.attitude).T @ self.linear_acceleration
+        linear_acc_body_flu = quaternion_to_matrix(self.attitude).T @ self.linear_acceleration
 
         # Convert the linear acceleration in the body frame expressed in FLU convention to the FRD convention
         return rot_FLU_to_FRD(device=self.device, dtype=torch.float32) @ linear_acc_body_flu
+
 
     def get_linear_velocity_ned(self):
         """
@@ -118,6 +115,7 @@ class State:
             np.ndarray: A torch tensor with [p,q,r] with the angular velocity of the vehicle's FRD body frame, relative to an NED inertial frame, expressed in the FRD body frame.
         """
         return rot_FLU_to_FRD(device=self.device, dtype=torch.float32) @ self.angular_velocity
+
 
     def get_linear_acceleration_ned(self):
         """

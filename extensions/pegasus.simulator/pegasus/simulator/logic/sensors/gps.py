@@ -6,13 +6,10 @@
 """
 __all__ = ["GPS"]
 
-#import numpy as np
 import torch
 
 from pegasus.simulator.logic.sensors import Sensor
 from pegasus.simulator.logic.sensors.geo_mag_utils import reprojection
-
-# TODO - Introduce delay on the GPS data
 
 class GPS(Sensor):
     """The class that implements a GPS sensor. This class inherits the base class Sensor.

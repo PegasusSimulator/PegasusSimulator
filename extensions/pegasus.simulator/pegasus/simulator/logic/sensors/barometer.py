@@ -7,7 +7,6 @@
 """
 __all__ = ["Barometer"]
 
-#import numpy as np
 import torch
 from pegasus.simulator.logic.state import State
 from pegasus.simulator.logic.sensors import Sensor
@@ -52,16 +51,42 @@ class Barometer(Sensor):
 
         # Define the constants for the barometer
         # International standard atmosphere (troposphere model - valid up to 11km) see [1]
-        self._TEMPERATURE_MSL: torch.Tensor = torch.tensor(config.get("temperature_msl", 288.15), dtype=torch.float32, device=device)  # temperature at MSL [K] (15 [C])
-        self._PRESSURE_MSL: torch.Tensor = torch.tensor(config.get("pressure_msl", 101325.0), dtype=torch.float32, device=device)  # pressure at MSL [Pa]
-        self._LAPSE_RATE: torch.Tensor = torch.tensor(config.get(
-            "lapse_rate", 0.0065
-        ), dtype=torch.float32, device=device)  # reduction in temperature with altitude for troposphere [K/m]
-        self._AIR_DENSITY_MSL: torch.Tensor = torch.tensor(config.get("air_density_msl", 1.225), dtype=torch.float32, device=device)  # air density at MSL [kg/m^3]
-        self._ABSOLUTE_ZERO_C: torch.Tensor = torch.tensor(config.get("absolute_zero", -273.15), dtype=torch.float32, device=device)  # [C]
+        self._TEMPERATURE_MSL: torch.Tensor = torch.tensor(
+            config.get("temperature_msl", 288.15), 
+            dtype=torch.float32, 
+            device=device
+        )  # temperature at MSL [K] (15 [C])
+        
+        self._PRESSURE_MSL: torch.Tensor = torch.tensor(
+            config.get("pressure_msl", 101325.0), 
+            dtype=torch.float32, 
+            device=device
+        )  # pressure at MSL [Pa]
+        
+        self._LAPSE_RATE: torch.Tensor = torch.tensor(
+            config.get("lapse_rate", 0.0065), 
+            dtype=torch.float32, 
+            device=device
+        )  # reduction in temperature with altitude for troposphere [K/m]
+        
+        self._AIR_DENSITY_MSL: torch.Tensor = torch.tensor(
+            config.get("air_density_msl", 1.225),
+            dtype=torch.float32, 
+            device=device
+        )  # air density at MSL [kg/m^3]
+        
+        self._ABSOLUTE_ZERO_C: torch.Tensor = torch.tensor(
+            config.get("absolute_zero", -273.15), 
+            dtype=torch.float32, 
+            device=device
+        )  # [C]
 
         # Set the drift for the sensor
-        self._baro_drift_pa_per_sec: torch.Tensor = torch.tensor(config.get("drift_pa_per_sec", 0.0), dtype=torch.float32, device=device)
+        self._baro_drift_pa_per_sec: torch.Tensor = torch.tensor(
+            config.get("drift_pa_per_sec", 0.0), 
+            dtype=torch.float32, 
+            device=device
+        )
 
         # Auxiliar variables for generating the noise
         self._baro_rnd_use_last: bool = False

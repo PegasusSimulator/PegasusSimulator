@@ -4,11 +4,7 @@
 | License: BSD-3-Clause. Copyright (c) 2024, Marcelo Jacinto. All rights reserved.
 | Description: Definition of the Multirotor class which is used as the base for all the multirotor vehicles.
 """
-
-#import numpy as np
 import torch
-
-from omni.isaac.dynamic_control import _dynamic_control
 
 # The vehicle interface
 from pegasus.simulator.logic.vehicles.vehicle import Vehicle

@@ -6,17 +6,13 @@
 """
 __all__ = ["IMU"]
 
-#import numpy as np
 import torch
-
-#from scipy.spatial.transform import Rotation
-import pytorch3d.transforms as transforms
 
 from pegasus.simulator.logic.state import State
 from pegasus.simulator.logic.sensors import Sensor
 from pegasus.simulator.logic.rotations import rot_FLU_to_FRD, rot_ENU_to_NED
 from pegasus.simulator.logic.sensors.geo_mag_utils import GRAVITY_VECTOR
-
+from pegasus.simulator.logic.transforms import quaternion_to_matrix, matrix_to_quaternion
 
 class IMU(Sensor):
     """The class that implements the IMU sensor. This class inherits the base class Sensor.
@@ -178,7 +174,7 @@ class IMU(Sensor):
         self._prev_linear_velocity = state.linear_velocity
 
         # Compute the linear acceleration of the body frame, with respect to the inertial frame, expressed in the body frame
-        linear_acceleration = transforms.quaternion_to_matrix(state.attitude).T @ linear_acceleration_inertial
+        linear_acceleration = quaternion_to_matrix(state.attitude).T @ linear_acceleration_inertial
 
         # Simulate the accelerometer noise processes and add them to the true linear aceleration values
         for i in range(3):
@@ -194,7 +190,7 @@ class IMU(Sensor):
         # --------------------------------------------------------------------------------------------
 
         # Convert the orientation to the FRD-NED standard
-        attitude_flu_enu = transforms.quaternion_to_matrix(state.attitude)
+        attitude_flu_enu = quaternion_to_matrix(state.attitude)
         attitude_frd_enu = attitude_flu_enu @ rot_FLU_to_FRD(device = self.device, dtype=torch.float32)
         attitude_frd_ned = rot_ENU_to_NED(device = self.device, dtype=torch.float32) @ attitude_frd_enu
 
@@ -206,7 +202,7 @@ class IMU(Sensor):
 
         # Add the values to the dictionary and return it
         self._state = {
-            "orientation": transforms.matrix_to_quaternion(attitude_frd_ned),
+            "orientation": matrix_to_quaternion(attitude_frd_ned),
             "angular_velocity": angular_velocity_frd,
             "linear_acceleration": linear_acceleration_frd,
         }

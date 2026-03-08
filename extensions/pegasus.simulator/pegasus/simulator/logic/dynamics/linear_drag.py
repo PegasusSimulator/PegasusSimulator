@@ -4,7 +4,7 @@
 | Description: Computes the forces that should actuate on a rigidbody affected by linear drag
 | License: BSD-3-Clause. Copyright (c) 2023, Marcelo Jacinto. All rights reserved.
 """
-import numpy as np
+import torch
 from pegasus.simulator.logic.dynamics.drag import Drag
 from pegasus.simulator.logic.state import State
 

@@ -4,14 +4,7 @@
 | License: BSD-3-Clause. Copyright (c) 2024, Marcelo Jacinto. All rights reserved.
 | Description: Definition of the Vehicle class which is used as the base for all the vehicles.
 """
-
-# Numerical computations
-
-# import numpy as np
 import torch
-
-#from scipy.spatial.transform import Rotation
-import pytorch3d.transforms as transforms
 
 # Low level APIs
 import carb
@@ -26,8 +19,9 @@ from omni.isaac.dynamic_control import _dynamic_control
 
 # Extension APIs
 from pegasus.simulator.logic.state import State
-from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 from pegasus.simulator.logic.vehicle_manager import VehicleManager
+from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
+from pegasus.simulator.logic.transforms import quaternion_apply, quaternion_invert
 
 
 def get_world_transform_xform(prim: Usd.Prim):
@@ -118,7 +112,8 @@ class Vehicle(Robot):
         self._world.add_physics_callback(self._stage_prefix + "/state", self.update_state)
 
         # Add the update method to the physics callback if the world was received
-        # so that we can apply forces and torques to the vehicle. Note, this method should        # be implemented in classes that inherit the vehicle object
+        # so that we can apply forces and torques to the vehicle. Note, this method should 
+        # be implemented in classes that inherit the vehicle object
         self._world.add_physics_callback(self._stage_prefix + "/update", self.update)
 
         # Set the flag that signals if the simulation is running or not
@@ -335,11 +330,11 @@ class Vehicle(Robot):
 
         # The linear velocity V =[u,v,w] of the vehicle's body frame expressed in the body frame of reference
         # Note that: x_dot = Rot * V
-        self._state.linear_body_velocity = transforms.quaternion_apply(transforms.quaternion_invert(self._state.attitude), self._state.linear_velocity)
+        self._state.linear_body_velocity = quaternion_apply(quaternion_invert(self._state.attitude), self._state.linear_velocity)
 
         # omega = [p,q,r]
         ang_vel_tensor = torch.tensor([ang_vel.x, ang_vel.y, ang_vel.z], dtype=torch.float32, device=self.device)
-        self._state.angular_velocity = transforms.quaternion_apply(transforms.quaternion_invert(self._state.attitude), ang_vel_tensor)
+        self._state.angular_velocity = quaternion_apply(quaternion_invert(self._state.attitude), ang_vel_tensor)
 
         # The acceleration of the vehicle expressed in the inertial frame X_ddot = [x_ddot, y_ddot, z_ddot]
         self._state.linear_acceleration = linear_acceleration

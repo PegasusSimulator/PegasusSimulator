@@ -4,7 +4,6 @@
 | Descriptio: File that implements a quadratic thrust curve for rotors
 | License: BSD-3-Clause. Copyright (c) 2023, Marcelo Jacinto. All rights reserved.
 """
-#import numpy as np
 import torch
 from pegasus.simulator.logic.state import State
 from pegasus.simulator.logic.thrusters.thrust_curve import ThrustCurve
@@ -13,8 +12,7 @@ class QuadraticThrustCurve(ThrustCurve):
     """Class that implements the dynamics of rotors that can be described by a quadratic thrust curve
     """
     def __init__(self, config={}, device="cpu"):
-        """_summary_
-
+        """
         Args:
             config (dict): A Dictionary that contains all the parameters for configuring the QuadraticThrustCurve - it can be empty or only have some of the parameters used by the QuadraticThrustCurve.
         
