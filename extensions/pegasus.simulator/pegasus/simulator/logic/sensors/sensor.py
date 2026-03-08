@@ -5,38 +5,43 @@
 """
 __all__ = ["Sensor"]
 
+import torch
+
 from pegasus.simulator.logic.state import State
 
 class Sensor:
     """The base class for implementing a sensor
 
     Attributes:
-        update_period (float): The period for each sensor update: update_period = 1 / update_rate (in s).
-        origin_lat (float): The latitude of the origin of the world in degrees (might get used by some sensors).
-        origin_lon (float): The longitude of the origin of the world in degrees (might get used by some sensors).
-        origin_alt (float): The altitude of the origin of the world relative to sea water level (might get used by some sensors)
+        update_period (torch.Tensor): The period for each sensor update: update_period = 1 / update_rate (in s).
+        origin_lat (torch.Tensor): The latitude of the origin of the world in degrees (might get used by some sensors).
+        origin_lon (torch.Tensor): The longitude of the origin of the world in degrees (might get used by some sensors).
+        origin_alt (torch.Tensor): The altitude of the origin of the world relative to sea water level (might get used by some sensors)
     """
-    def __init__(self, sensor_type: str, update_rate: float):
+    def __init__(self, sensor_type: str, update_rate: torch.Tensor):
         """Initialize the Sensor class
 
         Args:
             sensor_type (str): A name that describes the type of sensor
-            update_rate (float): The rate at which the data in the sensor should be refreshed (in Hz)
+            update_rate (torch.Tensor): The rate at which the data in the sensor should be refreshed (in Hz)
         """
+
+        # Set device
+        self._device = update_rate.device
 
         # Set the sensor type and update rate
         self._sensor_type = sensor_type
         self._update_rate = update_rate
-        self._update_period = 1.0 / self._update_rate
+        self._update_period = torch.tensor(1.0, dtype=torch.float32, device=self._device) / self._update_rate
 
         # Auxiliar variables used to control whether to update the sensor or not given the time elapsed
         self._first_update = True
-        self._total_time = 0.0
+        self._total_time = torch.tensor(0.0, dtype=torch.float32, device=self._device)
 
         # Set the "configuration of the world" - some sensors might need it
-        self._origin_lat = -999
-        self._origin_lon = -999
-        self._origin_alt = 0.0
+        self._origin_lat = torch.tensor(-999, dtype=torch.float32, device=self._device)
+        self._origin_lon = torch.tensor(-999, dtype=torch.float32, device=self._device)
+        self._origin_alt = torch.tensor(0.0, dtype=torch.float32, device=self._device)
 
         self._vehicle = None
 
@@ -49,23 +54,23 @@ class Sensor:
         
         Args:
             vehicle (Vehicle): A reference to the vehicle that this sensor is associated with
-            origin_lat (float): The latitude of the origin of the world in degrees (might get used by some sensors).
-            origin_lon (float): The longitude of the origin of the world in degrees (might get used by some sensors).
-            origin_alt (float): The altitude of the origin of the world relative to sea water level (might get used by some sensors).
+            origin_lat (torch.Tensor): The latitude of the origin of the world in degrees (might get used by some sensors).
+            origin_lon (torch.Tensor): The longitude of the origin of the world in degrees (might get used by some sensors).
+            origin_alt (torch.Tensor): The altitude of the origin of the world relative to sea water level (might get used by some sensors).
         """
         self._vehicle = vehicle
         self._origin_lat = origin_lat
         self._origin_lon = origin_lon
         self._origin_alt = origin_alt
 
-    def set_update_rate(self, update_rate: float):
+    def set_update_rate(self, update_rate: torch.Tensor):
         """Method that changes the update rate and period of the sensor
 
         Args:
-            update_rate (float): The new rate at which the data in the sensor should be refreshed (in Hz)
+            update_rate (torch.Tensor): The new rate at which the data in the sensor should be refreshed (in Hz)
         """
         self._update_rate = update_rate
-        self._update_period = 1.0 / self._update_rate
+        self._update_period = torch.tensor(1.0, dtype=torch.float32, device=self._device) / self._update_rate
 
     def update_at_rate(fnc):
         """Decorator function used to check if the time elapsed between the last sensor update call and the current 
@@ -87,7 +92,7 @@ class Sensor:
         """
 
         # Define a wrapper function so that the "self" of the object can be passed to the function as well
-        def wrapper(self, state: State, dt: float):
+        def wrapper(self, state: State, dt: torch.Tensor):
 
             # Add the total time passed between the last time the sensor was updated and the current call
             self._total_time += dt
@@ -100,7 +105,7 @@ class Sensor:
 
                 # Reset the auxiliar counter variables
                 self._first_update = False
-                self._total_time = 0.0
+                self._total_time = torch.tensor(0.0, dtype=torch.float32, device=self._device)
 
                 return result
             return None
@@ -127,13 +132,13 @@ class Sensor:
         """
         return None
 
-    def update(self, state: State, dt: float):
+    def update(self, state: State, dt: torch.Tensor):
         """Method that should be implemented by the class that inherits Sensor. This is where the actual implementation
         of the sensor should be performed.
 
         Args:
             state (State): The current state of the vehicle.
-            dt (float): The time elapsed between the previous and current function calls (s).
+            dt (torch.Tensor): The time elapsed between the previous and current function calls (s).
 
         Returns:
             (dict) A dictionary containing the current state of the sensor (the data produced by the sensor)
