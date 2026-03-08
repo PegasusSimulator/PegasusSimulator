@@ -6,18 +6,16 @@
 """
 __all__ = ["Lidar"]
 
+import torch
+
 from pegasus.simulator.logic.state import State
 from pegasus.simulator.logic.graphical_sensors import GraphicalSensor
 from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 
 # Imports the python bindings to interact with lidar sensor
 import omni.kit.commands
-from pxr import Gf, UsdGeom  
+from pxr import Gf  
 from omni.usd import get_stage_next_free_path
-
-# Auxiliary scipy and numpy modules
-import numpy as np
-from scipy.spatial.transform import Rotation
 
 # Import the replicatore core module used for writing graphical data to ROS 2
 import omni.replicator.core as rep

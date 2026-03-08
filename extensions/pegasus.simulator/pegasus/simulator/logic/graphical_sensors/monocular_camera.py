@@ -11,13 +11,10 @@ import torch
 from pegasus.simulator.logic.state import State
 from pegasus.simulator.logic.graphical_sensors import GraphicalSensor
 from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
+from pegasus.simulator.logic.transforms import euler_angles_to_matrix, matrix_to_quaternion
 
-from isaacsim.sensors.camera.camera import Camera
 from omni.usd import get_stage_next_free_path
-
-# Auxiliary scipy and numpy modules
-from scipy.spatial.transform import Rotation
-
+from isaacsim.sensors.camera.camera import Camera
 
 class MonocularCamera(GraphicalSensor):
     """
@@ -50,14 +47,17 @@ class MonocularCamera(GraphicalSensor):
         # Initialize the Super class "object" attributes
         super().__init__(sensor_type="MonocularCamera", update_rate=config.get("frequency", 30.0))        
         
+        # Define the same device that is running the simulation
+        self.device = PegasusInterface()._world_settings["device"]
+
         # Setup the name of the camera primitive path
         self._camera_name = camera_name
         self._stage_prim_path = ""
 
         # Configurations of the camera
         self._depth = config.get("depth", True)
-        self._position = config.get("position", np.array([0.30, 0.0, 0.0]))
-        self._orientation = config.get("orientation", np.array([0.0, 0.0, 180.0]))
+        self._position = config.get("position", torch.tensor([0.30, 0.0, 0.0], dtype=torch.float32, device=self.device))
+        self._orientation = config.get("orientation", torch.tensor([0.0, 0.0, 180.0], dtype=torch.float32, device=self.device))
         self._resolution = config.get("resolution", (1920, 1200))
         self._clipping_range = config.get("clipping_range", (0.05, 100.0))
         self._frequency = config.get("frequency", 30)
@@ -71,14 +71,14 @@ class MonocularCamera(GraphicalSensor):
         else:
             # Assume a default field of view of 70 degrees
             self.fov = 70.0  # degrees
-            self.fx = 0.5 * self._resolution[0] / np.tan(0.5 * np.radians(self.fov))
+            self.fx = 0.5 * self._resolution[0] / torch.tan(0.5 * torch.deg2rad(torch.tensor(self.fov)))
             self.fy = self.fx
             self.cx = 0.5 * self._resolution[0]
             self.cy = 0.5 * self._resolution[1]
 
-        self._intrinsics = np.array([[self.fx, 0.0, self.cx],
-                                     [0.0, self.fy, self.cy],
-                                     [0.0, 0.0, 1.0]])
+        self._intrinsics = torch.tensor([[self.fx, 0.0, self.cx],
+                                         [0.0, self.fy, self.cy],
+                                         [0.0, 0.0, 1.0]], dtype=torch.float32, device=self.device)
 
         # Setup an empty camera output dictionary
         self._state = {}
@@ -105,7 +105,10 @@ class MonocularCamera(GraphicalSensor):
             resolution=self._resolution)
         
         # Set the camera position locally with respect to the drone
-        self._camera.set_local_pose(np.array(self._position), Rotation.from_euler("ZYX", self._orientation, degrees=True).as_quat())
+        self._camera.set_local_pose(
+            torch.tensor(self._position, dtype=torch.float32, device=self.device), 
+            matrix_to_quaternion(euler_angles_to_matrix(angles=torch.deg2rad(torch.flip(self._orientation, dims=[0])), convention="ZYX"))
+        )
         
     def start(self):
 

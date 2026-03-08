@@ -8,7 +8,7 @@ __all__ = ["PX4MavlinkBackend", "PX4MavlinkBackendConfig"]
 
 import carb
 import time
-import numpy as np
+import torch
 from pymavlink import mavutil
 
 from pegasus.simulator.logic.state import State
@@ -286,11 +286,11 @@ class PX4MavlinkBackend(Backend):
 
         # Vehicle actuator control data
         self._num_inputs: int = self.config.num_rotors
-        self._input_reference: np.ndarray = np.zeros((self._num_inputs,))
+        self._input_reference: torch.Tensor = torch.zeros((self._num_inputs,), dtype=torch.float32)
         self._armed: bool = False
 
-        self._input_offset: np.ndarray = np.zeros((self._num_inputs,))
-        self._input_scaling: np.ndarray = np.zeros((self._num_inputs,))
+        self._input_offset: torch.Tensor = torch.zeros((self._num_inputs,), dtype=torch.float32)
+        self._input_scaling: torch.Tensor = torch.zeros((self._num_inputs,), dtype=torch.float32)
 
         # Select whether lockstep is enabled
         self._enable_lockstep: bool = self.config.enable_lockstep
@@ -469,7 +469,7 @@ class PX4MavlinkBackend(Backend):
         # Compute the air_speed - assumed indicated airspeed due to flow aligned with pitot (body x)
         body_vel = state.get_linear_body_velocity_ned_frd()
         self._sensor_data.sim_ind_airspeed = int(body_vel[0] * 100)
-        self._sensor_data.sim_true_airspeed = int(np.linalg.norm(lin_vel) * 100)  # TODO - add wind here
+        self._sensor_data.sim_true_airspeed = int(torch.linalg.norm(lin_vel) * 100)  # TODO - add wind here
 
         self._sensor_data.new_sim_state = True
 

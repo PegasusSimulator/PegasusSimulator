@@ -5,8 +5,10 @@
 | License: BSD-3-Clause. Copyright (c) 2023, Marcelo Jacinto. All rights reserved.
 """
 import torch
-from pegasus.simulator.logic.dynamics.drag import Drag
 from pegasus.simulator.logic.state import State
+from pegasus.simulator.logic.dynamics.drag import Drag
+from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
+
 
 class LinearDrag(Drag):
     """
@@ -26,11 +28,15 @@ class LinearDrag(Drag):
         # Initialize the base Drag class
         super().__init__()
 
+        # Define the same device that is running the simulation
+        self.device = PegasusInterface()._world_settings["device"]
+
         # The linear drag coefficients of the vehicle's body frame
-        self._drag_coefficients = np.diag(drag_coefficients)
+        self._drag_coefficients = torch.diag(drag_coefficients, dtype=torch.float32, device=self.device)
 
         # The drag force to apply on the vehicle's body frame
-        self._drag_force = np.array([0.0, 0.0, 0.0])
+        self._drag_force = torch.tensor([0.0, 0.0, 0.0], dtype=torch.float32, device=self.device)
+
 
     @property
     def drag(self):
@@ -41,6 +47,7 @@ class LinearDrag(Drag):
             frame, expressed in Newton (N) [dx, dy, dz]
         """
         return self._drag_force
+
 
     def update(self, state: State, dt: float):
         """Method that updates the drag force to be applied on the body frame of the vehicle. The total drag force
@@ -59,5 +66,4 @@ class LinearDrag(Drag):
         body_vel = state.linear_body_velocity
 
         # Compute the component of the drag force to be applied in the body frame
-        self._drag_force = -np.dot(self._drag_coefficients, body_vel)
-        return self._drag_force
+        return -torch.dot(self._drag_coefficients, body_vel)
