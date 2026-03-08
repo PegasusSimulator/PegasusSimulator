@@ -60,7 +60,7 @@ class PegasusApp:
         #self.pg._world = World(**self.pg._world_settings)
 
         world_settings = dict(self.pg._world_settings) 
-        world_settings["device"] = "cuda"           
+        world_settings["device"] = "cpu"           
 
         self.pg._world = World(**world_settings)
 
