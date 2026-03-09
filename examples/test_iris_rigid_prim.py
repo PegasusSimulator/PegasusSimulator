@@ -59,7 +59,7 @@ class PegasusApp:
     A Template class that serves as an example on how to build a simple Isaac Sim standalone App.
     """
 
-    def __init__(self, n_envs=8, spacing=3.0):
+    def __init__(self, n_envs=8, spacing=3.0, device="cpu"):
         """
         Method that initializes the PegasusApp and is used to setup the simulation environment.
         """
@@ -72,12 +72,11 @@ class PegasusApp:
 
         # Acquire the World, .i.e, the singleton that controls that is a one stop shop for setting up physics, 
         # spawning asset primitives, etc.
-        #self.pg._world = World(**self.pg._world_settings)
         self.pg._world = World(
             physics_dt = 1.0 / 100.0,
             stage_units_in_meters=1.0,
             rendering_dt=1.0 / 60.0,
-            device="cuda"
+            device=device
         )
 
         stage = stage_utils.get_current_stage()
@@ -88,9 +87,6 @@ class PegasusApp:
 
         self.pg._world.get_physics_context().enable_gpu_dynamics(True)
         print(self.pg._world.get_physics_context().is_gpu_dynamics_enabled())
-
-        
-        #UsdGeom.Xform.Define(stage, "/World")
 
         # Launch one of the worlds provided by NVIDIA
         self.pg.load_environment(SIMULATION_ENVIRONMENTS["Curved Gridroom"])
@@ -122,8 +118,7 @@ class PegasusApp:
         self.prims = RigidPrim(prim_paths_expr="/World/quadrotor.*/.*", name="prims")
         self.prims.initialize()
 
-        print("prims.count =", self.prims.count)
-
+        #print("prims.count =", self.prims.count)
         #print("prims.prim_paths =", self.prims.prim_paths)
 
         self.device = torch.device("cuda")
@@ -169,7 +164,7 @@ class PegasusApp:
 def main():
 
     # Instantiate the template app
-    pg_app = PegasusApp(n_envs=4096, spacing=3.0)
+    pg_app = PegasusApp(n_envs=4096, spacing=3.0, device="cuda")
 
     # Run the application loop
     pg_app.run()

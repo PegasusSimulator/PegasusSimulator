@@ -198,7 +198,6 @@ class NonlinearController(Backend):
         # -------------------------------------------------
         self.total_time += dt
         
-
         # Check if we need to update to the next trajectory index
         if self.index < self.max_index - 1 and self.total_time >= self.trajectory[self.index + 1, 0]:
             self.index += 1

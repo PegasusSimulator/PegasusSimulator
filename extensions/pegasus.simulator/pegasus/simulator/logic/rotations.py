@@ -16,7 +16,7 @@ from pegasus.simulator.logic.transforms import quaternion_to_matrix
 
 # Rotation from the ENU inertial frame to the NED inertial frame of reference
 def rot_ENU_to_NED(device, dtype):
-    q_ENU_to_NED = torch.tensor([0.0, 0.70711, 0.70711, 0.0], dtype=torch.float32, device=device)
+    q_ENU_to_NED = torch.tensor([0.0, 0.70711, 0.70711, 0.0], dtype=dtype, device=device)
     return quaternion_to_matrix(q_ENU_to_NED)
 
 # Quaternion for rotation between body FLU and body FRD frames
@@ -28,6 +28,6 @@ def rot_ENU_to_NED(device, dtype):
 
 # Rotation from the FLU body frame to the FRD body frame
 def rot_FLU_to_FRD(device, dtype):
-    q_FLU_to_FRD = torch.tensor([0.0, 1.0, 0.0, 0.0], dtype=torch.float32, device=device)
+    q_FLU_to_FRD = torch.tensor([0.0, 1.0, 0.0, 0.0], dtype=dtype, device=device)
     return quaternion_to_matrix(q_FLU_to_FRD)
 
