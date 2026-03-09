@@ -32,7 +32,7 @@ class LinearDrag(Drag):
         self.device = PegasusInterface()._world_settings["device"]
 
         # The linear drag coefficients of the vehicle's body frame
-        self._drag_coefficients = torch.diag(drag_coefficients, dtype=torch.float32, device=self.device)
+        self._drag_coefficients = torch.diag(torch.tensor(drag_coefficients, dtype=torch.float32, device=self.device))
 
         # The drag force to apply on the vehicle's body frame
         self._drag_force = torch.tensor([0.0, 0.0, 0.0], dtype=torch.float32, device=self.device)
@@ -66,4 +66,4 @@ class LinearDrag(Drag):
         body_vel = state.linear_body_velocity
 
         # Compute the component of the drag force to be applied in the body frame
-        return -torch.dot(self._drag_coefficients, body_vel)
+        return -(self._drag_coefficients @ body_vel)

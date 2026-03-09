@@ -265,6 +265,12 @@ class Vehicle(Robot):
             body_part (str): . Defaults to "/body".
         """
 
+        if isinstance(force, torch.Tensor):
+            force = force.detach().cpu().tolist()
+
+        if isinstance(pos, torch.Tensor):
+            pos = pos.detach().cpu().tolist()
+
         # Get the handle of the rigidbody that we will apply the force to
         rb = self.get_dc_interface().get_rigid_body(self._stage_prefix + body_part)
 
