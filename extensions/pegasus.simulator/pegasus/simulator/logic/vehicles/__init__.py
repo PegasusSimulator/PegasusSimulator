@@ -4,4 +4,6 @@
 """
 
 from .vehicle import Vehicle
+from .vehicle_batch import VehicleBatch
 from .multirotor import Multirotor, MultirotorConfig
+from .multirotor_batch import MultirotorBatch, MultirotorBatchConfig
