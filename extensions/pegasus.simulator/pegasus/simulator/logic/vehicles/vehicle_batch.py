@@ -19,6 +19,9 @@ import isaacsim.core.utils.stage as stage_utils
 #from omni.isaac.dynamic_control import _dynamic_control
 from isaacsim.core.prims import RigidPrim
 
+from omni.isaac.cloner import GridCloner
+from omni.isaac.core.prims import XFormPrimView
+
 # Extension APIs
 from pegasus.simulator.logic.state_batch import StateBatch
 from pegasus.simulator.logic.vehicle_manager import VehicleManager
@@ -80,21 +83,12 @@ class VehicleBatch():
 
         self._vehicle_name = self._stage_prefix.rpartition("/")[-1]
 
-        # Initialize the position and orientation of the vehicles. If no position is given, we will initialize the vehicles in a grid formation (spacing x spacing)
-        if init_pos is None:
-            self.init_pos = self._build_init_positions(init_pos, spacing)
-        else:             
-            self.init_pos = torch.as_tensor(init_pos, dtype=torch.float32, device=self.device)
-            
-        if init_orientation is None:
-            self.init_orientation = torch.tensor([[1.0, 0.0, 0.0, 0.0]] * n_vehicles, dtype=torch.float32, device=self.device)
-        else:
-            self.init_orientation = torch.stack(init_orientation, dim=0).to(self.device)
-
         # Spawn the batch of vehicle's in the world's stage
-        self._spawn_batch()
+        self._spawn_batch(init_pos, init_orientation, spacing)
 
         self.parts_per_vehicle = None
+        
+        self.body_index = None
 
         # View batch prims
         self._vehicle_expr = f"{self._stage_prefix}.*/.*"
@@ -173,43 +167,91 @@ class VehicleBatch():
         """
         self.vehicle_prims.initialize()
 
-        #self.body_indices = [i for i, p in enumerate(self.vehicle_prims.prim_paths) if p.endswith("/body")]
-
         self.parts_per_vehicle = self.vehicle_prims.count // self.n_vehicles
+
         print(f"Spawned {self.n_vehicles} vehicles with {self.parts_per_vehicle} parts each (total {self.vehicle_prims.count} prims)")
+
+        self.body_index = next((i for i, p in enumerate(self.vehicle_prims.prim_paths[:self.parts_per_vehicle]) if p.endswith("/body")), None)
 
         self._allocate_batch_state()
 
-    def _build_init_positions(self, init_pos, spacing):
-        side = int(math.ceil(math.sqrt(self.n_vehicles)))
-        pos = torch.zeros((self.n_vehicles, 3), dtype=torch.float32, device=self.device)
-        for i in range(self.n_vehicles):
-            pos[i, 0] = float(i % side) * spacing
-            pos[i, 1] = float(i // side) * spacing
-            pos[i, 2] = 0.3
+
+    def _spawn_batch(self, init_pos=None, init_orientation=None, spacing=3.0):
+        '''
+        This method spawns a batch of vehicles in the simulation stage.
+
+        If explicit initial positions are provided, each vehicle is spawned individually at the specified position and orientation.
+        Otherwise, a GridCloner is used to spawn the vehicles automatically in a grid formation with the given spacing.
+
+        Args:
+            spacing (float): Distance between vehicles when using the grid spawn mode.
+        '''
+
+        # If explicit initial positions were provided, spawn each vehicle manually
+        if init_pos is not None:
+
+            for i in range(self.n_vehicles):
+                
+                # Create the prim path for this vehicle instance
+                prim_path = f"{self._stage_prefix}_{i}"
+
+                # Add the USD reference of the vehicle to the stage
+                stage_utils.add_reference_to_stage(self._usd_file, prim_path=prim_path)
+
+                # Get the prim and create XForm interfaces to manipulate its transform
+                prim = self._stage.GetPrimAtPath(prim_path)
+                xformable = UsdGeom.Xformable(prim)
+                xform = UsdGeom.XformCommonAPI(xformable)
+
+                # Set the initial position of the vehicle in world coordinates
+                p = init_pos[i]
+                xform.SetTranslate(Gf.Vec3d(float(p[0]), float(p[1]), float(p[2])))
+
+                # If initial orientations were provided, apply them using a quaternion
+                if init_orientation is not None:
+                    q = init_orientation[i]   # [w, x, y, z]
+                    quat = Gf.Quatf(float(q[0]), float(q[1]), float(q[2]), float(q[3])).GetNormalized()
+
+                    # Check if the prim already has an orient transform op
+                    orient_attr = prim.GetAttribute("xformOp:orient")
+                    
+                    if orient_attr.IsValid():
+                        orient_attr.Set(quat)
+                    else:
+                        orient_op = xformable.AddOrientOp()
+                        orient_op.Set(quat)
         
-        return pos
+        # If no explicit positions were given, spawn vehicles using GridCloner
+        else:
 
-    def _build_init_orientations(self, init_orientation):
-        q = torch.zeros((self.n_vehicles, 4), dtype=torch.float32, device=self.device)
-        q[:, 0] = 1.0
-        
-        return q
-
-    def _spawn_batch(self):
-
-        for i in range(self.n_vehicles):
-            prim_path = f"{self._stage_prefix}_{i}"
+            # Spawn the base vehicle that will be used as the cloning source
+            prim_path = f"{self._stage_prefix}_0"
             stage_utils.add_reference_to_stage(self._usd_file, prim_path=prim_path)
 
-            prim = self._stage.GetPrimAtPath(prim_path)
-            xform = UsdGeom.XformCommonAPI(UsdGeom.Xformable(prim))
-            p = self.init_pos[i]
-            xform.SetTranslate(Gf.Vec3d(float(p[0]), float(p[1]), float(p[2])))
+            # Create a grid cloner that will distribute vehicles with the given spacing
+            cloner = GridCloner(spacing=spacing)
+            
+            # Generate the prim paths for all vehicle instances
+            target_paths = cloner.generate_paths(self._stage_prefix, self.n_vehicles)
 
-            #q = self.init_orientation[i]
-            #quat = Gf.Quatd(float(q[0]), float(q[1]), float(q[2]), float(q[3]))
-            #xform.SetRotate(quat.GetNormalized().GetImaginary())
+            # Clone the base vehicle to the generated paths
+            cloner.clone(source_prim_path=f"{self._stage_prefix}_0", prim_paths=target_paths, replicate_physics=False, copy_from_source=True, base_env_path="/World", root_path=f"{self._stage_prefix}_")
+
+        # Create a view over the root prim of each vehicle
+        vehicles = XFormPrimView(prim_paths_expr=f"{self._stage_prefix}_.*/")
+
+        # Retrieve the world poses of the spawned vehicles
+        init_pos, init_orientation = vehicles.get_world_poses()
+
+        #init_pos[:, 2] = 0.3
+        #vehicles.set_world_poses(init_pos, init_orientation)
+
+        # Store them as tensors for later use
+        self.init_pos = torch.as_tensor(init_pos, dtype=torch.float32, device=self.device)
+        self.init_orientation = torch.as_tensor(init_orientation, dtype=torch.float32, device=self.device)
+
+        #print(f"Initialized {self.n_vehicles} vehicles at positions: {self.init_pos} and orientations: {self.init_orientation}")
+
 
     def _allocate_batch_state(self):
         n = self.n_vehicles
@@ -354,7 +396,7 @@ class VehicleBatch():
         if self._sim_running == False:
             return
 
-        # Get the positions, orientations, linear velocities, and angular velocities of all vehicle prims        
+        # Get the positions, orientations, linear velocities, and angular velocities of all vehicle prims in the inertial frame of reference   
         prims_positions, prims_orientations = self.vehicle_prims.get_world_poses()
         prims_linear_vel = self.vehicle_prims.get_linear_velocities()
         prims_angular_vel = self.vehicle_prims.get_angular_velocities()
@@ -368,14 +410,14 @@ class VehicleBatch():
         # Use the body prim of each vehicle as the reference frame for the state
 
         # Get the current position of the body in the inertial frame and its orientation relative to the inertial frame
-        positions = prims_positions[:, 0, :]
-        orientations = prims_orientations[:, 0, :]
+        positions = prims_positions[:, self.body_index, :]
+        orientations = prims_orientations[:, self.body_index, :]
 
         # The linear velocity [x_dot, y_dot, z_dot] of the vehicle's body frame expressed in the inertial frame of reference
-        linear_vel = prims_linear_vel[:, 0, :]
+        linear_vel = prims_linear_vel[:, self.body_index, :]
         
         # Get the angular velocity of the vehicle expressed in the body frame of reference
-        angular_vel = prims_angular_vel[:, 0, :]
+        angular_vel = prims_angular_vel[:, self.body_index, :]
 
         # Get the linear acceleration of the body relative to the inertial frame, expressed in the inertial frame
         # Note: we must do this approximation, since the Isaac sim does not output the acceleration of the rigid body directly
@@ -392,8 +434,8 @@ class VehicleBatch():
         # Note that: x_dot = Rot * V
         self._state.linear_body_velocity = quaternion_apply(quaternion_invert(self._state.attitude), self._state.linear_velocity)
 
-        # omega = [p,q,r]
-        self._state.angular_velocity = angular_vel
+        # omega = [p,q,r], expressed in the body frame of reference
+        self._state.angular_velocity = quaternion_apply(quaternion_invert(self._state.attitude), angular_vel)
 
         # The acceleration of the vehicle expressed in the inertial frame X_ddot = [x_ddot, y_ddot, z_ddot]
         self._state.linear_acceleration = linear_acceleration
