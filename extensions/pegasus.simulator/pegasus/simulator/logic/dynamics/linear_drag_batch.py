@@ -10,12 +10,12 @@ from pegasus.simulator.logic.dynamics.drag import Drag
 from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 
 
-class LinearDrag(Drag):
+class LinearDragBatch(Drag):
     """
     Class that implements linear drag computations afftecting a rigid body. It inherits the Drag base class.
     """
 
-    def __init__(self, drag_coefficients=[0.0, 0.0, 0.0]):
+    def __init__(self, n_vehicles=1, drag_coefficients=[0.0, 0.0, 0.0]):
         """
         Receives as input the drag coefficients of the vehicle as a 3x1 vector of constants
 
@@ -32,10 +32,10 @@ class LinearDrag(Drag):
         self.device = PegasusInterface()._world_settings["device"]
 
         # The linear drag coefficients of the vehicle's body frame
-        self._drag_coefficients = torch.diag(torch.tensor(drag_coefficients, dtype=torch.float32, device=self.device))
-
+        self._drag_coefficients = torch.tensor(drag_coefficients, dtype=torch.float32, device=self.device)        
+        
         # The drag force to apply on the vehicle's body frame
-        self._drag_force = torch.tensor([0.0, 0.0, 0.0], dtype=torch.float32, device=self.device)
+        self._drag_force = torch.zeros((n_vehicles, 3), dtype=torch.float32, device=self.device)
 
 
     @property
@@ -63,7 +63,9 @@ class LinearDrag(Drag):
         """
 
         # Get the velocity of the vehicle expressed in the body frame of reference
-        body_vel = state.linear_body_velocity
+        body_vel = state.linear_body_velocity       # (n_vehicles, 3)
+
+        self._drag_force = -(body_vel * self._drag_coefficients)
 
         # Compute the component of the drag force to be applied in the body frame
-        return -(self._drag_coefficients @ body_vel)
+        return self._drag_force

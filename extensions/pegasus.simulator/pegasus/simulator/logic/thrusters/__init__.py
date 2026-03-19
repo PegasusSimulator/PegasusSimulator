@@ -5,3 +5,5 @@
 
 from .thrust_curve import ThrustCurve
 from .quadratic_thrust_curve import QuadraticThrustCurve
+
+from .quadratic_thrust_curve_batch import QuadraticThrustCurveBatch

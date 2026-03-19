@@ -14,18 +14,20 @@ can be achieved
 import carb
 
 # Imports from the Pegasus library
-from pegasus.simulator.logic.state import State
+from pegasus.simulator.logic.state_batch import StateBatch as State
 from pegasus.simulator.logic.backends import Backend
 
 # Auxiliary scipy and numpy modules
 import numpy as np
 import torch
 
+from typing import Sequence
+
 #from scipy.spatial.transform import Rotation
-import pytorch3d.transforms as transforms
+from pegasus.simulator.logic.transforms import quaternion_to_matrix
 
 
-class NonlinearController(Backend):
+class NonlinearControllerBatch(Backend):
     """A nonlinear controller class. It implements a nonlinear controller that allows a vehicle to track
     aggressive trajectories. This controlers is well described in the papers
     
@@ -38,28 +40,30 @@ class NonlinearController(Backend):
     """
 
     def __init__(self, 
-        trajectory_file: str = None, 
-        results_file: str=None, 
+        trajectory_files: Sequence[str] = None, 
+        results_files: Sequence[str]=None, 
         reverse=False, 
         Kp=[10.0, 10.0, 10.0],
         Kd=[8.5, 8.5, 8.5],
         Ki=[1.50, 1.50, 1.50],
         Kr=[3.5, 3.5, 3.5],
         Kw=[0.5, 0.5, 0.5],
-        device = "cpu"):
+        n_vehicles=1,
+        device = "cpu"
+    ):
 
         # Set device
         self.device = device
 
         # The current rotor references [rad/s]
-        self.input_ref = torch.zeros((4,), dtype=torch.float32, device=device)
+        self.input_ref = torch.zeros((n_vehicles, 4), dtype=torch.float32, device=device)
 
         # The current state of the vehicle expressed in the inertial frame (in ENU)
-        self.p = torch.zeros((3,), dtype=torch.float32, device=device)                   # The vehicle position
-        self.R: transforms.Rotation = transforms.quaternion_to_matrix(torch.tensor([1.0, 0.0, 0.0, 0.0], dtype=torch.float32, device=device))    # The vehicle attitude
-        self.w = torch.zeros((3,), dtype=torch.float32, device=device)                   # The angular velocity of the vehicle
-        self.v = torch.zeros((3,), dtype=torch.float32, device=device)                   # The linear velocity of the vehicle in the inertial frame
-        self.a = torch.zeros((3,), dtype=torch.float32, device=device)                   # The linear acceleration of the vehicle in the inertial frame
+        self.p = torch.zeros((n_vehicles, 3), dtype=torch.float32, device=device)                   # The vehicle position
+        self.R = torch.eye(3, dtype=torch.float32, device=device).unsqueeze(0).repeat(n_vehicles, 1, 1)        
+        self.w = torch.zeros((n_vehicles, 3), dtype=torch.float32, device=device)                   # The angular velocity of the vehicle
+        self.v = torch.zeros((n_vehicles, 3), dtype=torch.float32, device=device)                   # The linear velocity of the vehicle in the inertial frame
+        self.a = torch.zeros((n_vehicles, 3), dtype=torch.float32, device=device)                   # The linear acceleration of the vehicle in the inertial frame
 
         # Define the control gains matrix for the outer-loop
         self.Kp = torch.diag(torch.tensor(Kp, dtype=torch.float32, device=device))
@@ -68,7 +72,7 @@ class NonlinearController(Backend):
         self.Kr = torch.diag(torch.tensor(Kr, dtype=torch.float32, device=device))
         self.Kw = torch.diag(torch.tensor(Kw, dtype=torch.float32, device=device))
 
-        self.int = torch.tensor([0.0, 0.0, 0.0], dtype=torch.float32, device=device)
+        self.int = torch.zeros((n_vehicles, 3), dtype=torch.float32, device=device)
 
         # Define the dynamic parameters for the vehicle
         self.m = 1.50        # Mass in Kg
@@ -76,10 +80,18 @@ class NonlinearController(Backend):
 
         # Read the target trajectory from a CSV file inside the trajectories directory
         # if a trajectory is provided. Otherwise, just perform the hard-coded trajectory provided with this controller
-        self.index = 0
-        if trajectory_file is not None:
-            self.trajectory = self.read_trajectory_from_csv(trajectory_file)
-            self.max_index, _ = self.trajectory.shape
+        self.indices = torch.zeros(n_vehicles, dtype=torch.long, device=device)
+
+        if trajectory_files is not None:
+            if len(trajectory_files) != n_vehicles:
+                raise ValueError(f"trajectory_files must have length {n_vehicles}, got {len(trajectory_files)}")
+
+            self.trajectories = [self.read_trajectory_from_csv(f) for f in trajectory_files]
+            self.max_indices = torch.tensor(
+                [traj.shape[0] for traj in self.trajectories],
+                dtype=torch.long,
+                device=device
+            )
             self.total_time = 0.0
         # Use the built-in trajectory hard-coded for this controller
         else:
@@ -87,8 +99,8 @@ class NonlinearController(Backend):
             # as the parametric value)
             self.total_time = -5.0
             # Signal that we will not used a received trajectory
-            self.trajectory = None
-            self.max_index = 1
+            self.trajectories = None
+            self.max_indices = torch.ones(n_vehicles, dtype=torch.long, device=device)
 
         self.reverse = reverse
 
@@ -96,7 +108,11 @@ class NonlinearController(Backend):
         self.reveived_first_state = False
 
         # Lists used for analysing performance statistics
-        self.results_files = results_file
+        if results_files is not None and len(results_files) != n_vehicles:
+            raise ValueError(f"results_files must have length {n_vehicles}, got {len(results_files)}")
+
+        self.results_files = results_files
+
         self.time_vector = []
         self.desired_position_over_time = []
         self.position_over_time = []
@@ -134,17 +150,35 @@ class NonlinearController(Backend):
         # Check if we should save the statistics to some file or not
         if self.results_files is None:
             return
+
+        if len(self.time_vector) == 0:
+            carb.log_warn("No statistics to save.")
+            self.reset_statistics()
+            return
         
-        statistics = {}
-        statistics["time"] = torch.tensor(self.time_vector, dtype=torch.float32, device=self.device)
-        statistics["p"] = torch.stack(self.position_over_time)
-        statistics["desired_p"] = torch.stack(self.desired_position_over_time)
-        statistics["ep"] = torch.stack(self.position_error_over_time)
-        statistics["ev"] = torch.stack(self.velocity_error_over_time)
-        statistics["er"] = torch.stack(self.atittude_error_over_time)
-        statistics["ew"] = torch.stack(self.attitude_rate_error_over_time)
-        torch.save(statistics, self.results_files)
-        carb.log_warn("Statistics saved to: " + self.results_files)
+        time_tensor = torch.tensor(self.time_vector, dtype=torch.float32, device=self.device)
+
+        p_hist = torch.stack(self.position_over_time)                  # (T, N, 3)
+        desired_p_hist = torch.stack(self.desired_position_over_time)  # (T, N, 3)
+        ep_hist = torch.stack(self.position_error_over_time)           # (T, N, 3)
+        ev_hist = torch.stack(self.velocity_error_over_time)           # (T, N, 3)
+        er_hist = torch.stack(self.atittude_error_over_time)           # (T, N, 3)
+        ew_hist = torch.stack(self.attitude_rate_error_over_time)      # (T, N, 3)
+
+        n_vehicles = p_hist.shape[1]
+
+        for i in range(n_vehicles):
+            statistics = {}
+            statistics["time"] = time_tensor.clone()
+            statistics["p"] = p_hist[:, i, :]
+            statistics["desired_p"] = desired_p_hist[:, i, :]
+            statistics["ep"] = ep_hist[:, i, :]
+            statistics["ev"] = ev_hist[:, i, :]
+            statistics["er"] = er_hist[:, i, :]
+            statistics["ew"] = ew_hist[:, i, :]
+
+            torch.save(statistics, self.results_files[i])
+            carb.log_warn("Statistics saved to: " + self.results_files[i])
 
         self.reset_statistics()
 
@@ -167,7 +201,7 @@ class NonlinearController(Backend):
             state (State): The current state of the vehicle.
         """
         self.p = state.position
-        self.R = transforms.quaternion_to_matrix(state.attitude)
+        self.R = quaternion_to_matrix(state.attitude)
         self.w = state.angular_velocity
         self.v = state.linear_velocity
 
@@ -198,28 +232,41 @@ class NonlinearController(Backend):
         # -------------------------------------------------
         self.total_time += dt
         
-        # Check if we need to update to the next trajectory index
-        if self.index < self.max_index - 1 and self.total_time >= self.trajectory[self.index + 1, 0]:
-            self.index += 1
-
         # Update using an external trajectory
-        if self.trajectory is not None:
+        if self.trajectories is not None:
             # the target positions [m], velocity [m/s], accelerations [m/s^2], jerk [m/s^3], yaw-angle [rad], yaw-rate [rad/s]
-            p_ref = torch.tensor([self.trajectory[self.index, 1], self.trajectory[self.index, 2], self.trajectory[self.index, 3]], dtype=torch.float32, device=self.device)
-            v_ref = torch.tensor([self.trajectory[self.index, 4], self.trajectory[self.index, 5], self.trajectory[self.index, 6]], dtype=torch.float32, device=self.device)
-            a_ref = torch.tensor([self.trajectory[self.index, 7], self.trajectory[self.index, 8], self.trajectory[self.index, 9]], dtype=torch.float32, device=self.device)
-            j_ref = torch.tensor([self.trajectory[self.index, 10], self.trajectory[self.index, 11], self.trajectory[self.index, 12]], dtype=torch.float32, device=self.device)
-            yaw_ref = self.trajectory[self.index, 13]
-            yaw_rate_ref = self.trajectory[self.index, 14]
+            p_ref = torch.zeros((self.p.shape[0], 3), dtype=torch.float32, device=self.device)
+            v_ref = torch.zeros((self.p.shape[0], 3), dtype=torch.float32, device=self.device)
+            a_ref = torch.zeros((self.p.shape[0], 3), dtype=torch.float32, device=self.device)
+            j_ref = torch.zeros((self.p.shape[0], 3), dtype=torch.float32, device=self.device)
+            yaw_ref = torch.zeros((self.p.shape[0],), dtype=torch.float32, device=self.device)
+            yaw_rate_ref = torch.zeros((self.p.shape[0],), dtype=torch.float32, device=self.device)
+
+            for i in range(self.p.shape[0]):
+                idx = int(self.indices[i].item())
+                max_idx = int(self.max_indices[i].item())
+                traj = self.trajectories[i]
+
+                # Check if we need to update to the next trajectory index
+                if idx < max_idx - 1 and self.total_time >= traj[idx + 1, 0]:
+                    idx += 1
+                    self.indices[i] = idx
+
+                p_ref[i] = torch.tensor(traj[idx, 1:4], dtype=torch.float32, device=self.device)
+                v_ref[i] = torch.tensor(traj[idx, 4:7], dtype=torch.float32, device=self.device)
+                a_ref[i] = torch.tensor(traj[idx, 7:10], dtype=torch.float32, device=self.device)
+                j_ref[i] = torch.tensor(traj[idx, 10:13], dtype=torch.float32, device=self.device)
+                yaw_ref[i] = torch.tensor(traj[idx, 13], dtype=torch.float32, device=self.device)
+                yaw_rate_ref[i] = torch.tensor(traj[idx, 14], dtype=torch.float32, device=self.device)
         # Or update the reference using the built-in trajectory
         else:
             s = 0.6
-            p_ref = self.pd(self.total_time, s, self.reverse)
-            v_ref = self.d_pd(self.total_time, s, self.reverse)
-            a_ref = self.dd_pd(self.total_time, s, self.reverse)
-            j_ref = self.ddd_pd(self.total_time, s, self.reverse)
-            yaw_ref = self.yaw_d(self.total_time, s)
-            yaw_rate_ref = self.d_yaw_d(self.total_time, s)
+            p_ref = self.pd(self.total_time, s, self.reverse).unsqueeze(0).expand(self.p.shape[0], -1)
+            v_ref = self.d_pd(self.total_time, s, self.reverse).unsqueeze(0).expand(self.p.shape[0], -1)
+            a_ref = self.dd_pd(self.total_time, s, self.reverse).unsqueeze(0).expand(self.p.shape[0], -1)
+            j_ref = self.ddd_pd(self.total_time, s, self.reverse).unsqueeze(0).expand(self.p.shape[0], -1)
+            yaw_ref = torch.as_tensor(self.yaw_d(self.total_time, s), dtype=torch.float32, device=self.device).repeat(self.p.shape[0])
+            yaw_rate_ref = torch.as_tensor(self.d_yaw_d(self.total_time, s), dtype=torch.float32, device=self.device).repeat(self.p.shape[0])
 
         # -------------------------------------------------
         # Start the controller implementation
@@ -232,51 +279,54 @@ class NonlinearController(Backend):
         ei = self.int
 
         # Compute F_des term
-        F_des = -(self.Kp @ ep) - (self.Kd @ ev) - (self.Ki @ ei) + torch.tensor([0.0, 0.0, self.m * self.g], dtype=torch.float32, device=self.device) + (self.m * a_ref)
-
+        F_des = -(ep @ self.Kp.T) - (ev @ self.Kd.T) - (ei @ self.Ki.T) + torch.tensor([0.0, 0.0, self.m * self.g], dtype=torch.float32, device=self.device).unsqueeze(0) + self.m * a_ref
+        
         # Get the current axis Z_B (given by the last column of the rotation matrix)
-        Z_B = self.R[:,2]
+        Z_B = self.R[:, :,2]
 
         # Get the desired total thrust in Z_B direction (u_1)
-        u_1 = F_des @ Z_B
+        u_1 = torch.sum(F_des * Z_B, dim=1)
 
         # Compute the desired body-frame axis Z_b
-        Z_b_des = F_des / torch.linalg.norm(F_des)
+        Z_b_des = F_des / torch.linalg.norm(F_des, dim=1, keepdim=True)
 
         yaw_ref = torch.as_tensor(yaw_ref, dtype=torch.float32, device=self.device)
+        yaw_rate_ref = torch.as_tensor(yaw_rate_ref, dtype=torch.float32, device=self.device)
 
         # Compute X_C_des 
-        X_c_des = torch.stack([torch.cos(yaw_ref), torch.sin(yaw_ref), torch.tensor(0.0, dtype=torch.float32, device=self.device)])
+        X_c_des = torch.stack((torch.cos(yaw_ref), torch.sin(yaw_ref), torch.zeros_like(yaw_ref),), dim=1)
 
         # Compute Y_b_des
-        Z_b_cross_X_c = torch.cross(Z_b_des, X_c_des, dim=0)
-        Y_b_des = Z_b_cross_X_c / torch.linalg.norm(Z_b_cross_X_c)
+        Z_b_cross_X_c = torch.cross(Z_b_des, X_c_des, dim=1)
+        Y_b_des = Z_b_cross_X_c / torch.linalg.norm(Z_b_cross_X_c, dim=1, keepdim=True)
 
         # Compute X_b_des
-        X_b_des = torch.cross(Y_b_des, Z_b_des, dim=0)
+        X_b_des = torch.cross(Y_b_des, Z_b_des, dim=1)
 
         # Compute the desired rotation R_des = [X_b_des | Y_b_des | Z_b_des]
-        R_des = torch.stack([X_b_des, Y_b_des, Z_b_des], dim=1)
+        R_des = torch.stack((X_b_des, Y_b_des, Z_b_des), dim=2)
 
         # Compute the rotation error
-        e_R = 0.5 * self.vee((R_des.T @ self.R) - (self.R.T @ R_des))
+        e_R_mat = torch.matmul(R_des.transpose(1, 2), self.R) - torch.matmul(self.R.transpose(1, 2), R_des)
+        e_R = 0.5 * self.vee_batch(e_R_mat)
 
         # Compute an approximation of the current vehicle acceleration in the inertial frame (since we cannot measure it directly)
-        self.a = (u_1 * Z_B) / self.m - torch.tensor([0.0, 0.0, self.g], dtype=torch.float32, device=self.device)
-
+        self.a = (u_1.unsqueeze(1) * Z_B) / self.m - torch.tensor([0.0, 0.0, self.g], dtype=torch.float32, device=self.device).unsqueeze(0)
+        
         # Compute the desired angular velocity by projecting the angular velocity in the Xb-Yb plane
         # projection of angular velocity on xB − yB plane
         # see eqn (7) from [2].
-        hw = (self.m / u_1) * (j_ref - torch.dot(Z_b_des, j_ref) * Z_b_des) 
-        
+        proj = torch.sum(Z_b_des * j_ref, dim=1, keepdim=True)
+        hw = (self.m / torch.clamp(u_1, min=1e-6)).unsqueeze(1) * (j_ref - proj * Z_b_des)
+                
         # desired angular velocity
-        w_des = torch.stack([-torch.dot(hw, Y_b_des), torch.dot(hw, X_b_des), yaw_rate_ref * Z_b_des[2]])
-
+        w_des = torch.stack((-torch.sum(hw * Y_b_des, dim=1), torch.sum(hw * X_b_des, dim=1), yaw_rate_ref * Z_b_des[:, 2]), dim=1)
+        
         # Compute the angular velocity error
         e_w = self.w - w_des
 
         # Compute the torques to apply on the rigid body
-        tau = -(self.Kr @ e_R) - (self.Kw @ e_w)
+        tau = -(e_R @ self.Kr.T) - (e_w @ self.Kw.T)
 
         # Use the allocation matrix provided by the Multirotor vehicle to convert the desired force and torque
         # to angular velocity [rad/s] references to give to each rotor
@@ -295,19 +345,19 @@ class NonlinearController(Backend):
         self.attitude_rate_error_over_time.append(e_w)
 
     @staticmethod
-    def vee(S):
+    def vee_batch(S):
         """Auxiliary function that computes the 'v' map which takes elements from so(3) to R^3.
 
         Args:
-            S (torch.tensor): A matrix in so(3)
+            S (torch.Tensor): A batch of matrices in so(3).
         """
-        return torch.tensor([-S[1,2], S[0,2], -S[0,1]], dtype=torch.float32, device=S.device)
+        return torch.stack((-S[:, 1, 2], S[:, 0, 2], -S[:, 0, 1]), dim=1)
     
     def reset_statistics(self):
 
-        self.index = 0
+        self.indices.zero_()
         # If we received an external trajectory, reset the time to 0.0
-        if self.trajectory is not None:
+        if self.trajectories is not None:
             self.total_time = 0.0
         # if using the internal trajectory, make the parametric value start at -5.0
         else:
@@ -390,10 +440,10 @@ class NonlinearController(Backend):
 
         x = 0.0
         y = (torch.power(t,2)*torch.exp(-torch.power(t,2)/(2*torch.power(s,2))))/torch.power(s,5) - torch.exp(-torch.power(t,2)/(2*torch.power(s,2)))/torch.power(s,3)
-        z = (torch.power(t,2)*torch.exp(-torchpower(t,2)/(2*torchpower(s,2))))/torchpower(s,5) - torch.exp(-torchpower(t,2)/(2*torchpower(s,2)))/torchpower(s,3)
+        z = (torch.power(t,2)*torch.exp(-torch.power(t,2)/(2*torch.power(s,2))))/torch.power(s,5) - torch.exp(-torch.power(t,2)/(2*torch.power(s,2)))/torch.power(s,3)
 
         if reverse == True:
-            y = torch.exp(-torchpower(t,2)/(2*torchpower(s,2)))/torchpower(s,3) - (torchpower(t,2)*torch.exp(-torchpower(t,2)/(2*torchpower(s,2))))/torchpower(s,5)
+            y = torch.exp(-torch.power(t,2)/(2*torch.power(s,2)))/torch.power(s,3) - (torch.power(t,2)*torch.exp(-torch.power(t,2)/(2*torch.power(s,2))))/torch.power(s,5)
 
         return torch.tensor([x,y,z], dtype=torch.float32, device=self.device)
 
@@ -413,10 +463,10 @@ class NonlinearController(Backend):
 
         x = 0.0
         y = (3*t*torch.exp(-torch.power(t,2)/(2*torch.power(s,2))))/torch.power(s,5) - (torch.power(t,3)*torch.exp(-torch.power(t,2)/(2*torch.power(s,2))))/torch.power(s,7)
-        z = (3*t*torch.exp(-torchpower(t,2)/(2*torchpower(s,2))))/torchpower(s,5) - (torchpower(t,3)*torch.exp(-torchpower(t,2)/(2*torchpower(s,2))))/torchpower(s,7)
+        z = (3*t*torch.exp(-torch.power(t,2)/(2*torch.power(s,2))))/torch.power(s,5) - (torch.power(t,3)*torch.exp(-torch.power(t,2)/(2*torch.power(s,2))))/torch.power(s,7)
 
         if reverse == True:
-            y = (torch.power(t,3)*torch.exp(-torchpower(t,2)/(2*torchpower(s,2))))/torchpower(s,7) - (3*t*torch.exp(-torchpower(t,2)/(2*torchpower(s,2))))/torchpower(s,5)
+            y = (torch.power(t,3)*torch.exp(-torch.power(t,2)/(2*torch.power(s,2))))/torch.power(s,7) - (3*t*torch.exp(-torch.power(t,2)/(2*torch.power(s,2))))/torch.power(s,5)
 
         return torch.tensor([x,y,z], dtype=torch.float32, device=self.device)
 
