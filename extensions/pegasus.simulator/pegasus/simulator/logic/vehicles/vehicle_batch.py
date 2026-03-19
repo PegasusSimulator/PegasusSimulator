@@ -29,6 +29,8 @@ from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 from pegasus.simulator.logic.transforms import quaternion_apply, quaternion_invert
 
 
+from isaacsim.core.simulation_manager import SimulationManager, IsaacEvents
+
 
 class VehicleBatch():
     """
@@ -97,13 +99,15 @@ class VehicleBatch():
         # Variable that will hold the current state of the vehicle
         self._state = StateBatch(self.n_vehicles, self.device)
 
-        # Add a callback to the physics engine to update the current state of the system
-        self._world.add_physics_callback(self._stage_prefix + "/state", self.update_state)
-
         # Add the update method to the physics callback if the world was received
         # so that we can apply forces and torques to the vehicle. Note, this method should 
         # be implemented in classes that inherit the vehicle object
-        self._world.add_physics_callback(self._stage_prefix + "/update", self.update)
+        #self._world.add_physics_callback(self._stage_prefix + "/update", self.update)
+        self._cb_pre = SimulationManager.register_callback(self.update, event=IsaacEvents.PRE_PHYSICS_STEP, order=0)
+
+        # Add a callback to the physics engine to update the current state of the system
+        #self._world.add_physics_callback(self._stage_prefix + "/state", self.update_state)
+        self._cb_post = SimulationManager.register_callback(self.update_state, event=IsaacEvents.POST_PHYSICS_STEP, order=0)
 
         # Set the flag that signals if the simulation is running or not
         self._sim_running = False
@@ -157,8 +161,6 @@ class VehicleBatch():
         for backend in self._backends:
             backend.initialize(self)
 
-        # Add a callbacks for the
-        self._world.add_physics_callback(self._stage_prefix + "/mav_state", self.update_sim_state)
 
 
     def initialize(self):
@@ -271,6 +273,10 @@ class VehicleBatch():
         Method that is invoked when a vehicle object gets destroyed. When this happens, we also invoke the 
         'remove_vehicle' from the VehicleManager in order to remove the vehicle from the list of active vehicles.
         """
+
+        # Deregister Callbacks
+        SimulationManager.deregister_callback(self._cb_pre)
+        SimulationManager.deregister_callback(self._cb_post)
 
         # Remove this object from the vehicleHandler
         VehicleManager.get_vehicle_manager().remove_vehicle(self._stage_prefix)
@@ -392,10 +398,10 @@ class VehicleBatch():
         Args:
             dt (float): The time elapsed between the previous and current function calls (s).
         """
-
+        
         if self._sim_running == False:
             return
-
+                
         # Get the positions, orientations, linear velocities, and angular velocities of all vehicle prims in the inertial frame of reference   
         prims_positions, prims_orientations = self.vehicle_prims.get_world_poses()
         prims_linear_vel = self.vehicle_prims.get_linear_velocities()
@@ -421,7 +427,8 @@ class VehicleBatch():
 
         # Get the linear acceleration of the body relative to the inertial frame, expressed in the inertial frame
         # Note: we must do this approximation, since the Isaac sim does not output the acceleration of the rigid body directly
-        linear_acceleration = (linear_vel - self._state.linear_velocity) / dt
+        if dt > 0.0:
+            linear_acceleration = (linear_vel - self._state.linear_velocity) / dt
 
         # Update the state
         self._state.position = positions
@@ -439,6 +446,10 @@ class VehicleBatch():
 
         # The acceleration of the vehicle expressed in the inertial frame X_ddot = [x_ddot, y_ddot, z_ddot]
         self._state.linear_acceleration = linear_acceleration
+
+        for backend in self._backends:
+            backend._vehicle = self
+            backend.update_state(self._state)
 
 
     def start(self):
@@ -504,15 +515,3 @@ class VehicleBatch():
                 for backend in self._backends:
                     backend._vehicle = self
                     backend.update_graphical_sensor(sensor.sensor_type, sensor_data)
-
-    def update_sim_state(self, dt: float):
-        """
-        Callback that is used to "send" the current state for each backend being used to control the vehicle. This callback
-        is called on every physics step.
-
-        Args:
-            dt (float): The time elapsed between the previous and current function calls (s).
-        """
-        for backend in self._backends:
-            backend._vehicle = self
-            backend.update_state(self._state)
