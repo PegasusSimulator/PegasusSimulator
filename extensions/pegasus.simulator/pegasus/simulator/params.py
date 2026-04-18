@@ -30,7 +30,7 @@ ROBOTS_ASSETS = ASSET_PATH + "/Robots"
 # Define the built in robots of the extension
 ROBOTS = {
     "Iris": ROBOTS_ASSETS + "/Iris/iris.usd",
-    "Pegasus": ROBOTS_ASSETS + "/Pegasus/pegasus.usda"
+    "Pegasus": ROBOTS_ASSETS + "/Pegasus/pegasus.usd"
 } #, "Flying Cube": ROBOTS_ASSETS + "/iris_cube.usda"}
 
 # Setup the default simulation environments path
