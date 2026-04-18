@@ -28,7 +28,10 @@ ASSET_PATH = ROOT + "/pegasus.simulator/pegasus/simulator/assets"
 ROBOTS_ASSETS = ASSET_PATH + "/Robots"
 
 # Define the built in robots of the extension
-ROBOTS = {"Iris": ROBOTS_ASSETS + "/Iris/iris.usd"} #, "Flying Cube": ROBOTS_ASSETS + "/iris_cube.usda"}
+ROBOTS = {
+    "Iris": ROBOTS_ASSETS + "/Iris/iris.usd",
+    "Pegasus": ROBOTS_ASSETS + "/Pegasus/pegasus.usda"
+} #, "Flying Cube": ROBOTS_ASSETS + "/iris_cube.usda"}
 
 # Setup the default simulation environments path
 NVIDIA_ASSETS_PATH = str(nucleus.get_assets_root_path())
@@ -97,7 +100,10 @@ WORLD_SETTINGS = {
 DEFAULT_WORLD_SETTINGS = WORLD_SETTINGS['px4']
 
 # Define where the thumbnail of the vehicle is located
-THUMBNAIL = ROBOTS_ASSETS + "/Iris/iris_thumbnail.png"
+THUMBNAILS = {
+    "Iris": ROBOTS_ASSETS + "/Iris/iris_thumbnail.png",
+    "Pegasus": ROBOTS_ASSETS + "/Pegasus/pegasus_thumbnail.png"
+}
 
 # Define where the thumbail of the world is located
 WORLD_THUMBNAIL = ASSET_PATH + "/Worlds/Empty_thumbnail.png"

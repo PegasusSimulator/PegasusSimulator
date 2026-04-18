@@ -661,8 +661,6 @@ class PX4MavlinkBackend(Backend):
             mav_type (int): The ID that indicates the type of vehicle. Defaults to MAV_TYPE_GENERIC=0 
         """
 
-        carb.log_info("Sending heartbeat")
-
         # Note: to know more about these functions, go to pymavlink->dialects->v20->standard.py
         # This contains the definitions for sending the hearbeat and simulated sensor messages
         self._connection.mav.heartbeat_send(mav_type, mavutil.mavlink.MAV_AUTOPILOT_INVALID, 0, 0, 0)
@@ -674,7 +672,6 @@ class PX4MavlinkBackend(Backend):
         Args:
             time_usec (int): The total time elapsed since the simulation started
         """
-        carb.log_info("Sending sensor msgs")
 
         # Check which sensors have new data to send
         fields_updated: int = 0
@@ -727,7 +724,6 @@ class PX4MavlinkBackend(Backend):
         Args:
             time_usec (int): The total time elapsed since the simulation started
         """
-        carb.log_info("Sending GPS msgs")
 
         # Do not send GPS data, if no new data was received
         if not self._sensor_data.new_gps_data:
@@ -762,7 +758,6 @@ class PX4MavlinkBackend(Backend):
         Args:
             time_usec (int): The total time elapsed since the simulation started
         """
-        carb.log_info("Sending vision/mocap msgs")
 
         # Do not send vision/mocap data, if not new data was received
         if not self._sensor_data.new_vision_data:
@@ -791,8 +786,6 @@ class PX4MavlinkBackend(Backend):
         Args:
             time_usec (int): The total time elapsed since the simulation started
         """
-
-        carb.log_info("Sending groundtruth msgs")
 
         # Do not send vision/mocap data, if not new data was received
         if not self._sensor_data.new_sim_state or self._sensor_data.sim_alt == 0:
@@ -836,8 +829,6 @@ class PX4MavlinkBackend(Backend):
         # Check if the vehicle is armed - Note: here we have to add a +1 since the code for armed is 128, but
         # pymavlink is return 129 (the end of the buffer)
         if mode == mavutil.mavlink.MAV_MODE_FLAG_SAFETY_ARMED + 1:
-
-            carb.log_info("Parsing control input")
 
             # Set the rotor target speeds
             self._rotor_data.update_input_reference(controls)
