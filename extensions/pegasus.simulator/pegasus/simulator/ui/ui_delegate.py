@@ -306,7 +306,25 @@ class UIDelegate:
                 carb.log_error("Could not spawn the robot using the Pegasus Simulator UI")
 
         # Run the actual vehicle spawn async so that the UI does not freeze
-        asyncio.ensure_future(async_load_vehicle())        
+        asyncio.ensure_future(async_load_vehicle())
+
+    def get_selected_vehicle(self):
+        """
+        Method that returns the currently selected vehicle id in the UI
+        """
+
+        selected_robot = 'Iris'
+
+        if self._vehicle_dropdown is not None and self._window is not None:
+
+            # Get the id of the selected vehicle from the list
+            vehicle_index = self._vehicle_dropdown.get_item_value_model().as_int
+
+            # Get the name of the selected vehicle
+            selected_robot = self._vehicles_names[vehicle_index]
+
+        carb.log_info("Selected vehicle: " + selected_robot)
+        return selected_robot
 
     def on_set_viewport_camera(self):
         """

@@ -16,7 +16,7 @@ import omni.ui as ui
 from omni.ui import color as cl
 
 from pegasus.simulator.ui.ui_delegate import UIDelegate
-from pegasus.simulator.params import ROBOTS, SIMULATION_ENVIRONMENTS, THUMBNAIL, BACKENDS, WORLD_THUMBNAIL, WINDOW_TITLE, BACKENDS_THUMBMAILS
+from pegasus.simulator.params import ROBOTS, SIMULATION_ENVIRONMENTS, THUMBNAILS, BACKENDS, WORLD_THUMBNAIL, WINDOW_TITLE, BACKENDS_THUMBMAILS
 
 
 class WidgetWindow(ui.Window):
@@ -210,8 +210,10 @@ class WidgetWindow(ui.Window):
                     # Add a thumbnail image to have a preview of the world that is about to be loaded
                     with ui.ZStack(width=WidgetWindow.LABEL_PADDING, height=WidgetWindow.BUTTON_HEIGHT * 2):
                         ui.Rectangle()
-                        ui.Image(
-                            THUMBNAIL,
+                        # Create an image widget and keep a reference so we can update it when
+                        # the selected vehicle in the dropdown changes.
+                        vehicle_thumbnail = ui.Image(
+                            THUMBNAILS[self._delegate.get_selected_vehicle()],
                             fill_policy=ui.FillPolicy.PRESERVE_ASPECT_FIT,
                             alignment=ui.Alignment.CENTER,
                         )
@@ -226,7 +228,33 @@ class WidgetWindow(ui.Window):
                             dropdown_menu = ui.ComboBox(0, name="robots")
                             for robot in ROBOTS:
                                 dropdown_menu.model.append_child_item(None, ui.SimpleStringModel(robot))
+                            # Give the delegate the model so it can read the selection
                             self._delegate.set_vehicle_dropdown(dropdown_menu.model)
+
+                            # Attach a change callback to the combo box selected-index value model so
+                            # that the thumbnail updates whenever a new vehicle is selected.
+                            value_model = dropdown_menu.model.get_item_value_model()
+
+                            def _on_vehicle_selection_changed(*_args, **_kwargs):
+                                try:
+                                    sel = self._delegate.get_selected_vehicle()
+                                    vehicle_thumbnail.source_url = THUMBNAILS[sel]
+                                except Exception as e:
+                                    carb.log_warn(f"Could not update vehicle thumbnail: {e}")
+
+                            # Register the callback using whichever API is available on the model.
+                            if hasattr(value_model, "set_changed_fn"):
+                                value_model.set_changed_fn(_on_vehicle_selection_changed)
+                            elif hasattr(value_model, "set_value_changed_fn"):
+                                value_model.set_value_changed_fn(_on_vehicle_selection_changed)
+                            elif hasattr(value_model, "add_value_changed_fn"):
+                                value_model.add_value_changed_fn(_on_vehicle_selection_changed)
+                            else:
+                                # Fallback: try setting attribute directly (best-effort, non-fatal)
+                                try:
+                                    value_model.changed_fn = _on_vehicle_selection_changed
+                                except Exception:
+                                    carb.log_warn("Vehicle dropdown value model does not support change callbacks")
 
                         with ui.HStack():
                             ui.Label("Vehicle ID", name="label", width=WidgetWindow.LABEL_PADDING, alignment=ui.Alignment.TOP)
