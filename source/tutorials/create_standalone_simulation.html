@@ -179,7 +179,7 @@ already, follow the Preparation section in the <a class="reference internal" hre
 <span class="linenos"> 53</span>        <span class="bp">self</span><span class="o">.</span><span class="n">world</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pg</span><span class="o">.</span><span class="n">world</span>
 <span class="linenos"> 54</span>
 <span class="hll"><span class="linenos"> 55</span>        <span class="c1"># Launch one of the worlds provided by NVIDIA</span>
-</span><span class="hll"><span class="linenos"> 56</span>        <span class="bp">self</span><span class="o">.</span><span class="n">pg</span><span class="o">.</span><span class="n">load_environment</span><span class="p">(</span><span class="n">SIMULATION_ENVIRONMENTS</span><span class="p">[</span><span class="s2">&quot;Curved Gridroom&quot;</span><span class="p">])</span>
+</span><span class="hll"><span class="linenos"> 56</span>        <span class="bp">self</span><span class="o">.</span><span class="n">pg</span><span class="o">.</span><span class="n">load_environment</span><span class="p">(</span><span class="n">SIMULATION_ENVIRONMENTS</span><span class="p">[</span><span class="s2">&quot;Box Room&quot;</span><span class="p">])</span>
 </span><span class="linenos"> 57</span>
 <span class="hll"><span class="linenos"> 58</span>        <span class="c1"># Create the vehicle</span>
 </span><span class="hll"><span class="linenos"> 59</span>        <span class="c1"># Try to spawn the selected robot in the world to the specified namespace</span>
@@ -195,7 +195,7 @@ already, follow the Preparation section in the <a class="reference internal" hre
 </span><span class="hll"><span class="linenos"> 69</span>
 </span><span class="hll"><span class="linenos"> 70</span>        <span class="n">Multirotor</span><span class="p">(</span>
 </span><span class="hll"><span class="linenos"> 71</span>            <span class="s2">&quot;/World/quadrotor&quot;</span><span class="p">,</span>
-</span><span class="hll"><span class="linenos"> 72</span>            <span class="n">ROBOTS</span><span class="p">[</span><span class="s1">&#39;Iris&#39;</span><span class="p">],</span>
+</span><span class="hll"><span class="linenos"> 72</span>            <span class="n">ROBOTS</span><span class="p">[</span><span class="s1">&#39;Pegasus&#39;</span><span class="p">],</span>
 </span><span class="hll"><span class="linenos"> 73</span>            <span class="mi">0</span><span class="p">,</span>
 </span><span class="hll"><span class="linenos"> 74</span>            <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.07</span><span class="p">],</span>
 </span><span class="hll"><span class="linenos"> 75</span>            <span class="n">Rotation</span><span class="o">.</span><span class="n">from_euler</span><span class="p">(</span><span class="s2">&quot;XYZ&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="n">degrees</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">as_quat</span><span class="p">(),</span>
@@ -272,7 +272,7 @@ loading pre-made environments stored in <a class="reference external" href="http
 example, we load one of the simulation environments already provided by NVIDIA, whose path in stored in the <code class="docutils literal notranslate"><span class="pre">SIMULATION_ENVIRONMENTS</span></code>
 dictionary. To known all provided environments, check the <a class="reference internal" href="../api/params.html#module-pegasus.simulator.params"><span class="std std-ref">Params</span></a> API section.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">55</span>        <span class="c1"># Launch one of the worlds provided by NVIDIA</span>
-<span class="linenos">56</span>        <span class="bp">self</span><span class="o">.</span><span class="n">pg</span><span class="o">.</span><span class="n">load_environment</span><span class="p">(</span><span class="n">SIMULATION_ENVIRONMENTS</span><span class="p">[</span><span class="s2">&quot;Curved Gridroom&quot;</span><span class="p">])</span>
+<span class="linenos">56</span>        <span class="bp">self</span><span class="o">.</span><span class="n">pg</span><span class="o">.</span><span class="n">load_environment</span><span class="p">(</span><span class="n">SIMULATION_ENVIRONMENTS</span><span class="p">[</span><span class="s2">&quot;Box Room&quot;</span><span class="p">])</span>
 </pre></div>
 </div>
 <p>The next step is to create a multirotor vehicle object. For that we start by creating a <code class="docutils literal notranslate"><span class="pre">MultirotorConfig</span></code>, which contains
@@ -299,7 +299,7 @@ provided vehicle models, check the <a class="reference internal" href="../api/pa
 of the vehicle, according to an East-North-DOWN (ENU) convention.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">70</span>        <span class="n">Multirotor</span><span class="p">(</span>
 <span class="linenos">71</span>            <span class="s2">&quot;/World/quadrotor&quot;</span><span class="p">,</span>
-<span class="linenos">72</span>            <span class="n">ROBOTS</span><span class="p">[</span><span class="s1">&#39;Iris&#39;</span><span class="p">],</span>
+<span class="linenos">72</span>            <span class="n">ROBOTS</span><span class="p">[</span><span class="s1">&#39;Pegasus&#39;</span><span class="p">],</span>
 <span class="linenos">73</span>            <span class="mi">0</span><span class="p">,</span>
 <span class="linenos">74</span>            <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.07</span><span class="p">],</span>
 <span class="linenos">75</span>            <span class="n">Rotation</span><span class="o">.</span><span class="n">from_euler</span><span class="p">(</span><span class="s2">&quot;XYZ&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="n">degrees</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">as_quat</span><span class="p">(),</span>

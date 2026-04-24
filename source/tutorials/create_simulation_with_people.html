@@ -228,7 +228,7 @@ that our API is simpler and more intuitive to use in most user cases. I also nee
 <span class="linenos">101</span>
 <span class="linenos">102</span>        <span class="c1"># Launch one of the worlds provided by NVIDIA</span>
 <span class="linenos">103</span>        <span class="c1">#self.pg.load_environment(SIMULATION_ENVIRONMENTS[&quot;Curved Gridroom&quot;])</span>
-<span class="linenos">104</span>        <span class="bp">self</span><span class="o">.</span><span class="n">pg</span><span class="o">.</span><span class="n">load_asset</span><span class="p">(</span><span class="n">SIMULATION_ENVIRONMENTS</span><span class="p">[</span><span class="s2">&quot;Curved Gridroom&quot;</span><span class="p">],</span> <span class="s2">&quot;/World/layout&quot;</span><span class="p">)</span>
+<span class="linenos">104</span>        <span class="bp">self</span><span class="o">.</span><span class="n">pg</span><span class="o">.</span><span class="n">load_asset</span><span class="p">(</span><span class="n">SIMULATION_ENVIRONMENTS</span><span class="p">[</span><span class="s2">&quot;Box Room&quot;</span><span class="p">],</span> <span class="s2">&quot;/World/layout&quot;</span><span class="p">)</span>
 <span class="linenos">105</span>
 <span class="hll"><span class="linenos">106</span>        <span class="c1"># Check the available assets for people</span>
 </span><span class="hll"><span class="linenos">107</span>        <span class="n">people_assets_list</span> <span class="o">=</span> <span class="n">Person</span><span class="o">.</span><span class="n">get_character_asset_list</span><span class="p">()</span>
@@ -248,7 +248,7 @@ that our API is simpler and more intuitive to use in most user cases. I also nee
 <span class="linenos">121</span>        <span class="n">mavlink_config</span> <span class="o">=</span> <span class="n">PX4MavlinkBackendConfig</span><span class="p">({</span>
 <span class="linenos">122</span>            <span class="s2">&quot;vehicle_id&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
 <span class="linenos">123</span>            <span class="s2">&quot;px4_autolaunch&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-<span class="linenos">124</span>            <span class="s2">&quot;px4_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;/home/marcelo/PX4-Autopilot&quot;</span>
+<span class="linenos">124</span>            <span class="s2">&quot;px4_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;/home/marcelo/PX4-Autopilot&quot;</span>     <span class="c1"># TODO -&gt; Change this line to the path where you have the PX4-Autopilot code downloaded (this is an example on how you can set your own path for PX4)</span>
 <span class="linenos">125</span>        <span class="p">})</span>
 <span class="linenos">126</span>
 <span class="linenos">127</span>        <span class="n">config_multirotor</span><span class="o">.</span><span class="n">backends</span> <span class="o">=</span> <span class="p">[</span>
@@ -266,7 +266,7 @@ that our API is simpler and more intuitive to use in most user cases. I also nee
 <span class="linenos">139</span>        
 <span class="linenos">140</span>        <span class="n">Multirotor</span><span class="p">(</span>
 <span class="linenos">141</span>            <span class="s2">&quot;/World/quadrotor&quot;</span><span class="p">,</span>
-<span class="linenos">142</span>            <span class="n">ROBOTS</span><span class="p">[</span><span class="s1">&#39;Iris&#39;</span><span class="p">],</span>
+<span class="linenos">142</span>            <span class="n">ROBOTS</span><span class="p">[</span><span class="s1">&#39;Pegasus&#39;</span><span class="p">],</span>
 <span class="linenos">143</span>            <span class="mi">0</span><span class="p">,</span>
 <span class="linenos">144</span>            <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.07</span><span class="p">],</span>
 <span class="linenos">145</span>            <span class="n">Rotation</span><span class="o">.</span><span class="n">from_euler</span><span class="p">(</span><span class="s2">&quot;XYZ&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="n">degrees</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">as_quat</span><span class="p">(),</span>
