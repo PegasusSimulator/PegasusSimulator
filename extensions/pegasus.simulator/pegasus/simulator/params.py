@@ -57,6 +57,10 @@ OMNIVERSE_ENVIRONMENTS = {
     "Exhibition Hall": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/4.5/NVIDIA/Assets/Scenes/Templates/Interior/ZetCG_ExhibitionHall.usd"
 }
 
+PEGASUS_ENVIRONMENTS = {
+    "Box Room": ASSET_PATH + "/Worlds/Box/Box.usd",
+    "Box with Cylinders": ASSET_PATH + "/Worlds/BoxWithCylinders/BoxWithCylinders.usd"
+}
 
 SIMULATION_ENVIRONMENTS = {}
 
@@ -69,6 +73,10 @@ for asset in NVIDIA_SIMULATION_ENVIRONMENTS:
 # Add the omniverse assets to the list
 for asset in OMNIVERSE_ENVIRONMENTS:
     SIMULATION_ENVIRONMENTS[asset] = OMNIVERSE_ENVIRONMENTS[asset]
+
+# Add the Pegasus assets to the list
+for asset in PEGASUS_ENVIRONMENTS:
+    SIMULATION_ENVIRONMENTS[asset] = PEGASUS_ENVIRONMENTS[asset]
 
 BACKENDS = {
     "px4": "px4",

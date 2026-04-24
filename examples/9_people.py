@@ -101,7 +101,7 @@ class PegasusApp:
 
         # Launch one of the worlds provided by NVIDIA
         #self.pg.load_environment(SIMULATION_ENVIRONMENTS["Curved Gridroom"])
-        self.pg.load_asset(SIMULATION_ENVIRONMENTS["Curved Gridroom"], "/World/layout")
+        self.pg.load_asset(SIMULATION_ENVIRONMENTS["Box Room"], "/World/layout")
 
         # Check the available assets for people
         people_assets_list = Person.get_character_asset_list()
@@ -121,7 +121,7 @@ class PegasusApp:
         mavlink_config = PX4MavlinkBackendConfig({
             "vehicle_id": 0,
             "px4_autolaunch": True,
-            "px4_dir": "/home/marcelo/PX4-Autopilot"
+            "px4_dir": "/home/marcelo/PX4-Autopilot"     # TODO -> Change this line to the path where you have the PX4-Autopilot code downloaded (this is an example on how you can set your own path for PX4)
         })
 
         config_multirotor.backends = [
@@ -139,7 +139,7 @@ class PegasusApp:
         
         Multirotor(
             "/World/quadrotor",
-            ROBOTS['Iris'],
+            ROBOTS['Pegasus'],
             0,
             [0.0, 0.0, 0.07],
             Rotation.from_euler("XYZ", [0.0, 0.0, 0.0], degrees=True).as_quat(),

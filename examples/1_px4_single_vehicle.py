@@ -53,7 +53,7 @@ class PegasusApp:
         self.world = self.pg.world
 
         # Launch one of the worlds provided by NVIDIA
-        self.pg.load_environment(SIMULATION_ENVIRONMENTS["Curved Gridroom"])
+        self.pg.load_environment(SIMULATION_ENVIRONMENTS["Box Room"])
 
         # Create the vehicle
         # Try to spawn the selected robot in the world to the specified namespace
@@ -69,7 +69,7 @@ class PegasusApp:
 
         Multirotor(
             "/World/quadrotor",
-            ROBOTS['Iris'],
+            ROBOTS['Pegasus'],
             0,
             [0.0, 0.0, 0.07],
             Rotation.from_euler("XYZ", [0.0, 0.0, 0.0], degrees=True).as_quat(),
