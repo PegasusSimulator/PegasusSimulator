@@ -167,6 +167,9 @@ class MonocularCamera(GraphicalSensor):
             self._state["camera"] = self._camera
             self._state["intrinsics"] = self._intrinsics
 
+            if self._depth:
+                self._state["depth"] = True
+
             # To actually get the image data from the camera, you can use:
             #self._state["camera"].get_rgb_image()  # For RGB image
             
