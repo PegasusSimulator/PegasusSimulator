@@ -79,11 +79,11 @@ class State:
             np.ndarray: A numpy array with [u,v,w] that defines the velocity of the vehicle expressed in the FRD body frame.
         """
 
-        # Get the linear acceleration in FLU convention
-        linear_acc_body_flu = Rotation.from_quat(self.attitude).inv().apply(self.linear_acceleration)
+        # Get the linear velocity in FLU convention
+        linear_vel_body_flu = Rotation.from_quat(self.attitude).inv().apply(self.linear_velocity)
 
-        # Convert the linear acceleration in the body frame expressed in FLU convention to the FRD convention
-        return rot_FLU_to_FRD.apply(linear_acc_body_flu)
+        # Convert the linear velocity in the body frame expressed in FLU convention to the FRD convention
+        return rot_FLU_to_FRD.apply(linear_vel_body_flu)
 
     def get_linear_velocity_ned(self):
         """
