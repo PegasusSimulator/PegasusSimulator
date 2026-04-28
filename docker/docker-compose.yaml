@@ -1,0 +1,79 @@
+services:
+  pegasus-simulator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: final
+      args:
+        ROS_DISTRO: humble
+        USERNAME: ubuntu
+    image: seanchangx/pegasus-simulator:isaacsim-4.5.0
+    container_name: pegasus-simulator
+    stdin_open: true
+    tty: true
+    restart: "no"
+    network_mode: host
+    runtime: nvidia
+    environment:
+      # Isaac Sim configuration
+      - ACCEPT_EULA=Y
+      - PRIVACY_CONSENT=N
+      - NVIDIA_DRIVER_CAPABILITIES=all
+      - OMNI_KIT_ALLOW_ROOT=1
+      
+      # X11 forwarding for GUI
+      - DISPLAY=${DISPLAY}
+      
+      # ROS2 configuration
+      - AUTO_BUILD=${AUTO_BUILD:-false}
+      - AUTO_RUN=${AUTO_RUN:-false}
+      - LOCAL_USER_ID=${LOCAL_USER_ID:-1000}
+      - LOCAL_GROUP_ID=${LOCAL_GROUP_ID:-1000}
+      - ROS_WS=/home/ubuntu/PegasusSimulator/ros2_ws
+      - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-100}
+      - RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+      
+      # PX4 configuration
+      - PX4_DIR=/home/ubuntu/PX4-Autopilot
+      
+    volumes:
+      - ~/App/isaac-sim/cache/kit:/isaac-sim/kit/cache:rw
+      - ~/App/isaac-sim/cache/ov:/root/.cache/ov:rw
+      - ~/App/isaac-sim/cache/pip:/root/.cache/pip:rw
+      - ~/App/isaac-sim/cache/glcache:/root/.cache/nvidia/GLCache:rw
+      - ~/App/isaac-sim/cache/computecache:/root/.nv/ComputeCache:rw
+      - ~/App/isaac-sim/logs:/root/.nvidia-omniverse/logs:rw
+      # - ~/App/isaac-sim/data:/root/.local/share/ov/data:rw
+      - ~/App/isaac-sim/ov_local_share:/root/.local/share/ov:rw
+      - ~/App/isaac-sim/documents:/root/Documents:rw
+
+      # Mount local timezone into container.
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+      # Mount X11 server
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+
+      - ../:/home/ubuntu/PegasusSimulator
+      
+      # QGroundControl configuration and data persistence
+      - ~/App/QGroundControl/config:/home/ubuntu/.config/QGroundControl:rw
+      - ~/App/QGroundControl/data:/home/ubuntu/Documents/QGroundControl:rw
+    
+    stop_grace_period: 3s
+
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+    
+    # Enable FUSE for AppImage support
+    devices:
+      - /dev/fuse:/dev/fuse
+    cap_add:
+      - SYS_ADMIN
+    security_opt:
+      - apparmor:unconfined
+
+    entrypoint: ["/entrypoint.sh"]
+    command: ["${CUSTOM_COMMAND:-/bin/bash}"]
