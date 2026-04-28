@@ -185,10 +185,10 @@ open a new terminal window (**Ctrl+Alt+T**), and test the following commands:
     .. code:: bash
 
         # Run the bundled python interpreter and see if it prints on the terminal "Hello World."
-        ISAACSIM_PYTHON -c "print('Hello World.')"
+        $ISAACSIM_PYTHON -c "print('Hello World.')"
 
         # Run the python interpreter and check if we can run a script that starts the simulator and adds cubes to the world
-        ISAACSIM_PYTHON ${ISAACSIM_PATH}/standalone_examples/api/isaacsim.core.api/add_cubes.py
+        $ISAACSIM_PYTHON ${ISAACSIM_PATH}/standalone_examples/api/isaacsim.core.api/add_cubes.py
 
 If you were unable to run the commands above successfuly, then something is incorrectly configured. 
 Please do not proceed with this installation until you have everything setup correctly.
@@ -269,7 +269,7 @@ extension as a ``pip`` python module for the built-in ``ISAACSIM_PYTHON`` to rec
         cd extensions
 
         # Run the pip command using the built-in python interpreter
-        ISAACSIM_PYTHON -m pip install --editable pegasus.simulator
+        $ISAACSIM_PYTHON -m pip install --editable pegasus.simulator
 
 We use the ``--editable`` flag so that the content of the extension is linked instead of copied. After this step, you 
 should be able to run the python standalone examples inside the ``examples`` folder.

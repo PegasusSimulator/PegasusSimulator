@@ -38,7 +38,7 @@ Latest Updates
 ⚠️ For users of versions prior to ``v5.1.0``:
 A new command line tool named ``isaac_run`` is now used to launch Isaac Sim. **This is a function that should be added to your .bashrc or .zshrc file during the installation of Isaac Sim.** See `Installation Instructions <https://pegasussimulator.github.io/PegasusSimulator/source/setup/installation.html>`__ for more details.
 
-This was done to simplify the launching of Isaac Sim from the terminal with ROS2 support. All previous instructions that mentioned launching Isaac Sim examples from the examples folder using the ``ISAACSIM_PYTHON`` command should now use ``isaac_run`` instead.
+This was done to simplify the launching of Isaac Sim from the terminal with ROS2 support. All previous instructions that mentioned launching Isaac Sim examples from the examples folder using the ``$ISAACSIM_PYTHON`` command should now use ``isaac_run`` instead.
 
 Please refer to the updated documentation for more details.
 
