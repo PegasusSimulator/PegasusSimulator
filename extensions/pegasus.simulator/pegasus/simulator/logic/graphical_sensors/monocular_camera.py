@@ -66,7 +66,7 @@ class MonocularCamera(GraphicalSensor):
         # Set the values for the intrinsics if provided
         if self._intrinsics is not None:
             # Set the camera intrinsics
-            ((fx,_,cx),(_,fy,cy),(_,_,_)) = self._intrinsics
+            ((self.fx,_,self.cx),(_,self.fy,self.cy),(_,_,_)) = self._intrinsics
         else:
             # Assume a default field of view of 70 degrees
             self.fov = 70.0  # degrees
