@@ -165,7 +165,7 @@ class ROS2Backend(Backend):
             # The current setup as it is.... its a pain!!!!
             self.rotor_subs = []
             for i in range(self._num_rotors):
-                self.rotor_subs.append(self.node.create_subscription(Float64, self._namespace + str(self._id) + "/control/rotor" + str(i) + "/ref", lambda x: self.rotor_callback(x, i),10))
+                self.rotor_subs.append(self.node.create_subscription(Float64, self._namespace + str(self._id) + "/control/rotor" + str(i) + "/ref", lambda x, idx=i: self.rotor_callback(x, idx),10))
 
 
     def send_static_transforms(self):
