@@ -117,6 +117,27 @@ class GraphicalSensor:
         """
         return None
 
+    @property
+    def position(self):
+        """
+        (array) Position of the sensor in the vehicle's coordinate frame.
+        """
+        return self._position
+
+    @property
+    def orientation(self):
+        """
+        (array) Orientation of the sensor in the vehicle's coordinate frame.
+        """
+        return self._orientation
+
+    @property
+    def name(self):
+        """
+        (str) The name of the sensor.
+        """
+        return None
+
     def update(self, state: State, dt: float):
         """Method that should be implemented by the class that inherits Sensor. This is where the actual implementation
         of the sensor should be performed.
