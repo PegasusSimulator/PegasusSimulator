@@ -31,6 +31,7 @@ Graphs
 
    graphs.graph
    graphs.ros2_camera_graph
+   graphs.ros2_odometry
 
 Dynamics
 --------
