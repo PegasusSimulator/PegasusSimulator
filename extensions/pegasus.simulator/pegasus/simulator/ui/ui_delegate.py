@@ -207,7 +207,14 @@ class UIDelegate:
             # Check if we already have a physics environment activated. If not, then activate it
             # and only after spawn the vehicle. This is to avoid trying to spawn a vehicle without a physics
             # environment setup. This way we can even spawn a vehicle in an empty world and it won't care
-            if hasattr(self._pegasus_sim.world, "_physics_context") == False:
+
+            # Ensure the world is initialized first
+            if self._pegasus_sim.world is None:
+                self._pegasus_sim.initialize_world()
+            
+            # Ensure physics context is initialized and ready
+            if (self._pegasus_sim.world._physics_context is None or 
+                self._pegasus_sim.world._physics_context._physx_interface is None):
                 await self._pegasus_sim.world.initialize_simulation_context_async()
 
             # Check if a vehicle is selected in the drop-down menu
