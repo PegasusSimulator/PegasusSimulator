@@ -8,11 +8,11 @@ __all__ = ["Lidar"]
 
 from pegasus.simulator.logic.state import State
 from pegasus.simulator.logic.graphical_sensors import GraphicalSensor
-from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 
 # Imports the python bindings to interact with lidar sensor
+import omni.usd
 import omni.kit.commands
-from pxr import Gf, UsdGeom  
+from pxr import Gf, UsdGeom
 from omni.usd import get_stage_next_free_path
 
 # Auxiliary scipy and numpy modules
@@ -55,7 +55,7 @@ class Lidar(GraphicalSensor):
         super().initialize(vehicle)
         
         # Get the complete stage prefix for the lidar
-        self._stage_prim_path = get_stage_next_free_path(PegasusInterface().world.stage, self._vehicle.prim_path + "/body/" + self._lidar_name, False)
+        self._stage_prim_path = get_stage_next_free_path(omni.usd.get_context().get_stage(), self._vehicle.prim_path + "/body/" + self._lidar_name, False)
 
         # Get the camera name that was actually created (and update the camera name)
         self._lidar_name = self._stage_prim_path.rpartition("/")[-1]

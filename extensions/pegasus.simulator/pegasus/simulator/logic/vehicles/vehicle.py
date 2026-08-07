@@ -11,14 +11,16 @@ from scipy.spatial.transform import Rotation
 
 # Low level APIs
 import carb
-from pxr import Usd, Gf
+from pxr import Usd, Gf, UsdGeom
 
 # High level Isaac sim APIs
 import omni.usd
-from isaacsim.core.utils.prims import define_prim, get_prim_at_path
 from omni.usd import get_stage_next_free_path
-from isaacsim.core.api.robots.robot import Robot
-from omni.isaac.dynamic_control import _dynamic_control
+import isaacsim.core.experimental.utils.app as app_utils
+import isaacsim.core.experimental.utils.stage as stage_utils
+from isaacsim.core.simulation_manager import SimulationManager, SimulationEvent
+from isaacsim.core.rendering_manager import RenderingManager, RenderingEvent
+from isaacsim.core.experimental.prims import RigidPrim
 
 # Extension APIs
 from pegasus.simulator.logic.state import State
@@ -43,8 +45,8 @@ def get_world_transform_xform(prim: Usd.Prim):
     return rotation
 
 
-class Vehicle(Robot):
-    
+class Vehicle:
+
     def __init__(
         self,
         stage_prefix: str,
@@ -66,9 +68,12 @@ class Vehicle(Robot):
             init_orientation (list): The initial orientation of the vehicle in quaternion [qx, qy, qz, qw]. Defaults to [0.0, 0.0, 0.0, 1.0].
         """
 
-        # Get the current world at which we want to spawn the vehicle
-        self._world = PegasusInterface().world
-        self._current_stage = self._world.stage
+        # Initialize callback IDs to None so __del__ is safe even if __init__ fails partway
+        self._cb_state = self._cb_update = self._cb_sensors = self._cb_sim_state = None
+        self._cb_sim_start = self._cb_sim_stop = self._cb_render = None
+
+        # Get the current stage
+        self._current_stage = omni.usd.get_context().get_stage()
 
         # Save the name with which the vehicle will appear in the stage
         # and the name of the .usd file that contains its description
@@ -79,26 +84,19 @@ class Vehicle(Robot):
         self._vehicle_name = self._stage_prefix.rpartition("/")[-1]
 
         # Spawn the vehicle primitive in the world's stage
-        self._prim = define_prim(self._stage_prefix, "Xform")
-        self._prim = get_prim_at_path(self._stage_prefix)
+        self._prim = stage_utils.define_prim(self._stage_prefix, "Xform")
+        self._prim = self._current_stage.GetPrimAtPath(self._stage_prefix)
         self._prim.GetReferences().AddReference(self._usd_file)
 
-        # Initialize the "Robot" class
-        # Note: we need to change the rotation to have qw first, because NVidia
-        # does not keep a standard of quaternions inside its own libraries (not good, but okay)
-        super().__init__(
-            prim_path=self._stage_prefix,
-            name=self._stage_prefix,
-            position=init_pos,
-            orientation=[init_orientation[3], init_orientation[0], init_orientation[1], init_orientation[2]],
-            articulation_controller=None,
-        )
+        # Set the initial pose via the Xform API
+        xformable = UsdGeom.Xformable(self._prim)
+        xformable.ClearXformOpOrder()
+        xformable.AddTranslateOp().Set(Gf.Vec3d(init_pos[0], init_pos[1], init_pos[2]))
+        # Convert [qx, qy, qz, qw] → [qw, qx, qy, qz] for USD; use Quatf (single precision) to match the op type in NVIDIA USD assets
+        xformable.AddOrientOp().Set(Gf.Quatf(init_orientation[3], init_orientation[0], init_orientation[1], init_orientation[2]))
 
-        self._vehicle_dc_interface = None
-
-        # Add this object for the world to track, so that if we clear the world, this object is deleted from memory and
-        # as a consequence, from the VehicleManager as well
-        self._world.scene.add(self)
+        # Body rigid prim — created lazily after simulation starts
+        self._body_rigid_prim: RigidPrim | None = None
 
         # Add the current vehicle to the vehicle manager, so that it knows
         # that a vehicle was instantiated
@@ -107,30 +105,27 @@ class Vehicle(Robot):
         # Variable that will hold the current state of the vehicle
         self._state = State()
 
-        # Add a callback to the physics engine to update the current state of the system
-        self._world.add_physics_callback(self._stage_prefix + "/state", self.update_state)
-
-        # Add the update method to the physics callback if the world was received
-        # so that we can apply forces and torques to the vehicle. Note, this method should        # be implemented in classes that inherit the vehicle object
-        self._world.add_physics_callback(self._stage_prefix + "/update", self.update)
+        # Register physics callbacks
+        self._cb_state = SimulationManager.register_callback(self.update_state, SimulationEvent.PHYSICS_POST_STEP)
+        self._cb_update = SimulationManager.register_callback(self.update, SimulationEvent.PHYSICS_POST_STEP)
 
         # Set the flag that signals if the simulation is running or not
         self._sim_running = False
 
-        # Add a callback to start/stop of the simulation once the play/stop button is hit
-        self._world.add_timeline_callback(self._stage_prefix + "/start_stop_sim", self.sim_start_stop)
+        # Register simulation start/stop callbacks
+        self._cb_sim_start = SimulationManager.register_callback(self._on_sim_started, SimulationEvent.SIMULATION_STARTED)
+        self._cb_sim_stop = SimulationManager.register_callback(self._on_sim_stopped, SimulationEvent.SIMULATION_STOPPED)
 
         # --------------------------------------------------------------------
         # -------------------- Add sensors to the vehicle --------------------
         # --------------------------------------------------------------------
         self._sensors = sensors
-        
+
         for sensor in self._sensors:
             sensor.initialize(self, PegasusInterface().latitude, PegasusInterface().longitude, PegasusInterface().altitude)
 
         # Add callbacks to the physics engine to update each sensor at every timestep
-        # and let the sensor decide depending on its internal update rate whether to generate new data
-        self._world.add_physics_callback(self._stage_prefix + "/Sensors", self.update_sensors)
+        self._cb_sensors = SimulationManager.register_callback(self.update_sensors, SimulationEvent.PHYSICS_POST_STEP)
 
         # --------------------------------------------------------------------
         # -------------------- Add the graphical sensors to the vehicle ------
@@ -140,9 +135,8 @@ class Vehicle(Robot):
         for graphical_sensor in self._graphical_sensors:
             graphical_sensor.initialize(self)
 
-        # Add callbacks to the rendering engine to update each graphical sensor at every timestep of the rendering engine
-        self._world.add_render_callback(self._stage_prefix + "/GraphicalSensors", self.update_graphical_sensors)
-
+        # Add callback to the rendering engine to update each graphical sensor
+        self._cb_render = RenderingManager.register_callback(RenderingEvent.NEW_FRAME, callback=self.update_graphical_sensors)
 
         # --------------------------------------------------------------------
         # -------------------- Add the graphs to the vehicle -----------------
@@ -151,7 +145,7 @@ class Vehicle(Robot):
 
         for graph in self._graphs:
             graph.initialize(self)
-        
+
         # --------------------------------------------------------------------
         # ---- Add (communication/control) backends to the vehicle -----------
         # --------------------------------------------------------------------
@@ -161,15 +155,29 @@ class Vehicle(Robot):
         for backend in self._backends:
             backend.initialize(self)
 
-        # Add a callbacks for the
-        self._world.add_physics_callback(self._stage_prefix + "/mav_state", self.update_sim_state)
+        # Callback for sending state to backends on every physics step
+        self._cb_sim_state = SimulationManager.register_callback(self.update_sim_state, SimulationEvent.PHYSICS_POST_STEP)
 
 
     def __del__(self):
         """
-        Method that is invoked when a vehicle object gets destroyed. When this happens, we also invoke the 
+        Method that is invoked when a vehicle object gets destroyed. When this happens, we also invoke the
         'remove_vehicle' from the VehicleManager in order to remove the vehicle from the list of active vehicles.
         """
+        # Deregister all SimulationManager callbacks
+        for cb_id in (self._cb_state, self._cb_update, self._cb_sensors, self._cb_sim_state,
+                      self._cb_sim_start, self._cb_sim_stop):
+            if cb_id is not None:
+                try:
+                    SimulationManager.deregister_callback(cb_id)
+                except Exception:
+                    pass
+        # Deregister RenderingManager callback
+        if self._cb_render is not None:
+            try:
+                RenderingManager.deregister_callback(self._cb_render)
+            except Exception:
+                pass
 
         # Remove this object from the vehicleHandler
         VehicleManager.get_vehicle_manager().remove_vehicle(self._stage_prefix)
@@ -179,6 +187,15 @@ class Vehicle(Robot):
     """
 
     @property
+    def prim_path(self) -> str:
+        """The USD stage path of this vehicle.
+
+        Returns:
+            str: Stage prefix string.
+        """
+        return self._stage_prefix
+
+    @property
     def state(self):
         """The state of the vehicle.
 
@@ -186,7 +203,7 @@ class Vehicle(Robot):
             State: The current state of the vehicle, i.e., position, orientation, linear and angular velocities...
         """
         return self._state
-    
+
     @property
     def vehicle_name(self) -> str:
         """Vehicle name.
@@ -200,17 +217,13 @@ class Vehicle(Robot):
     Operations
     """
 
-    def sim_start_stop(self, event):
-        """
-        Callback that is called every time there is a timeline event such as starting/stoping the simulation.
-
-        Args:
-            event: A timeline event generated from Isaac Sim, such as starting or stoping the simulation.
-        """
-
-        # If the start/stop button was pressed, then call the start and stop methods accordingly
-        if self._world.is_playing() and self._sim_running == False:
+    def _on_sim_started(self, *args):
+        """Callback invoked when the simulation starts (after the first physics warm-up step)."""
+        if not self._sim_running:
             self._sim_running = True
+
+            # Create (or re-create) the rigid prim wrapper now that physics is ready
+            self._body_rigid_prim = RigidPrim(paths=self._stage_prefix + "/body")
 
             # Initialize the sensors
             for sensor in self._sensors:
@@ -220,18 +233,19 @@ class Vehicle(Robot):
             for graphical_sensor in self._graphical_sensors:
                 graphical_sensor.start()
 
-            # Intializes the communication with all the backends. This method is invoked automatically when the simulation starts
+            # Initialize the communication backends
             for backend in self._backends:
                 backend.start()
 
-            # Invoke the start method of the vehicle (if it exists)
             self.start()
 
-        if self._world.is_stopped() and self._sim_running == True:
+    def _on_sim_stopped(self, *args):
+        """Callback invoked when the simulation stops."""
+        if self._sim_running:
             self._sim_running = False
 
-            # Reset the DC interface
-            self._vehicle_dc_interface = None
+            # Release the rigid prim wrapper so it can be re-created fresh on next play
+            self._body_rigid_prim = None
 
             # Stop the sensors
             for sensor in self._sensors:
@@ -241,7 +255,7 @@ class Vehicle(Robot):
             for graphical_sensor in self._graphical_sensors:
                 graphical_sensor.stop()
 
-            # Signal all the backends that the simulation has stoped. This method is invoked automatically when the simulation stops
+            # Signal all the backends that the simulation has stopped
             for backend in self._backends:
                 backend.stop()
 
@@ -250,70 +264,85 @@ class Vehicle(Robot):
     def apply_force(self, force, pos=[0.0, 0.0, 0.0], body_part="/body"):
         """
         Method that will apply a force on the rigidbody, on the part specified in the 'body_part' at its relative position
-        given by 'pos' (following a FLU) convention. 
+        given by 'pos' (following a FLU) convention.
 
         Args:
             force (list): A 3-dimensional vector of floats with the force [Fx, Fy, Fz] on the body axis of the vehicle according to a FLU convention.
-            pos (list): _description_. Defaults to [0.0, 0.0, 0.0].
-            body_part (str): . Defaults to "/body".
+            pos (list): Position offset in local body frame. Defaults to [0.0, 0.0, 0.0].
+            body_part (str): Rigid body sub-path relative to the vehicle stage prefix. Defaults to "/body".
         """
+        if self._body_rigid_prim is None or not self._body_rigid_prim.is_physics_tensor_entity_valid():
+            return
 
-        # Get the handle of the rigidbody that we will apply the force to
-        rb = self.get_dc_interface().get_rigid_body(self._stage_prefix + body_part)
+        prim_path = self._stage_prefix + body_part
+        rigid_prim = RigidPrim(paths=prim_path) if body_part != "/body" else self._body_rigid_prim
 
-        # Apply the force to the rigidbody. The force should be expressed in the rigidbody frame
-        self.get_dc_interface().apply_body_force(rb, carb._carb.Float3(force), carb._carb.Float3(pos), False)
+        forces = np.array([[force[0], force[1], force[2]]], dtype=np.float32)
+        torques = np.zeros((1, 3), dtype=np.float32)
+        positions = np.array([[pos[0], pos[1], pos[2]]], dtype=np.float32)
+        rigid_prim.apply_forces_and_torques_at_pos(forces=forces, torques=torques, positions=positions, local_frame=True)
 
     def apply_torque(self, torque, body_part="/body"):
         """
         Method that when invoked applies a given torque vector to /<rigid_body_name>/"body" or to /<rigid_body_name>/<body_part>.
 
         Args:
-            torque (list): A 3-dimensional vector of floats with the force [Tx, Ty, Tz] on the body axis of the vehicle according to a FLU convention.
-            body_part (str): . Defaults to "/body".
+            torque (list): A 3-dimensional vector of floats with the torque [Tx, Ty, Tz] on the body axis of the vehicle according to a FLU convention.
+            body_part (str): Rigid body sub-path relative to the vehicle stage prefix. Defaults to "/body".
         """
+        if self._body_rigid_prim is None or not self._body_rigid_prim.is_physics_tensor_entity_valid():
+            return
 
-        # Get the handle of the rigidbody that we will apply a torque to
-        rb = self.get_dc_interface().get_rigid_body(self._stage_prefix + body_part)
+        prim_path = self._stage_prefix + body_part
+        rigid_prim = RigidPrim(paths=prim_path) if body_part != "/body" else self._body_rigid_prim
 
-        # Apply the torque to the rigidbody. The torque should be expressed in the rigidbody frame
-        self.get_dc_interface().apply_body_torque(rb, carb._carb.Float3(torque), False)
+        forces = np.zeros((1, 3), dtype=np.float32)
+        torques = np.array([[torque[0], torque[1], torque[2]]], dtype=np.float32)
+        positions = np.zeros((1, 3), dtype=np.float32)
+        rigid_prim.apply_forces_and_torques_at_pos(forces=forces, torques=torques, positions=positions, local_frame=True)
 
-    def update_state(self, dt: float):
+    def update_state(self, dt: float, context=None):
         """
         Method that is called at every physics step to retrieve and update the current state of the vehicle, i.e., get
         the current position, orientation, linear and angular velocities and acceleration of the vehicle.
 
         Args:
             dt (float): The time elapsed between the previous and current function calls (s).
+            context: Physics step context (unused, required by SimulationManager callback signature).
         """
+        if self._body_rigid_prim is None:
+            return
 
-        # Get the body frame interface of the vehicle (this will be the frame used to get the position, orientation, etc.)
-        body = self.get_dc_interface().get_rigid_body(self._stage_prefix + "/body")
+        # Get the current position and orientation from the body rigid prim
+        # get_world_poses() returns (positions wp.array Nx3, orientations wp.array Nx4 in wxyz)
+        positions, orientations = self._body_rigid_prim.get_world_poses()
+        pos = positions.numpy()[0]        # [x, y, z]
+        quat_wxyz = orientations.numpy()[0]  # [qw, qx, qy, qz]
 
-        # Get the current position and orientation in the inertial frame
-        pose = self.get_dc_interface().get_rigid_body_pose(body)
-
-        # Get the attitude according to the convention [w, x, y, z]
-        prim = self._world.stage.GetPrimAtPath(self._stage_prefix + "/body")
+        # Get the attitude via the USD rotation (more accurate for orientation)
+        prim = self._current_stage.GetPrimAtPath(self._stage_prefix + "/body")
         rotation_quat = get_world_transform_xform(prim).GetQuaternion()
         rotation_quat_real = rotation_quat.GetReal()
         rotation_quat_img = rotation_quat.GetImaginary()
 
-        # Get the angular velocity of the vehicle expressed in the body frame of reference
-        ang_vel = self.get_dc_interface().get_rigid_body_angular_velocity(body)
+        # Get the linear and angular velocities
+        # get_velocities() returns (linear wp.array Nx3, angular wp.array Nx3) both in world frame
+        linear_vels, angular_vels = self._body_rigid_prim.get_velocities()
+        linear_vel = linear_vels.numpy()[0]   # [vx, vy, vz] in world frame
+        ang_vel_world = angular_vels.numpy()[0]  # [wx, wy, wz] in world frame, rad/s
 
-        # The linear velocity [x_dot, y_dot, z_dot] of the vehicle's body frame expressed in the inertial frame of reference
-        linear_vel = self.get_dc_interface().get_rigid_body_linear_velocity(body)
+        # Convert warp float32 outputs to float64 so ROS 2 message fields pass PyFloat_Check
+        pos = pos.astype(np.float64)
+        linear_vel = linear_vel.astype(np.float64)
+        ang_vel_world = ang_vel_world.astype(np.float64)
 
         # Get the linear acceleration of the body relative to the inertial frame, expressed in the inertial frame
-        # Note: we must do this approximation, since the Isaac sim does not output the acceleration of the rigid body directly
-        linear_acceleration = (np.array(linear_vel) - self._state.linear_velocity) / dt
+        linear_acceleration = (linear_vel - self._state.linear_velocity) / dt if dt > 0.0 else np.zeros(3)
 
         # Update the state variable X = [x,y,z]
-        self._state.position = np.array(pose.p)
+        self._state.position = np.array(pos)
 
-        # Get the quaternion according in the [qx,qy,qz,qw] standard
+        # Get the quaternion in the [qx, qy, qz, qw] standard
         self._state.attitude = np.array(
             [rotation_quat_img[0], rotation_quat_img[1], rotation_quat_img[2], rotation_quat_real]
         )
@@ -321,16 +350,15 @@ class Vehicle(Robot):
         # Express the velocity of the vehicle in the inertial frame X_dot = [x_dot, y_dot, z_dot]
         self._state.linear_velocity = np.array(linear_vel)
 
-        # The linear velocity V =[u,v,w] of the vehicle's body frame expressed in the body frame of reference
-        # Note that: x_dot = Rot * V
+        # The linear velocity V = [u,v,w] of the vehicle's body frame expressed in the body frame of reference
         self._state.linear_body_velocity = (
             Rotation.from_quat(self._state.attitude).inv().apply(self._state.linear_velocity)
         )
 
-        # omega = [p,q,r]
-        self._state.angular_velocity = Rotation.from_quat(self._state.attitude).inv().apply(np.array(ang_vel))
+        # omega = [p, q, r] expressed in body frame
+        self._state.angular_velocity = Rotation.from_quat(self._state.attitude).inv().apply(np.array(ang_vel_world))
 
-        # The acceleration of the vehicle expressed in the inertial frame X_ddot = [x_ddot, y_ddot, z_ddot]
+        # The acceleration of the vehicle expressed in the inertial frame
         self._state.linear_acceleration = linear_acceleration
 
     def start(self):
@@ -345,7 +373,7 @@ class Vehicle(Robot):
         """
         pass
 
-    def update(self, dt: float):
+    def update(self, dt: float, context=None):
         """
         Method that computes and applies the forces to the vehicle in
         simulation based on the motor speed. This method must be implemented
@@ -353,17 +381,18 @@ class Vehicle(Robot):
 
         Args:
             dt (float): The time elapsed between the previous and current function calls (s).
+            context: Physics step context (unused, required by SimulationManager callback signature).
         """
         pass
 
-    def update_sensors(self, dt: float):
+    def update_sensors(self, dt: float, context=None):
         """Callback that is called at every physics steps and will call the sensor.update method to generate new
         sensor data. For each data that the sensor generates, the backend.update_sensor method will also be called for
-        every backend. For example, if new data is generated for an IMU and we have a PX4MavlinkBackend, then the update_sensor
-        method will be called for that backend so that this data can latter be sent thorugh mavlink.
+        every backend.
 
         Args:
             dt (float): The time elapsed between the previous and current function calls (s).
+            context: Physics step context (unused, required by SimulationManager callback signature).
         """
 
         # Call the update method for the sensor to update its values internally (if applicable)
@@ -377,37 +406,32 @@ class Vehicle(Robot):
 
     def update_graphical_sensors(self, event):
         """Callback that is called at every rendering steps and will call the graphical_sensor.update method to generate new
-        sensor data. For each data that the sensor generates, the backend.update_graphical_sensor method will also be called for
-        every backend. For example, if new data is generated for a monocular camera and we have a ROS2Backend, then the update_graphical_sensor
-        method will be called for that backend so that this data can latter be sent through a ROS2 topic.
+        sensor data.
 
         Args:
-            event (float): The timer event that contains the time elapsed between the previous and current function calls (s).
+            event: Rendering event from RenderingManager.
         """
+        # Extract dt from the event payload if available, otherwise use a sensible default
+        dt = 1.0 / 60.0
+        if hasattr(event, 'payload') and isinstance(event.payload, dict):
+            dt = event.payload.get('dt', dt)
 
-        # Call the update method for the sensor to update its values internally (if applicable)
         for sensor in self._graphical_sensors:
-            sensor_data = sensor.update(self._state, event.payload['dt'])
+            sensor_data = sensor.update(self._state, dt)
 
             # If some data was updated and we have a ros backend (or other), then just update it
             if sensor_data is not None:
                 for backend in self._backends:
                     backend.update_graphical_sensor(sensor.sensor_type, sensor_data)
 
-    def update_sim_state(self, dt: float):
+    def update_sim_state(self, dt: float, context=None):
         """
         Callback that is used to "send" the current state for each backend being used to control the vehicle. This callback
         is called on every physics step.
 
         Args:
             dt (float): The time elapsed between the previous and current function calls (s).
+            context: Physics step context (unused, required by SimulationManager callback signature).
         """
         for backend in self._backends:
             backend.update_state(self._state)
-
-    def get_dc_interface(self):
-
-        if self._vehicle_dc_interface is None:
-            self._vehicle_dc_interface = _dynamic_control.acquire_dynamic_control_interface()
-
-        return self._vehicle_dc_interface

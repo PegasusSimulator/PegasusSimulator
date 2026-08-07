@@ -17,9 +17,10 @@ from threading import Lock
 # NVidia API imports
 import carb
 import omni.kit.app
-from isaacsim.core.api.world import World
-from isaacsim.core.utils.stage import clear_stage, create_new_stage_async, update_stage_async, create_new_stage
-from isaacsim.core.utils.viewports import set_camera_view
+import omni.usd
+from isaacsim.core.simulation_manager import SimulationManager
+import isaacsim.core.experimental.utils.app as app_utils
+import isaacsim.core.experimental.utils.stage as stage_utils
 import isaacsim.storage.native as nucleus
 
 # Pegasus Simulator internal API
@@ -30,7 +31,7 @@ from pegasus.simulator.logic.vehicle_manager import VehicleManager
 class PegasusInterface:
     """
     PegasusInterface is a singleton class (there is only one object instance at any given time) that will be used
-    to 
+    to
     """
 
     # The object instance of the Vehicle Manager
@@ -58,8 +59,7 @@ class PegasusInterface:
 
         # Initialize the world with the default simulation settings
         self._world_settings = DEFAULT_WORLD_SETTINGS
-        self._world = None
-        
+
         # Initialize the latitude, longitude and altitude of the simulated environment at the (0.0, 0.0, 0.0) coordinate
         # from the extension configuration file
         self._latitude, self._longitude, self._altitude = self._get_global_coordinates_from_config()
@@ -76,15 +76,6 @@ class PegasusInterface:
 
 
     @property
-    def world(self):
-        """The current isaacsim.core.api.world World instance
-
-        Returns:
-            isaacsim.core.api.world: The world instance
-        """
-        return self._world
-
-    @property
     def vehicle_manager(self):
         """The instance of the VehicleManager.
 
@@ -92,7 +83,7 @@ class PegasusInterface:
             VehicleManager: The current instance of the VehicleManager.
         """
         return self._vehicle_manager
-    
+
     @property
     def latitude(self):
         """The latitude of the origin of the simulated world in degrees.
@@ -101,7 +92,7 @@ class PegasusInterface:
             float: The latitude of the origin of the simulated world in degrees.
         """
         return self._latitude
-    
+
     @property
     def longitude(self):
         """The longitude of the origin of the simulated world in degrees.
@@ -110,7 +101,7 @@ class PegasusInterface:
             float: The longitude of the origin of the simulated world in degrees.
         """
         return self._longitude
-    
+
     @property
     def altitude(self):
         """The altitude of the origin of the simulated world in meters.
@@ -119,7 +110,7 @@ class PegasusInterface:
             float: The latitude of the origin of the simulated world in meters.
         """
         return self._altitude
-    
+
     @property
     def px4_path(self):
         """A string with the installation directory for PX4 (if it was setup). Otherwise it is None.
@@ -128,7 +119,7 @@ class PegasusInterface:
             str: A string with the installation directory for PX4 (if it was setup). Otherwise it is None.
         """
         return self._px4_path
-    
+
     @property
     def ardupilot_path(self):
         """A string with the installation directory for ArduPilot (if it was setup). Otherwise it is None.
@@ -137,7 +128,7 @@ class PegasusInterface:
             str: A string with the installation directory for ArduPilot (if it was setup). Otherwise it is None.
         """
         return self._ardupilot_path
-    
+
     @property
     def px4_default_airframe(self):
         """A string with the PX4 default airframe (if it was setup). Otherwise it is None.
@@ -146,7 +137,7 @@ class PegasusInterface:
             str: A string with the PX4 default airframe (if it was setup). Otherwise it is None.
         """
         return self._px4_default_airframe
-    
+
     @property
     def ardupilot_default_airframe(self):
         """A string with the ArduPilot default airframe (if it was setup). Otherwise it is None.
@@ -155,7 +146,7 @@ class PegasusInterface:
             str: A string with the ArduPilot default airframe (if it was setup). Otherwise it is None.
         """
         return self._ardupilot_default_airframe
-    
+
     def set_global_coordinates(self, latitude=None, longitude=None, altitude=None):
         """Method that can be used to set the latitude, longitude and altitude of the simulation world at the origin.
 
@@ -177,16 +168,15 @@ class PegasusInterface:
         carb.log_warn("New global coordinates set to: " + str(self._latitude) + ", " + str(self._longitude) + ", " + str(self._altitude))
 
     def initialize_world(self):
-        """Method that initializes the world object
-        """
-        self._world = World(**self._world_settings)
-        #asyncio.ensure_future(self._world.initialize_simulation_context_async())
+        """Apply simulation settings (physics dt) via SimulationManager."""
+        physics_dt = self._world_settings.get("physics_dt", 1.0 / 250.0)
+        SimulationManager.set_physics_dt(physics_dt)
 
     def get_vehicle(self, stage_prefix: str):
         """Method that returns the vehicle object given its 'stage_prefix', i.e., the name the vehicle was spawned with in the simulator.
 
         Args:
-            stage_prefix (str): The name the vehicle will present in the simulator when spawned. 
+            stage_prefix (str): The name the vehicle will present in the simulator when spawned.
 
         Returns:
             Vehicle: Returns a vehicle object that was spawned with the given 'stage_prefix'
@@ -230,16 +220,7 @@ class PegasusInterface:
         """
 
         # If the physics simulation was running, stop it first
-        if self._world is not None:
-            self._world.stop()
-
-        # Clear the world
-        if self._world is not None:
-            self._world.clear_all_callbacks()
-            self._world.clear()
-
-        # Clear the stage
-        clear_stage()
+        app_utils.stop()
 
         # Remove all the robots that were spawned
         self._vehicle_manager.remove_all_vehicles()
@@ -247,11 +228,8 @@ class PegasusInterface:
         # Call python's garbage collection
         gc.collect()
 
-        # Re-initialize the world
-        self._world = World(**self._world_settings)
-
-        # Re-initialize the physics context
-        asyncio.ensure_future(self._world.initialize_simulation_context_async())
+        # Create a new stage to clear the scene
+        asyncio.ensure_future(stage_utils.create_new_stage_async())
         carb.log_info("Current scene and its vehicles has been deleted")
 
     async def load_environment_async(self, usd_path: str, backend: str = 'px4', force_clear: bool=False):
@@ -259,24 +237,16 @@ class PegasusInterface:
 
         Args:
             usd_path (str): The path where the USD file describing the world is located.
-            force_clear (bool): Whether to perform a clear before loading the asset. Defaults to False. 
+            force_clear (bool): Whether to perform a clear before loading the asset. Defaults to False.
             It should be set to True only if the method is invoked from an App (GUI mode).
         """
 
         carb.log_warn("Loading a new environment into the simulator. Please wait...")
 
-        # Reset and pause the world simulation (only if force_clear is true)
-        # This is done to maximize the support between running in GUI as extension vs App
-        if force_clear == True:
-
-            # Create a new stage and initialize (or re-initialized) the world
-            await create_new_stage_async()
-            self._world = World(**self._world_settings)
-            await self._world.initialize_simulation_context_async()
-            self._world = World.instance()
-
-            await self._world.reset_async()
-            await self._world.stop_async()
+        if force_clear:
+            await stage_utils.create_new_stage_async()
+            physics_dt = self._world_settings.get("physics_dt", 1.0 / 250.0)
+            SimulationManager.set_physics_dt(physics_dt)
 
         # Load the USD asset that will be used for the environment
         try:
@@ -288,7 +258,7 @@ class PegasusInterface:
 
     def load_environment(self, usd_path: str, force_clear: bool=False):
         """Method that loads a given world (specified in the usd_path) into the simulator. If invoked from a python app,
-        this method should have force_clear=False, as the world reset and stop are performed asynchronously by this method, 
+        this method should have force_clear=False, as the world reset and stop are performed asynchronously by this method,
         and when we are operating in App mode, we want everything to run in sync.
 
         Args:
@@ -323,15 +293,16 @@ class PegasusInterface:
 
         Args:
             usd_asset (str): The path where the USD file describing the world is located.
-            stage_prefix (str): The name the vehicle will present in the simulator when spawned. 
+            stage_prefix (str): The name the vehicle will present in the simulator when spawned.
         """
+        stage = omni.usd.get_context().get_stage()
 
         # Try to check if there is already a prim with the same stage prefix in the stage
-        if self._world.stage.GetPrimAtPath(stage_prefix):
+        if stage.GetPrimAtPath(stage_prefix):
             raise Exception("A primitive already exists at the specified path")
 
         # Create the stage primitive and load the usd into it
-        prim = self._world.stage.DefinePrim(stage_prefix)
+        prim = stage.DefinePrim(stage_prefix)
         success = prim.GetReferences().AddReference(usd_asset)
 
         if not success:
@@ -344,8 +315,16 @@ class PegasusInterface:
             camera_position (list): A list with [X, Y, Z] coordinates of the camera in ENU inertial frame.
             camera_target (list): A list with [X, Y, Z] coordinates of the target that the camera should point to in the ENU inertial frame.
         """
-        # Set the camera view to a fixed value
-        set_camera_view(eye=camera_position, target=camera_target)
+        try:
+            from omni.kit.viewport.utility import get_active_viewport
+            from omni.kit.viewport.utility.camera_state import ViewportCameraState
+            viewport = get_active_viewport()
+            if viewport:
+                camera_state = ViewportCameraState(viewport)
+                camera_state.set_position_world(camera_position, True)
+                camera_state.set_target_world(camera_target, True)
+        except Exception as e:
+            carb.log_warn(f"Could not set viewport camera: {e}")
 
     def set_world_settings(self, physics_dt=None, stage_units_in_meters=None, rendering_dt=None, device=None):
         """
@@ -369,14 +348,14 @@ class PegasusInterface:
 
     def _get_px4_path_from_config(self):
         """
-        Method that reads the configured PX4 installation directory from the extension configuration file 
+        Method that reads the configured PX4 installation directory from the extension configuration file
 
         Returns:
             str: A string with the path to the px4 configuration directory or empty string ''
         """
 
         px4_dir = ""
-        
+
         # Open the configuration file. If it fails, just return the empty path
         try:
             with open(CONFIG_FILE, 'r') as f:
@@ -386,17 +365,17 @@ class PegasusInterface:
             carb.log_warn("Could not retrieve px4_dir from: " + str(CONFIG_FILE))
 
         return px4_dir
-    
+
     def _get_ardupilot_path_from_config(self):
         """
-        Method that reads the configured ArduPilot installation directory from the extension configuration file 
+        Method that reads the configured ArduPilot installation directory from the extension configuration file
 
         Returns:
             str: A string with the path to the ardupilot configuration directory or empty string ''
         """
 
         ardupilot_dir = ""
-        
+
         # Open the configuration file. If it fails, just return the empty path
         try:
             with open(CONFIG_FILE, 'r') as f:
@@ -406,16 +385,16 @@ class PegasusInterface:
             carb.log_warn("Could not retrieve ardupilot_dir from: " + str(CONFIG_FILE))
 
         return ardupilot_dir
-    
+
     def _get_px4_default_airframe_from_config(self):
         """
-        Method that reads the configured PX4 default airframe from the extension configuration file 
+        Method that reads the configured PX4 default airframe from the extension configuration file
 
         Returns:
             str: A string with the path to the PX4 default airframe or empty string ''
         """
         px4_default_airframe = ""
-        
+
         # Open the configuration file. If it fails, just return the empty path
         try:
             with open(CONFIG_FILE, 'r') as f:
@@ -425,16 +404,16 @@ class PegasusInterface:
             carb.log_warn("Could not retrieve px4_default_airframe from: " + str(CONFIG_FILE))
 
         return px4_default_airframe
-    
+
     def _get_ardupilot_default_airframe_from_config(self):
         """
-        Method that reads the configured Ardupilot default airframe from the extension configuration file 
+        Method that reads the configured Ardupilot default airframe from the extension configuration file
 
         Returns:
             str: A string with the path to the Ardupilot default airframe or empty string ''
         """
         ardupilot_default_airframe = ""
-        
+
         # Open the configuration file. If it fails, just return the empty path
         try:
             with open(CONFIG_FILE, 'r') as f:
@@ -461,7 +440,7 @@ class PegasusInterface:
         try:
             with open(CONFIG_FILE, 'r') as f:
                 data = yaml.safe_load(f)
-                
+
                 # Try to read the coordinates from the configuration file
                 global_coordinates = data.get("global_coordinates", {})
                 latitude = global_coordinates.get("latitude", 0.0)
@@ -478,7 +457,7 @@ class PegasusInterface:
         Args:
             absolute_path (str): The new path of the px4-autopilot installation directory
         """
-        
+
         # Save the new path for current use during this simulation
         self._px4_path = os.path.expanduser(path)
 
@@ -504,7 +483,7 @@ class PegasusInterface:
         Args:
             absolute_path (str): The new path of the ArduPilot installation directory
         """
-        
+
         # Save the new path for current use during this simulation
         self._ardupilot_path = os.path.expanduser(path)
 
@@ -530,7 +509,7 @@ class PegasusInterface:
         Args:
             absolute_path (str): The new px4 default airframe
         """
-        
+
         # Save the new path for current use during this simulation
         self._px4_default_airframe = airframe
 
@@ -556,7 +535,7 @@ class PegasusInterface:
         Args:
             airframe (str): The new ArduPilot default airframe
         """
-        
+
         # Save the new airframe for current use during this simulation
         self._ardupilot_default_airframe = airframe
 
@@ -578,13 +557,13 @@ class PegasusInterface:
 
     def set_default_global_coordinates(self):
         """
-        Method that sets the latitude, longitude and altitude from the pegasus interface to the 
+        Method that sets the latitude, longitude and altitude from the pegasus interface to the
         default global coordinates specified in the extension configuration file
         """
         self._latitude, self._longitude, self._altitude = self._get_global_coordinates_from_config()
 
     def set_new_default_global_coordinates(self, latitude: float=None, longitude: float=None, altitude: float=None):
-        
+
         # Set the current global coordinates to the new default global coordinates
         self.set_global_coordinates(latitude, longitude, altitude)
 
@@ -605,8 +584,8 @@ class PegasusInterface:
 
                 if altitude is not None:
                     data["global_coordinates"]["altitude"] = altitude
-                
-                # Save the updated configurations    
+
+                # Save the updated configurations
                 yaml.dump(data, f)
         except:
             carb.log_warn("Could not save the new global coordinates to: " + str(CONFIG_FILE))

@@ -20,7 +20,6 @@ simulation_app = SimulationApp({"headless": False})
 # The actual script should start here
 # -----------------------------------
 import omni.timeline
-from omni.isaac.core.world import World
 
 # Import the Pegasus API for simulating drones
 from pegasus.simulator.params import ROBOTS, SIMULATION_ENVIRONMENTS
@@ -57,8 +56,7 @@ class PegasusApp:
 
         # Acquire the World, .i.e, the singleton that controls that is a one stop shop for setting up physics, 
         # spawning asset primitives, etc.
-        self.pg._world = World(**self.pg._world_settings)
-        self.world = self.pg.world
+        self.pg.initialize_world()
 
         # Launch one of the worlds provided by NVIDIA
         self.pg.load_environment(SIMULATION_ENVIRONMENTS["Curved Gridroom"])
@@ -86,7 +84,6 @@ class PegasusApp:
         )
 
         # Reset the simulation environment so that all articulations (aka robots) are initialized
-        self.world.reset()
 
     def run(self):
         """
@@ -100,7 +97,7 @@ class PegasusApp:
         while simulation_app.is_running():
 
             # Update the UI of the app and perform the physics step
-            self.world.step(render=True)
+            simulation_app.update()
         
         # Cleanup and stop
         carb.log_warn("PegasusApp Simulation App is closing.")

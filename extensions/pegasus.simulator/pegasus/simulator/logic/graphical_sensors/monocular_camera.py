@@ -8,8 +8,8 @@ __all__ = ["MonocularCamera"]
 
 from pegasus.simulator.logic.state import State
 from pegasus.simulator.logic.graphical_sensors import GraphicalSensor
-from pegasus.simulator.logic.interface.pegasus_interface import PegasusInterface
 
+import omni.usd
 from isaacsim.sensors.camera.camera import Camera
 from omni.usd import get_stage_next_free_path
 
@@ -92,7 +92,7 @@ class MonocularCamera(GraphicalSensor):
         super().initialize(vehicle)
 
         # Get the complete stage prefix for the camera
-        self._stage_prim_path = get_stage_next_free_path(PegasusInterface().world.stage, self._vehicle.prim_path + "/body/" + self._camera_name, False)
+        self._stage_prim_path = get_stage_next_free_path(omni.usd.get_context().get_stage(), self._vehicle.prim_path + "/body/" + self._camera_name, False)
 
         # Get the camera name that was actually created (and update the camera name)
         self._camera_name = self._stage_prim_path.rpartition("/")[-1]

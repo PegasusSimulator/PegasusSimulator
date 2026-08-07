@@ -85,7 +85,7 @@ setup(
     maintainer="Marcelo Jacinto",
     maintainer_email="marcelo.jacinto@tecnico.ulisboa.pt",
     url="https://github.com/PegasusSimulator/PegasusSimulator/tree/main/extensions/pegasus.simulator",
-    version="5.1.0",
+    version="6.0.0",
     description="Extension providing the main framework interfaces for simulating aerial vehicles using PX4, Python or ROS 2 as a backend",
     keywords=["drone", "quadrotor", "multirotor", "UAV", "px4", "sitl", "robotics"],
     license="BSD-3-Clause",

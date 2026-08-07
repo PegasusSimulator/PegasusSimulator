@@ -7,7 +7,7 @@
 
 # Make sure the ROS2 extension is enabled
 import carb
-from isaacsim.core.utils.extensions import enable_extension
+from isaacsim.core.experimental.utils.app import enable_extension
 enable_extension("isaacsim.ros2.bridge")
 
 # ROS2 imports
@@ -33,7 +33,7 @@ from pegasus.simulator.logic.backends.backend import Backend
 import omni
 import omni.graph.core as og
 import omni.replicator.core as rep
-from isaacsim.ros2.bridge import read_camera_info
+from isaacsim.ros2.core.impl.camera_info_utils import read_camera_info
 
 
 class ROS2Backend(Backend):

@@ -19,7 +19,11 @@ simulation_app = SimulationApp({"headless": False})
 # The actual script should start here
 # -----------------------------------
 import omni.timeline
-from omni.isaac.core import World
+import omni.usd
+from pxr import UsdGeom, UsdPhysics, Gf
+from isaacsim.core.simulation_manager import SimulationManager, SimulationEvent
+from isaacsim.core.rendering_manager import RenderingManager, RenderingEvent
+import isaacsim.core.experimental.utils.app as app_utils
 
 class Template:
     """
@@ -30,57 +34,60 @@ class Template:
         """
         Method that initializes the template App and is used to setup the simulation environment.
         """
-        
+
         # Acquire the timeline that will be used to start/stop the simulation
         self.timeline = omni.timeline.get_timeline_interface()
 
-        # Acquire the World, .i.e, the singleton that controls that is a one stop shop for setting up physics, 
-        # spawning asset primitives, etc.
-        self.world = World()
+        # Set up simulation with a default physics dt of 1/60 s
+        SimulationManager.set_physics_dt(1.0 / 60.0)
 
-        # Create a ground plane for the simulation
-        self.world.scene.add_default_ground_plane()
+        # Add a simple ground plane via USD physics (large flat cube with collision)
+        stage = omni.usd.get_context().get_stage()
+        ground = UsdGeom.Cube.Define(stage, "/World/groundPlane")
+        ground.GetSizeAttr().Set(150.0)
+        xform = UsdGeom.Xformable(ground.GetPrim())
+        xform.AddTranslateOp().Set(Gf.Vec3d(0.0, 0.0, -0.5))
+        xform.AddScaleOp().Set(Gf.Vec3d(1.0, 1.0, 0.01))
+        UsdPhysics.CollisionAPI.Apply(ground.GetPrim())
 
-        # Create an example physics callback
-        self.world.add_physics_callback('template_physics_callback', self.physics_callback)
+        # Register example physics callback
+        self._cb_physics = SimulationManager.register_callback(
+            self.physics_callback, SimulationEvent.PHYSICS_POST_STEP
+        )
 
-        # Create an example render callback
-        self.world.add_render_callback('template_render_callback', self.render_callback)
+        # Register example render callback
+        self._cb_render = RenderingManager.register_callback(
+            RenderingEvent.NEW_FRAME, callback=self.render_callback
+        )
 
-        # Create an example timeline callback
-        self.world.add_timeline_callback('template_timeline_callback', self.timeline_callback)
+        # Register simulation stopped callback (replaces the old timeline callback)
+        self._cb_stop = SimulationManager.register_callback(
+            self._on_sim_stopped, SimulationEvent.SIMULATION_STOPPED
+        )
 
-        # Reset the simulation environment so that all articulations (aka robots) are initialized
-        self.world.reset()
-
-        # Auxiliar variable for the timeline callback example
+        # Auxiliar variable for the stop callback example
         self.stop_sim = False
 
-    def physics_callback(self, dt: float):
+    def physics_callback(self, dt: float, context=None):
         """An example physics callback. It will get invoked every physics step.
 
         Args:
             dt (float): The time difference between the previous and current function call, in seconds.
+            context: Physics step context (unused).
         """
         carb.log_info("This is a physics callback. It is called every " + str(dt) + " seconds!")
 
-    def render_callback(self, data):
+    def render_callback(self, event):
         """An example render callback. It will get invoked for every rendered frame.
 
         Args:
-            data: Rendering data.
+            event: Rendering event from RenderingManager.
         """
         carb.log_info("This is a render callback. It is called every frame!")
 
-    def timeline_callback(self, timeline_event):
-        """An example timeline callback. It will get invoked every time a timeline event occurs. In this example,
-        we will check if the event is for a 'simulation stop'. If so, we will attempt to close the app
-
-        Args:
-            timeline_event: A timeline event
-        """
-        if self.world.is_stopped():
-            self.stop_sim = True
+    def _on_sim_stopped(self, *args):
+        """Invoked when the simulation stops."""
+        self.stop_sim = True
 
     def run(self):
         """
@@ -94,10 +101,13 @@ class Template:
         while simulation_app.is_running() and not self.stop_sim:
 
             # Update the UI of the app and perform the physics step
-            self.world.step(render=True)
-        
+            simulation_app.update()
+
         # Cleanup and stop
         carb.log_warn("Template Simulation App is closing.")
+        SimulationManager.deregister_callback(self._cb_physics)
+        SimulationManager.deregister_callback(self._cb_stop)
+        RenderingManager.deregister_callback(self._cb_render)
         self.timeline.stop()
         simulation_app.close()
 

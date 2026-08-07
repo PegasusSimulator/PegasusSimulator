@@ -5,27 +5,29 @@
 | Description: Definition of the Person class which is used as the base for spawning people in the simulation world.
 """
 
+import asyncio
 import numpy as np
 from scipy.spatial.transform import Rotation
 
 # Low level APIs
 import carb
-from pxr import Sdf
+from pxr import Sdf, Gf, UsdGeom
 
 # High level Isaac sim APIs
 import NavSchema
 import omni.client
-from isaacsim.core.utils import prims
+import omni.kit.app
+import omni.usd
 from omni.usd import get_stage_next_free_path
 from isaacsim.storage.native import get_assets_root_path
+import isaacsim.core.experimental.utils.app as app_utils
+import isaacsim.core.experimental.utils.stage as stage_utils
+from isaacsim.core.simulation_manager import SimulationManager, SimulationEvent
 
-from omni.isaac.core import SimulationContext
-
-# New imports from the replicator API
+# omni.anim.graph.core is in extscache in Isaac Sim 6.0 and must be enabled before import
+from isaacsim.core.experimental.utils.app import enable_extension
+enable_extension("omni.anim.graph.core")
 import omni.anim.graph.core as ag
-import isaacsim.replicator.agent.core
-from isaacsim.replicator.agent.core.settings import PrimPaths
-from isaacsim.replicator.agent.core.stage_util import CharacterUtil
 
 # Extension APIs
 from pegasus.simulator.logic.state import State
@@ -39,21 +41,34 @@ class Person:
     Class that implements a person in the simulation world. The person can be controlled by a controller that inherits from the PersonController class.
     """
 
-    # Get root assets path from setting, if not set, get the Isaac-Sim asset path
-    people_asset_folder = "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.1/Isaac/People/Characters/"
-    character_root_prim_path = PrimPaths.characters_parent_path()
+    # Can be set by users to override the default NVIDIA asset server URL.
+    # When None, the path is resolved at runtime via get_assets_root_path() so
+    # the correct Nucleus/S3 URL for this Isaac Sim installation is used.
+    people_asset_folder = None
 
-    assets_root_path = None   
+    # Default parent path for character prims (matches isaacsim.replicator.agent.core config default)
+    character_root_prim_path = "/World/Characters"
 
-    if people_asset_folder:
-        assets_root_path = people_asset_folder
-    else:   
-        root_path = get_assets_root_path()
-        if root_path is not None:
-            assets_root_path  = "{}/Isaac/People/Characters".format(root_path)
+    # Resolved lazily on first Person instantiation (not at module import time)
+    assets_root_path = None
+
+    @classmethod
+    def _ensure_assets_root_path(cls):
+        """Resolve assets_root_path on first call. Called from __init__ and static helpers."""
+        if cls.assets_root_path is not None:
+            return
+        if cls.people_asset_folder:
+            cls.assets_root_path = cls.people_asset_folder
+        else:
+            try:
+                root_path = get_assets_root_path()
+                if root_path:
+                    cls.assets_root_path = f"{root_path}/Isaac/People/Characters"
+            except Exception as e:
+                carb.log_error(f"Could not resolve Isaac Sim asset root path: {e}")
 
     def __init__(
-        self, 
+        self,
         stage_prefix: str,
         character_name: str = None,
         init_pos=[0.0, 0.0, 0.0],
@@ -71,9 +86,11 @@ class Person:
             controller (PersonController): A controller to add some custom behaviour to the movement of the person. Defaults to None.
         """
 
-        # Get the current world at which we want to spawn the vehicle
-        self._world = PegasusInterface().world
-        self._current_stage = self._world.stage
+        # Get the current stage
+        self._current_stage = omni.usd.get_context().get_stage()
+
+        # Ensure the assets root path is resolved before first use
+        Person._ensure_assets_root_path()
 
         # Variable that will hold the current state of the vehicle
         self._state = State()
@@ -105,9 +122,11 @@ class Person:
         # Characters assets path:
         # https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.1/Isaac/People/Characters/
 
-        # Add the animation graph to the agent, such that it can move around
+        # Add the animation graph to the agent, such that it can move around.
+        # ApplyBehaviorAgentAPICommand triggers OmniGraph creation which segfaults when
+        # called synchronously before the first app update; schedule it async instead.
         self.character_graph = None
-        self.add_animation_graph_to_agent()
+        asyncio.ensure_future(self._setup_animation_graph_async())
 
         # Set the controller for the person if any and initialize it
         self._controller = controller
@@ -119,18 +138,23 @@ class Person:
         if self._backend:
             self._backend.initialize(self)
 
-        # Add a callback to the physics engine to update the current state of the person
-        self._world.add_physics_callback(self._stage_prefix + "/state", self.update_state)
-
-        # Add the update method to the physics callback if the world was received
-        # so that we can apply the new references to be tracked by the person
-        self._world.add_physics_callback(self._stage_prefix + "/update", self.update)
+        # Register physics callbacks with SimulationManager
+        self._cb_state = SimulationManager.register_callback(self.update_state, SimulationEvent.PHYSICS_POST_STEP)
+        self._cb_update = SimulationManager.register_callback(self.update, SimulationEvent.PHYSICS_POST_STEP)
 
         # Set the flag that signals if the simulation is running or not
         self._sim_running = False
 
-        # Add a callback to start/stop of the simulation once the play/stop button is hit
-        self._world.add_timeline_callback(self._stage_prefix + "/start_stop_sim", self.sim_start_stop)
+        # Register simulation start/stop callbacks
+        self._cb_sim_start = SimulationManager.register_callback(self._on_sim_started, SimulationEvent.SIMULATION_STARTED)
+        self._cb_sim_stop = SimulationManager.register_callback(self._on_sim_stopped, SimulationEvent.SIMULATION_STOPPED)
+
+    def __del__(self):
+        for cb_id in (self._cb_state, self._cb_update, self._cb_sim_start, self._cb_sim_stop):
+            try:
+                SimulationManager.deregister_callback(cb_id)
+            except Exception:
+                pass
 
     @property
     def state(self):
@@ -141,20 +165,15 @@ class Person:
         """
         return self._state
     
-    def sim_start_stop(self, event):
-        """
-        Callback that is called every time there is a timeline event such as starting/stoping the simulation.
-
-        Args:
-            event: A timeline event generated from Isaac Sim, such as starting or stoping the simulation.
-        """
-
-        # If the start/stop button was pressed, then call the start and stop methods accordingly
-        if self._world.is_playing() and self._sim_running == False:
+    def _on_sim_started(self, *args):
+        """Callback invoked when the simulation starts."""
+        if not self._sim_running:
             self._sim_running = True
             self.start()
 
-        if self._world.is_stopped() and self._sim_running == True:
+    def _on_sim_stopped(self, *args):
+        """Callback invoked when the simulation stops."""
+        if self._sim_running:
             self._sim_running = False
             self.stop()
 
@@ -172,7 +191,7 @@ class Person:
         if self._controller:
             self._controller.stop()
 
-    def update(self, dt: float):
+    def update(self, dt: float, context=None):
         """
         Method that implements the logic to make the person move around in the simulation world and also play the animation
 
@@ -220,7 +239,7 @@ class Person:
         self._target_speed = walk_speed
 
 
-    def update_state(self, dt: float):
+    def update_state(self, dt: float, context=None):
         """
         Method that is called at every physics step to retrieve and update the current state of the person, i.e., get
         the current position, orientation, linear and angular velocities and acceleration of the person.
@@ -262,12 +281,15 @@ class Person:
 
     def spawn_agent(self, usd_file, stage_name, init_pos, init_yaw):
 
-        # Get the last name after the last slash in the stage name
-        # We only want the name of the character, not the full path
-        character_name = stage_name.split("/")[-1]
-
-        # Spawn the character in the stage using the NVIDIA replicar API (which is suprisingly similar to the original version I provided in this function in version 4.2.0)
-        CharacterUtil.load_character_usd_to_stage(usd_file, init_pos, init_yaw, character_name)
+        # CharacterUtil.load_character_usd_to_stage was removed in Isaac Sim 6.0.
+        # Replicate its behavior: add a USD reference at the stage path and set the initial xform.
+        stage_utils.add_reference_to_stage(usd_path=usd_file, path=stage_name)
+        prim = self._current_stage.GetPrimAtPath(stage_name)
+        xformable = UsdGeom.Xformable(prim)
+        xformable.ClearXformOpOrder()
+        xformable.AddTranslateOp().Set(Gf.Vec3f(float(init_pos[0]), float(init_pos[1]), float(init_pos[2])))
+        yaw_quat = Rotation.from_euler('z', init_yaw, degrees=False).as_quat()  # [qx, qy, qz, qw]
+        xformable.AddOrientOp().Set(Gf.Quatf(float(yaw_quat[3]), float(yaw_quat[0]), float(yaw_quat[1]), float(yaw_quat[2])))
 
         # Add the current person to the person manager
         PeopleManager.get_people_manager().add_person(self._stage_prefix, self)
@@ -278,22 +300,44 @@ class Person:
         # Update the navigation mesh to include the character skeleton root prim
         omni.kit.commands.execute("ApplyNavMeshAPICommand", prim_path=stage_name, api=NavSchema.NavMeshExcludeAPI)
 
-        # If the base biped character is not present in the stage, spawn it
-        if not self._current_stage.GetPrimAtPath(Person.character_root_prim_path + "/Biped_Setup"):
-            prim = prims.create_prim(Person.character_root_prim_path + "/Biped_Setup", "Xform", usd_path=Person.assets_root_path + "/Biped_Setup.usd")
-            prim.GetAttribute("visibility").Set("invisible")
+        # Load HumanMotionLibrary (replaces Biped_Setup.usd in Isaac Sim 6.0)
+        motion_library_prim_path = Person.character_root_prim_path + "/HumanMotionLibrary"
+        if not self._current_stage.GetPrimAtPath(motion_library_prim_path):
+            try:
+                root_path = get_assets_root_path()
+                motion_library_url = f"{root_path}/Isaac/People/MotionLibrary/HumanMotionLibrary.usd"
+                omni.kit.commands.execute(
+                    "CreatePayloadCommand",
+                    usd_context=omni.usd.get_context(),
+                    path_to=motion_library_prim_path,
+                    asset_path=motion_library_url,
+                    prim_path=None,
+                    instanceable=False,
+                    select_prim=False,
+                )
+            except Exception as e:
+                carb.log_error(f"Failed to load HumanMotionLibrary: {e}")
 
+
+    async def _setup_animation_graph_async(self):
+        # Wait one frame so the HumanMotionLibrary payload is fully resolved and
+        # OmniGraph is ready to accept new nodes (avoids segfault in standalone mode).
+        await omni.kit.app.get_app().next_update_async()
+        self.add_animation_graph_to_agent()
 
     def add_animation_graph_to_agent(self):
-
-        # Get the animation graph that we are going to add to the person
-        animation_graph = self._current_stage.GetPrimAtPath(Person.character_root_prim_path + "/Biped_Setup/CharacterAnimation/AnimationGraph")
-
-        # Remove the animation graph attribute if it exists
-        omni.kit.commands.execute("RemoveAnimationGraphAPICommand", paths=[Sdf.Path(self.character_skel_root.GetPrimPath())])
-
-        # Add the animation graph to the character
-        omni.kit.commands.execute("ApplyAnimationGraphAPICommand", paths=[Sdf.Path(self.character_skel_root.GetPrimPath())], animation_graph_path=Sdf.Path(animation_graph.GetPrimPath()))
+        # In Isaac Sim 6.0, ApplyBehaviorAgentAPICommand replaces AnimationGraphAPI + Biped_Setup.usd.
+        # Apply the BehaviorAgentAPI to the character's SkelRoot, pointing at the HumanMotionLibrary.
+        if self.character_skel_root is None:
+            carb.log_warn("No SkelRoot found for character — skipping BehaviorAgentAPI setup.")
+            return
+        motion_library_prim_path = Person.character_root_prim_path + "/HumanMotionLibrary"
+        omni.kit.commands.execute(
+            "ApplyBehaviorAgentAPICommand",
+            skelroot_prim_paths=[self.character_skel_root.GetPath()],
+            motion_library_prim_path=motion_library_prim_path,
+            motion_library_skeleton_rig="Human",
+        )
 
 
     @staticmethod
@@ -325,6 +369,7 @@ class Person:
 
     @staticmethod
     def get_character_asset_list():
+        Person._ensure_assets_root_path()
         # List all files in characters directory
         result, folder_list = omni.client.list("{}/".format(Person.assets_root_path))
 

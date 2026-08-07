@@ -20,9 +20,8 @@ simulation_app = SimulationApp({"headless": False})
 # The actual script should start here
 # -----------------------------------
 import omni.timeline
-from omni.isaac.core.world import World
 
-from isaacsim.core.utils.extensions import enable_extension
+from isaacsim.core.experimental.utils.app import enable_extension
 enable_extension("isaacsim.ros2.bridge")
 
 # Import the Pegasus API for simulating drones
@@ -53,8 +52,7 @@ class PegasusApp:
 
         # Acquire the World, .i.e, the singleton that controls that is a one stop shop for setting up physics, 
         # spawning asset primitives, etc.
-        self.pg._world = World(**self.pg._world_settings)
-        self.world = self.pg.world
+        self.pg.initialize_world()
 
         # Launch one of the worlds provided by NVIDIA
         self.pg.load_environment(SIMULATION_ENVIRONMENTS["Curved Gridroom"])
@@ -83,7 +81,6 @@ class PegasusApp:
         )
 
         # Reset the simulation environment so that all articulations (aka robots) are initialized
-        self.world.reset()
 
         # Auxiliar variable for the timeline callback example
         self.stop_sim = False
@@ -100,7 +97,7 @@ class PegasusApp:
         while simulation_app.is_running() and not self.stop_sim:
 
             # Update the UI of the app and perform the physics step
-            self.world.step(render=True)
+            simulation_app.update()
         
         # Cleanup and stop
         carb.log_warn("PegasusApp Simulation App is closing.")

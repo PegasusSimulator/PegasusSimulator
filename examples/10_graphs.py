@@ -20,9 +20,9 @@ simulation_app = SimulationApp({"headless": False})
 # The actual script should start here
 # -----------------------------------
 import omni.timeline
-from omni.isaac.core.world import World
-from omni.isaac.core.objects import DynamicCuboid
+import omni.usd
 import numpy as np
+from pxr import UsdGeom, UsdPhysics, Gf
 
 # Import the Pegasus API for simulating drones
 from pegasus.simulator.params import ROBOTS, SIMULATION_ENVIRONMENTS
@@ -52,23 +52,20 @@ class PegasusApp:
 
         # Acquire the World, .i.e, the singleton that controls that is a one stop shop for setting up physics,
         # spawning asset primitives, etc.
-        self.pg._world = World(**self.pg._world_settings)
-        self.world = self.pg.world
+        self.pg.initialize_world()
 
         # Launch one of the worlds provided by NVIDIA
         self.pg.load_environment(SIMULATION_ENVIRONMENTS["Curved Gridroom"])
 
-        
-        cube_2 = self.world.scene.add(
-            DynamicCuboid(
-                prim_path="/new_cube_2",
-                name="cube_1",
-                position=np.array([-3.0, 0, 2.0]),
-                scale=np.array([1.0, 1.0, 1.0]),
-                size=1.0,
-                color=np.array([255, 0, 0]),
-            )
-        )
+        # Add a dynamic rigid body cube using USD physics API
+        _stage = omni.usd.get_context().get_stage()
+        cube_geom = UsdGeom.Cube.Define(_stage, "/new_cube_2")
+        cube_geom.GetSizeAttr().Set(1.0)
+        xform = UsdGeom.Xformable(cube_geom.GetPrim())
+        xform.AddTranslateOp().Set(Gf.Vec3d(-3.0, 0.0, 2.0))
+        UsdPhysics.RigidBodyAPI.Apply(cube_geom.GetPrim())
+        UsdPhysics.CollisionAPI.Apply(cube_geom.GetPrim())
+        UsdPhysics.MassAPI.Apply(cube_geom.GetPrim()).GetMassAttr().Set(1.0)
 
         # Create the vehicle
         # Try to spawn the selected robot in the world to the specified namespace
@@ -96,8 +93,6 @@ class PegasusApp:
             config=config_multirotor,
         )
 
-        # Reset the simulation environment so that all articulations (aka robots) are initialized
-        self.world.reset()
 
         # Auxiliar variable for the timeline callback example
         self.stop_sim = False
@@ -113,7 +108,7 @@ class PegasusApp:
         # The "infinite" loop
         while simulation_app.is_running() and not self.stop_sim:
             # Update the UI of the app and perform the physics step
-            self.world.step(render=True)
+            simulation_app.update()
 
         # Cleanup and stop
         carb.log_warn("PegasusApp Simulation App is closing.")

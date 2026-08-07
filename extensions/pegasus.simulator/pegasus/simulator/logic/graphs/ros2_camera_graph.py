@@ -6,11 +6,9 @@ __all__ = ["ROS2CameraGraph"]
 
 import carb
 
-from isaacsim.core.utils import stage
+import omni.usd
 import omni.graph.core as og
-from isaacsim.core.utils.prims import is_prim_path_valid
-from isaacsim.core.utils.prims import set_targets
-from omni.isaac.sensor import Camera
+from pxr import Sdf
 
 from pegasus.simulator.logic.graphs import Graph
 from pegasus.simulator.logic.vehicles import Vehicle
@@ -78,20 +76,9 @@ class ROS2CameraGraph(Graph):
         if self._camera_prim_path[0] != '/':
             self._camera_prim_path = f"{vehicle.prim_path}/{self._camera_prim_path}"
 
-        # Create the camera object attached to the vehicle
-        self.camera = Camera(
-            prim_path=self._camera_prim_path,
-            position=np.array([0.30, 0.0, 0.0]),
-            frequency=30.0,
-            resolution=self._resolution,
-            orientation=Rotation.from_euler("ZYX", [0.0, 0.0, 0.0], degrees=True).as_quat()
-        )
-
-        # Initialize the camera sensor
-        self.camera.initialize()
-
-        # Create camera prism
-        if not is_prim_path_valid(self._camera_prim_path):
+        # Verify the camera prim exists in the stage
+        _stage = omni.usd.get_context().get_stage()
+        if not _stage.GetPrimAtPath(self._camera_prim_path).IsValid():
             carb.log_error(f"Cannot create ROS2 Camera graph, the camera prim path \"{self._camera_prim_path}\" is not valid")
             return
 
@@ -208,12 +195,9 @@ class ROS2CameraGraph(Graph):
              graph_config
         )
 
-        # Connect camera to the graphs
-        set_targets(
-            prim=stage.get_current_stage().GetPrimAtPath(f"{graph_path}/set_camera"),
-            attribute="inputs:cameraPrim",
-            target_prim_paths=[self._camera_prim_path]
-        )
+        # Connect camera to the graph using USD relationship API
+        set_camera_prim = omni.usd.get_context().get_stage().GetPrimAtPath(f"{graph_path}/set_camera")
+        set_camera_prim.GetRelationship("inputs:cameraPrim").SetTargets([Sdf.Path(self._camera_prim_path)])
 
         # Run the ROS Camera graph once to generate ROS image publishers in SDGPipeline
         og.Controller.evaluate_sync(graph)

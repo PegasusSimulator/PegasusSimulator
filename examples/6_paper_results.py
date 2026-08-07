@@ -21,13 +21,8 @@ simulation_app = SimulationApp({"headless": False})
 # The actual script should start here
 # -----------------------------------
 import omni.timeline
-from omni.isaac.core.world import World
-
-# Used for adding extra lights to the environment
-import isaacsim.core.utils.prims as prim_utils
-
-import omni.kit.commands
-from pxr import Sdf
+import omni.usd
+from pxr import Sdf, UsdLux, Gf
 
 # Import the Pegasus API for simulating drones
 from pegasus.simulator.params import ROBOTS
@@ -68,18 +63,16 @@ class PegasusApp:
         # Acquire the World, .i.e, the singleton that controls that is a one stop shop for setting up physics, 
         # spawning asset primitives, etc.
         self.pg._world_settings = {"physics_dt": 1.0 / 500.0, "stage_units_in_meters": 1.0, "rendering_dt": 1.0 / 60.0}
-        self.pg._world = World(**self.pg._world_settings)
-        self.world = self.pg.world
+        self.pg.initialize_world()
 
-        prim_utils.create_prim(
-            "/World/Light/DomeLight",
-            "DomeLight",
-            position=np.array([1.0, 1.0, 1.0]),
-            attributes={
-                "inputs:intensity": 5e3,
-                "inputs:color": (1.0, 1.0, 1.0),
-                "inputs:texture:file": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/4.5/NVIDIA/Assets/Skies/Indoor/ZetoCGcom_ExhibitionHall_Interior1.hdr"
-            }
+        # Add a dome light to the scene using USD API
+        _stage = omni.usd.get_context().get_stage()
+        _stage.DefinePrim("/World/Light", "Xform")
+        dome_prim = _stage.DefinePrim("/World/Light/DomeLight", "DomeLight")
+        dome_prim.CreateAttribute("inputs:intensity", Sdf.ValueTypeNames.Float).Set(5e3)
+        dome_prim.CreateAttribute("inputs:color", Sdf.ValueTypeNames.Color3f).Set(Gf.Vec3f(1.0, 1.0, 1.0))
+        dome_prim.CreateAttribute("inputs:texture:file", Sdf.ValueTypeNames.Asset).Set(
+            "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/4.5/NVIDIA/Assets/Skies/Indoor/ZetoCGcom_ExhibitionHall_Interior1.hdr"
         )
 
         # Get the current directory used to read trajectories and save results
@@ -139,8 +132,6 @@ class PegasusApp:
         point_list_2 = [(trajectory2[i][0], trajectory2[i][1], trajectory2[i][2]) for i in range(num_samples)]
         draw.draw_lines_spline(point_list_2, (255/255, 0, 0, 1), 5, False)
 
-        # Reset the world
-        self.world.reset()
 
     def run(self):
         """
@@ -154,7 +145,7 @@ class PegasusApp:
         while simulation_app.is_running():
 
             # Update the UI of the app and perform the physics step
-            self.world.step(render=True)
+            simulation_app.update()
         
         # Cleanup and stop
         carb.log_warn("PegasusApp Simulation App is closing.")

@@ -204,11 +204,8 @@ class UIDelegate:
         """
 
         async def async_load_vehicle():
-            # Check if we already have a physics environment activated. If not, then activate it
-            # and only after spawn the vehicle. This is to avoid trying to spawn a vehicle without a physics
-            # environment setup. This way we can even spawn a vehicle in an empty world and it won't care
-            if hasattr(self._pegasus_sim.world, "_physics_context") == False:
-                await self._pegasus_sim.world.initialize_simulation_context_async()
+            # Ensure physics dt is configured before spawning a vehicle
+            self._pegasus_sim.initialize_world()
 
             # Check if a vehicle is selected in the drop-down menu
             if self._vehicle_dropdown is not None and self._window is not None:

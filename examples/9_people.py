@@ -20,8 +20,7 @@ simulation_app = SimulationApp({"headless": False})
 # The actual script should start here
 # -----------------------------------
 import omni.timeline
-from omni.isaac.core.world import World
-from isaacsim.core.utils.extensions import enable_extension
+from isaacsim.core.experimental.utils.app import enable_extension
 
 # Enable/disable ROS bridge extensions to keep only ROS2 Bridge
 enable_extension("isaacsim.ros2.bridge")
@@ -96,8 +95,7 @@ class PegasusApp:
 
         # Acquire the World, .i.e, the singleton that controls that is a one stop shop for setting up physics,
         # spawning asset primitives, etc.
-        self.pg._world = World(**self.pg._world_settings)
-        self.world = self.pg.world
+        self.pg.initialize_world()
 
         # Launch one of the worlds provided by NVIDIA
         #self.pg.load_environment(SIMULATION_ENVIRONMENTS["Curved Gridroom"])
@@ -121,7 +119,6 @@ class PegasusApp:
         mavlink_config = PX4MavlinkBackendConfig({
             "vehicle_id": 0,
             "px4_autolaunch": True,
-            "px4_dir": "/home/marcelo/PX4-Autopilot"     # TODO -> Change this line to the path where you have the PX4-Autopilot code downloaded (this is an example on how you can set your own path for PX4)
         })
 
         config_multirotor.backends = [
@@ -150,7 +147,6 @@ class PegasusApp:
         self.pg.set_viewport_camera([5.0, 9.0, 6.5], [0.0, 0.0, 0.0])
 
         # Reset the simulation environment so that all articulations (aka robots) are initialized
-        self.world.reset()
 
         # Auxiliar variable for the timeline callback example
         self.stop_sim = False
@@ -166,7 +162,7 @@ class PegasusApp:
         # The "infinite" loop
         while simulation_app.is_running() and not self.stop_sim:
             # Update the UI of the app and perform the physics step
-            self.world.step(render=True)
+            simulation_app.update()
 
         # Cleanup and stop
         carb.log_warn("PegasusApp Simulation App is closing.")
