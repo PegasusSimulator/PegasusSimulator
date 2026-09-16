@@ -294,11 +294,9 @@ class Vehicle(Robot):
         # Get the current position and orientation in the inertial frame
         pose = self.get_dc_interface().get_rigid_body_pose(body)
 
-        # Get the attitude according to the convention [w, x, y, z]
-        prim = self._world.stage.GetPrimAtPath(self._stage_prefix + "/body")
-        rotation_quat = get_world_transform_xform(prim).GetQuaternion()
-        rotation_quat_real = rotation_quat.GetReal()
-        rotation_quat_img = rotation_quat.GetImaginary()
+        # Attitude comes from the SAME PhysX pose as the position above; the
+        # USD xform is only refreshed once per app.update and is stale on any
+        # loop that substeps faster than it renders.
 
         # Get the angular velocity of the vehicle expressed in the body frame of reference
         ang_vel = self.get_dc_interface().get_rigid_body_angular_velocity(body)
@@ -313,10 +311,8 @@ class Vehicle(Robot):
         # Update the state variable X = [x,y,z]
         self._state.position = np.array(pose.p)
 
-        # Get the quaternion according in the [qx,qy,qz,qw] standard
-        self._state.attitude = np.array(
-            [rotation_quat_img[0], rotation_quat_img[1], rotation_quat_img[2], rotation_quat_real]
-        )
+        # dynamic_control Transform.r is already [qx, qy, qz, qw]
+        self._state.attitude = np.array(pose.r)
 
         # Express the velocity of the vehicle in the inertial frame X_dot = [x_dot, y_dot, z_dot]
         self._state.linear_velocity = np.array(linear_vel)
