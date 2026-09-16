@@ -98,7 +98,7 @@ class IMU(Sensor):
         """
 
         # Gyroscopic terms
-        tau_g: float = self._accelerometer_bias_correlation_time
+        tau_g: float = self._gyroscope_bias_correlation_time
 
         # Discrete-time standard deviation equivalent to an "integrating" sampler with integration time dt
         sigma_g_d: float = 1 / np.sqrt(dt) * self._gyroscope_noise_density
@@ -142,10 +142,10 @@ class IMU(Sensor):
 
         # Simulate the accelerometer noise processes and add them to the true linear aceleration values
         for i in range(3):
-            self._accelerometer_bias[i] = phi_a_d * self._accelerometer_bias[i] + sigma_b_a_d * np.random.rand()
+            self._accelerometer_bias[i] = phi_a_d * self._accelerometer_bias[i] + sigma_b_a_d * np.random.randn()
             linear_acceleration[i] = (
-                linear_acceleration[i] + sigma_a_d * np.random.randn()
-            ) #+ self._accelerometer_bias[i]
+                linear_acceleration[i] + sigma_a_d * np.random.randn() + self._accelerometer_bias[i]
+            )
 
         # TODO - Add small "noisy" to the attitude
 
