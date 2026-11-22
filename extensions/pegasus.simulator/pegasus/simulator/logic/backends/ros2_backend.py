@@ -456,7 +456,10 @@ class ROS2Backend(Backend):
         render_prod_path = rep.create.render_product(data["stage_prim_path"], [1, 1], name=data["lidar_name"])
 
         # Create the writer for the lidar
-        writer = rep.writers.get("RtxLidarROS2PublishPointCloud")
+        if data.get("use_sys_time", False): #option to use simulation or system time.
+            writer = rep.writers.get("RtxLidarROS2SystemTimePublishPointCloud")
+        else:
+            writer = rep.writers.get("RtxLidarROS2PublishPointCloud")
         writer.initialize(nodeNamespace=self._namespace + str(self._id), topicName=data["lidar_name"] + "/pointcloud", frameId=data["lidar_name"])
         writer.attach([render_prod_path])
 
@@ -464,7 +467,10 @@ class ROS2Backend(Backend):
         self.graphical_sensors_writers[data["lidar_name"]] = [writer]
 
         # Create the writer for publishing a laser scan message along with the point cloud
-        writer = rep.writers.get("RtxLidarROS2PublishLaserScan")
+        if data.get("use_sys_time", False): #option to use simulation or system time.
+            writer = rep.writers.get("RtxLidarROS2SystemTimePublishLaserScan")
+        else:
+            writer = rep.writers.get("RtxLidarROS2PublishLaserScan")
         writer.initialize(nodeNamespace=self._namespace + str(self._id), topicName=data["lidar_name"] + "/laserscan", frameId=data["lidar_name"])
         writer.attach([render_prod_path])
         self.graphical_sensors_writers[data["lidar_name"]].append(writer)

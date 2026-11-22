@@ -47,6 +47,7 @@ class Lidar(GraphicalSensor):
         self._show_render = config.get("show_render", False)
 
         self._sensor = None
+        self._use_sys_time = config.get("use_sys_time", False) #option to use system time instead of simulation time
 
     def initialize(self, vehicle):
         """
@@ -74,7 +75,10 @@ class Lidar(GraphicalSensor):
         # If show_render is True, then create a render product for the lidar in the Isaac Sim environment
         if self._show_render:
             hydra_texture = rep.create.render_product(self._sensor.GetPath(), [1, 1], name="Isaac")
-            writer = rep.writers.get("RtxLidar" + "ROS2PublishPointCloud")
+            if self._use_sys_time:  # option to use simulation or system time. Defaults to sim.
+                writer = rep.writers.get("RtxLidar" + "ROS2SystemTimePublishPointCloud")
+            else:
+                writer = rep.writers.get("RtxLidar" + "ROS2PublishPointCloud")
             writer.initialize(topicName="point_cloud", frameId="base_scan")
             writer.attach([hydra_texture])
 
@@ -98,6 +102,8 @@ class Lidar(GraphicalSensor):
         """
 
         # Just return the prim path and the name of the lidar
-        self._state = {"lidar_name": self._lidar_name, "stage_prim_path": self._stage_prim_path}
+        self._state = {"lidar_name": self._lidar_name,
+                       "stage_prim_path": self._stage_prim_path,
+                       "use_sys_time": self._use_sys_time}
 
         return self._state

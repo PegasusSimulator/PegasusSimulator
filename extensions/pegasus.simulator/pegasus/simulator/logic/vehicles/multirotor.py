@@ -121,7 +121,7 @@ class Multirotor(Vehicle):
         forces_z, _, rolling_moment = self._thrusters.update(self._state, dt)
 
         # Apply force to each rotor
-        for i in range(4):
+        for i in range(self._thrusters._num_rotors):
 
             # Apply the force in Z on the rotor frame
             self.apply_force([0.0, 0.0, forces_z[i]], body_part="/rotor" + str(i))
